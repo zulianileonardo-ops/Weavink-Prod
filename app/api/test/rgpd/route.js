@@ -16,6 +16,7 @@ import { runConsentTests } from '../../../../lib/services/servicePrivacy/tests/c
 import { runDataExportTests } from '../../../../lib/services/servicePrivacy/tests/dataExportTests.js';
 import { runAccountDeletionTests } from '../../../../lib/services/servicePrivacy/tests/accountDeletionTests.js';
 import { runPhase3Tests } from '../../../../lib/services/servicePrivacy/tests/phase3Tests.js';
+import { runPhase4Tests } from '../../../../lib/services/servicePrivacy/tests/phase4Tests.js';
 
 /**
  * POST /api/test/rgpd
@@ -75,6 +76,21 @@ export async function POST(request) {
           total: phase3Results.total,
         },
         tests: phase3Results.tests,
+      };
+    }
+
+    // Run Phase 4 Tests
+    if (suite === 'all' || suite === 'phase4') {
+      console.log('\n🚀 Running Phase 4 Tests...\n');
+      const phase4Results = await runPhase4Tests();
+      results.results.phase4 = {
+        success: phase4Results.failed === 0,
+        summary: {
+          passed: phase4Results.passed,
+          failed: phase4Results.failed,
+          total: phase4Results.total,
+        },
+        tests: phase4Results.tests,
       };
     }
 
@@ -138,11 +154,12 @@ export async function GET() {
     version: '1.0.0',
     documentation: 'See RGPD_TESTING_GUIDE.md for detailed instructions',
     availableTests: {
-      all: 'Run all RGPD compliance tests (Phase 1-3)',
+      all: 'Run all RGPD compliance tests (Phase 1-4)',
       consent: 'Test consent management system',
       export: 'Test data export functionality',
       deletion: 'Test account deletion with grace period',
       phase3: 'Test Phase 3 features (minimization, retention, DPIA, incidents, audit logs)',
+      phase4: 'Test Phase 4 features (portability, breach notifications, certifications, processors, monitoring)',
       cookie: 'Cookie consent tests (browser only)',
     },
     usage: {
