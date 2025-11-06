@@ -15,6 +15,7 @@ import { NextResponse } from 'next/server';
 import { runConsentTests } from '../../../../lib/services/servicePrivacy/tests/consentTests.js';
 import { runDataExportTests } from '../../../../lib/services/servicePrivacy/tests/dataExportTests.js';
 import { runAccountDeletionTests } from '../../../../lib/services/servicePrivacy/tests/accountDeletionTests.js';
+import { runPhase3Tests } from '../../../../lib/services/servicePrivacy/tests/phase3Tests.js';
 
 /**
  * POST /api/test/rgpd
@@ -60,6 +61,21 @@ export async function POST(request) {
       console.log('\n🗑️  Running Account Deletion Tests...\n');
       const deletionResults = await runAccountDeletionTests(deletionUserId);
       results.results.deletion = deletionResults;
+    }
+
+    // Run Phase 3 Tests
+    if (suite === 'all' || suite === 'phase3') {
+      console.log('\n🚀 Running Phase 3 Tests...\n');
+      const phase3Results = await runPhase3Tests();
+      results.results.phase3 = {
+        success: phase3Results.failed === 0,
+        summary: {
+          passed: phase3Results.passed,
+          failed: phase3Results.failed,
+          total: phase3Results.total,
+        },
+        tests: phase3Results.tests,
+      };
     }
 
     // Cookie consent tests are frontend-only (not included in API tests)
@@ -122,10 +138,11 @@ export async function GET() {
     version: '1.0.0',
     documentation: 'See RGPD_TESTING_GUIDE.md for detailed instructions',
     availableTests: {
-      all: 'Run all RGPD compliance tests',
+      all: 'Run all RGPD compliance tests (Phase 1-3)',
       consent: 'Test consent management system',
       export: 'Test data export functionality',
       deletion: 'Test account deletion with grace period',
+      phase3: 'Test Phase 3 features (minimization, retention, DPIA, incidents, audit logs)',
       cookie: 'Cookie consent tests (browser only)',
     },
     usage: {
