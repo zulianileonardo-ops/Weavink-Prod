@@ -1,0 +1,292 @@
+/**
+ * Account Deletion API Endpoint
+ * GDPR Art. 17 - Right to Erasure ("Right to be Forgotten")
+ *
+ * Allows users to delete their account and all associated data
+ */
+
+import { NextResponse } from 'next/server';
+import { createApiSession } from '@/lib/server/session';
+import { rateLimit } from '@/lib/rateLimiter';
+import {
+  requestAccountDeletion,
+  cancelAccountDeletion,
+  getDeletionRequest,
+  getUserDeletionRequest,
+} from '../../../../../lib/services/servicePrivacy/server/accountDeletionService.js';
+
+/**
+ * GET - Check if user has a pending deletion request
+ */
+export async function GET(request) {
+  try {
+    // Create session (includes authentication)
+    const session = await createApiSession(request);
+    const userId = session.userId;
+
+    // Check for pending deletion request
+    const deletionRequest = await getUserDeletionRequest(userId);
+
+    if (!deletionRequest) {
+      return NextResponse.json({
+        success: true,
+        hasPendingDeletion: false,
+        message: 'No pending account deletion request',
+      });
+    }
+
+    return NextResponse.json({
+      success: true,
+      hasPendingDeletion: true,
+      deletionRequest,
+      daysRemaining: Math.ceil(
+        (new Date(deletionRequest.scheduledDeletionDate) - new Date()) / (1000 * 60 * 60 * 24)
+      ),
+    });
+  } catch (error) {
+    console.error('Error in GET /api/user/privacy/delete-account:', error);
+    return NextResponse.json(
+      { error: 'Failed to check deletion status', details: error.message },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * POST - Request account deletion
+ * Body: {
+ *   confirmation: string (must be "DELETE MY ACCOUNT"),
+ *   reason: string (optional),
+ *   immediate: boolean (optional, default: false)
+ * }
+ */
+export async function POST(request) {
+  try {
+    // Create session (includes authentication)
+    const session = await createApiSession(request);
+    const userId = session.userId;
+
+    // Rate limiting - very strict for deletion requests
+    if (!rateLimit(userId, 2, 3600000)) {
+      // Max 2 requests per hour
+      return NextResponse.json(
+        {
+          error: 'Too many deletion requests',
+          message: 'For security reasons, please wait before trying again.',
+        },
+        { status: 429 }
+      );
+    }
+
+    const body = await request.json();
+
+    // Validate confirmation text
+    const { confirmation, reason, immediate = false } = body;
+
+    if (confirmation !== 'DELETE MY ACCOUNT') {
+      return NextResponse.json(
+        {
+          error: 'Invalid confirmation',
+          message: 'You must type "DELETE MY ACCOUNT" to confirm account deletion',
+          required: 'DELETE MY ACCOUNT',
+        },
+        { status: 400 }
+      );
+    }
+
+    // Check if user already has a pending deletion request
+    const existingRequest = await getUserDeletionRequest(userId);
+    if (existingRequest) {
+      return NextResponse.json(
+        {
+          error: 'Deletion already pending',
+          message: 'You already have a pending account deletion request',
+          deletionRequest: existingRequest,
+          daysRemaining: Math.ceil(
+            (new Date(existingRequest.scheduledDeletionDate) - new Date()) / (1000 * 60 * 60 * 24)
+          ),
+        },
+        { status: 409 }
+      );
+    }
+
+    console.log(`[AccountDeletion] User ${userId} requested account deletion`);
+
+    // Request account deletion
+    const result = await requestAccountDeletion(
+      userId,
+      {
+        ipAddress: session.requestMetadata?.ipAddress,
+        userAgent: session.requestMetadata?.userAgent,
+      },
+      {
+        reason,
+        immediate,
+        keepBillingData: true, // Always keep billing data (legal requirement)
+      }
+    );
+
+    return NextResponse.json({
+      success: true,
+      ...result,
+      warning: {
+        title: 'Account Deletion Initiated',
+        message: immediate
+          ? 'Your account and all data are being deleted. This action is irreversible.'
+          : 'Your account will be permanently deleted in 30 days. You can cancel this request within that period.',
+        deletionDate: result.deletionRequest.scheduledDeletionDate,
+        affectedData: [
+          'Your user profile',
+          'All your contacts',
+          'All your groups',
+          'Your analytics data (anonymized)',
+          'Your consent history',
+          'Your settings',
+        ],
+        retainedData: [
+          'Billing records (legal requirement - 10 years)',
+          'Anonymized analytics (aggregated)',
+          'Audit logs (12 months)',
+        ],
+        affectedUsers: result.affectedUsers > 0
+          ? `${result.affectedUsers} users who have you as a contact will be notified`
+          : 'No other users affected',
+        cancellation: immediate
+          ? null
+          : 'You can cancel this deletion by clicking "Cancel Deletion" in your Privacy Center',
+      },
+    });
+  } catch (error) {
+    console.error('Error in POST /api/user/privacy/delete-account:', error);
+    return NextResponse.json(
+      {
+        error: 'Failed to delete account',
+        details: error.message,
+        support: 'If you need assistance, please contact support@weavink.io',
+      },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * DELETE - Cancel pending account deletion request
+ */
+export async function DELETE(request) {
+  try {
+    // Create session (includes authentication)
+    const session = await createApiSession(request);
+    const userId = session.userId;
+
+    const { searchParams } = new URL(request.url);
+    const requestId = searchParams.get('requestId');
+
+    // Get user's pending deletion request
+    const deletionRequest = requestId
+      ? await getDeletionRequest(requestId)
+      : await getUserDeletionRequest(userId);
+
+    if (!deletionRequest) {
+      return NextResponse.json(
+        {
+          error: 'No pending deletion request',
+          message: 'You do not have a pending account deletion request to cancel',
+        },
+        { status: 404 }
+      );
+    }
+
+    // Verify ownership
+    if (deletionRequest.userId !== userId) {
+      return NextResponse.json(
+        {
+          error: 'Unauthorized',
+          message: 'You can only cancel your own deletion request',
+        },
+        { status: 403 }
+      );
+    }
+
+    // Cancel the deletion
+    const result = await cancelAccountDeletion(userId, deletionRequest.id);
+
+    return NextResponse.json({
+      success: true,
+      ...result,
+      message: 'Account deletion cancelled successfully',
+      info: {
+        title: 'Deletion Cancelled',
+        message: 'Your account will not be deleted. All your data remains intact.',
+        nextSteps: [
+          'Your account is now fully active',
+          'No further action is required',
+          'You can request deletion again at any time from Privacy Settings',
+        ],
+      },
+    });
+  } catch (error) {
+    console.error('Error in DELETE /api/user/privacy/delete-account:', error);
+    return NextResponse.json(
+      {
+        error: 'Failed to cancel deletion',
+        details: error.message,
+      },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * PATCH - Modify pending deletion request (e.g., change scheduled date)
+ */
+export async function PATCH(request) {
+  try {
+    // Create session (includes authentication)
+    const session = await createApiSession(request);
+    const userId = session.userId;
+
+    const body = await request.json();
+    const { action } = body;
+
+    if (action === 'postpone') {
+      // Postpone deletion by 30 more days
+      const deletionRequest = await getUserDeletionRequest(userId);
+
+      if (!deletionRequest) {
+        return NextResponse.json(
+          {
+            error: 'No pending deletion',
+            message: 'You do not have a pending deletion request',
+          },
+          { status: 404 }
+        );
+      }
+
+      // Not implemented yet - would update scheduledDeletionDate
+      return NextResponse.json(
+        {
+          error: 'Not implemented',
+          message: 'Postponing deletion is not yet implemented. Please cancel and re-request if needed.',
+        },
+        { status: 501 }
+      );
+    }
+
+    return NextResponse.json(
+      {
+        error: 'Invalid action',
+        message: 'Supported actions: postpone',
+      },
+      { status: 400 }
+    );
+  } catch (error) {
+    console.error('Error in PATCH /api/user/privacy/delete-account:', error);
+    return NextResponse.json(
+      {
+        error: 'Failed to modify deletion request',
+        details: error.message,
+      },
+      { status: 500 }
+    );
+  }
+}
