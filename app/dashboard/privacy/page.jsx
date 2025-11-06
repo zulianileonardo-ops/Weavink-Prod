@@ -554,10 +554,10 @@ function DeleteAccountTab({ pendingDeletion, onUpdate }) {
       <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
         <h3 className="text-yellow-900 font-semibold mb-3">Before you delete:</h3>
         <ul className="space-y-2 text-sm text-yellow-800">
-          <li>✓ Consider exporting your data first (you won't be able to access it after deletion)</li>
+          <li>✓ Consider exporting your data first (you won&apos;t be able to access it after deletion)</li>
           <li>✓ This will delete all your contacts, groups, and settings</li>
           <li>✓ Users who have you as a contact will be notified</li>
-          <li>✓ You have 30 days to cancel the deletion before it's final</li>
+          <li>✓ You have 30 days to cancel the deletion before it&apos;s final</li>
         </ul>
       </div>
 

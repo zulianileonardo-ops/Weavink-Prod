@@ -165,7 +165,7 @@ export default function CookieBanner() {
                     </h2>
                     <p className="text-gray-600 text-sm mb-4">
                       We use cookies to enhance your experience, analyze site usage, and personalize
-                      content. You can choose which cookies you're comfortable with. Essential
+                      content. You can choose which cookies you&apos;re comfortable with. Essential
                       cookies are required for the site to function.{' '}
                       <a
                         href="/cookie-policy"
