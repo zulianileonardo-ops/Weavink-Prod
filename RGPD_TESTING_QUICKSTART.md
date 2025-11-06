@@ -46,11 +46,18 @@ fetch('/api/test/rgpd', {method:'POST', headers:{'Content-Type':'application/jso
 fetch('/api/test/rgpd', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({suite:'deletion'})}).then(r=>r.json()).then(console.log)
 ```
 
+### Phase 3 Tests Only
+```javascript
+fetch('/api/test/rgpd', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({suite:'phase3'})}).then(r=>r.json()).then(console.log)
+```
+
 ---
 
 ## 🔍 What Gets Tested?
 
-### ✅ 24 Automated Tests
+### ✅ 62 Automated Tests (Phase 1-3)
+
+**Phase 1-2: Core Features (24 tests)**
 
 **Consent Management (8 tests)**
 - Grant consent ✓
@@ -69,6 +76,32 @@ fetch('/api/test/rgpd', {method:'POST', headers:{'Content-Type':'application/jso
 - 30-day grace period ✓
 - Cancel deletion ✓
 - Audit trail ✓
+
+**Phase 3: Advanced Compliance (38 tests)**
+
+**Data Minimization (3 tests)**
+- Run minimization audits ✓
+- Statistics and reporting ✓
+
+**Retention Policies (7 tests)**
+- Policy management ✓
+- Automated cleanup ✓
+- Legal holds ✓
+
+**DPIA - Privacy Impact (8 tests)**
+- Risk assessments ✓
+- Approval workflow ✓
+- Mitigation tracking ✓
+
+**Incident Reporting (9 tests)**
+- 72-hour breach tracking ✓
+- CNIL notifications ✓
+- Containment actions ✓
+
+**Audit Logging (11 tests)**
+- Tamper-evident logs ✓
+- Compliance reports ✓
+- Export capabilities ✓
 
 ---
 
@@ -215,10 +248,19 @@ fetch('/api/test/rgpd', {method:'POST', headers:{'Content-Type':'application/jso
 
 | Feature | Tests | Status |
 |---------|-------|--------|
+| **Phase 1-2** | | |
 | Consent Management | 8 | ✅ Ready |
 | Data Export | 8 | ✅ Ready |
 | Account Deletion | 8 | ✅ Ready |
-| **Total** | **24** | **✅ 100%** |
+| **Phase 3** | | |
+| Data Minimization | 3 | ✅ Ready |
+| Retention Policies | 7 | ✅ Ready |
+| DPIA System | 8 | ✅ Ready |
+| Incident Reporting | 9 | ✅ Ready |
+| Audit Logging | 11 | ✅ Ready |
+| **Total** | **62** | **✅ 85%** |
+
+**Note**: 9 tests require Firestore index deployment to reach 100%
 
 ---
 
