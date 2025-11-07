@@ -14,6 +14,10 @@ import {
     RATE_LIMIT_CONFIG,
     ANALYTICS_ERRORS
 } from '@/lib/services/serviceUser/constants/analyticsConstants';
+import {
+    getUserConsents,
+    CONSENT_TYPES
+} from '@/lib/services/servicePrivacy/server/consentService';
 
 /**
  * POST /api/user/analytics/track-event
@@ -75,7 +79,73 @@ export async function POST(request) {
             );
         }
 
-        // --- 2. RATE LIMITING with Fingerprinting ---
+        // --- 2. CONSENT VERIFICATION (GDPR Compliance) ---
+        console.log('📊 Analytics API: Verifying user consent');
+
+        try {
+            const consentResult = await getUserConsents(userId);
+            const consents = consentResult.consents;
+
+            // Check for basic analytics consent (minimum requirement)
+            const hasBasicConsent = consents?.[CONSENT_TYPES.ANALYTICS_BASIC]?.status === true;
+
+            if (!hasBasicConsent) {
+                console.warn('⚠️ Analytics API: User has not granted analytics consent');
+                return NextResponse.json(
+                    {
+                        error: 'Analytics consent required',
+                        message: 'User has not granted permission for analytics tracking'
+                    },
+                    { status: 403 }
+                );
+            }
+
+            // Check if sessionData requires detailed consent
+            if (sessionData) {
+                const hasDetailedConsent = consents?.[CONSENT_TYPES.ANALYTICS_DETAILED]?.status === true;
+
+                if (!hasDetailedConsent) {
+                    console.warn('⚠️ Analytics API: SessionData provided but detailed consent not granted');
+                    return NextResponse.json(
+                        {
+                            error: 'Detailed analytics consent required',
+                            message: 'Session tracking requires detailed analytics consent'
+                        },
+                        { status: 403 }
+                    );
+                }
+            }
+
+            // Time tracking always requires detailed consent
+            if (eventType === ANALYTICS_EVENT_TYPES.TIME_ON_PROFILE) {
+                const hasDetailedConsent = consents?.[CONSENT_TYPES.ANALYTICS_DETAILED]?.status === true;
+
+                if (!hasDetailedConsent) {
+                    console.warn('⚠️ Analytics API: Time tracking requires detailed consent');
+                    return NextResponse.json(
+                        {
+                            error: 'Detailed analytics consent required',
+                            message: 'Time tracking requires detailed analytics consent'
+                        },
+                        { status: 403 }
+                    );
+                }
+            }
+
+            console.log('✅ Analytics API: Consent verification passed');
+
+        } catch (consentError) {
+            console.error('❌ Analytics API: Error checking consent:', consentError);
+            return NextResponse.json(
+                {
+                    error: 'Consent verification failed',
+                    message: 'Unable to verify user consent'
+                },
+                { status: 500 }
+            );
+        }
+
+        // --- 3. RATE LIMITING with Fingerprinting ---
         const rateLimitConfig = RATE_LIMIT_CONFIG[eventType.toUpperCase()] || RATE_LIMIT_CONFIG.VIEW;
         const rateLimitResult = applyAnalyticsRateLimit(request, eventType, rateLimitConfig, userId);
 
@@ -107,7 +177,7 @@ export async function POST(request) {
             'X-RateLimit-Reset': rateLimitResult.resetTime.toString()
         };
 
-        // --- 3. PROCESS EVENT based on type ---
+        // --- 4. PROCESS EVENT based on type ---
         let result;
 
         switch (eventType) {

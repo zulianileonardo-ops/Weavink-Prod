@@ -3,7 +3,7 @@
 
 **Last Updated**: January 7, 2025
 **Status**: ✅ **ALL TESTS PASSING**
-**Total Tests**: **104/104** (100% Pass Rate)
+**Total Tests**: **116/116** (100% Pass Rate)
 
 ---
 
@@ -14,17 +14,18 @@
 | **Consent Management** | 8 | 8 | 0 | 100% ✅ |
 | **Consent Categories** | 12 | 12 | 0 | 100% ✅ |
 | **Privacy Settings** | 8 | 8 | 0 | 100% ✅ |
+| **Analytics Consent Integration** | 12 | 12 | 0 | 100% ✅ |
 | **Data Export** | 8 | 8 | 0 | 100% ✅ |
 | **Account Deletion** | 8 | 8 | 0 | 100% ✅ |
 | **Phase 3 (Advanced)** | 38 | 38 | 0 | 100% ✅ |
 | **Phase 4 (Enterprise)** | 22 | 22 | 0 | 100% ✅ |
-| **TOTAL** | **104** | **104** | **0** | **100%** ✅ |
+| **TOTAL** | **116** | **116** | **0** | **100%** ✅ |
 
 ---
 
 ## 🎯 Test Coverage by Feature
 
-### Phase 1-2: Core RGPD Features (44 tests)
+### Phase 1-2: Core RGPD Features (56 tests)
 
 #### Consent Management (8 tests)
 - ✅ Grant marketing email consent
@@ -50,7 +51,7 @@
 - ✅ Re-grant previously withdrawn AI Features category
 - ✅ Check if entire category is enabled
 
-#### Privacy Settings (8 tests) 🆕
+#### Privacy Settings (8 tests)
 - ✅ Get initial privacy settings
 - ✅ Update profile visibility to private
 - ✅ Update profile visibility to public
@@ -59,6 +60,20 @@
 - ✅ Update notification preferences - disable email
 - ✅ Update notification preferences - disable all
 - ✅ Batch update privacy settings
+
+#### Analytics Consent Integration (12 tests) 🆕
+- ✅ Verify no analytics consent by default
+- ✅ Grant basic analytics consent (ANALYTICS_BASIC)
+- ✅ API accepts tracking with basic consent
+- ✅ Grant detailed analytics consent (ANALYTICS_DETAILED)
+- ✅ Grant cookies consent for session tracking (COOKIES_ANALYTICS)
+- ✅ Verify all three analytics consents are granted
+- ✅ Withdraw detailed analytics consent (downgrade to basic)
+- ✅ Withdraw cookies consent
+- ✅ Withdraw basic analytics consent (blocks all tracking)
+- ✅ Verify API blocks tracking without consent
+- ✅ Re-grant all analytics consents
+- ✅ Verify complete consent history includes all changes
 
 #### Data Export (8 tests)
 - ✅ Request full data export (all formats)
@@ -172,7 +187,7 @@
 
 ## 🚀 Running the Tests
 
-### Run All Tests (104 total)
+### Run All Tests (116 total)
 ```bash
 node -r dotenv/config runAllRGPDTests.mjs
 ```
@@ -185,8 +200,11 @@ node -r dotenv/config runConsentTests.mjs
 # Consent Categories (12 tests)
 node -r dotenv/config runConsentCategoryTests.mjs
 
-# Privacy Settings (8 tests) 🆕
+# Privacy Settings (8 tests)
 node -r dotenv/config runPrivacySettingsTests.mjs
+
+# Analytics Consent Integration (12 tests) 🆕
+node -r dotenv/config runAnalyticsConsentIntegrationTests.mjs
 
 # Data Export (8 tests)
 # Account Deletion (8 tests)
@@ -206,14 +224,15 @@ curl -X POST http://localhost:3000/api/test/rgpd \
 ## 📈 Test Execution Details
 
 **Last Full Run**: January 7, 2025
-**Duration**: 68.55 seconds
+**Duration**: 60.31 seconds
 **Environment**: Development (Firebase)
-**Pass Rate**: 100% (104/104)
+**Pass Rate**: 100% (116/116)
 
 ### Test Breakdown by Phase
 - **Consent Management**: 8 tests - 100% passing
 - **Consent Categories**: 12 tests - 100% passing
-- **Privacy Settings**: 8 tests - 100% passing 🆕
+- **Privacy Settings**: 8 tests - 100% passing
+- **Analytics Consent Integration**: 12 tests - 100% passing 🆕
 - **Data Export**: 8 tests - 100% passing
 - **Account Deletion**: 8 tests - 100% passing
 - **Phase 3 (Minimization, Retention, DPIA, Incidents, Audit)**: 38 tests - 100% passing
@@ -223,7 +242,7 @@ curl -X POST http://localhost:3000/api/test/rgpd \
 
 ## ✅ Compliance Verification
 
-All 104 automated tests verify compliance with:
+All 116 automated tests verify compliance with:
 
 - ✅ **GDPR Articles**: 5, 6, 7, 12-22, 25, 30, 32-34, 35, 37
 - ✅ **CNIL Guidelines**: Cookie consent, data minimization, retention
@@ -237,7 +256,7 @@ All 104 automated tests verify compliance with:
 
 **Status**: ✅ **PRODUCTION READY**
 
-All 104 tests passing with 100% success rate demonstrates:
+All 116 tests passing with 100% success rate demonstrates:
 - Complete RGPD/GDPR compliance implementation
 - Robust error handling and edge case coverage
 - Enterprise-grade privacy features

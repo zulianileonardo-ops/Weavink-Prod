@@ -26,12 +26,13 @@ Author: Claude Code
 
 ### What Are These Tests?
 
-This test suite validates **all RGPD Phase 1-4 features** (104 comprehensive tests) to ensure compliance with GDPR/CNIL regulations. The tests simulate real user interactions and verify that:
+This test suite validates **all RGPD Phase 1-4 features** (116 comprehensive tests) to ensure compliance with GDPR/CNIL regulations. The tests simulate real user interactions and verify that:
 
 **Phase 1-2 (Core Features)**:
 - ✅ Consent management works correctly
 - ✅ Consent categories (Essential, AI Features, Analytics, Communication, Personalization) work correctly
 - ✅ Privacy settings (profile visibility, messaging, notifications) work correctly
+- ✅ Analytics consent integration (verify consent controls actually control tracking)
 - ✅ Data exports include all required data in correct formats
 - ✅ Account deletion respects the 30-day grace period
 - ✅ Cookie consent banner functions properly
@@ -96,10 +97,13 @@ fetch('/api/test/rgpd', {
 
 Replace `'all'` with:
 - `'consent'` - Consent management tests only (8 tests)
+- `'consent-categories'` - Consent categories tests only (12 tests)
+- `'privacy-settings'` - Privacy settings tests only (8 tests)
+- `'analytics-consent'` - Analytics consent integration tests only (12 tests)
 - `'export'` - Data export tests only (8 tests)
 - `'deletion'` - Account deletion tests only (8 tests)
 - `'phase3'` - Phase 3 tests only (38 tests - minimization, retention, DPIA, incidents, audit)
-- `'phase4'` - Phase 4 tests only (28 tests - portability, breach, certifications, processors, monitoring)
+- `'phase4'` - Phase 4 tests only (22 tests - portability, breach, certifications, processors, monitoring)
 
 ---
 
@@ -109,11 +113,14 @@ Replace `'all'` with:
 
 ```
 lib/services/servicePrivacy/tests/
-├── consentTests.js           # Consent management tests (8 tests)
-├── dataExportTests.js        # Data export tests (8 tests)
-├── accountDeletionTests.js   # Account deletion tests (8 tests)
-├── phase3Tests.js            # Phase 3 tests (38 tests)
-└── phase4Tests.js            # Phase 4 tests (28 tests)
+├── consentTests.js                         # Consent management tests (8 tests)
+├── consentCategoryTests.js                 # Consent category tests (12 tests)
+├── privacySettingsTests.js                 # Privacy settings tests (8 tests)
+├── analyticsConsentIntegrationTests.js     # Analytics consent integration (12 tests)
+├── dataExportTests.js                      # Data export tests (8 tests)
+├── accountDeletionTests.js                 # Account deletion tests (8 tests)
+├── phase3Tests.js                          # Phase 3 tests (38 tests)
+└── phase4Tests.js                          # Phase 4 tests (22 tests)
 
 app/api/test/rgpd/
 └── route.js                  # Test API endpoint
@@ -763,6 +770,8 @@ jobs:
 | **Phase 1-2** | | | |
 | Consent Management | 8 tests | 100% | ✅ All Passing |
 | Consent Categories | 12 tests | 100% | ✅ All Passing |
+| Privacy Settings | 8 tests | 100% | ✅ All Passing |
+| Analytics Consent Integration | 12 tests | 100% | ✅ All Passing |
 | Data Export | 8 tests | 100% | ✅ All Passing |
 | Account Deletion | 8 tests | 100% | ✅ All Passing |
 | Cookie Banner | Manual | 90% | ✅ Manual Test |
@@ -778,7 +787,7 @@ jobs:
 | Certifications | 5 tests | 100% | ✅ All Passing |
 | Processor Management | 5 tests | 100% | ✅ All Passing |
 | Compliance Monitoring | 6 tests | 100% | ✅ All Passing |
-| **TOTAL** | **104 automated + manual** | **100%** | **✅ 104/104 Passing** |
+| **TOTAL** | **116 automated + manual** | **100%** | **✅ 116/116 Passing** |
 
 ### What's Tested
 
@@ -789,6 +798,7 @@ jobs:
 ✅ Consent categories (Essential, AI Features, Analytics, Communication, Personalization)
 ✅ Category-level consent management and verification
 ✅ Privacy settings (profile visibility, messaging, notifications)
+✅ Analytics consent integration (verify consent controls actually control tracking)
 ✅ Data export (JSON, CSV, vCard)
 ✅ Export request tracking
 ✅ Account deletion with grace period
@@ -882,11 +892,11 @@ To improve these tests:
 ---
 
 **Last Updated**: 2025-11-07
-**Version**: 2.2.0 (All tests passing - 100%)
+**Version**: 2.3.0 (All tests passing - 100%)
 **Maintainer**: Claude Code
 **License**: Internal Use
-**Total Tests**: 104 automated tests across 4 phases
-**Test Pass Rate**: 104/104 (100%) - All tests passing
+**Total Tests**: 116 automated tests across 4 phases
+**Test Pass Rate**: 116/116 (100%) - All tests passing
 **Compliance Coverage**: 95/100 GDPR compliance score
 
 ---

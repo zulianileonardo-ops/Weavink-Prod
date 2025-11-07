@@ -21,7 +21,7 @@ fetch('/api/test/rgpd', {method:'POST', headers:{'Content-Type':'application/jso
 That's it! You'll see:
 ```
 📊 RGPD Test Results
-✅ Passed: 104
+✅ Passed: 116
 ❌ Failed: 0
 📈 Success Rate: 100%
 Full Results: {...}
@@ -44,6 +44,11 @@ fetch('/api/test/rgpd', {method:'POST', headers:{'Content-Type':'application/jso
 ### Privacy Settings Only
 ```javascript
 fetch('/api/test/rgpd', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({suite:'privacy-settings'})}).then(r=>r.json()).then(console.log)
+```
+
+### Analytics Consent Integration Only 🆕
+```javascript
+fetch('/api/test/rgpd', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({suite:'analytics-consent'})}).then(r=>r.json()).then(console.log)
 ```
 
 ### Data Export Only
@@ -70,9 +75,9 @@ fetch('/api/test/rgpd', {method:'POST', headers:{'Content-Type':'application/jso
 
 ## 🔍 What Gets Tested?
 
-### ✅ 104 Automated Tests (Phase 1-4 + Consent Categories + Privacy Settings) - 100% Passing
+### ✅ 116 Automated Tests (Phase 1-4 + Consent Categories + Privacy Settings + Analytics Consent Integration) - 100% Passing
 
-**Phase 1-2: Core Features (44 tests)**
+**Phase 1-2: Core Features (56 tests)**
 
 **Consent Management (8 tests)**
 - Grant consent ✓
@@ -89,12 +94,20 @@ fetch('/api/test/rgpd', {method:'POST', headers:{'Content-Type':'application/jso
 - Mixed consent states ✓
 - Category-level consent checks ✓
 
-**Privacy Settings (8 tests) - NEW!**
+**Privacy Settings (8 tests)**
 - Profile visibility control (isPublic) ✓
 - Messaging settings (allowMessages) ✓
 - Email notifications ✓
 - Push notifications ✓
 - Batch updates ✓
+
+**Analytics Consent Integration (12 tests) - NEW!**
+- No consent blocks tracking ✓
+- Basic consent (ANALYTICS_BASIC) = counts only ✓
+- Detailed consent (ANALYTICS_DETAILED) = full tracking ✓
+- Cookies consent (COOKIES_ANALYTICS) = localStorage sessions ✓
+- Consent withdrawal scenarios ✓
+- API enforces consent requirements ✓
 
 **Data Export (8 tests)**
 - JSON format ✓
@@ -134,7 +147,7 @@ fetch('/api/test/rgpd', {method:'POST', headers:{'Content-Type':'application/jso
 - Compliance reports ✓
 - Export capabilities ✓
 
-**Phase 4: Advanced Features (28 tests)**
+**Phase 4: Advanced Features (22 tests)**
 
 **Data Portability (4 tests)**
 - XML export ✓
@@ -171,8 +184,8 @@ fetch('/api/test/rgpd', {method:'POST', headers:{'Content-Type':'application/jso
 ```javascript
 {
   summary: {
-    totalTests: 104,
-    passed: 104,
+    totalTests: 116,
+    passed: 116,
     failed: 0,
     successRate: "100%",
     allTestsPassed: true
@@ -310,6 +323,9 @@ fetch('/api/test/rgpd', {method:'POST', headers:{'Content-Type':'application/jso
 |---------|-------|--------|
 | **Phase 1-2** | | |
 | Consent Management | 8 | ✅ 100% Passing |
+| Consent Categories | 12 | ✅ 100% Passing |
+| Privacy Settings | 8 | ✅ 100% Passing |
+| Analytics Consent Integration | 12 | ✅ 100% Passing |
 | Data Export | 8 | ✅ 100% Passing |
 | Account Deletion | 8 | ✅ 100% Passing |
 | **Phase 3** | | |
@@ -324,7 +340,7 @@ fetch('/api/test/rgpd', {method:'POST', headers:{'Content-Type':'application/jso
 | Certifications | 5 | ✅ 100% Passing |
 | Processor Management | 5 | ✅ 100% Passing |
 | Compliance Monitoring | 6 | ✅ 100% Passing |
-| **Total** | **84** | **✅ 100%** |
+| **Total** | **116** | **✅ 100%** |
 
 **Status**: All tests passing! All Firestore indexes deployed and active.
 

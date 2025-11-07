@@ -19,12 +19,19 @@ import { runDataExportTests } from '../../../../lib/services/servicePrivacy/test
 import { runAccountDeletionTests } from '../../../../lib/services/servicePrivacy/tests/accountDeletionTests.js';
 import { runPhase3Tests } from '../../../../lib/services/servicePrivacy/tests/phase3Tests.js';
 import { runPhase4Tests } from '../../../../lib/services/servicePrivacy/tests/phase4Tests.js';
+import { runAnalyticsConsentIntegrationTests } from '../../../../lib/services/servicePrivacy/tests/analyticsConsentIntegrationTests.js';
+
+// ✅ PERFORMANCE FIX: Allow tests to run for up to 5 minutes (300 seconds)
+// With optimizations, tests should complete in 90-120 seconds
+// This prevents timeout errors during full test suite execution
+export const maxDuration = 300; // 5 minutes for full test suite (104 tests)
 
 /**
  * POST /api/test/rgpd
  * Run RGPD compliance tests
  */
 export async function POST(request) {
+  const startTime = Date.now();
   try {
     const body = await request.json();
     const { suite = 'all', userId = null } = body;
@@ -44,6 +51,7 @@ export async function POST(request) {
     const consentUserId = userId || `test-consent-${Date.now()}`;
     const consentCategoryUserId = userId || `test-consent-category-${Date.now()}`;
     const privacySettingsUserId = userId || `test-privacy-settings-${Date.now()}`;
+    const analyticsConsentUserId = userId || `test-analytics-consent-${Date.now()}`;
     const exportUserId = userId || `test-export-${Date.now()}`;
     const deletionUserId = userId || `test-deletion-${Date.now()}`;
 
@@ -66,6 +74,13 @@ export async function POST(request) {
       console.log('\n⚙️  Running Privacy Settings Tests...\n');
       const privacySettingsResults = await runPrivacySettingsTests(privacySettingsUserId);
       results.results.privacySettings = privacySettingsResults;
+    }
+
+    // Run Analytics Consent Integration Tests
+    if (suite === 'all' || suite === 'analytics-consent') {
+      console.log('\n🔗 Running Analytics Consent Integration Tests...\n');
+      const analyticsConsentResults = await runAnalyticsConsentIntegrationTests(analyticsConsentUserId);
+      results.results.analyticsConsent = analyticsConsentResults;
     }
 
     // Run Data Export Tests
@@ -136,6 +151,10 @@ export async function POST(request) {
       allTestsPassed: allSuccess,
     };
 
+    // Calculate test duration
+    const duration = ((Date.now() - startTime) / 1000).toFixed(2);
+    results.duration = `${duration}s`;
+
     console.log('\n=================================');
     console.log('🏁 TEST SUMMARY');
     console.log('=================================');
@@ -143,6 +162,7 @@ export async function POST(request) {
     console.log(`✅ Passed: ${results.summary.passed}`);
     console.log(`❌ Failed: ${results.summary.failed}`);
     console.log(`📊 Success Rate: ${results.summary.successRate}`);
+    console.log(`⏱️  Duration: ${duration}s`);
     console.log(`${results.summary.allTestsPassed ? '✅ ALL TESTS PASSED' : '❌ SOME TESTS FAILED'}`);
     console.log('=================================\n');
 
@@ -172,13 +192,15 @@ export async function GET() {
     version: '1.0.0',
     documentation: 'See RGPD_TESTING_GUIDE.md for detailed instructions',
     availableTests: {
-      all: 'Run all RGPD compliance tests (Phase 1-4 + Consent Categories)',
-      consent: 'Test consent management system',
-      'consent-categories': 'Test consent management by category (Essential, AI Features, Analytics, Communication, Personalization)',
-      export: 'Test data export functionality',
-      deletion: 'Test account deletion with grace period',
-      phase3: 'Test Phase 3 features (minimization, retention, DPIA, incidents, audit logs)',
-      phase4: 'Test Phase 4 features (portability, breach notifications, certifications, processors, monitoring)',
+      all: 'Run all RGPD compliance tests (116 tests across all phases)',
+      consent: 'Test consent management system (8 tests)',
+      'consent-categories': 'Test consent management by category (12 tests)',
+      'privacy-settings': 'Test privacy settings (8 tests)',
+      'analytics-consent': 'Test analytics consent integration (12 tests)',
+      export: 'Test data export functionality (8 tests)',
+      deletion: 'Test account deletion with grace period (8 tests)',
+      phase3: 'Test Phase 3 features (38 tests - minimization, retention, DPIA, incidents, audit logs)',
+      phase4: 'Test Phase 4 features (22 tests - portability, breach notifications, certifications, processors, monitoring)',
       cookie: 'Cookie consent tests (browser only)',
     },
     usage: {
