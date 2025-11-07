@@ -163,12 +163,12 @@ Achieve full GDPR/CNIL compliance for Weavink platform with score of 95+/100
 
 ---
 
-#### 5. Privacy Center UI ✅
-**File**: `app/dashboard/privacy/page.jsx` (643 lines)
-**Route**: `/dashboard/privacy`
+#### 5. Account & Privacy Center UI ✅
+**File**: `app/dashboard/(dashboard pages)/account/page.jsx` (1,402 lines)
+**Route**: `http://localhost:3000/dashboard/account`
 
 **Features**:
-- ✅ Comprehensive dashboard with 5 tabs
+- ✅ Comprehensive Account & Privacy dashboard with 5 tabs
 - ✅ Real-time status indicators
 - ✅ One-click data export with downloads
 - ✅ Account deletion workflow with confirmation
@@ -890,7 +890,8 @@ app/api/
 
 ```
 app/dashboard/
-├── privacy/ (✅ Phase 1-2 - User-facing)
+├── (dashboard pages)/
+│   └── account/ (✅ Phase 1-2 - User-facing Account & Privacy)
 └── admin/
     ├── privacy-audit/ (🚧 Phase 3)
     ├── dpia/ (🚧 Phase 3)

@@ -564,7 +564,7 @@ Each test produces structured logs with emoji indicators:
 
 ### Testing Consent Management (Browser)
 
-1. **Navigate to Privacy Center**: `/dashboard/privacy`
+1. **Navigate to Account & Privacy Center**: `/dashboard/account`
 2. **Go to Consents Tab**
 3. **Grant Consent**:
    - Toggle on "Marketing Emails"
@@ -579,7 +579,7 @@ Each test produces structured logs with emoji indicators:
 
 ### Testing Data Export (Browser)
 
-1. **Navigate to Privacy Center**: `/dashboard/privacy`
+1. **Navigate to Account & Privacy Center**: `/dashboard/account`
 2. **Go to Export Tab**
 3. **Click "Export All Data"**
 4. **Wait for Export**: Should complete in seconds
@@ -596,7 +596,7 @@ Each test produces structured logs with emoji indicators:
 
 ### Testing Account Deletion (Browser)
 
-1. **Navigate to Privacy Center**: `/dashboard/privacy`
+1. **Navigate to Account & Privacy Center**: `/dashboard/account`
 2. **Go to Delete Tab**
 3. **Read Warning**: Verify warning message appears
 4. **Click "Delete My Account"**

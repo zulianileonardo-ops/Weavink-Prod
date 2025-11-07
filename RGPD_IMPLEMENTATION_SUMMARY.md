@@ -139,12 +139,13 @@ PATCH  /api/user/privacy/delete-account           # Modify deletion (postpone)
 
 ---
 
-#### 1.4 Privacy Center UI
+#### 1.4 Account & Privacy Center UI
 **Status**: ✅ COMPLETE
-**Location**: `/app/dashboard/privacy/page.jsx`
+**Location**: `/app/dashboard/(dashboard pages)/account/page.jsx`
+**Route**: `http://localhost:3000/dashboard/account`
 
 **Features**:
-- ✅ Comprehensive privacy dashboard with 5 tabs:
+- ✅ Comprehensive Account & Privacy dashboard with 5 tabs:
   1. **Overview** - Privacy rights summary
   2. **Export Data** - One-click data export with download
   3. **Delete Account** - Account deletion workflow
@@ -159,7 +160,7 @@ PATCH  /api/user/privacy/delete-account           # Modify deletion (postpone)
 - ✅ Responsive design (mobile-friendly)
 
 **User Flow**:
-1. User navigates to `/dashboard/privacy`
+1. User navigates to `/dashboard/account`
 2. Sees overview of all privacy options
 3. Can export data, manage consents, or delete account
 4. All actions are logged and audited
@@ -171,7 +172,7 @@ PATCH  /api/user/privacy/delete-account           # Modify deletion (postpone)
 **GDPR Articles**: Art. 5 (Principles relating to processing), Art. 7 (Conditions for consent)
 
 **Files Created**:
-- `/app/dashboard/privacy/page.jsx` (Privacy Settings Tab)
+- `/app/dashboard/(dashboard pages)/account/page.jsx` (Privacy Settings Tab - integrated with Account page)
 - `/lib/services/servicePrivacy/tests/privacySettingsTests.js`
 - `/lib/services/serviceSetting/server/settingsService.js`
 - `/app/api/user/settings/route.js`
@@ -834,13 +835,13 @@ export default function RootLayout({ children }) {
 }
 ```
 
-### 2. Add Privacy Center Link to Navigation
+### 2. Add Account & Privacy Link to Navigation
 
 **In your dashboard navigation**:
 ```jsx
-<Link href="/dashboard/privacy">
+<Link href="/dashboard/account">
   <Shield className="w-5 h-5" />
-  Privacy Center
+  Account & Privacy
 </Link>
 ```
 
@@ -1022,6 +1023,8 @@ const metadata = {
 **Total Lines of Code**: ~15,000+ lines
 **Automated Tests**: 116 comprehensive tests (Phases 1-4 + Consent Categories + Privacy Settings + Analytics Consent Integration) - **100% PASSING** ✅
 **Test Pass Rate**: 116/116 (100%) - All tests passing
+**UI Location**: Account & Privacy Center at `/dashboard/account`
+**Analytics**: Public consent API for unauthenticated visitors
 **Estimated Development Time Saved**: 12-16 weeks
 **Commercial Value**: 50,000-80,000€ (if outsourced)
 
