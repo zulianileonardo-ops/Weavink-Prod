@@ -20,7 +20,13 @@
 - `/app/api/user/privacy/consent/route.js`
 
 **Features**:
-- ✅ 11 consent types (Terms, Privacy, Marketing, AI, Analytics, Cookies, etc.)
+- ✅ 12 consent types grouped into 5 categories:
+  - Essential (TERMS_OF_SERVICE, PRIVACY_POLICY)
+  - AI Features (AI_SEMANTIC_SEARCH, AI_AUTO_GROUPING, AI_BUSINESS_CARD_ENHANCEMENT)
+  - Analytics (ANALYTICS_BASIC, ANALYTICS_DETAILED, COOKIES_ANALYTICS)
+  - Communication (MARKETING_EMAILS, CONTACT_RECOMMENDATIONS)
+  - Personalization (PROFILE_PUBLIC, COOKIES_PERSONALIZATION)
+- ✅ Category-level consent management (grant/withdraw entire categories)
 - ✅ Granular consent tracking with full audit trail
 - ✅ IP address + User Agent logging
 - ✅ Consent history (view, export)
@@ -157,6 +163,59 @@ PATCH  /api/user/privacy/delete-account           # Modify deletion (postpone)
 2. Sees overview of all privacy options
 3. Can export data, manage consents, or delete account
 4. All actions are logged and audited
+
+---
+
+####  1.5 Privacy Settings Management
+**Status**: ✅ COMPLETE
+**GDPR Articles**: Art. 5 (Principles relating to processing), Art. 7 (Conditions for consent)
+
+**Files Created**:
+- `/app/dashboard/privacy/page.jsx` (Privacy Settings Tab)
+- `/lib/services/servicePrivacy/tests/privacySettingsTests.js`
+- `/lib/services/serviceSetting/server/settingsService.js`
+- `/app/api/user/settings/route.js`
+
+**Features**:
+- ✅ **Profile Visibility Control** (`isPublic`)
+  - Toggle between public/private profile
+  - Controls who can view user information
+  - Real-time updates with immediate feedback
+
+- ✅ **Messaging Settings** (`allowMessages`)
+  - Enable/disable messages from other users
+  - Prevents unsolicited communications
+  - Independent of profile visibility
+
+- ✅ **Notification Preferences**
+  - Email notifications toggle
+  - Push notifications toggle
+  - Granular control over communication channels
+
+- ✅ **UI Features**:
+  - Toggle switches for all settings
+  - Success/error notifications
+  - Loading states for better UX
+  - Quick navigation to other privacy tabs
+  - GDPR information section
+
+**API Endpoints**:
+```
+GET  /api/user/settings                          # Get privacy settings
+POST /api/user/settings                          # Update privacy settings
+```
+
+**Database Fields**:
+- `users.settings.isPublic` - Profile visibility
+- `users.settings.allowMessages` - Messaging preferences
+- `users.settings.notifications.email` - Email notification preference
+- `users.settings.notifications.push` - Push notification preference
+
+**Integration**:
+- Connects to existing settings service
+- Uses action-based updates (`updatePrivacy`, `updateNotifications`)
+- Follows same UI patterns as Consents tab
+- Error handling with automatic reversion on failure
 
 ---
 
@@ -961,8 +1020,8 @@ const metadata = {
 ✅ **18 Database Collections** (Complete audit trail and compliance tracking)
 
 **Total Lines of Code**: ~15,000+ lines
-**Automated Tests**: 84 comprehensive tests (Phases 1-4) - **100% PASSING** ✅
-**Test Pass Rate**: 84/84 (100%) - All tests passing
+**Automated Tests**: 104 comprehensive tests (Phases 1-4 + Consent Categories + Privacy Settings) - **100% PASSING** ✅
+**Test Pass Rate**: 104/104 (100%) - All tests passing
 **Estimated Development Time Saved**: 12-16 weeks
 **Commercial Value**: 50,000-80,000€ (if outsourced)
 

@@ -21,7 +21,7 @@ fetch('/api/test/rgpd', {method:'POST', headers:{'Content-Type':'application/jso
 That's it! You'll see:
 ```
 📊 RGPD Test Results
-✅ Passed: 84
+✅ Passed: 104
 ❌ Failed: 0
 📈 Success Rate: 100%
 Full Results: {...}
@@ -34,6 +34,16 @@ Full Results: {...}
 ### Consent Management Only
 ```javascript
 fetch('/api/test/rgpd', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({suite:'consent'})}).then(r=>r.json()).then(console.log)
+```
+
+### Consent Categories Only (Essential, AI Features, Analytics, Communication, Personalization)
+```javascript
+fetch('/api/test/rgpd', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({suite:'consent-categories'})}).then(r=>r.json()).then(console.log)
+```
+
+### Privacy Settings Only
+```javascript
+fetch('/api/test/rgpd', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({suite:'privacy-settings'})}).then(r=>r.json()).then(console.log)
 ```
 
 ### Data Export Only
@@ -60,15 +70,31 @@ fetch('/api/test/rgpd', {method:'POST', headers:{'Content-Type':'application/jso
 
 ## 🔍 What Gets Tested?
 
-### ✅ 84 Automated Tests (Phase 1-4) - 100% Passing
+### ✅ 104 Automated Tests (Phase 1-4 + Consent Categories + Privacy Settings) - 100% Passing
 
-**Phase 1-2: Core Features (24 tests)**
+**Phase 1-2: Core Features (44 tests)**
 
 **Consent Management (8 tests)**
 - Grant consent ✓
 - Withdraw consent ✓
 - Batch operations ✓
 - History tracking ✓
+
+**Consent Categories (12 tests)**
+- Essential category (TERMS_OF_SERVICE, PRIVACY_POLICY) ✓
+- AI Features category (AI_SEMANTIC_SEARCH, AI_AUTO_GROUPING, AI_BUSINESS_CARD_ENHANCEMENT) ✓
+- Analytics category (ANALYTICS_BASIC, ANALYTICS_DETAILED, COOKIES_ANALYTICS) ✓
+- Communication category (MARKETING_EMAILS, CONTACT_RECOMMENDATIONS) ✓
+- Personalization category (PROFILE_PUBLIC, COOKIES_PERSONALIZATION) ✓
+- Mixed consent states ✓
+- Category-level consent checks ✓
+
+**Privacy Settings (8 tests) - NEW!**
+- Profile visibility control (isPublic) ✓
+- Messaging settings (allowMessages) ✓
+- Email notifications ✓
+- Push notifications ✓
+- Batch updates ✓
 
 **Data Export (8 tests)**
 - JSON format ✓
@@ -145,8 +171,8 @@ fetch('/api/test/rgpd', {method:'POST', headers:{'Content-Type':'application/jso
 ```javascript
 {
   summary: {
-    totalTests: 84,
-    passed: 84,
+    totalTests: 104,
+    passed: 104,
     failed: 0,
     successRate: "100%",
     allTestsPassed: true

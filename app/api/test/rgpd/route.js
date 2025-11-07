@@ -13,6 +13,8 @@
 
 import { NextResponse } from 'next/server';
 import { runConsentTests } from '../../../../lib/services/servicePrivacy/tests/consentTests.js';
+import { runConsentCategoryTests } from '../../../../lib/services/servicePrivacy/tests/consentCategoryTests.js';
+import { runPrivacySettingsTests } from '../../../../lib/services/servicePrivacy/tests/privacySettingsTests.js';
 import { runDataExportTests } from '../../../../lib/services/servicePrivacy/tests/dataExportTests.js';
 import { runAccountDeletionTests } from '../../../../lib/services/servicePrivacy/tests/accountDeletionTests.js';
 import { runPhase3Tests } from '../../../../lib/services/servicePrivacy/tests/phase3Tests.js';
@@ -40,6 +42,8 @@ export async function POST(request) {
 
     // Generate unique test user IDs if not provided
     const consentUserId = userId || `test-consent-${Date.now()}`;
+    const consentCategoryUserId = userId || `test-consent-category-${Date.now()}`;
+    const privacySettingsUserId = userId || `test-privacy-settings-${Date.now()}`;
     const exportUserId = userId || `test-export-${Date.now()}`;
     const deletionUserId = userId || `test-deletion-${Date.now()}`;
 
@@ -48,6 +52,20 @@ export async function POST(request) {
       console.log('\n📋 Running Consent Management Tests...\n');
       const consentResults = await runConsentTests(consentUserId);
       results.results.consent = consentResults;
+    }
+
+    // Run Consent Category Tests
+    if (suite === 'all' || suite === 'consent-categories') {
+      console.log('\n🗂️  Running Consent Category Tests...\n');
+      const consentCategoryResults = await runConsentCategoryTests(consentCategoryUserId);
+      results.results.consentCategories = consentCategoryResults;
+    }
+
+    // Run Privacy Settings Tests
+    if (suite === 'all' || suite === 'privacy-settings') {
+      console.log('\n⚙️  Running Privacy Settings Tests...\n');
+      const privacySettingsResults = await runPrivacySettingsTests(privacySettingsUserId);
+      results.results.privacySettings = privacySettingsResults;
     }
 
     // Run Data Export Tests
@@ -154,8 +172,9 @@ export async function GET() {
     version: '1.0.0',
     documentation: 'See RGPD_TESTING_GUIDE.md for detailed instructions',
     availableTests: {
-      all: 'Run all RGPD compliance tests (Phase 1-4)',
+      all: 'Run all RGPD compliance tests (Phase 1-4 + Consent Categories)',
       consent: 'Test consent management system',
+      'consent-categories': 'Test consent management by category (Essential, AI Features, Analytics, Communication, Personalization)',
       export: 'Test data export functionality',
       deletion: 'Test account deletion with grace period',
       phase3: 'Test Phase 3 features (minimization, retention, DPIA, incidents, audit logs)',

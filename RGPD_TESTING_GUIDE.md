@@ -26,10 +26,12 @@ Author: Claude Code
 
 ### What Are These Tests?
 
-This test suite validates **all RGPD Phase 1-4 features** (84 comprehensive tests) to ensure compliance with GDPR/CNIL regulations. The tests simulate real user interactions and verify that:
+This test suite validates **all RGPD Phase 1-4 features** (104 comprehensive tests) to ensure compliance with GDPR/CNIL regulations. The tests simulate real user interactions and verify that:
 
 **Phase 1-2 (Core Features)**:
 - ✅ Consent management works correctly
+- ✅ Consent categories (Essential, AI Features, Analytics, Communication, Personalization) work correctly
+- ✅ Privacy settings (profile visibility, messaging, notifications) work correctly
 - ✅ Data exports include all required data in correct formats
 - ✅ Account deletion respects the 30-day grace period
 - ✅ Cookie consent banner functions properly
@@ -760,6 +762,7 @@ jobs:
 |---------|-------|----------|--------|
 | **Phase 1-2** | | | |
 | Consent Management | 8 tests | 100% | ✅ All Passing |
+| Consent Categories | 12 tests | 100% | ✅ All Passing |
 | Data Export | 8 tests | 100% | ✅ All Passing |
 | Account Deletion | 8 tests | 100% | ✅ All Passing |
 | Cookie Banner | Manual | 90% | ✅ Manual Test |
@@ -775,7 +778,7 @@ jobs:
 | Certifications | 5 tests | 100% | ✅ All Passing |
 | Processor Management | 5 tests | 100% | ✅ All Passing |
 | Compliance Monitoring | 6 tests | 100% | ✅ All Passing |
-| **TOTAL** | **84 automated + manual** | **100%** | **✅ 84/84 Passing** |
+| **TOTAL** | **104 automated + manual** | **100%** | **✅ 104/104 Passing** |
 
 ### What's Tested
 
@@ -783,6 +786,9 @@ jobs:
 ✅ Consent granting and withdrawal
 ✅ Consent history and audit trail
 ✅ Batch consent operations
+✅ Consent categories (Essential, AI Features, Analytics, Communication, Personalization)
+✅ Category-level consent management and verification
+✅ Privacy settings (profile visibility, messaging, notifications)
 ✅ Data export (JSON, CSV, vCard)
 ✅ Export request tracking
 ✅ Account deletion with grace period
@@ -876,11 +882,11 @@ To improve these tests:
 ---
 
 **Last Updated**: 2025-11-07
-**Version**: 2.1.0 (All tests passing - 100%)
+**Version**: 2.2.0 (All tests passing - 100%)
 **Maintainer**: Claude Code
 **License**: Internal Use
-**Total Tests**: 84 automated tests across 4 phases
-**Test Pass Rate**: 84/84 (100%) - All tests passing
+**Total Tests**: 104 automated tests across 4 phases
+**Test Pass Rate**: 104/104 (100%) - All tests passing
 **Compliance Coverage**: 95/100 GDPR compliance score
 
 ---

@@ -11,7 +11,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { Shield, Download, Trash2, CheckSquare, Settings, AlertCircle, Info } from 'lucide-react';
+import { Shield, Download, Trash2, CheckSquare, Settings, AlertCircle, Info, Search, Target, CreditCard, BarChart, Mail, Users, Cookie, Eye, CheckCircle, XCircle, ChevronDown } from 'lucide-react';
 
 export default function PrivacyCenterPage() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -149,7 +149,7 @@ export default function PrivacyCenterPage() {
                   />
                 )}
                 {activeTab === 'consents' && <ConsentsTab consents={consents} onUpdate={loadPrivacyData} />}
-                {activeTab === 'settings' && <PrivacySettingsTab />}
+                {activeTab === 'settings' && <PrivacySettingsTab setActiveTab={setActiveTab} />}
               </>
             )}
           </div>
@@ -612,32 +612,790 @@ function DeleteAccountTab({ pendingDeletion, onUpdate }) {
   );
 }
 
-// Consents Tab (placeholder)
+// Consents Tab - Full Implementation
 function ConsentsTab({ consents, onUpdate }) {
+  const [updating, setUpdating] = useState(null);
+  const [notification, setNotification] = useState(null);
+  // Start with all categories collapsed by default
+  const [collapsedCategories, setCollapsedCategories] = useState(
+    new Set(['essential', 'ai_features', 'analytics', 'communication', 'personalization'])
+  );
+
+  const getAuthToken = async () => {
+    const { getAuth } = await import('firebase/auth');
+    const auth = getAuth();
+    const user = auth.currentUser;
+    if (!user) throw new Error('Not authenticated');
+    return await user.getIdToken();
+  };
+
+  const showNotification = (message, type = 'success') => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 3000);
+  };
+
+  const toggleCategory = (categoryId) => {
+    setCollapsedCategories((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(categoryId)) {
+        newSet.delete(categoryId);
+      } else {
+        newSet.add(categoryId);
+      }
+      return newSet;
+    });
+  };
+
+  const handleConsentToggle = async (consentType, currentStatus) => {
+    try {
+      setUpdating(consentType);
+      const newStatus = !currentStatus;
+      const action = newStatus ? 'granted' : 'withdrawn';
+
+      const token = await getAuthToken();
+      const response = await fetch('/api/user/privacy/consent', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          consentType,
+          action,
+          version: '1.0',
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to update consent');
+      }
+
+      // Refresh consents
+      await onUpdate();
+      showNotification(`Consent ${action === 'granted' ? 'granted' : 'withdrawn'} successfully`, 'success');
+    } catch (error) {
+      console.error('Error updating consent:', error);
+      showNotification(error.message, 'error');
+    } finally {
+      setUpdating(null);
+    }
+  };
+
+  const consentCategories = [
+    {
+      id: 'essential',
+      name: 'Essential',
+      description: 'Required for the application to function properly',
+      consents: [
+        {
+          type: 'terms_of_service',
+          name: 'Terms of Service',
+          description: 'Acceptance of our terms and conditions',
+          icon: CheckSquare,
+          required: true,
+          gdprArticle: 'Art. 6(1)(b) - Contract performance',
+        },
+        {
+          type: 'privacy_policy',
+          name: 'Privacy Policy',
+          description: 'Acceptance of our privacy practices',
+          icon: Shield,
+          required: true,
+          gdprArticle: 'Art. 6(1)(b) - Contract performance',
+        },
+      ],
+    },
+    {
+      id: 'ai_features',
+      name: 'AI Features',
+      description: 'Artificial intelligence powered enhancements',
+      consents: [
+        {
+          type: 'ai_business_card_enhancement',
+          name: 'AI Business Card Enhancement',
+          description: 'Use AI (Google Gemini 2.0) to extract information from business card images with high accuracy',
+          icon: CreditCard,
+          required: false,
+          tierRequired: 'Premium+',
+          gdprArticle: 'Art. 6(1)(a) - Consent',
+          technologies: ['Google Cloud Vision API', 'Gemini 2.0 Flash Lite'],
+        },
+        {
+          type: 'ai_semantic_search',
+          name: 'AI Semantic Search',
+          description: 'Enable AI-powered search with query enhancement, embeddings, reranking, and intelligent result analysis',
+          icon: Search,
+          required: false,
+          tierRequired: 'Business+',
+          gdprArticle: 'Art. 6(1)(a) - Consent',
+          technologies: ['Gemini 2.5 Flash', 'Pinecone Inference (multilingual-e5-large)', 'Cohere Rerank v3.5'],
+        },
+        {
+          type: 'ai_auto_grouping',
+          name: 'AI Auto-Grouping',
+          description: 'Automatically group contacts using intelligent algorithms, venue enrichment, and event detection',
+          icon: Target,
+          required: false,
+          tierRequired: 'Premium+',
+          gdprArticle: 'Art. 6(1)(a) - Consent',
+          technologies: ['Google Places API', 'Clustering Algorithms'],
+        },
+      ],
+    },
+    {
+      id: 'analytics',
+      name: 'Analytics',
+      description: 'Usage analytics and performance tracking',
+      consents: [
+        {
+          type: 'analytics_basic',
+          name: 'Basic Analytics',
+          description: 'Basic usage statistics (page views, feature usage) - anonymized data only',
+          icon: BarChart,
+          required: false,
+          gdprArticle: 'Art. 6(1)(f) - Legitimate interest',
+        },
+        {
+          type: 'analytics_detailed',
+          name: 'Detailed Analytics',
+          description: 'Detailed usage patterns and behavior analysis for improving user experience',
+          icon: BarChart,
+          required: false,
+          gdprArticle: 'Art. 6(1)(a) - Consent',
+        },
+        {
+          type: 'cookies_analytics',
+          name: 'Analytics Cookies',
+          description: 'Cookies used to track usage patterns and improve the application',
+          icon: Cookie,
+          required: false,
+          gdprArticle: 'Art. 6(1)(a) - Consent',
+        },
+      ],
+    },
+    {
+      id: 'communication',
+      name: 'Communication',
+      description: 'Email communications and recommendations',
+      consents: [
+        {
+          type: 'marketing_emails',
+          name: 'Marketing Emails',
+          description: 'Receive newsletters, product updates, and promotional offers',
+          icon: Mail,
+          required: false,
+          gdprArticle: 'Art. 6(1)(a) - Consent',
+        },
+        {
+          type: 'contact_recommendations',
+          name: 'Contact Recommendations',
+          description: 'Receive suggestions for potential connections based on your network',
+          icon: Users,
+          required: false,
+          gdprArticle: 'Art. 6(1)(a) - Consent',
+        },
+      ],
+    },
+    {
+      id: 'personalization',
+      name: 'Personalization',
+      description: 'Personalized experience and profile settings',
+      consents: [
+        {
+          type: 'cookies_personalization',
+          name: 'Personalization Cookies',
+          description: 'Remember your preferences and customize your experience',
+          icon: Cookie,
+          required: false,
+          gdprArticle: 'Art. 6(1)(a) - Consent',
+        },
+        {
+          type: 'profile_public',
+          name: 'Public Profile',
+          description: 'Make your profile visible to other users on the platform',
+          icon: Eye,
+          required: false,
+          gdprArticle: 'Art. 6(1)(a) - Consent',
+        },
+      ],
+    },
+  ];
+
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div>
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Manage Consents</h2>
         <p className="text-gray-600">
           Control which features can process your data. You can withdraw consent at any time.
+          Changes take effect immediately.
         </p>
       </div>
-      {/* Detailed consents management will be implemented */}
-      <div className="text-gray-600">Consents management coming soon...</div>
+
+      {/* Notification */}
+      {notification && (
+        <div
+          className={`p-4 rounded-lg border ${
+            notification.type === 'success'
+              ? 'bg-green-50 border-green-200 text-green-800'
+              : 'bg-red-50 border-red-200 text-red-800'
+          }`}
+        >
+          <div className="flex items-center space-x-2">
+            {notification.type === 'success' ? (
+              <CheckCircle className="w-5 h-5" />
+            ) : (
+              <XCircle className="w-5 h-5" />
+            )}
+            <span className="font-medium">{notification.message}</span>
+          </div>
+        </div>
+      )}
+
+      {/* Consent Categories */}
+      {!consents ? (
+        <div className="text-center py-12">
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          <p className="text-gray-600 mt-4">Loading consent data...</p>
+        </div>
+      ) : (
+        <div className="space-y-8">
+          {consentCategories.map((category) => {
+            const isCollapsed = collapsedCategories.has(category.id);
+
+            return (
+              <div key={category.id} className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                {/* Category Header - Clickable */}
+                <button
+                  onClick={() => toggleCategory(category.id)}
+                  className="w-full bg-gray-50 border-b border-gray-200 px-6 py-4 hover:bg-gray-100 transition-colors cursor-pointer text-left"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-gray-900">{category.name}</h3>
+                      <p className="text-sm text-gray-600 mt-1">{category.description}</p>
+                    </div>
+                    <ChevronDown
+                      className={`w-5 h-5 text-gray-600 transition-transform duration-200 flex-shrink-0 ml-4 ${
+                        isCollapsed ? '-rotate-90' : 'rotate-0'
+                      }`}
+                    />
+                  </div>
+                </button>
+
+                {/* Consent Items - Collapsible */}
+                {!isCollapsed && (
+                  <div className="divide-y divide-gray-200">
+                {category.consents.map((consent) => {
+                  const consentData = consents[consent.type] || { status: false, lastUpdated: null };
+                  const isGranted = consentData.status === true;
+                  const isUpdating = updating === consent.type;
+                  const Icon = consent.icon;
+
+                  return (
+                    <div key={consent.type} className="p-6 hover:bg-gray-50 transition">
+                      <div className="flex items-start justify-between">
+                        {/* Left: Icon + Details */}
+                        <div className="flex items-start space-x-4 flex-1">
+                          <div
+                            className={`p-3 rounded-lg ${
+                              isGranted ? 'bg-green-100' : 'bg-gray-100'
+                            }`}
+                          >
+                            <Icon
+                              className={`w-6 h-6 ${
+                                isGranted ? 'text-green-600' : 'text-gray-400'
+                              }`}
+                            />
+                          </div>
+
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-2">
+                              <h4 className="font-semibold text-gray-900">{consent.name}</h4>
+                              {consent.required && (
+                                <span className="px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-800 rounded">
+                                  Required
+                                </span>
+                              )}
+                              {consent.tierRequired && (
+                                <span className="px-2 py-0.5 text-xs font-medium bg-purple-100 text-purple-800 rounded">
+                                  {consent.tierRequired}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-sm text-gray-600 mt-1">{consent.description}</p>
+
+                            {/* Technologies Used */}
+                            {consent.technologies && (
+                              <div className="flex items-center flex-wrap gap-2 mt-2">
+                                <span className="text-xs text-gray-500">Technologies:</span>
+                                {consent.technologies.map((tech) => (
+                                  <span
+                                    key={tech}
+                                    className="text-xs px-2 py-0.5 bg-blue-50 text-blue-700 rounded"
+                                  >
+                                    {tech}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+
+                            {/* GDPR Article */}
+                            <p className="text-xs text-gray-500 mt-2">{consent.gdprArticle}</p>
+
+                            {/* Last Updated */}
+                            {consentData.lastUpdated && (
+                              <p className="text-xs text-gray-500 mt-1">
+                                Last updated:{' '}
+                                {new Date(consentData.lastUpdated._seconds * 1000).toLocaleDateString(
+                                  'en-US',
+                                  {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                  }
+                                )}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Right: Toggle */}
+                        <div className="ml-4 flex items-center space-x-3">
+                          {/* Status Badge */}
+                          <span
+                            className={`text-sm font-medium ${
+                              isGranted ? 'text-green-600' : 'text-gray-500'
+                            }`}
+                          >
+                            {isGranted ? 'Granted' : 'Withdrawn'}
+                          </span>
+
+                          {/* Toggle Switch */}
+                          <button
+                            onClick={() => handleConsentToggle(consent.type, isGranted)}
+                            disabled={consent.required || isUpdating}
+                            className={`
+                              relative inline-flex h-6 w-11 items-center rounded-full transition-colors
+                              focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+                              ${consent.required ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+                              ${isGranted ? 'bg-green-600' : 'bg-gray-300'}
+                            `}
+                          >
+                            <span
+                              className={`
+                                inline-block h-4 w-4 transform rounded-full bg-white transition-transform
+                                ${isGranted ? 'translate-x-6' : 'translate-x-1'}
+                              `}
+                            />
+                          </button>
+
+                          {/* Loading Spinner */}
+                          {isUpdating && (
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+
+          {/* Additional Info */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+            <h3 className="font-semibold text-blue-900 mb-2">About Your Consent Rights</h3>
+            <div className="text-sm text-blue-800 space-y-2">
+              <p>
+                • You can withdraw your consent at any time by toggling the switches above.
+              </p>
+              <p>
+                • Withdrawing consent will not affect the lawfulness of processing based on consent
+                before withdrawal (GDPR Art. 7.3).
+              </p>
+              <p>
+                • Essential consents are required for the service to function and cannot be withdrawn
+                without deleting your account.
+              </p>
+              <p>
+                • Some features require specific subscription tiers and may be unavailable if consent
+                is withdrawn.
+              </p>
+              <p>
+                • All consent changes are logged and can be audited. Contact our Data Protection
+                Officer if you have questions.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
-// Privacy Settings Tab (placeholder)
-function PrivacySettingsTab() {
+// Privacy Settings Tab - Full Implementation
+function PrivacySettingsTab({ setActiveTab }) {
+  const [settings, setSettings] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(null);
+  const [notification, setNotification] = useState(null);
+
+  useEffect(() => {
+    loadSettings();
+  }, []);
+
+  const getAuthToken = async () => {
+    const { getAuth } = await import('firebase/auth');
+    const auth = getAuth();
+    const user = auth.currentUser;
+    if (!user) throw new Error('Not authenticated');
+    return await user.getIdToken();
+  };
+
+  const loadSettings = async () => {
+    try {
+      setLoading(true);
+      const token = await getAuthToken();
+      const response = await fetch('/api/user/settings', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to load settings');
+      }
+
+      const data = await response.json();
+      setSettings(data);
+    } catch (error) {
+      console.error('Error loading settings:', error);
+      showNotification('Failed to load settings', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const showNotification = (message, type = 'success') => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 3000);
+  };
+
+  const updateSetting = async (settingKey, value) => {
+    try {
+      setUpdating(settingKey);
+      const token = await getAuthToken();
+
+      // Build update payload based on setting key
+      let updatePayload = {};
+      if (settingKey === 'isPublic' || settingKey === 'allowMessages') {
+        updatePayload = {
+          action: 'updatePrivacy',
+          data: { [settingKey]: value },
+        };
+      } else if (settingKey === 'notifications') {
+        updatePayload = {
+          action: 'updateNotifications',
+          data: { notifications: value },
+        };
+      }
+
+      const response = await fetch('/api/user/settings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(updatePayload),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update setting');
+      }
+
+      // Update local state
+      setSettings((prev) => {
+        if (settingKey === 'notifications') {
+          return { ...prev, notifications: value };
+        }
+        return { ...prev, [settingKey]: value };
+      });
+
+      showNotification('Setting updated successfully', 'success');
+    } catch (error) {
+      console.error('Error updating setting:', error);
+      showNotification(error.message, 'error');
+      // Revert the change by reloading
+      await loadSettings();
+    } finally {
+      setUpdating(null);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="text-center py-12">
+        <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <p className="text-gray-600 mt-4">Loading privacy settings...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div>
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Privacy Settings</h2>
-        <p className="text-gray-600">Configure your privacy preferences.</p>
+        <p className="text-gray-600">
+          Configure your privacy preferences and control how your data is used.
+        </p>
       </div>
-      {/* Settings will be implemented */}
-      <div className="text-gray-600">Privacy settings coming soon...</div>
+
+      {/* Notification */}
+      {notification && (
+        <div
+          className={`p-4 rounded-lg border ${
+            notification.type === 'success'
+              ? 'bg-green-50 border-green-200 text-green-800'
+              : 'bg-red-50 border-red-200 text-red-800'
+          }`}
+        >
+          <div className="flex items-center space-x-2">
+            {notification.type === 'success' ? (
+              <CheckCircle className="w-5 h-5" />
+            ) : (
+              <XCircle className="w-5 h-5" />
+            )}
+            <span className="font-medium">{notification.message}</span>
+          </div>
+        </div>
+      )}
+
+      {/* Profile Visibility Section */}
+      <div className="bg-white border border-gray-200 rounded-lg p-6">
+        <div className="flex items-start justify-between">
+          <div className="flex-1">
+            <div className="flex items-center space-x-2 mb-2">
+              <Eye className="w-5 h-5 text-blue-600" />
+              <h3 className="text-lg font-semibold text-gray-900">Profile Visibility</h3>
+            </div>
+            <p className="text-sm text-gray-600 mb-4">
+              Control who can see your profile and contact information. When your profile is
+              public, anyone can view your information. When private, only approved connections
+              can see your details.
+            </p>
+            <div className="flex items-center space-x-4">
+              <span className="text-sm font-medium text-gray-700">Profile Status:</span>
+              <span
+                className={`text-sm font-semibold ${
+                  settings?.isPublic ? 'text-green-600' : 'text-gray-600'
+                }`}
+              >
+                {settings?.isPublic ? 'Public' : 'Private'}
+              </span>
+            </div>
+          </div>
+
+          {/* Toggle */}
+          <button
+            onClick={() => updateSetting('isPublic', !settings?.isPublic)}
+            disabled={updating === 'isPublic'}
+            className={`
+              relative inline-flex h-6 w-11 items-center rounded-full transition-colors
+              focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+              ${updating === 'isPublic' ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+              ${settings?.isPublic ? 'bg-green-600' : 'bg-gray-300'}
+            `}
+          >
+            <span
+              className={`
+                inline-block h-4 w-4 transform rounded-full bg-white transition-transform
+                ${settings?.isPublic ? 'translate-x-6' : 'translate-x-1'}
+              `}
+            />
+          </button>
+        </div>
+      </div>
+
+      {/* Messaging Settings */}
+      <div className="bg-white border border-gray-200 rounded-lg p-6">
+        <div className="flex items-start justify-between">
+          <div className="flex-1">
+            <div className="flex items-center space-x-2 mb-2">
+              <Mail className="w-5 h-5 text-purple-600" />
+              <h3 className="text-lg font-semibold text-gray-900">Allow Messages</h3>
+            </div>
+            <p className="text-sm text-gray-600 mb-4">
+              Allow other users to send you messages through the platform. You can disable this to
+              prevent unsolicited messages while still maintaining your connections.
+            </p>
+            <div className="flex items-center space-x-4">
+              <span className="text-sm font-medium text-gray-700">Messages:</span>
+              <span
+                className={`text-sm font-semibold ${
+                  settings?.allowMessages ? 'text-green-600' : 'text-gray-600'
+                }`}
+              >
+                {settings?.allowMessages ? 'Enabled' : 'Disabled'}
+              </span>
+            </div>
+          </div>
+
+          {/* Toggle */}
+          <button
+            onClick={() => updateSetting('allowMessages', !settings?.allowMessages)}
+            disabled={updating === 'allowMessages'}
+            className={`
+              relative inline-flex h-6 w-11 items-center rounded-full transition-colors
+              focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2
+              ${updating === 'allowMessages' ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+              ${settings?.allowMessages ? 'bg-purple-600' : 'bg-gray-300'}
+            `}
+          >
+            <span
+              className={`
+                inline-block h-4 w-4 transform rounded-full bg-white transition-transform
+                ${settings?.allowMessages ? 'translate-x-6' : 'translate-x-1'}
+              `}
+            />
+          </button>
+        </div>
+      </div>
+
+      {/* Notification Preferences */}
+      <div className="bg-white border border-gray-200 rounded-lg p-6">
+        <div className="flex items-center space-x-2 mb-4">
+          <Settings className="w-5 h-5 text-orange-600" />
+          <h3 className="text-lg font-semibold text-gray-900">Notification Preferences</h3>
+        </div>
+        <p className="text-sm text-gray-600 mb-6">
+          Control how you receive notifications about your account activity.
+        </p>
+
+        <div className="space-y-4">
+          {/* Email Notifications */}
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <h4 className="font-medium text-gray-900">Email Notifications</h4>
+              <p className="text-sm text-gray-600 mt-1">
+                Receive important updates and notifications via email
+              </p>
+            </div>
+            <button
+              onClick={() =>
+                updateSetting('notifications', {
+                  ...settings?.notifications,
+                  email: !settings?.notifications?.email,
+                })
+              }
+              disabled={updating === 'notifications'}
+              className={`
+                relative inline-flex h-6 w-11 items-center rounded-full transition-colors
+                focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2
+                ${updating === 'notifications' ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+                ${settings?.notifications?.email ? 'bg-orange-600' : 'bg-gray-300'}
+              `}
+            >
+              <span
+                className={`
+                  inline-block h-4 w-4 transform rounded-full bg-white transition-transform
+                  ${settings?.notifications?.email ? 'translate-x-6' : 'translate-x-1'}
+                `}
+              />
+            </button>
+          </div>
+
+          {/* Push Notifications */}
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <h4 className="font-medium text-gray-900">Push Notifications</h4>
+              <p className="text-sm text-gray-600 mt-1">
+                Receive real-time push notifications on your devices
+              </p>
+            </div>
+            <button
+              onClick={() =>
+                updateSetting('notifications', {
+                  ...settings?.notifications,
+                  push: !settings?.notifications?.push,
+                })
+              }
+              disabled={updating === 'notifications'}
+              className={`
+                relative inline-flex h-6 w-11 items-center rounded-full transition-colors
+                focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2
+                ${updating === 'notifications' ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+                ${settings?.notifications?.push ? 'bg-orange-600' : 'bg-gray-300'}
+              `}
+            >
+              <span
+                className={`
+                  inline-block h-4 w-4 transform rounded-full bg-white transition-transform
+                  ${settings?.notifications?.push ? 'translate-x-6' : 'translate-x-1'}
+                `}
+              />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+        <h3 className="font-semibold text-blue-900 mb-3">Additional Privacy Controls</h3>
+        <div className="space-y-3">
+          <p className="text-sm text-blue-800">
+            • Manage detailed consent preferences in the{' '}
+            <button
+              onClick={() => setActiveTab('consents')}
+              className="font-medium underline hover:text-blue-900"
+            >
+              Consents
+            </button>{' '}
+            tab
+          </p>
+          <p className="text-sm text-blue-800">
+            • Export all your data in the{' '}
+            <button
+              onClick={() => setActiveTab('export')}
+              className="font-medium underline hover:text-blue-900"
+            >
+              Export Data
+            </button>{' '}
+            tab
+          </p>
+          <p className="text-sm text-blue-800">
+            • Request account deletion in the{' '}
+            <button
+              onClick={() => setActiveTab('delete')}
+              className="font-medium underline hover:text-blue-900"
+            >
+              Delete Account
+            </button>{' '}
+            tab
+          </p>
+        </div>
+      </div>
+
+      {/* GDPR Information */}
+      <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
+        <h3 className="font-semibold text-gray-900 mb-2">Your Privacy Rights</h3>
+        <p className="text-sm text-gray-700">
+          Under GDPR, you have the right to control your personal data. These settings give you
+          granular control over your privacy preferences. All changes are logged and auditable. For
+          more information about how we process your data, please review our{' '}
+          <a href="/privacy-policy" className="text-blue-600 hover:text-blue-700 font-medium">
+            Privacy Policy
+          </a>
+          .
+        </p>
+      </div>
     </div>
   );
 }
