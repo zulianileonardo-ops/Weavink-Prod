@@ -157,6 +157,48 @@
           "order": "DESCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "DataProcessingAgreements",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "processorId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "uploadedAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "ComplianceActions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "ProcessorRiskAssessments",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "processorId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "assessedAt",
+          "order": "DESCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": []
