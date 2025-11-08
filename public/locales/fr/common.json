@@ -103,6 +103,48 @@
     "pick_image": "Choisissez votre image",
     "remove": "Supprimer"
   },
+  "download_contact": {
+    "button_text": "Télécharger le Contact",
+    "button_text_short": "Télécharger",
+    "button_verifying": "Vérification...",
+    "button_verifying_short": "Vérification...",
+    "button_unavailable": "Téléchargement Indisponible",
+    "button_unavailable_short": "Indisponible",
+    "downloading": "Téléchargement...",
+    "success": "Contact téléchargé avec succès!",
+    "error": "Échec du téléchargement du contact",
+    "profile_unavailable": "Ce profil n'est pas disponible pour le téléchargement",
+    "title": "Télécharger les Informations de Contact"
+  },
+  "contact_preview": {
+    "title": "Sélectionner les Informations de Contact",
+    "subtitle": "Choisissez les informations à inclure dans la vCard",
+    "preview_title": "Aperçu",
+    "select_fields": "Sélectionner les Champs",
+    "select_all": "Tout Sélectionner",
+    "select_none": "Tout Désélectionner",
+    "required": "Requis",
+    "optional": "Optionnel",
+    "download_button": "Télécharger vCard ({{count}} champs)",
+    "cancel": "Annuler",
+    "fields": {
+      "display_name": "Nom d'Affichage",
+      "email": "Email",
+      "bio": "Bio / Notes",
+      "location": "Localisation",
+      "website": "URL du Profil",
+      "photo": "Photo de Profil",
+      "linkedin": "LinkedIn",
+      "twitter": "Twitter",
+      "instagram": "Instagram",
+      "facebook": "Facebook"
+    },
+    "categories": {
+      "basic": "Informations de Base",
+      "social": "Réseaux Sociaux",
+      "other": "Informations Supplémentaires"
+    }
+  },
   "business_card_scanner": {
     "title": "Scanner une carte de visite",
     "capture_title": "Capturer une carte de visite",
@@ -2170,7 +2212,8 @@
       "export": "Exporter les Données",
       "delete": "Supprimer le Compte",
       "consents": "Consentements",
-      "settings": "Paramètres de Confidentialité"
+      "settings": "Paramètres de Confidentialité",
+      "contact_download": "Téléchargement de Contact"
     },
     "loading": {
       "privacy_data": "Chargement des données de confidentialité...",
@@ -2415,6 +2458,53 @@
       },
       "notification": {
         "success": "Paramètre mis à jour avec succès"
+      }
+    },
+    "contact_download_settings": {
+      "title": "Paramètres de Téléchargement de Contact",
+      "description": "Contrôlez qui peut télécharger vos informations de contact et quels champs sont disponibles",
+      "master_toggle": {
+        "title": "Activer les Téléchargements de Contact",
+        "description": "Permettre aux visiteurs de télécharger vos informations de contact sous forme de fichier vCard. Lorsque désactivé, le bouton de téléchargement n'apparaîtra pas sur votre profil public.",
+        "status_label": "Statut :",
+        "enabled": "Activé",
+        "disabled": "Désactivé"
+      },
+      "fields": {
+        "title": "Champs Disponibles",
+        "description": "Choisissez les champs que les visiteurs peuvent inclure lors du téléchargement de votre contact. Les champs obligatoires ne peuvent pas être désactivés.",
+        "categories": {
+          "basic": "Informations de Base",
+          "additional": "Informations Supplémentaires",
+          "social": "Réseaux Sociaux"
+        },
+        "field_labels": {
+          "displayName": "Nom d'Affichage",
+          "email": "E-mail",
+          "photo": "Photo de Profil",
+          "bio": "Bio / Notes",
+          "location": "Localisation",
+          "website": "URL du Profil",
+          "linkedin": "LinkedIn",
+          "twitter": "Twitter",
+          "instagram": "Instagram",
+          "facebook": "Facebook"
+        },
+        "required_badge": "Obligatoire",
+        "count": "{{count}} champs sélectionnés"
+      },
+      "quick_actions": {
+        "select_all": "Tout Sélectionner",
+        "deselect_all": "Tout Désélectionner"
+      },
+      "info_card": {
+        "title": "Comment Ça Marche",
+        "description": "Lorsque les visiteurs cliquent sur le bouton Télécharger le Contact sur votre profil, ils verront une fenêtre modale où ils peuvent choisir lesquels de vos champs activés inclure dans le fichier vCard. Les champs que vous désactivez ici ne seront pas disponibles pour les visiteurs."
+      },
+      "notifications": {
+        "saving": "Enregistrement...",
+        "success": "Paramètres enregistrés avec succès !",
+        "error": "Échec de l'enregistrement des paramètres"
       }
     },
     "footer": {

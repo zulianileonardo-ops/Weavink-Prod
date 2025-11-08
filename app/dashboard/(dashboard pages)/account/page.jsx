@@ -17,7 +17,7 @@
 
 import { useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Shield, Download, Trash2, CheckSquare, Settings, Info, AlertCircle } from 'lucide-react';
+import { Shield, Download, Trash2, CheckSquare, Settings, Info, AlertCircle, FileUser } from 'lucide-react';
 import { useTranslation } from '@/lib/translation/useTranslation';
 import { AccountProvider, useAccount } from './AccountContext';
 
@@ -27,6 +27,7 @@ import ExportDataTab from './components/ExportDataTab';
 import DeleteAccountTab from './components/DeleteAccountTab';
 import ConsentsTab from './components/ConsentsTab';
 import PrivacySettingsTab from './components/PrivacySettingsTab';
+import ContactDownloadTab from './components/ContactDownloadTab';
 
 // Wrapper component that provides context
 export default function AccountPageWrapper() {
@@ -64,6 +65,7 @@ function AccountPage() {
     { id: 'delete', label: t('account.tabs.delete', 'Delete Account'), icon: Trash2 },
     { id: 'consents', label: t('account.tabs.consents', 'Consents'), icon: CheckSquare },
     { id: 'settings', label: t('account.tabs.settings', 'Privacy Settings'), icon: Settings },
+    { id: 'contact-download', label: t('account.tabs.contact_download', 'Contact Download'), icon: FileUser },
   ];
 
   return (
@@ -141,6 +143,7 @@ function AccountPage() {
                 {activeTab === 'delete' && <DeleteAccountTab />}
                 {activeTab === 'consents' && <ConsentsTab />}
                 {activeTab === 'settings' && <PrivacySettingsTab />}
+                {activeTab === 'contact-download' && <ContactDownloadTab />}
               </>
             )}
           </div>

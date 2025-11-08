@@ -14,6 +14,7 @@ import SensitiveWarning from "./components/SensitiveWarning";
 import { trackView } from '@/lib/services/analyticsService';
 import AssetLayer from "./components/AssetLayer";
 import ExchangeButton from "./components/ExchangeButton";
+import DownloadContactButton from "./components/DownloadContactButton";
 
 export const HouseContext = React.createContext(null);
 
@@ -25,6 +26,12 @@ export default function House({ initialUserData, scanToken = null, scanAvailable
     const [viewTracked, setViewTracked] = useState(false);
 
     const [profileVerificationStatus, setProfileVerificationStatus] = useState({
+        verified: false,
+        loading: true,
+        error: null
+    });
+
+    const [downloadContactVerificationStatus, setDownloadContactVerificationStatus] = useState({
         verified: false,
         loading: true,
         error: null
@@ -58,6 +65,24 @@ export default function House({ initialUserData, scanToken = null, scanAvailable
         });
 
         return contactExchangeEnabled && !!hasContactInfo;
+    }, [isPreviewMode, userData?.profile, userData?.displayName, userData?.settings, userData?.email]);
+
+    const shouldShowDownloadContact = useMemo(() => {
+        if (isPreviewMode) return false;
+        const settings = userData?.settings || {};
+        const downloadContactEnabled = settings.downloadContactEnabled !== false;
+        const profile = userData?.profile || {};
+        const hasContactInfo = profile.displayName || userData?.displayName || userData?.email;
+
+        console.log('📇 Download Contact Check:', {
+            isPreviewMode,
+            settingsDownloadContactEnabledRaw: userData?.settings?.downloadContactEnabled,
+            downloadContactEnabledCalculated: downloadContactEnabled,
+            hasContactInfoCalculated: hasContactInfo,
+            finalShouldShow: downloadContactEnabled && !!hasContactInfo
+        });
+
+        return downloadContactEnabled && !!hasContactInfo;
     }, [isPreviewMode, userData?.profile, userData?.displayName, userData?.settings, userData?.email]);
 
     const hasBanner = useMemo(() => {
@@ -185,6 +210,24 @@ export default function House({ initialUserData, scanToken = null, scanAvailable
         }
     }, [userData?.uid, userData?.username, isPreviewMode, shouldShowContactExchange]);
 
+    useEffect(() => {
+        // Simplified verification for download contact
+        // The API will do the actual verification, so we just check if it should show
+        if (isPreviewMode || !shouldShowDownloadContact) {
+            setDownloadContactVerificationStatus({ verified: false, loading: false, error: null });
+            return;
+        }
+
+        if (userData?.uid || userData?.username) {
+            console.log('📇 House: Download contact feature enabled');
+            setDownloadContactVerificationStatus({
+                verified: true,
+                loading: false,
+                error: null
+            });
+        }
+    }, [userData?.uid, userData?.username, isPreviewMode, shouldShowDownloadContact]);
+
     const contextValue = useMemo(() => ({
         userData,
         setShowSensitiveWarning,
@@ -234,13 +277,13 @@ export default function House({ initialUserData, scanToken = null, scanAvailable
 
                             <MyLinks />
                             
-                            {shouldShowContactExchange && (
+                            {(shouldShowContactExchange || shouldShowDownloadContact) && (
                                 <div className="w-full max-w-lg px-4 mt-6 space-y-3">
                                     <div className="text-center mb-4">
-                                        
-                                       
-                                        
-                                        {scanAvailable && (
+
+
+
+                                        {scanAvailable && shouldShowContactExchange && (
                                             <div className="mt-2 inline-flex items-center gap-1 px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-full">
                                                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
@@ -249,22 +292,35 @@ export default function House({ initialUserData, scanToken = null, scanAvailable
                                             </div>
                                         )}
                                     </div>
-                                    
+
                                     <div className="space-y-3">
-                                        <ExchangeButton 
-                                            username={userData.username}
-                                            userInfo={{
-                                                userId: userData.uid,
-                                                displayName: userData.displayName || userData.profile?.displayName,
-                                                email: userData.email
-                                            }}
-                                            userId={userData.uid}
-                                            scanToken={scanToken}
-                                            scanAvailable={scanAvailable}
-                                            preVerified={profileVerificationStatus.verified}
-                                            verificationLoading={profileVerificationStatus.loading}
-                                            themeData={userData.appearance} // Pass the entire appearance object
-                                        />
+                                        {shouldShowContactExchange && (
+                                            <ExchangeButton
+                                                username={userData.username}
+                                                userInfo={{
+                                                    userId: userData.uid,
+                                                    displayName: userData.displayName || userData.profile?.displayName,
+                                                    email: userData.email
+                                                }}
+                                                userId={userData.uid}
+                                                scanToken={scanToken}
+                                                scanAvailable={scanAvailable}
+                                                preVerified={profileVerificationStatus.verified}
+                                                verificationLoading={profileVerificationStatus.loading}
+                                                themeData={userData.appearance}
+                                            />
+                                        )}
+
+                                        {shouldShowDownloadContact && (
+                                            <DownloadContactButton
+                                                username={userData.username}
+                                                userId={userData.uid}
+                                                userData={userData}
+                                                preVerified={downloadContactVerificationStatus.verified}
+                                                verificationLoading={downloadContactVerificationStatus.loading}
+                                                themeData={userData.appearance}
+                                            />
+                                        )}
                                     </div>
 
                                     {scanAvailable && (

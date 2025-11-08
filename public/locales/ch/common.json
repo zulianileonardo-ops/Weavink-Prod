@@ -33,6 +33,48 @@
     "pick_image": "选择您的图片",
     "remove": "移除"
   },
+  "download_contact": {
+    "button_text": "下载联系人",
+    "button_text_short": "下载",
+    "button_verifying": "验证中...",
+    "button_verifying_short": "验证中...",
+    "button_unavailable": "下载不可用",
+    "button_unavailable_short": "不可用",
+    "downloading": "下载中...",
+    "success": "联系人下载成功！",
+    "error": "下载联系人失败",
+    "profile_unavailable": "此个人资料不可下载",
+    "title": "下载联系信息"
+  },
+  "contact_preview": {
+    "title": "选择联系信息",
+    "subtitle": "选择要包含在vCard中的信息",
+    "preview_title": "预览",
+    "select_fields": "选择字段",
+    "select_all": "全选",
+    "select_none": "取消全选",
+    "required": "必填",
+    "optional": "可选",
+    "download_button": "下载vCard（{{count}}个字段）",
+    "cancel": "取消",
+    "fields": {
+      "display_name": "显示名称",
+      "email": "电子邮件",
+      "bio": "简介/备注",
+      "location": "位置",
+      "website": "个人资料网址",
+      "photo": "头像",
+      "linkedin": "领英",
+      "twitter": "推特",
+      "instagram": "Instagram",
+      "facebook": "脸书"
+    },
+    "categories": {
+      "basic": "基本信息",
+      "social": "社交媒体",
+      "other": "附加信息"
+    }
+  },
   "business_card_scanner": {
     "title": "扫描名片",
     "capture_title": "拍摄名片",
@@ -1452,7 +1494,8 @@
       "export": "导出数据",
       "delete": "删除账户",
       "consents": "同意管理",
-      "settings": "隐私设置"
+      "settings": "隐私设置",
+      "contact_download": "联系人下载"
     },
     "loading": {
       "privacy_data": "加载隐私数据中...",
@@ -1697,6 +1740,53 @@
       },
       "notification": {
         "success": "设置更新成功"
+      }
+    },
+    "contact_download_settings": {
+      "title": "联系人下载设置",
+      "description": "控制谁可以下载您的联系信息以及哪些字段可用",
+      "master_toggle": {
+        "title": "启用联系人下载",
+        "description": "允许访客将您的联系信息下载为 vCard 文件。禁用后，下载按钮将不会出现在您的公开个人资料中。",
+        "status_label": "状态：",
+        "enabled": "已启用",
+        "disabled": "已禁用"
+      },
+      "fields": {
+        "title": "可用字段",
+        "description": "选择访客下载您的联系人时可以包含的字段。必填字段无法禁用。",
+        "categories": {
+          "basic": "基本信息",
+          "additional": "附加信息",
+          "social": "社交媒体"
+        },
+        "field_labels": {
+          "displayName": "显示名称",
+          "email": "电子邮件",
+          "photo": "个人资料照片",
+          "bio": "简介/备注",
+          "location": "位置",
+          "website": "个人资料网址",
+          "linkedin": "领英",
+          "twitter": "推特",
+          "instagram": "Instagram",
+          "facebook": "Facebook"
+        },
+        "required_badge": "必填",
+        "count": "已选择 {{count}} 个字段"
+      },
+      "quick_actions": {
+        "select_all": "全选",
+        "deselect_all": "取消全选"
+      },
+      "info_card": {
+        "title": "工作原理",
+        "description": "当访客点击您个人资料上的下载联系人按钮时，他们将看到一个弹窗，可以选择要包含在 vCard 文件中的已启用字段。您在此处禁用的字段将不可供访客下载。"
+      },
+      "notifications": {
+        "saving": "保存中...",
+        "success": "设置保存成功！",
+        "error": "保存设置失败"
       }
     },
     "footer": {

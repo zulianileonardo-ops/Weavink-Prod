@@ -211,6 +211,47 @@ export function AccountProvider({ children }) {
   }, [currentUser, invalidateCache, showNotification, fetchSettings]);
 
   /**
+   * Update contact download settings
+   */
+  const updateContactDownloadSettings = useCallback(async (enabled, fields) => {
+    if (!currentUser) return;
+
+    try {
+      console.log('🔄 [AccountContext] Updating contact download settings');
+
+      // Build update payload
+      const updatePayload = {
+        action: 'updateContactDownload',
+        data: {
+          downloadContactEnabled: enabled,
+          downloadContactFields: fields
+        }
+      };
+
+      // Call service
+      await SettingsService.updateSettingsData(updatePayload);
+
+      // Update local state
+      setPrivacySettings((prev) => ({
+        ...prev,
+        downloadContactEnabled: enabled,
+        downloadContactFields: fields
+      }));
+
+      // Invalidate cache to force fresh data on next tab switch
+      invalidateCache();
+
+      console.log('✅ [AccountContext] Contact download settings updated successfully');
+    } catch (error) {
+      console.error('❌ [AccountContext] Error updating contact download settings:', error);
+      showNotification(error.message, 'error');
+      // Refresh to revert
+      await fetchSettings(true);
+      throw error;
+    }
+  }, [currentUser, invalidateCache, showNotification, fetchSettings]);
+
+  /**
    * Grant consent
    */
   const grantConsent = useCallback(async (consentType, metadata) => {
@@ -367,6 +408,7 @@ export function AccountProvider({ children }) {
 
     // Mutations
     updatePrivacySetting,
+    updateContactDownloadSettings,
     grantConsent,
     withdrawConsent,
     requestDeletion,

@@ -66,6 +66,48 @@
     "pick_image": "Elige tu imagen",
     "remove": "Eliminar"
   },
+  "download_contact": {
+    "button_text": "Descargar Contacto",
+    "button_text_short": "Descargar",
+    "button_verifying": "Verificando...",
+    "button_verifying_short": "Verificando...",
+    "button_unavailable": "Descarga No Disponible",
+    "button_unavailable_short": "No Disponible",
+    "downloading": "Descargando...",
+    "success": "¡Contacto descargado con éxito!",
+    "error": "Error al descargar el contacto",
+    "profile_unavailable": "Este perfil no está disponible para descargar",
+    "title": "Descargar Información de Contacto"
+  },
+  "contact_preview": {
+    "title": "Seleccionar Información de Contacto",
+    "subtitle": "Elige qué información incluir en la vCard",
+    "preview_title": "Vista Previa",
+    "select_fields": "Seleccionar Campos",
+    "select_all": "Seleccionar Todo",
+    "select_none": "Deseleccionar Todo",
+    "required": "Requerido",
+    "optional": "Opcional",
+    "download_button": "Descargar vCard ({{count}} campos)",
+    "cancel": "Cancelar",
+    "fields": {
+      "display_name": "Nombre para Mostrar",
+      "email": "Email",
+      "bio": "Biografía / Notas",
+      "location": "Ubicación",
+      "website": "URL del Perfil",
+      "photo": "Foto de Perfil",
+      "linkedin": "LinkedIn",
+      "twitter": "Twitter",
+      "instagram": "Instagram",
+      "facebook": "Facebook"
+    },
+    "categories": {
+      "basic": "Información Básica",
+      "social": "Redes Sociales",
+      "other": "Información Adicional"
+    }
+  },
   "business_card_scanner": {
     "title": "Escanear tarjeta de visita",
     "capture_title": "Capturar tarjeta de visita",
@@ -1923,7 +1965,8 @@
       "export": "Exportar Datos",
       "delete": "Eliminar Cuenta",
       "consents": "Consentimientos",
-      "settings": "Configuración de Privacidad"
+      "settings": "Configuración de Privacidad",
+      "contact_download": "Descarga de Contacto"
     },
     "loading": {
       "privacy_data": "Cargando datos de privacidad...",
@@ -2168,6 +2211,53 @@
       },
       "notification": {
         "success": "Configuración actualizada exitosamente"
+      }
+    },
+    "contact_download_settings": {
+      "title": "Configuración de Descarga de Contacto",
+      "description": "Controla quién puede descargar tu información de contacto y qué campos están disponibles",
+      "master_toggle": {
+        "title": "Habilitar Descargas de Contacto",
+        "description": "Permitir a los visitantes descargar tu información de contacto como archivo vCard. Cuando está deshabilitado, el botón de descarga no aparecerá en tu perfil público.",
+        "status_label": "Estado:",
+        "enabled": "Habilitado",
+        "disabled": "Deshabilitado"
+      },
+      "fields": {
+        "title": "Campos Disponibles",
+        "description": "Elige qué campos pueden incluir los visitantes al descargar tu contacto. Los campos obligatorios no se pueden deshabilitar.",
+        "categories": {
+          "basic": "Información Básica",
+          "additional": "Información Adicional",
+          "social": "Redes Sociales"
+        },
+        "field_labels": {
+          "displayName": "Nombre para Mostrar",
+          "email": "Correo Electrónico",
+          "photo": "Foto de Perfil",
+          "bio": "Biografía / Notas",
+          "location": "Ubicación",
+          "website": "URL del Perfil",
+          "linkedin": "LinkedIn",
+          "twitter": "Twitter",
+          "instagram": "Instagram",
+          "facebook": "Facebook"
+        },
+        "required_badge": "Obligatorio",
+        "count": "{{count}} campos seleccionados"
+      },
+      "quick_actions": {
+        "select_all": "Seleccionar Todo",
+        "deselect_all": "Deseleccionar Todo"
+      },
+      "info_card": {
+        "title": "Cómo Funciona",
+        "description": "Cuando los visitantes hacen clic en el botón Descargar Contacto en tu perfil, verán un modal donde pueden elegir cuáles de tus campos habilitados incluir en el archivo vCard. Los campos que deshabilites aquí no estarán disponibles para los visitantes."
+      },
+      "notifications": {
+        "saving": "Guardando...",
+        "success": "¡Configuración guardada exitosamente!",
+        "error": "Error al guardar la configuración"
       }
     },
     "footer": {

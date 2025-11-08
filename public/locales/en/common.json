@@ -754,7 +754,8 @@
       "export": "Export Data",
       "delete": "Delete Account",
       "consents": "Consents",
-      "settings": "Privacy Settings"
+      "settings": "Privacy Settings",
+      "contact_download": "Contact Download"
     },
     "loading": {
       "privacy_data": "Loading privacy data...",
@@ -1001,6 +1002,53 @@
         "success": "Setting updated successfully"
       }
     },
+    "contact_download_settings": {
+      "title": "Contact Download Settings",
+      "description": "Control who can download your contact information and what fields are available",
+      "master_toggle": {
+        "title": "Enable Contact Downloads",
+        "description": "Allow visitors to download your contact information as a vCard file. When disabled, the download button will not appear on your public profile.",
+        "status_label": "Status:",
+        "enabled": "Enabled",
+        "disabled": "Disabled"
+      },
+      "fields": {
+        "title": "Available Fields",
+        "description": "Choose which fields visitors can include when downloading your contact. Required fields cannot be disabled.",
+        "categories": {
+          "basic": "Basic Information",
+          "additional": "Additional Information",
+          "social": "Social Media"
+        },
+        "field_labels": {
+          "displayName": "Display Name",
+          "email": "Email",
+          "photo": "Profile Photo",
+          "bio": "Bio / Notes",
+          "location": "Location",
+          "website": "Profile URL",
+          "linkedin": "LinkedIn",
+          "twitter": "Twitter",
+          "instagram": "Instagram",
+          "facebook": "Facebook"
+        },
+        "required_badge": "Required",
+        "count": "{{count}} fields selected"
+      },
+      "quick_actions": {
+        "select_all": "Select All",
+        "deselect_all": "Deselect All"
+      },
+      "info_card": {
+        "title": "How It Works",
+        "description": "When visitors click the Download Contact button on your profile, they'll see a modal where they can choose which of your enabled fields to include in the vCard file. Fields you disable here won't be available for visitors to download."
+      },
+      "notifications": {
+        "saving": "Saving...",
+        "success": "Settings saved successfully!",
+        "error": "Failed to save settings"
+      }
+    },
     "footer": {
       "title": "Your Rights Under GDPR",
       "rights": {
@@ -1137,6 +1185,48 @@
         "save_success": "Contact saved!",
         "save_error": "Failed to save contact."
       }
+    }
+  },
+  "download_contact": {
+    "button_text": "Download Contact",
+    "button_text_short": "Download",
+    "button_verifying": "Verifying...",
+    "button_verifying_short": "Verifying...",
+    "button_unavailable": "Download Unavailable",
+    "button_unavailable_short": "Unavailable",
+    "downloading": "Downloading...",
+    "success": "Contact downloaded successfully!",
+    "error": "Failed to download contact",
+    "profile_unavailable": "This profile is not available for download",
+    "title": "Download Contact Information"
+  },
+  "contact_preview": {
+    "title": "Select Contact Information",
+    "subtitle": "Choose which information to include in the vCard",
+    "preview_title": "Preview",
+    "select_fields": "Select Fields",
+    "select_all": "Select All",
+    "select_none": "Select None",
+    "required": "Required",
+    "optional": "Optional",
+    "download_button": "Download vCard ({{count}} fields)",
+    "cancel": "Cancel",
+    "fields": {
+      "display_name": "Display Name",
+      "email": "Email",
+      "bio": "Bio / Notes",
+      "location": "Location",
+      "website": "Profile URL",
+      "photo": "Profile Photo",
+      "linkedin": "LinkedIn",
+      "twitter": "Twitter",
+      "instagram": "Instagram",
+      "facebook": "Facebook"
+    },
+    "categories": {
+      "basic": "Basic Information",
+      "social": "Social Media",
+      "other": "Additional Info"
     }
   },
   "business_card_scanner": {

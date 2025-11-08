@@ -66,6 +66,48 @@
     "pick_image": "Chọn ảnh của bạn",
     "remove": "Xóa"
   },
+  "download_contact": {
+    "button_text": "Tải Xuống Liên Hệ",
+    "button_text_short": "Tải Xuống",
+    "button_verifying": "Đang xác minh...",
+    "button_verifying_short": "Đang xác minh...",
+    "button_unavailable": "Tải Xuống Không Khả Dụng",
+    "button_unavailable_short": "Không Khả Dụng",
+    "downloading": "Đang tải xuống...",
+    "success": "Đã tải xuống liên hệ thành công!",
+    "error": "Không thể tải xuống liên hệ",
+    "profile_unavailable": "Hồ sơ này không khả dụng để tải xuống",
+    "title": "Tải Xuống Thông Tin Liên Hệ"
+  },
+  "contact_preview": {
+    "title": "Chọn Thông Tin Liên Hệ",
+    "subtitle": "Chọn thông tin để đưa vào vCard",
+    "preview_title": "Xem Trước",
+    "select_fields": "Chọn Trường",
+    "select_all": "Chọn Tất Cả",
+    "select_none": "Bỏ Chọn Tất Cả",
+    "required": "Bắt Buộc",
+    "optional": "Tùy Chọn",
+    "download_button": "Tải vCard ({{count}} trường)",
+    "cancel": "Hủy",
+    "fields": {
+      "display_name": "Tên Hiển Thị",
+      "email": "Email",
+      "bio": "Tiểu Sử / Ghi Chú",
+      "location": "Vị Trí",
+      "website": "URL Hồ Sơ",
+      "photo": "Ảnh Hồ Sơ",
+      "linkedin": "LinkedIn",
+      "twitter": "Twitter",
+      "instagram": "Instagram",
+      "facebook": "Facebook"
+    },
+    "categories": {
+      "basic": "Thông Tin Cơ Bản",
+      "social": "Mạng Xã Hội",
+      "other": "Thông Tin Bổ Sung"
+    }
+  },
   "business_card_scanner": {
     "title": "Quét Danh thiếp",
     "capture_title": "Chụp Danh thiếp",
@@ -1905,7 +1947,8 @@
       "export": "Xuất Dữ Liệu",
       "delete": "Xóa Tài Khoản",
       "consents": "Đồng Ý",
-      "settings": "Cài Đặt Quyền Riêng Tư"
+      "settings": "Cài Đặt Quyền Riêng Tư",
+      "contact_download": "Tải Liên Hệ"
     },
     "loading": {
       "privacy_data": "Đang tải dữ liệu quyền riêng tư...",
@@ -2150,6 +2193,53 @@
       },
       "notification": {
         "success": "Đã cập nhật cài đặt thành công"
+      }
+    },
+    "contact_download_settings": {
+      "title": "Cài Đặt Tải Liên Hệ",
+      "description": "Kiểm soát ai có thể tải thông tin liên hệ của bạn và trường nào có sẵn",
+      "master_toggle": {
+        "title": "Bật Tải Liên Hệ",
+        "description": "Cho phép khách truy cập tải thông tin liên hệ của bạn dưới dạng tệp vCard. Khi tắt, nút tải xuống sẽ không xuất hiện trên hồ sơ công khai của bạn.",
+        "status_label": "Trạng thái:",
+        "enabled": "Đã Bật",
+        "disabled": "Đã Tắt"
+      },
+      "fields": {
+        "title": "Trường Có Sẵn",
+        "description": "Chọn trường khách truy cập có thể bao gồm khi tải liên hệ của bạn. Trường bắt buộc không thể tắt.",
+        "categories": {
+          "basic": "Thông Tin Cơ Bản",
+          "additional": "Thông Tin Bổ Sung",
+          "social": "Mạng Xã Hội"
+        },
+        "field_labels": {
+          "displayName": "Tên Hiển Thị",
+          "email": "Email",
+          "photo": "Ảnh Hồ Sơ",
+          "bio": "Tiểu Sử / Ghi Chú",
+          "location": "Vị Trí",
+          "website": "URL Hồ Sơ",
+          "linkedin": "LinkedIn",
+          "twitter": "Twitter",
+          "instagram": "Instagram",
+          "facebook": "Facebook"
+        },
+        "required_badge": "Bắt Buộc",
+        "count": "{{count}} trường đã chọn"
+      },
+      "quick_actions": {
+        "select_all": "Chọn Tất Cả",
+        "deselect_all": "Bỏ Chọn Tất Cả"
+      },
+      "info_card": {
+        "title": "Cách Hoạt Động",
+        "description": "Khi khách truy cập nhấp vào nút Tải Liên Hệ trên hồ sơ của bạn, họ sẽ thấy một cửa sổ bật lên nơi họ có thể chọn trường đã bật của bạn để đưa vào tệp vCard. Các trường bạn tắt ở đây sẽ không có sẵn cho khách truy cập."
+      },
+      "notifications": {
+        "saving": "Đang lưu...",
+        "success": "Đã lưu cài đặt thành công!",
+        "error": "Lưu cài đặt thất bại"
       }
     },
     "footer": {
