@@ -9,6 +9,7 @@
   import { getSubscriptionStatus } from '@/lib/services/client/subscriptionService';
   import { getFirestore, doc, onSnapshot } from 'firebase/firestore';
   import { app } from '@/important/firebase';
+  import { ConsentService } from '@/lib/services/servicePrivacy/client/services/ConsentService';
 
   const DashboardContext = createContext();
 
@@ -28,6 +29,7 @@
     const [error, setError] = useState(null);
     const [budgetInfo, setBudgetInfo] = useState(null);
     const [budgetLoading, setBudgetLoading] = useState(false);
+    const [consents, setConsents] = useState(null);
   const didFetch = useRef(false);
 
     const fetchDashboardData = useCallback(async (forceRefresh = false) => {
@@ -49,6 +51,12 @@
 
         setSubscriptionData(data);
         console.log('✅ DashboardProvider: Data loaded successfully');
+
+        // Fetch user consents using ConsentService (has proper auth)
+        const consentResponse = await ConsentService.getUserConsents();
+        const consentData = consentResponse.consents;
+        setConsents(consentData);
+        console.log('✅ DashboardProvider: Consents loaded successfully');
 
         // 🔍 DEBUG: Log permissions for carousel and media embed features
         console.log('🔍 [DashboardContext] Permissions Debug:', {
@@ -228,7 +236,10 @@
       // Budget information
       budgetInfo,
       budgetLoading,
-      refreshBudget: fetchBudgetInfo
+      refreshBudget: fetchBudgetInfo,
+
+      // Consent information
+      consents
     };
 
     return (

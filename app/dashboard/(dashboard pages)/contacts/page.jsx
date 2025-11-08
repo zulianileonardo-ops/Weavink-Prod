@@ -2,6 +2,7 @@
 "use client";
 
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useTranslation } from "@/lib/translation/useTranslation";
 import { toast } from 'react-hot-toast';
 import { useDashboard } from '@/app/dashboard/DashboardContext';
@@ -31,7 +32,8 @@ export default function ContactsPageWrapper() {
 
 function ContactsPage() {
     const { t, isInitialized } = useTranslation();
-    const { isLoading: isSessionLoading, subscriptionLevel, budgetInfo, budgetLoading } = useDashboard();
+    const router = useRouter();
+    const { isLoading: isSessionLoading, subscriptionLevel, budgetInfo, budgetLoading, consents } = useDashboard();
     const isPremium = subscriptionLevel === 'premium' || subscriptionLevel === 'business' || subscriptionLevel === 'enterprise';
     const { setIsMapOpen } = useMapVisibility();
 
@@ -80,10 +82,24 @@ function ContactsPage() {
     const [showMap, setShowMap] = useState(false);
     const [selectedContactForMap, setSelectedContactForMap] = useState(null);
     const [focusLocation, setFocusLocation] = useState(null);
+    const [showScannerConsentPopover, setShowScannerConsentPopover] = useState(false);
 
     // View mode and focus state for interactive filtering
     const [viewMode, setViewMode] = useState('contacts'); // 'contacts' | 'groups'
     const [focus, setFocus] = useState(null); // null | { type: 'contact', id: string } | { type: 'group', id: string }
+
+    // Check if user has given consent for business card scanner
+    const hasBusinessCardConsent = consents?.ai_business_card_enhancement?.status === true;
+
+    // Handler for scanner button click
+    const handleScannerClick = useCallback(() => {
+        if (!hasBusinessCardConsent) {
+            router.push('/dashboard/account?tab=consents&expand=ai_features');
+            return;
+        }
+        console.log("ACCESS GRANTED: User opened the Business Card Scanner.");
+        setShowScanner(true);
+    }, [hasBusinessCardConsent, router]);
 
     // Update map visibility in context
     useEffect(() => {
@@ -275,11 +291,48 @@ function ContactsPage() {
                 <StatsCards stats={stats} translations={translations} />
 
                 {/* Usage Info Cards (if available) */}
-                <UsageCards 
+                <UsageCards
                     usageInfo={usageInfo}
                     usageLoading={usageLoading}
                     hasFeature={hasFeature}
                 />
+
+                {/* Analytics Consent Status */}
+                {consents && (
+                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 space-y-1 mb-4 sm:mb-6">
+                        <p className="text-xs font-semibold text-gray-700 mb-2">
+                            {t('analytics.consent_status.title', 'Analytics Consent Status:')}
+                        </p>
+                        <div className="text-xs text-gray-600 space-y-1">
+                            <div>
+                                {t('analytics.consent_status.analytics_basic', 'Basic Analytics')}: {' '}
+                                {(consents.analytics_basic?.status === true)
+                                    ? t('analytics.consent_status.yes', 'yes')
+                                    : t('analytics.consent_status.no', 'no')}
+                            </div>
+                            <div>
+                                {t('analytics.consent_status.analytics_detailed', 'Detailed Analytics')}: {' '}
+                                {(consents.analytics_detailed?.status === true)
+                                    ? t('analytics.consent_status.yes', 'yes')
+                                    : t('analytics.consent_status.no', 'no')}
+                            </div>
+                            <div>
+                                {t('analytics.consent_status.cookies_analytics', 'Analytics Cookies')}: {' '}
+                                {(consents.cookies_analytics?.status === true)
+                                    ? t('analytics.consent_status.yes', 'yes')
+                                    : t('analytics.consent_status.no', 'no')}
+                            </div>
+                        </div>
+
+                        {/* Navigation Button */}
+                        <button
+                            onClick={() => router.push('/dashboard/account?tab=consents&expand=analytics')}
+                            className="mt-3 w-full px-3 py-2 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-md transition-colors duration-200"
+                        >
+                            {t('analytics.consent_status.manage_button', 'Manage Consent Settings')}
+                        </button>
+                    </div>
+                )}
 
                 {/* Search Bar */}
                 <SearchBar
@@ -323,16 +376,44 @@ function ContactsPage() {
                             )}
 
                             {(hasFeature(CONTACT_FEATURES.BASIC_CARD_SCANNER) || hasFeature(CONTACT_FEATURES.AI_ENHANCED_CARD_SCANNER)) && (
-                                <button
-                                    onClick={() => {
-                                        console.log("ACCESS GRANTED: User opened the Business Card Scanner.");
-                                        setShowScanner(true);
-                                    }}
-                                    className="px-3 py-2.5 bg-blue-500 text-white rounded-md hover:bg-blue-600 flex items-center justify-center gap-1.5 text-sm"
-                                >
-                                    <span>📇</span>
-                                    <span>{t('contacts.buttons.scan_card') || 'Scan Card'}</span>
-                                </button>
+                                <div className="relative">
+                                    <button
+                                        onClick={handleScannerClick}
+                                        onMouseEnter={() => {
+                                            if (!hasBusinessCardConsent) {
+                                                setShowScannerConsentPopover(true);
+                                            }
+                                        }}
+                                        onMouseLeave={() => setShowScannerConsentPopover(false)}
+                                        className={`px-3 py-2.5 rounded-md flex items-center justify-center gap-1.5 text-sm transition-colors ${
+                                            hasBusinessCardConsent
+                                                ? 'bg-blue-500 text-white hover:bg-blue-600 cursor-pointer'
+                                                : 'bg-blue-300 text-white cursor-not-allowed opacity-50'
+                                        }`}
+                                    >
+                                        <span>📇</span>
+                                        <span>{t('contacts.buttons.scan_card') || 'Scan Card'}</span>
+                                    </button>
+
+                                    {/* Consent Popover - Mobile */}
+                                    {showScannerConsentPopover && !hasBusinessCardConsent && (
+                                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-72 z-50">
+                                            <div className="bg-gray-900 text-white text-xs rounded-lg shadow-lg p-3">
+                                                <p className="mb-2">
+                                                    {t('business_card_scanner.consent_required') || 'Business Card Scanner requires your consent to use AI/OCR features'}
+                                                </p>
+                                                <button
+                                                    onClick={() => router.push('/dashboard/account?tab=consents&expand=ai_features')}
+                                                    className="w-full text-blue-300 hover:text-blue-200 bg-gray-800 hover:bg-gray-700 px-3 py-1.5 rounded transition-colors font-medium"
+                                                >
+                                                    {t('business_card_scanner.enable_consent') || 'Enable in Settings'} →
+                                                </button>
+                                                {/* Tooltip arrow */}
+                                                <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
                             )}
 
                             <button
@@ -388,15 +469,43 @@ function ContactsPage() {
                         )}
 
                         {(hasFeature(CONTACT_FEATURES.BASIC_CARD_SCANNER) || hasFeature(CONTACT_FEATURES.AI_ENHANCED_CARD_SCANNER)) && (
-                            <button
-                                onClick={() => {
-                                    console.log("ACCESS GRANTED: User opened the Business Card Scanner.");
-                                    setShowScanner(true);
-                                }}
-                                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                            >
-                                {t('contacts.buttons.scan_card') || 'Scan Card'}
-                            </button>
+                            <div className="relative">
+                                <button
+                                    onClick={handleScannerClick}
+                                    onMouseEnter={() => {
+                                        if (!hasBusinessCardConsent) {
+                                            setShowScannerConsentPopover(true);
+                                        }
+                                    }}
+                                    onMouseLeave={() => setShowScannerConsentPopover(false)}
+                                    className={`px-4 py-2 rounded-md transition-colors ${
+                                        hasBusinessCardConsent
+                                            ? 'bg-blue-500 text-white hover:bg-blue-600 cursor-pointer'
+                                            : 'bg-blue-300 text-white cursor-not-allowed opacity-50'
+                                    }`}
+                                >
+                                    {t('contacts.buttons.scan_card') || 'Scan Card'}
+                                </button>
+
+                                {/* Consent Popover - Desktop */}
+                                {showScannerConsentPopover && !hasBusinessCardConsent && (
+                                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-72 z-50">
+                                        <div className="bg-gray-900 text-white text-xs rounded-lg shadow-lg p-3">
+                                            <p className="mb-2">
+                                                {t('business_card_scanner.consent_required') || 'Business Card Scanner requires your consent to use AI/OCR features'}
+                                            </p>
+                                            <button
+                                                onClick={() => router.push('/dashboard/account?tab=consents&expand=ai_features')}
+                                                className="w-full text-blue-300 hover:text-blue-200 bg-gray-800 hover:bg-gray-700 px-3 py-1.5 rounded transition-colors font-medium"
+                                            >
+                                                {t('business_card_scanner.enable_consent') || 'Enable in Settings'} →
+                                            </button>
+                                            {/* Tooltip arrow */}
+                                            <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
                         )}
 
                         <button

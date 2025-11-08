@@ -731,6 +731,308 @@
       "click_for_more": "Click for more info",
       "traffic_sources_explained": "How Traffic Sources Work",
       "traffic_description": "Traffic sources help you understand where your visitors come from. This data shows you which platforms drive the most engagement to your profile."
+    },
+    "consent_status": {
+      "title": "Analytics Consent Status:",
+      "manage_button": "Manage Consent Settings",
+      "analytics_basic": "Basic Analytics",
+      "analytics_detailed": "Detailed Analytics",
+      "cookies_analytics": "Analytics Cookies",
+      "yes": "yes",
+      "no": "no"
+    }
+  },
+  "account": {
+    "header": {
+      "title": "Account & Privacy",
+      "subtitle": "Manage your personal data and privacy preferences",
+      "deletion_warning_title": "Account Deletion Pending",
+      "deletion_warning_message": "Your account is scheduled for deletion on {{date}}. You can cancel this at any time before that date."
+    },
+    "tabs": {
+      "overview": "Overview",
+      "export": "Export Data",
+      "delete": "Delete Account",
+      "consents": "Consents",
+      "settings": "Privacy Settings"
+    },
+    "loading": {
+      "privacy_data": "Loading privacy data...",
+      "settings": "Loading privacy settings...",
+      "consent_data": "Loading consent data..."
+    },
+    "overview": {
+      "title": "Privacy Overview",
+      "welcome": "Welcome to your Account & Privacy Center. Here you can manage all aspects of your personal data, exercise your rights under GDPR, and control how your information is used.",
+      "export_card": {
+        "title": "Export Your Data",
+        "description": "Download all your personal data in machine-readable formats (JSON, CSV, vCard). Compatible with all contact managers.",
+        "cta": "Export Data →"
+      },
+      "consents_card": {
+        "title": "Manage Consents",
+        "description": "Review and update your privacy consents. Control which features can process your data.",
+        "cta": "Manage Consents →"
+      },
+      "settings_card": {
+        "title": "Privacy Settings",
+        "description": "Configure your privacy preferences, including profile visibility and data sharing.",
+        "cta": "Update Settings →"
+      },
+      "delete_card": {
+        "title": "Delete Account",
+        "description": "Permanently delete your account and all associated data. This action cannot be undone.",
+        "cta": "Delete Account →"
+      },
+      "gdpr_info": {
+        "title": "About GDPR Compliance",
+        "description": "Weavink is fully compliant with the General Data Protection Regulation (GDPR) and takes your privacy seriously. All your data is stored in EU data centers, encrypted, and protected according to the highest standards. You have full control over your personal information at all times."
+      }
+    },
+    "export": {
+      "title": "Export Your Data",
+      "description": "Download all your personal data in machine-readable formats. Your export will include:",
+      "includes": {
+        "profile": "User profile and account information (JSON)",
+        "contacts_json": "All contacts (JSON, CSV, vCard formats)",
+        "groups": "Contact groups and categories (JSON)",
+        "analytics": "Analytics data - anonymized (JSON)",
+        "consents": "Consent history (JSON)",
+        "settings": "Settings and preferences (JSON)"
+      },
+      "button": {
+        "export": "Export All Data",
+        "exporting": "Preparing Export..."
+      },
+      "success": {
+        "title": "Export Completed!",
+        "message": "Your data has been exported successfully. Download the files below:",
+        "back": "← Export Again"
+      },
+      "error": {
+        "message": "{{error}}"
+      }
+    },
+    "delete": {
+      "title": "Delete Your Account",
+      "description": "Permanently delete your account and all associated data. This action cannot be undone.",
+      "pending": {
+        "title": "Account Deletion Pending",
+        "message": "Your account is scheduled for permanent deletion on {{date}}.",
+        "warning": "All your data, including contacts, groups, and settings, will be permanently deleted. This action cannot be undone after the deletion date.",
+        "cancel_button": "Cancel Deletion"
+      },
+      "warning": {
+        "title": "Before you delete:",
+        "export": "Consider exporting your data first (you won't be able to access it after deletion)",
+        "all_data": "This will delete all your contacts, groups, and settings",
+        "notify": "Users who have you as a contact will be notified",
+        "grace_period": "You have 30 days to cancel the deletion before it's final"
+      },
+      "confirmation": {
+        "title": "Confirm Account Deletion",
+        "instruction": "Type {{text}} to confirm:",
+        "text": "DELETE MY ACCOUNT",
+        "placeholder": "DELETE MY ACCOUNT"
+      },
+      "button": {
+        "delete": "Delete My Account",
+        "confirm": "Confirm Deletion",
+        "deleting": "Deleting...",
+        "cancel": "Cancel"
+      }
+    },
+    "consents": {
+      "title": "Manage Consents",
+      "description": "Control which features can process your data. You can withdraw consent at any time. Changes take effect immediately.",
+      "status": {
+        "granted": "Granted",
+        "withdrawn": "Withdrawn"
+      },
+      "badge": {
+        "required": "Required"
+      },
+      "category": {
+        "essential": {
+          "name": "Essential",
+          "description": "Required for the application to function properly"
+        },
+        "ai_features": {
+          "name": "AI Features",
+          "description": "Artificial intelligence powered enhancements"
+        },
+        "analytics": {
+          "name": "Analytics",
+          "description": "Usage analytics and performance tracking"
+        },
+        "communication": {
+          "name": "Communication",
+          "description": "Email communications and recommendations"
+        },
+        "personalization": {
+          "name": "Personalization",
+          "description": "Personalized experience and profile settings"
+        }
+      },
+      "type": {
+        "terms_of_service": {
+          "name": "Terms of Service",
+          "description": "Acceptance of our terms and conditions",
+          "gdpr": "Art. 6(1)(b) - Contract performance"
+        },
+        "privacy_policy": {
+          "name": "Privacy Policy",
+          "description": "Acceptance of our privacy practices",
+          "gdpr": "Art. 6(1)(b) - Contract performance"
+        },
+        "ai_business_card": {
+          "name": "AI Business Card Enhancement",
+          "description": "Use AI (Google Gemini 2.0) to extract information from business card images with high accuracy",
+          "gdpr": "Art. 6(1)(a) - Consent",
+          "tier": "Premium+"
+        },
+        "ai_semantic_search": {
+          "name": "AI Semantic Search",
+          "description": "Enable AI-powered search with query enhancement, embeddings, reranking, and intelligent result analysis",
+          "gdpr": "Art. 6(1)(a) - Consent",
+          "tier": "Business+"
+        },
+        "ai_auto_grouping": {
+          "name": "AI Auto-Grouping",
+          "description": "Automatically group contacts using intelligent algorithms, venue enrichment, and event detection",
+          "gdpr": "Art. 6(1)(a) - Consent",
+          "tier": "Premium+"
+        },
+        "analytics_basic": {
+          "name": "Basic Analytics",
+          "description": "Basic usage statistics (page views, feature usage) - anonymized data only",
+          "gdpr": "Art. 6(1)(f) - Legitimate interest"
+        },
+        "analytics_detailed": {
+          "name": "Detailed Analytics",
+          "description": "Detailed usage patterns and behavior analysis for improving user experience",
+          "gdpr": "Art. 6(1)(a) - Consent"
+        },
+        "cookies_analytics": {
+          "name": "Analytics Cookies",
+          "description": "Cookies used to track usage patterns and improve the application",
+          "gdpr": "Art. 6(1)(a) - Consent"
+        },
+        "marketing_emails": {
+          "name": "Marketing Emails",
+          "description": "Receive newsletters, product updates, and promotional offers",
+          "gdpr": "Art. 6(1)(a) - Consent"
+        },
+        "contact_recommendations": {
+          "name": "Contact Recommendations",
+          "description": "Receive suggestions for potential connections based on your network",
+          "gdpr": "Art. 6(1)(a) - Consent"
+        },
+        "cookies_personalization": {
+          "name": "Personalization Cookies",
+          "description": "Remember your preferences and customize your experience",
+          "gdpr": "Art. 6(1)(a) - Consent"
+        },
+        "profile_public": {
+          "name": "Public Profile",
+          "description": "Make your profile visible to other users on the platform",
+          "gdpr": "Art. 6(1)(a) - Consent"
+        }
+      },
+      "technologies_label": "Technologies:",
+      "last_updated": "Last updated: {{date}}",
+      "info": {
+        "title": "About Your Consent Rights",
+        "withdraw": "You can withdraw your consent at any time by toggling the switches above.",
+        "lawfulness": "Withdrawing consent will not affect the lawfulness of processing based on consent before withdrawal (GDPR Art. 7.3).",
+        "essential": "Essential consents are required for the service to function and cannot be withdrawn without deleting your account.",
+        "tiers": "Some features require specific subscription tiers and may be unavailable if consent is withdrawn.",
+        "audit": "All consent changes are logged and can be audited. Contact our Data Protection Officer if you have questions."
+      },
+      "notification": {
+        "granted": "Consent granted successfully",
+        "withdrawn": "Consent withdrawn successfully"
+      }
+    },
+    "settings": {
+      "title": "Privacy Settings",
+      "description": "Configure your privacy preferences and control how your data is used.",
+      "profile_visibility": {
+        "title": "Profile Visibility",
+        "description": "Control who can see your profile and contact information. When your profile is public, anyone can view your information. When private, only approved connections can see your details.",
+        "label": "Profile Status:",
+        "public": "Public",
+        "private": "Private"
+      },
+      "allow_messages": {
+        "title": "Allow Messages",
+        "description": "Allow other users to send you messages through the platform. You can disable this to prevent unsolicited messages while still maintaining your connections.",
+        "label": "Messages:",
+        "enabled": "Enabled",
+        "disabled": "Disabled"
+      },
+      "notifications": {
+        "title": "Notification Preferences",
+        "description": "Control how you receive notifications about your account activity.",
+        "email": {
+          "title": "Email Notifications",
+          "description": "Receive important updates and notifications via email"
+        },
+        "push": {
+          "title": "Push Notifications",
+          "description": "Receive real-time push notifications on your devices"
+        }
+      },
+      "quick_actions": {
+        "title": "Additional Privacy Controls",
+        "consents": "Manage detailed consent preferences in the {{link}} tab",
+        "consents_link": "Consents",
+        "export": "Export all your data in the {{link}} tab",
+        "export_link": "Export Data",
+        "delete": "Request account deletion in the {{link}} tab",
+        "delete_link": "Delete Account"
+      },
+      "gdpr_info": {
+        "title": "Your Privacy Rights",
+        "description": "Under GDPR, you have the right to control your personal data. These settings give you granular control over your privacy preferences. All changes are logged and auditable. For more information about how we process your data, please review our {{link}}.",
+        "privacy_policy_link": "Privacy Policy"
+      },
+      "notification": {
+        "success": "Setting updated successfully"
+      }
+    },
+    "footer": {
+      "title": "Your Rights Under GDPR",
+      "rights": {
+        "access": {
+          "title": "✓ Right to Access",
+          "description": "View and download all your personal data"
+        },
+        "rectification": {
+          "title": "✓ Right to Rectification",
+          "description": "Correct or update your information"
+        },
+        "erasure": {
+          "title": "✓ Right to Erasure",
+          "description": "Delete your account and all data"
+        },
+        "portability": {
+          "title": "✓ Right to Portability",
+          "description": "Export data in standard formats"
+        },
+        "object": {
+          "title": "✓ Right to Object",
+          "description": "Opt-out of specific data processing"
+        },
+        "restriction": {
+          "title": "✓ Right to Restriction",
+          "description": "Limit how your data is processed"
+        }
+      },
+      "dpo": {
+        "question": "Questions about your privacy?",
+        "link": "Contact our Data Protection Officer"
+      }
     }
   },
   "contacts": {
@@ -774,7 +1076,9 @@
         "startup founders",
         "marketing professionals",
         "based in California"
-      ]
+      ],
+      "consent_required": "AI Semantic Search requires your consent",
+      "enable_consent": "Enable in Settings"
     },
     "map": {
       "title": "Contacts Map",
@@ -837,6 +1141,8 @@
   },
   "business_card_scanner": {
     "login_required": "Please log in to use the business card scanner",
+    "consent_required": "Business Card Scanner requires your consent to use AI/OCR features",
+    "enable_consent": "Enable in Settings",
     "camera_access_error": "Camera access error",
     "invalid_file_type": "Invalid file type",
     "file_too_large": "File too large",

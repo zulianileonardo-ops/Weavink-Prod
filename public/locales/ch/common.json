@@ -63,6 +63,8 @@
     "image_read_error": "读取图片文件失败",
     "image_display_failed": "显示图片失败",
     "login_required": "请登录以使用名片扫描器",
+    "consent_required": "名片扫描器需要您的同意才能使用AI/OCR功能",
+    "enable_consent": "在设置中启用",
     "upload_success_single": "名片图像上传成功！",
     "side_upload_success": "已成功上传{{side}}！",
     "upload_success_double": "已成功上传名片的正反两面！",
@@ -1427,6 +1429,308 @@
       "click_for_more": "点击了解更多",
       "traffic_sources_explained": "流量来源的工作原理",
       "traffic_description": "流量来源帮助您了解访问者的来源。这些数据显示哪些平台为您的个人资料带来了最多的参与度。"
+    },
+    "consent_status": {
+      "title": "分析同意状态：",
+      "manage_button": "管理同意设置",
+      "analytics_basic": "基本分析",
+      "analytics_detailed": "详细分析",
+      "cookies_analytics": "分析 Cookies",
+      "yes": "是",
+      "no": "否"
+    }
+  },
+  "account": {
+    "header": {
+      "title": "账户与隐私",
+      "subtitle": "管理您的个人数据和隐私偏好",
+      "deletion_warning_title": "账户删除待处理",
+      "deletion_warning_message": "您的账户计划于 {{date}} 删除。您可以在该日期之前随时取消。"
+    },
+    "tabs": {
+      "overview": "概览",
+      "export": "导出数据",
+      "delete": "删除账户",
+      "consents": "同意管理",
+      "settings": "隐私设置"
+    },
+    "loading": {
+      "privacy_data": "加载隐私数据中...",
+      "settings": "加载隐私设置中...",
+      "consent_data": "加载同意数据中..."
+    },
+    "overview": {
+      "title": "隐私概览",
+      "welcome": "欢迎来到您的账户与隐私中心。在这里，您可以管理个人数据的所有方面，行使 GDPR 下的权利，并控制您的信息使用方式。",
+      "export_card": {
+        "title": "导出您的数据",
+        "description": "以机器可读格式下载所有个人数据（JSON、CSV、vCard）。兼容所有联系人管理器。",
+        "cta": "导出数据 →"
+      },
+      "consents_card": {
+        "title": "管理同意",
+        "description": "查看和更新您的隐私同意。控制哪些功能可以处理您的数据。",
+        "cta": "管理同意 →"
+      },
+      "settings_card": {
+        "title": "隐私设置",
+        "description": "配置您的隐私偏好，包括个人资料可见性和数据共享。",
+        "cta": "更新设置 →"
+      },
+      "delete_card": {
+        "title": "删除账户",
+        "description": "永久删除您的账户和所有相关数据。此操作无法撤销。",
+        "cta": "删除账户 →"
+      },
+      "gdpr_info": {
+        "title": "关于 GDPR 合规",
+        "description": "Weavink 完全符合通用数据保护条例（GDPR）并认真对待您的隐私。您的所有数据都存储在欧盟数据中心，经过加密并按照最高标准进行保护。您始终可以完全控制您的个人信息。"
+      }
+    },
+    "export": {
+      "title": "导出您的数据",
+      "description": "以机器可读格式下载所有个人数据。您的导出将包括：",
+      "includes": {
+        "profile": "用户资料和账户信息（JSON）",
+        "contacts_json": "所有联系人（JSON、CSV、vCard 格式）",
+        "groups": "联系人组和类别（JSON）",
+        "analytics": "分析数据 - 匿名化（JSON）",
+        "consents": "同意历史记录（JSON）",
+        "settings": "设置和偏好（JSON）"
+      },
+      "button": {
+        "export": "导出所有数据",
+        "exporting": "准备导出中..."
+      },
+      "success": {
+        "title": "导出完成！",
+        "message": "您的数据已成功导出。请下载以下文件：",
+        "back": "← 再次导出"
+      },
+      "error": {
+        "message": "{{error}}"
+      }
+    },
+    "delete": {
+      "title": "删除您的账户",
+      "description": "永久删除您的账户和所有相关数据。此操作无法撤销。",
+      "pending": {
+        "title": "账户删除待处理",
+        "message": "您的账户计划于 {{date}} 永久删除。",
+        "warning": "您的所有数据，包括联系人、组和设置，将被永久删除。删除日期后此操作无法撤销。",
+        "cancel_button": "取消删除"
+      },
+      "warning": {
+        "title": "删除前请注意：",
+        "export": "考虑先导出您的数据（删除后将无法访问）",
+        "all_data": "这将删除您的所有联系人、组和设置",
+        "notify": "将您添加为联系人的用户将收到通知",
+        "grace_period": "您有 30 天时间取消删除"
+      },
+      "confirmation": {
+        "title": "确认账户删除",
+        "instruction": "输入 {{text}} 以确认：",
+        "text": "删除我的账户",
+        "placeholder": "删除我的账户"
+      },
+      "button": {
+        "delete": "删除我的账户",
+        "confirm": "确认删除",
+        "deleting": "删除中...",
+        "cancel": "取消"
+      }
+    },
+    "consents": {
+      "title": "管理同意",
+      "description": "控制哪些功能可以处理您的数据。您可以随时撤回同意。更改立即生效。",
+      "status": {
+        "granted": "已授予",
+        "withdrawn": "已撤回"
+      },
+      "badge": {
+        "required": "必需"
+      },
+      "category": {
+        "essential": {
+          "name": "基本",
+          "description": "应用程序正常运行所需"
+        },
+        "ai_features": {
+          "name": "AI 功能",
+          "description": "人工智能驱动的增强功能"
+        },
+        "analytics": {
+          "name": "分析",
+          "description": "使用分析和性能跟踪"
+        },
+        "communication": {
+          "name": "通信",
+          "description": "电子邮件通信和推荐"
+        },
+        "personalization": {
+          "name": "个性化",
+          "description": "个性化体验和个人资料设置"
+        }
+      },
+      "type": {
+        "terms_of_service": {
+          "name": "服务条款",
+          "description": "接受我们的条款和条件",
+          "gdpr": "第 6(1)(b) 条 - 合同履行"
+        },
+        "privacy_policy": {
+          "name": "隐私政策",
+          "description": "接受我们的隐私做法",
+          "gdpr": "第 6(1)(b) 条 - 合同履行"
+        },
+        "ai_business_card": {
+          "name": "AI 名片增强",
+          "description": "使用 AI（Google Gemini 2.0）以高精度从名片图像中提取信息",
+          "gdpr": "第 6(1)(a) 条 - 同意",
+          "tier": "Premium+"
+        },
+        "ai_semantic_search": {
+          "name": "AI 语义搜索",
+          "description": "启用 AI 驱动的搜索，包括查询增强、嵌入、重新排序和智能结果分析",
+          "gdpr": "第 6(1)(a) 条 - 同意",
+          "tier": "Business+"
+        },
+        "ai_auto_grouping": {
+          "name": "AI 自动分组",
+          "description": "使用智能算法、地点丰富和事件检测自动对联系人进行分组",
+          "gdpr": "第 6(1)(a) 条 - 同意",
+          "tier": "Premium+"
+        },
+        "analytics_basic": {
+          "name": "基本分析",
+          "description": "基本使用统计（页面浏览量、功能使用）- 仅匿名数据",
+          "gdpr": "第 6(1)(f) 条 - 合法利益"
+        },
+        "analytics_detailed": {
+          "name": "详细分析",
+          "description": "详细使用模式和行为分析，用于改善用户体验",
+          "gdpr": "第 6(1)(a) 条 - 同意"
+        },
+        "cookies_analytics": {
+          "name": "分析 Cookies",
+          "description": "用于跟踪使用模式和改进应用程序的 Cookies",
+          "gdpr": "第 6(1)(a) 条 - 同意"
+        },
+        "marketing_emails": {
+          "name": "营销邮件",
+          "description": "接收新闻通讯、产品更新和促销优惠",
+          "gdpr": "第 6(1)(a) 条 - 同意"
+        },
+        "contact_recommendations": {
+          "name": "联系人推荐",
+          "description": "根据您的网络接收潜在连接建议",
+          "gdpr": "第 6(1)(a) 条 - 同意"
+        },
+        "cookies_personalization": {
+          "name": "个性化 Cookies",
+          "description": "记住您的偏好并自定义您的体验",
+          "gdpr": "第 6(1)(a) 条 - 同意"
+        },
+        "profile_public": {
+          "name": "公开资料",
+          "description": "使您的个人资料对平台上的其他用户可见",
+          "gdpr": "第 6(1)(a) 条 - 同意"
+        }
+      },
+      "technologies_label": "技术：",
+      "last_updated": "最后更新：{{date}}",
+      "info": {
+        "title": "关于您的同意权利",
+        "withdraw": "您可以随时通过切换上面的开关来撤回同意。",
+        "lawfulness": "撤回同意不会影响撤回前基于同意的处理的合法性（GDPR 第 7.3 条）。",
+        "essential": "基本同意是服务运行所必需的，未删除账户前无法撤回。",
+        "tiers": "某些功能需要特定订阅级别，如果撤回同意可能不可用。",
+        "audit": "所有同意更改都会被记录并可以审核。如有问题，请联系我们的数据保护官。"
+      },
+      "notification": {
+        "granted": "同意授予成功",
+        "withdrawn": "同意撤回成功"
+      }
+    },
+    "settings": {
+      "title": "隐私设置",
+      "description": "配置您的隐私偏好并控制数据的使用方式。",
+      "profile_visibility": {
+        "title": "个人资料可见性",
+        "description": "控制谁可以查看您的个人资料和联系信息。当您的个人资料为公开时，任何人都可以查看您的信息。当为私密时，只有已批准的连接可以查看您的详细信息。",
+        "label": "个人资料状态：",
+        "public": "公开",
+        "private": "私密"
+      },
+      "allow_messages": {
+        "title": "允许消息",
+        "description": "允许其他用户通过平台向您发送消息。您可以禁用此功能以防止未经请求的消息，同时保持您的连接。",
+        "label": "消息：",
+        "enabled": "已启用",
+        "disabled": "已禁用"
+      },
+      "notifications": {
+        "title": "通知偏好",
+        "description": "控制如何接收有关账户活动的通知。",
+        "email": {
+          "title": "电子邮件通知",
+          "description": "通过电子邮件接收重要更新和通知"
+        },
+        "push": {
+          "title": "推送通知",
+          "description": "在您的设备上接收实时推送通知"
+        }
+      },
+      "quick_actions": {
+        "title": "其他隐私控制",
+        "consents": "在 {{link}} 标签中管理详细的同意偏好",
+        "consents_link": "同意管理",
+        "export": "在 {{link}} 标签中导出所有数据",
+        "export_link": "导出数据",
+        "delete": "在 {{link}} 标签中请求账户删除",
+        "delete_link": "删除账户"
+      },
+      "gdpr_info": {
+        "title": "您的隐私权利",
+        "description": "根据 GDPR，您有权控制您的个人数据。这些设置让您对隐私偏好进行精细控制。所有更改都会被记录并可审核。有关我们如何处理您的数据的更多信息，请查看我们的 {{link}}。",
+        "privacy_policy_link": "隐私政策"
+      },
+      "notification": {
+        "success": "设置更新成功"
+      }
+    },
+    "footer": {
+      "title": "您在 GDPR 下的权利",
+      "rights": {
+        "access": {
+          "title": "✓ 访问权",
+          "description": "查看和下载所有个人数据"
+        },
+        "rectification": {
+          "title": "✓ 更正权",
+          "description": "更正或更新您的信息"
+        },
+        "erasure": {
+          "title": "✓ 删除权",
+          "description": "删除您的账户和所有数据"
+        },
+        "portability": {
+          "title": "✓ 数据可携权",
+          "description": "以标准格式导出数据"
+        },
+        "object": {
+          "title": "✓ 反对权",
+          "description": "选择退出特定数据处理"
+        },
+        "restriction": {
+          "title": "✓ 限制权",
+          "description": "限制数据处理方式"
+        }
+      },
+      "dpo": {
+        "question": "对隐私有疑问？",
+        "link": "联系我们的数据保护官"
+      }
     }
   },
   "contacts": {
@@ -1470,7 +1774,9 @@
         "初创公司创始人",
         "市场营销专业人士",
         "位于加利福尼亚"
-      ]
+      ],
+      "consent_required": "AI 语义搜索需要您的同意",
+      "enable_consent": "在设置中启用"
     },
     "map": {
       "title": "联系人地图",

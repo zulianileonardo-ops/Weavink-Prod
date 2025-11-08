@@ -122,8 +122,9 @@ const CacheDebugPanel = ({ analyticsData, cacheInfo, isFromCache }) => {
 function AnalyticsContent() {
     const { currentUser } = useAuth();
     const router = useRouter();
+    const { t } = useTranslation();
 
-    const { permissions, isLoading: isSessionLoading } = useDashboard();
+    const { permissions, isLoading: isSessionLoading, consents } = useDashboard();
     const { analyticsData, isLoading: isAnalyticsLoading, isFromCache, cacheInfo } = useAnalytics();
 
     const [selectedPeriod, setSelectedPeriod] = useState('all');
@@ -194,11 +195,49 @@ function AnalyticsContent() {
                     </div>
                 )}
                 
-                <AnalyticsHeader 
+                <AnalyticsHeader
                     analytics={analyticsData}
                     isImpersonating={!!impersonationContext}
                     username={impersonationContext?.displayName || currentUser?.displayName}
                 />
+
+                {/* Consent Status Display */}
+                {consents && (
+                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 space-y-1">
+                        <p className="text-xs font-semibold text-gray-700 mb-2">
+                            {t('analytics.consent_status.title', 'Analytics Consent Status:')}
+                        </p>
+                        <div className="text-xs text-gray-600 space-y-1">
+                            <div>
+                                {t('analytics.consent_status.analytics_basic', 'Basic Analytics')}: {' '}
+                                {(consents.analytics_basic?.status === true)
+                                    ? t('analytics.consent_status.yes', 'yes')
+                                    : t('analytics.consent_status.no', 'no')}
+                            </div>
+                            <div>
+                                {t('analytics.consent_status.analytics_detailed', 'Detailed Analytics')}: {' '}
+                                {(consents.analytics_detailed?.status === true)
+                                    ? t('analytics.consent_status.yes', 'yes')
+                                    : t('analytics.consent_status.no', 'no')}
+                            </div>
+                            <div>
+                                {t('analytics.consent_status.cookies_analytics', 'Analytics Cookies')}: {' '}
+                                {(consents.cookies_analytics?.status === true)
+                                    ? t('analytics.consent_status.yes', 'yes')
+                                    : t('analytics.consent_status.no', 'no')}
+                            </div>
+                        </div>
+
+                        {/* Navigation Button */}
+                        <button
+                            onClick={() => router.push('/dashboard/account?tab=consents&expand=analytics')}
+                            className="mt-3 w-full px-3 py-2 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-md transition-colors duration-200"
+                        >
+                            {t('analytics.consent_status.manage_button', 'Manage Consent Settings')}
+                        </button>
+                    </div>
+                )}
+
                 <PeriodNavigation 
                     selectedPeriod={selectedPeriod} 
                     setSelectedPeriod={setSelectedPeriod}

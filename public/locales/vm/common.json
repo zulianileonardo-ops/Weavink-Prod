@@ -96,6 +96,8 @@
     "image_read_error": "Không thể đọc tệp ảnh",
     "image_display_failed": "Không thể hiển thị ảnh",
     "login_required": "Vui lòng đăng nhập để sử dụng trình quét danh thiếp",
+    "consent_required": "Trình quét danh thiếp yêu cầu sự đồng ý của bạn để sử dụng tính năng AI/OCR",
+    "enable_consent": "Kích hoạt trong Cài đặt",
     "upload_success_single": "Tải thành công hình ảnh danh thiếp!",
     "side_upload_success": "Đã tải thành công mặt {{side}}!",
     "upload_success_double": "Đã tải thành công cả hai mặt danh thiếp!",
@@ -1880,6 +1882,308 @@
       "click_for_more": "Nhấp để biết thêm thông tin",
       "traffic_sources_explained": "Cách Nguồn Lưu lượng Hoạt động",
       "traffic_description": "Nguồn lưu lượng giúp bạn hiểu khách truy cập đến từ đâu. Dữ liệu này cho bạn biết nền tảng nào tạo ra nhiều tương tác nhất với hồ sơ của bạn."
+    },
+    "consent_status": {
+      "title": "Trạng Thái Đồng Ý Phân Tích:",
+      "manage_button": "Quản Lý Cài Đặt Đồng Ý",
+      "analytics_basic": "Phân Tích Cơ Bản",
+      "analytics_detailed": "Phân Tích Chi Tiết",
+      "cookies_analytics": "Cookies Phân Tích",
+      "yes": "có",
+      "no": "không"
+    }
+  },
+  "account": {
+    "header": {
+      "title": "Tài Khoản & Quyền Riêng Tư",
+      "subtitle": "Quản lý dữ liệu cá nhân và tùy chọn quyền riêng tư của bạn",
+      "deletion_warning_title": "Đang Chờ Xóa Tài Khoản",
+      "deletion_warning_message": "Tài khoản của bạn được lên lịch xóa vào ngày {{date}}. Bạn có thể hủy bất cứ lúc nào trước ngày đó."
+    },
+    "tabs": {
+      "overview": "Tổng Quan",
+      "export": "Xuất Dữ Liệu",
+      "delete": "Xóa Tài Khoản",
+      "consents": "Đồng Ý",
+      "settings": "Cài Đặt Quyền Riêng Tư"
+    },
+    "loading": {
+      "privacy_data": "Đang tải dữ liệu quyền riêng tư...",
+      "settings": "Đang tải cài đặt quyền riêng tư...",
+      "consent_data": "Đang tải dữ liệu đồng ý..."
+    },
+    "overview": {
+      "title": "Tổng Quan Quyền Riêng Tư",
+      "welcome": "Chào mừng đến với Trung Tâm Tài Khoản & Quyền Riêng Tư của bạn. Tại đây, bạn có thể quản lý tất cả các khía cạnh của dữ liệu cá nhân, thực hiện quyền của bạn theo GDPR, và kiểm soát cách thông tin của bạn được sử dụng.",
+      "export_card": {
+        "title": "Xuất Dữ Liệu Của Bạn",
+        "description": "Tải xuống tất cả dữ liệu cá nhân của bạn ở định dạng có thể đọc được bằng máy (JSON, CSV, vCard). Tương thích với tất cả trình quản lý liên hệ.",
+        "cta": "Xuất Dữ Liệu →"
+      },
+      "consents_card": {
+        "title": "Quản Lý Đồng Ý",
+        "description": "Xem xét và cập nhật các đồng ý quyền riêng tư của bạn. Kiểm soát tính năng nào có thể xử lý dữ liệu của bạn.",
+        "cta": "Quản Lý Đồng Ý →"
+      },
+      "settings_card": {
+        "title": "Cài Đặt Quyền Riêng Tư",
+        "description": "Cấu hình tùy chọn quyền riêng tư của bạn, bao gồm khả năng hiển thị hồ sơ và chia sẻ dữ liệu.",
+        "cta": "Cập Nhật Cài Đặt →"
+      },
+      "delete_card": {
+        "title": "Xóa Tài Khoản",
+        "description": "Xóa vĩnh viễn tài khoản của bạn và tất cả dữ liệu liên quan. Hành động này không thể hoàn tác.",
+        "cta": "Xóa Tài Khoản →"
+      },
+      "gdpr_info": {
+        "title": "Về Tuân Thủ GDPR",
+        "description": "Weavink tuân thủ đầy đủ Quy Định Bảo Vệ Dữ Liệu Chung (GDPR) và coi trọng quyền riêng tư của bạn. Tất cả dữ liệu của bạn được lưu trữ trong các trung tâm dữ liệu EU, được mã hóa và bảo vệ theo các tiêu chuẩn cao nhất. Bạn có toàn quyền kiểm soát thông tin cá nhân của mình mọi lúc."
+      }
+    },
+    "export": {
+      "title": "Xuất Dữ Liệu Của Bạn",
+      "description": "Tải xuống tất cả dữ liệu cá nhân của bạn ở định dạng có thể đọc được bằng máy. Bản xuất của bạn sẽ bao gồm:",
+      "includes": {
+        "profile": "Hồ sơ người dùng và thông tin tài khoản (JSON)",
+        "contacts_json": "Tất cả danh bạ (định dạng JSON, CSV, vCard)",
+        "groups": "Nhóm liên hệ và danh mục (JSON)",
+        "analytics": "Dữ liệu phân tích - ẩn danh (JSON)",
+        "consents": "Lịch sử đồng ý (JSON)",
+        "settings": "Cài đặt và tùy chọn (JSON)"
+      },
+      "button": {
+        "export": "Xuất Tất Cả Dữ Liệu",
+        "exporting": "Đang Chuẩn Bị Xuất..."
+      },
+      "success": {
+        "title": "Xuất Hoàn Tất!",
+        "message": "Dữ liệu của bạn đã được xuất thành công. Tải xuống các tệp bên dưới:",
+        "back": "← Xuất Lại"
+      },
+      "error": {
+        "message": "{{error}}"
+      }
+    },
+    "delete": {
+      "title": "Xóa Tài Khoản Của Bạn",
+      "description": "Xóa vĩnh viễn tài khoản của bạn và tất cả dữ liệu liên quan. Hành động này không thể hoàn tác.",
+      "pending": {
+        "title": "Đang Chờ Xóa Tài Khoản",
+        "message": "Tài khoản của bạn được lên lịch xóa vĩnh viễn vào ngày {{date}}.",
+        "warning": "Tất cả dữ liệu của bạn, bao gồm danh bạ, nhóm và cài đặt, sẽ bị xóa vĩnh viễn. Hành động này không thể hoàn tác sau ngày xóa.",
+        "cancel_button": "Hủy Xóa"
+      },
+      "warning": {
+        "title": "Trước khi bạn xóa:",
+        "export": "Hãy cân nhắc xuất dữ liệu của bạn trước (bạn sẽ không thể truy cập sau khi xóa)",
+        "all_data": "Điều này sẽ xóa tất cả danh bạ, nhóm và cài đặt của bạn",
+        "notify": "Người dùng có bạn làm liên hệ sẽ được thông báo",
+        "grace_period": "Bạn có 30 ngày để hủy xóa trước khi nó hoàn tất"
+      },
+      "confirmation": {
+        "title": "Xác Nhận Xóa Tài Khoản",
+        "instruction": "Nhập {{text}} để xác nhận:",
+        "text": "DELETE MY ACCOUNT",
+        "placeholder": "DELETE MY ACCOUNT"
+      },
+      "button": {
+        "delete": "Xóa Tài Khoản Của Tôi",
+        "confirm": "Xác Nhận Xóa",
+        "deleting": "Đang Xóa...",
+        "cancel": "Hủy"
+      }
+    },
+    "consents": {
+      "title": "Quản Lý Đồng Ý",
+      "description": "Kiểm soát tính năng nào có thể xử lý dữ liệu của bạn. Bạn có thể rút lại đồng ý bất cứ lúc nào. Thay đổi có hiệu lực ngay lập tức.",
+      "status": {
+        "granted": "Đã Cho Phép",
+        "withdrawn": "Đã Rút Lại"
+      },
+      "badge": {
+        "required": "Bắt Buộc"
+      },
+      "category": {
+        "essential": {
+          "name": "Thiết Yếu",
+          "description": "Bắt buộc để ứng dụng hoạt động đúng cách"
+        },
+        "ai_features": {
+          "name": "Tính Năng AI",
+          "description": "Cải tiến được hỗ trợ bởi trí tuệ nhân tạo"
+        },
+        "analytics": {
+          "name": "Phân Tích",
+          "description": "Phân tích sử dụng và theo dõi hiệu suất"
+        },
+        "communication": {
+          "name": "Giao Tiếp",
+          "description": "Giao tiếp qua email và khuyến nghị"
+        },
+        "personalization": {
+          "name": "Cá Nhân Hóa",
+          "description": "Trải nghiệm cá nhân hóa và cài đặt hồ sơ"
+        }
+      },
+      "type": {
+        "terms_of_service": {
+          "name": "Điều Khoản Dịch Vụ",
+          "description": "Chấp nhận các điều khoản và điều kiện của chúng tôi",
+          "gdpr": "Điều 6(1)(b) - Thực hiện hợp đồng"
+        },
+        "privacy_policy": {
+          "name": "Chính Sách Bảo Mật",
+          "description": "Chấp nhận các thực hành bảo mật của chúng tôi",
+          "gdpr": "Điều 6(1)(b) - Thực hiện hợp đồng"
+        },
+        "ai_business_card": {
+          "name": "Cải Tiến Danh Thiếp Bằng AI",
+          "description": "Sử dụng AI (Google Gemini 2.0) để trích xuất thông tin từ hình ảnh danh thiếp với độ chính xác cao",
+          "gdpr": "Điều 6(1)(a) - Đồng ý",
+          "tier": "Premium+"
+        },
+        "ai_semantic_search": {
+          "name": "Tìm Kiếm Ngữ Nghĩa AI",
+          "description": "Bật tìm kiếm được hỗ trợ bởi AI với cải tiến truy vấn, nhúng, xếp hạng lại và phân tích kết quả thông minh",
+          "gdpr": "Điều 6(1)(a) - Đồng ý",
+          "tier": "Business+"
+        },
+        "ai_auto_grouping": {
+          "name": "Nhóm Tự Động Bằng AI",
+          "description": "Tự động nhóm danh bạ bằng thuật toán thông minh, làm phong phú địa điểm và phát hiện sự kiện",
+          "gdpr": "Điều 6(1)(a) - Đồng ý",
+          "tier": "Premium+"
+        },
+        "analytics_basic": {
+          "name": "Phân Tích Cơ Bản",
+          "description": "Thống kê sử dụng cơ bản (lượt xem trang, sử dụng tính năng) - chỉ dữ liệu ẩn danh",
+          "gdpr": "Điều 6(1)(f) - Lợi ích chính đáng"
+        },
+        "analytics_detailed": {
+          "name": "Phân Tích Chi Tiết",
+          "description": "Mẫu sử dụng chi tiết và phân tích hành vi để cải thiện trải nghiệm người dùng",
+          "gdpr": "Điều 6(1)(a) - Đồng ý"
+        },
+        "cookies_analytics": {
+          "name": "Cookies Phân Tích",
+          "description": "Cookies được sử dụng để theo dõi mẫu sử dụng và cải thiện ứng dụng",
+          "gdpr": "Điều 6(1)(a) - Đồng ý"
+        },
+        "marketing_emails": {
+          "name": "Email Tiếp Thị",
+          "description": "Nhận bản tin, cập nhật sản phẩm và ưu đãi khuyến mãi",
+          "gdpr": "Điều 6(1)(a) - Đồng ý"
+        },
+        "contact_recommendations": {
+          "name": "Khuyến Nghị Liên Hệ",
+          "description": "Nhận gợi ý về các kết nối tiềm năng dựa trên mạng của bạn",
+          "gdpr": "Điều 6(1)(a) - Đồng ý"
+        },
+        "cookies_personalization": {
+          "name": "Cookies Cá Nhân Hóa",
+          "description": "Ghi nhớ tùy chọn của bạn và tùy chỉnh trải nghiệm của bạn",
+          "gdpr": "Điều 6(1)(a) - Đồng ý"
+        },
+        "profile_public": {
+          "name": "Hồ Sơ Công Khai",
+          "description": "Làm cho hồ sơ của bạn hiển thị với người dùng khác trên nền tảng",
+          "gdpr": "Điều 6(1)(a) - Đồng ý"
+        }
+      },
+      "technologies_label": "Công Nghệ:",
+      "last_updated": "Cập nhật lần cuối: {{date}}",
+      "info": {
+        "title": "Về Quyền Đồng Ý Của Bạn",
+        "withdraw": "Bạn có thể rút lại đồng ý của mình bất cứ lúc nào bằng cách chuyển đổi các công tắc ở trên.",
+        "lawfulness": "Việc rút lại đồng ý sẽ không ảnh hưởng đến tính hợp pháp của việc xử lý dựa trên đồng ý trước khi rút lại (GDPR Điều 7.3).",
+        "essential": "Các đồng ý thiết yếu là bắt buộc để dịch vụ hoạt động và không thể rút lại mà không xóa tài khoản của bạn.",
+        "tiers": "Một số tính năng yêu cầu các cấp đăng ký cụ thể và có thể không khả dụng nếu đồng ý bị rút lại.",
+        "audit": "Tất cả các thay đổi đồng ý được ghi lại và có thể kiểm toán. Liên hệ với Cán Bộ Bảo Vệ Dữ Liệu của chúng tôi nếu bạn có câu hỏi."
+      },
+      "notification": {
+        "granted": "Đã cho phép đồng ý thành công",
+        "withdrawn": "Đã rút lại đồng ý thành công"
+      }
+    },
+    "settings": {
+      "title": "Cài Đặt Quyền Riêng Tư",
+      "description": "Cấu hình tùy chọn quyền riêng tư của bạn và kiểm soát cách dữ liệu của bạn được sử dụng.",
+      "profile_visibility": {
+        "title": "Khả Năng Hiển Thị Hồ Sơ",
+        "description": "Kiểm soát ai có thể xem hồ sơ và thông tin liên hệ của bạn. Khi hồ sơ của bạn công khai, bất kỳ ai cũng có thể xem thông tin của bạn. Khi riêng tư, chỉ các kết nối được phê duyệt mới có thể xem chi tiết của bạn.",
+        "label": "Trạng Thái Hồ Sơ:",
+        "public": "Công Khai",
+        "private": "Riêng Tư"
+      },
+      "allow_messages": {
+        "title": "Cho Phép Tin Nhắn",
+        "description": "Cho phép người dùng khác gửi tin nhắn cho bạn qua nền tảng. Bạn có thể tắt điều này để ngăn tin nhắn không mong muốn trong khi vẫn duy trì kết nối của bạn.",
+        "label": "Tin Nhắn:",
+        "enabled": "Đã Bật",
+        "disabled": "Đã Tắt"
+      },
+      "notifications": {
+        "title": "Tùy Chọn Thông Báo",
+        "description": "Kiểm soát cách bạn nhận thông báo về hoạt động tài khoản của bạn.",
+        "email": {
+          "title": "Thông Báo Qua Email",
+          "description": "Nhận cập nhật quan trọng và thông báo qua email"
+        },
+        "push": {
+          "title": "Thông Báo Đẩy",
+          "description": "Nhận thông báo đẩy theo thời gian thực trên thiết bị của bạn"
+        }
+      },
+      "quick_actions": {
+        "title": "Kiểm Soát Quyền Riêng Tư Bổ Sung",
+        "consents": "Quản lý tùy chọn đồng ý chi tiết trong tab {{link}}",
+        "consents_link": "Đồng Ý",
+        "export": "Xuất tất cả dữ liệu của bạn trong tab {{link}}",
+        "export_link": "Xuất Dữ Liệu",
+        "delete": "Yêu cầu xóa tài khoản trong tab {{link}}",
+        "delete_link": "Xóa Tài Khoản"
+      },
+      "gdpr_info": {
+        "title": "Quyền Quyền Riêng Tư Của Bạn",
+        "description": "Theo GDPR, bạn có quyền kiểm soát dữ liệu cá nhân của mình. Các cài đặt này cho bạn kiểm soát chi tiết về tùy chọn quyền riêng tư của bạn. Tất cả các thay đổi được ghi lại và có thể kiểm toán. Để biết thêm thông tin về cách chúng tôi xử lý dữ liệu của bạn, vui lòng xem {{link}} của chúng tôi.",
+        "privacy_policy_link": "Chính Sách Bảo Mật"
+      },
+      "notification": {
+        "success": "Đã cập nhật cài đặt thành công"
+      }
+    },
+    "footer": {
+      "title": "Quyền Của Bạn Theo GDPR",
+      "rights": {
+        "access": {
+          "title": "✓ Quyền Truy Cập",
+          "description": "Xem và tải xuống tất cả dữ liệu cá nhân của bạn"
+        },
+        "rectification": {
+          "title": "✓ Quyền Sửa Chữa",
+          "description": "Sửa hoặc cập nhật thông tin của bạn"
+        },
+        "erasure": {
+          "title": "✓ Quyền Xóa",
+          "description": "Xóa tài khoản của bạn và tất cả dữ liệu"
+        },
+        "portability": {
+          "title": "✓ Quyền Di Chuyển",
+          "description": "Xuất dữ liệu ở định dạng tiêu chuẩn"
+        },
+        "object": {
+          "title": "✓ Quyền Phản Đối",
+          "description": "Từ chối xử lý dữ liệu cụ thể"
+        },
+        "restriction": {
+          "title": "✓ Quyền Hạn Chế",
+          "description": "Giới hạn cách dữ liệu của bạn được xử lý"
+        }
+      },
+      "dpo": {
+        "question": "Có câu hỏi về quyền riêng tư của bạn?",
+        "link": "Liên hệ với Cán Bộ Bảo Vệ Dữ Liệu của chúng tôi"
+      }
     }
   },
   "contacts": {
@@ -1923,7 +2227,9 @@
         "nhà sáng lập startup",
         "chuyên gia marketing",
         "ở California"
-      ]
+      ],
+      "consent_required": "Tìm kiếm ngữ nghĩa AI cần sự đồng ý của bạn",
+      "enable_consent": "Bật trong Cài đặt"
     },
     "map": {
       "title": "Bản đồ Danh bạ",

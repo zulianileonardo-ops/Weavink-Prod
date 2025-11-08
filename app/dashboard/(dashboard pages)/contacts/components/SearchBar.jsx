@@ -2,9 +2,11 @@
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { CONTACT_FEATURES } from '@/lib/services/constants';
 import { useTranslation } from '@/lib/translation/useTranslation';
 import { SemanticSearchService } from '@/lib/services/serviceContact/client/services/SemanticSearchService';
+import { useDashboard } from '@/app/dashboard/DashboardContext';
 
 export default function SearchBar({
     searchMode,
@@ -17,7 +19,10 @@ export default function SearchBar({
     hasFeature
 }) {
     const { t } = useTranslation();
+    const router = useRouter();
+    const { consents } = useDashboard();
     const [cacheCleared, setCacheCleared] = useState(false);
+    const [showConsentPopover, setShowConsentPopover] = useState(false);
 
     // Search history state
     const [searchHistory, setSearchHistory] = useState([]);
@@ -103,7 +108,9 @@ export default function SearchBar({
         enhancedDescription: t('contacts.search.enhanced_description') || 'AI analyzes your contacts semantically and provides intelligent insights about why each contact matches your query.',
         semanticDescription: t('contacts.search.semantic_description') || 'Semantic search finds contacts based on meaning, not just keywords. Upgrade to Business for AI-powered insights.',
         tryExamples: t('contacts.search.try_examples') || 'Try these examples:',
-        exampleSuggestions: t('contacts.search.examples')
+        exampleSuggestions: t('contacts.search.examples'),
+        consentRequired: t('contacts.search.consent_required') || 'AI Semantic Search requires your consent',
+        enableConsent: t('contacts.search.enable_consent') || 'Enable in Settings'
     };
 
     const exampleSuggestions = Array.isArray(translations.exampleSuggestions)
@@ -117,6 +124,10 @@ export default function SearchBar({
 
     const canUseSemanticSearch = hasFeature(CONTACT_FEATURES.PREMIUM_SEMANTIC_SEARCH);
     const canUseFullAiSearch = hasFeature(CONTACT_FEATURES.BUSINESS_AI_SEARCH);
+
+    // Check if user has given consent for semantic search
+    const hasSemanticSearchConsent = consents?.ai_semantic_search?.status === true;
+    const isSemanticSearchEnabled = canUseSemanticSearch && hasSemanticSearchConsent;
 
     const handleKeyPress = (e) => {
         if (e.key === 'Enter') {
@@ -149,18 +160,51 @@ export default function SearchBar({
                         >
                             {translations.standardMode}
                         </button>
-                        <button
-                            onClick={() => setSearchMode('semantic')}
-                            className={`flex-1 sm:flex-none px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm rounded-md transition-colors flex items-center justify-center gap-1 ${
-                                searchMode === 'semantic'
-                                    ? 'bg-purple-100 text-purple-700 font-medium'
-                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                            }`}
-                        >
-                            <span>🤖</span>
-                            <span className="hidden sm:inline">{translations.aiMode}</span>
-                            <span className="sm:hidden">IA</span>
-                        </button>
+                        <div className="relative flex-1 sm:flex-none">
+                            <button
+                                onClick={() => {
+                                    if (isSemanticSearchEnabled) {
+                                        setSearchMode('semantic');
+                                    } else if (canUseSemanticSearch && !hasSemanticSearchConsent) {
+                                        router.push('/dashboard/account?tab=consents&expand=ai_features');
+                                    }
+                                }}
+                                onMouseEnter={() => {
+                                    if (!isSemanticSearchEnabled && canUseSemanticSearch && !hasSemanticSearchConsent) {
+                                        setShowConsentPopover(true);
+                                    }
+                                }}
+                                onMouseLeave={() => setShowConsentPopover(false)}
+                                className={`w-full px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm rounded-md transition-colors flex items-center justify-center gap-1 ${
+                                    searchMode === 'semantic'
+                                        ? 'bg-purple-100 text-purple-700 font-medium'
+                                        : isSemanticSearchEnabled
+                                        ? 'bg-gray-100 text-gray-600 hover:bg-gray-200 cursor-pointer'
+                                        : 'bg-gray-100 text-gray-400 cursor-not-allowed opacity-50'
+                                }`}
+                            >
+                                <span>🤖</span>
+                                <span className="hidden sm:inline">{translations.aiMode}</span>
+                                <span className="sm:hidden">IA</span>
+                            </button>
+
+                            {/* Consent Popover */}
+                            {showConsentPopover && !isSemanticSearchEnabled && canUseSemanticSearch && !hasSemanticSearchConsent && (
+                                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-64 z-50">
+                                    <div className="bg-gray-900 text-white text-xs rounded-lg shadow-lg p-3">
+                                        <p className="mb-2">{translations.consentRequired}</p>
+                                        <button
+                                            onClick={() => router.push('/dashboard/account?tab=consents&expand=ai_features')}
+                                            className="w-full text-blue-300 hover:text-blue-200 bg-gray-800 hover:bg-gray-700 px-3 py-1.5 rounded transition-colors font-medium"
+                                        >
+                                            {translations.enableConsent} →
+                                        </button>
+                                        {/* Tooltip arrow */}
+                                        <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
 
                         {/* Clear Cache Button - Only show in semantic mode */}
                         {searchMode === 'semantic' && (

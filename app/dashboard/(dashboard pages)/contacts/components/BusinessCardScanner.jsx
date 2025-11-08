@@ -5,6 +5,8 @@ import { useTranslation } from '@/lib/translation/useTranslation';
 import { toast } from 'react-hot-toast';
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useAuth } from "@/contexts/AuthContext";
+import { useDashboard } from '@/app/dashboard/DashboardContext';
+import { useRouter } from 'next/navigation';
 import { useCameraCapture } from './cardScanner/useCameraCapture';
 import { useImageProcessor } from './cardScanner/useImageProcessor';
 import ScannerHeader from './cardScanner/ScannerHeader';
@@ -15,7 +17,10 @@ import PreviewScreen from './cardScanner/PreviewScreen';
 export default function BusinessCardScanner({ isOpen, onClose, onContactParsed }) {
     const { t } = useTranslation();
     const { currentUser } = useAuth();
+    const { consents } = useDashboard();
+    const router = useRouter();
     const [isProcessing, setIsProcessing] = useState(false);
+    const [showConsentPopover, setShowConsentPopover] = useState(false);
     const [processingStatus, setProcessingStatus] = useState('');
     const [showCamera, setShowCamera] = useState(false);
     const [currentSide, setCurrentSide] = useState('front');
@@ -86,6 +91,9 @@ export default function BusinessCardScanner({ isOpen, onClose, onContactParsed }
         [translateWithFallback]
     );
 
+    // Check if user has given consent for business card scanner
+    const hasBusinessCardConsent = consents?.ai_business_card_enhancement?.status === true;
+
     // Define resetCardData with useCallback
     const resetCardData = useCallback(() => {
         setCardData(prev => {
@@ -100,6 +108,29 @@ export default function BusinessCardScanner({ isOpen, onClose, onContactParsed }
             };
         });
     }, []);
+
+    // Navigate to consent settings
+    const navigateToConsentSettings = useCallback(() => {
+        router.push('/dashboard/account?tab=consents&expand=ai_features');
+    }, [router]);
+
+    // Wrapper for startCamera that checks consent
+    const handleStartCamera = useCallback(() => {
+        if (!hasBusinessCardConsent) {
+            navigateToConsentSettings();
+            return;
+        }
+        startCamera();
+    }, [hasBusinessCardConsent, navigateToConsentSettings, startCamera]);
+
+    // Wrapper for file upload that checks consent
+    const handleFileUpload = useCallback(() => {
+        if (!hasBusinessCardConsent) {
+            navigateToConsentSettings();
+            return;
+        }
+        fileInputRef.current?.click();
+    }, [hasBusinessCardConsent, navigateToConsentSettings]);
 
     // Authentication check
     useEffect(() => {
@@ -307,9 +338,13 @@ export default function BusinessCardScanner({ isOpen, onClose, onContactParsed }
                         <InitialScreen
                             scanMode={scanMode}
                             setScanMode={setScanMode}
-                            startCamera={startCamera}
-                            fileInputRef={fileInputRef}
+                            startCamera={handleStartCamera}
+                            handleFileUpload={handleFileUpload}
                             isProcessing={isProcessing}
+                            hasConsent={hasBusinessCardConsent}
+                            showConsentPopover={showConsentPopover}
+                            setShowConsentPopover={setShowConsentPopover}
+                            onNavigateToConsent={navigateToConsentSettings}
                         />
                     )}
 

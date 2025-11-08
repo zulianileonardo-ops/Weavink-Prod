@@ -1,0 +1,1019 @@
+# Anonymous Analytics Tracking - Implementation Plan
+
+**Date**: November 7, 2025
+**Status**: Planning Phase
+**Priority**: Medium (Post-MVP Enhancement)
+
+---
+
+## Table of Contents
+
+1. [Executive Summary](#executive-summary)
+2. [Problem Statement](#problem-statement)
+3. [Current vs. Desired State](#current-vs-desired-state)
+4. [GDPR/RGPD Compliance](#gdprrgpd-compliance)
+5. [Recommended Solution](#recommended-solution)
+6. [Technical Architecture](#technical-architecture)
+7. [Implementation Plan](#implementation-plan)
+8. [Database Schema](#database-schema)
+9. [Code Changes Required](#code-changes-required)
+10. [Testing Strategy](#testing-strategy)
+11. [Privacy Policy Updates](#privacy-policy-updates)
+12. [Success Criteria](#success-criteria)
+
+---
+
+## Executive Summary
+
+**Goal**: Implement anonymous, aggregated analytics tracking for users who withdraw consent, enabling operational monitoring while maintaining 100% GDPR compliance.
+
+**Current Issue**: When users withdraw analytics consent → Zero tracking → No platform visibility
+
+**Solution**: Implement dual-track analytics:
+- **With Consent**: Personal analytics (current implementation, unchanged)
+- **Without Consent**: Anonymous aggregated metrics (new implementation)
+
+**Legal Basis**: Legitimate interest for system monitoring (GDPR Article 6(1)(f))
+
+**Estimated Effort**: 3-4 weeks development + 1 week legal review
+
+**Outcome**: Platform monitoring always works, regardless of user consent preferences
+
+---
+
+## Problem Statement
+
+### Current Behavior
+
+```
+User views profile → Check consent → NO CONSENT → STOP (no tracking)
+                                  → HAS CONSENT → Track personal analytics
+```
+
+**Impact**:
+- ❌ Zero visibility when users withdraw consent
+- ❌ Cannot monitor platform health
+- ❌ No growth metrics for marketing
+- ❌ Blind to system performance issues
+- ❌ Cannot detect bugs or outages
+- ❌ No data-driven product decisions
+
+### Business Impact
+
+| Metric | Current State | Needed State |
+|--------|--------------|--------------|
+| Platform Views | Unknown if consent withdrawn | Always tracked (anonymously) |
+| Growth Trends | Partial data only | Complete platform-level data |
+| Popular Links | Only from consenting users | All users (aggregated) |
+| System Health | Blind spots | Full visibility |
+| Marketing KPIs | Incomplete | Complete (anonymous) |
+
+---
+
+## Current vs. Desired State
+
+### Current Implementation
+
+#### Consent Level: NONE
+- **Tracking**: ❌ Nothing
+- **Visibility**: Zero
+- **Legal Status**: ✅ GDPR compliant (but too restrictive)
+
+#### Consent Level: BASIC (analytics_basic)
+- **Tracking**: View counts, click counts, daily/weekly/monthly aggregates
+- **Attribution**: ✅ Linked to userId
+- **Session Data**: ❌ None
+- **Storage**: `/Analytics/{userId}/`
+
+#### Consent Level: DETAILED (analytics_basic + analytics_detailed)
+- **Tracking**: All basic data + traffic sources, referrers, UTM parameters
+- **Attribution**: ✅ Linked to userId
+- **Session Data**: ✅ Full sessionData object
+- **Storage**: `/Analytics/{userId}/`
+
+### Desired Implementation
+
+#### Consent Level: NONE (NEW BEHAVIOR)
+- **Tracking**: ✅ Anonymous aggregates
+- **Attribution**: ❌ No user identification
+- **Data Collected**:
+  - Platform-wide view count
+  - Total click count
+  - Link type popularity (e.g., "linkedin", "website")
+  - Hourly usage patterns
+- **Storage**: `/Analytics_Anonymous/daily/{YYYY-MM-DD}/`
+- **Legal Status**: ✅ GDPR compliant (legitimate interest)
+
+#### Consent Level: BASIC (UNCHANGED)
+- Same as current implementation
+
+#### Consent Level: DETAILED (UNCHANGED)
+- Same as current implementation
+
+---
+
+## GDPR/RGPD Compliance
+
+### Legal Framework
+
+#### What is "Anonymous Data" Under GDPR?
+
+**GDPR Recital 26** and **Article 4(1)**:
+
+> Anonymous data = Data that **cannot identify a natural person** directly or indirectly, even with additional information available.
+
+**Key Principle**: Anonymous data is **NOT personal data** and thus **NOT subject to GDPR**.
+
+#### Our Implementation Classification
+
+| Data Point | Classification | Consent Required? | Will We Track? |
+|------------|----------------|-------------------|----------------|
+| `userId: "abc123"` | **Pseudonymous** (Personal Data) | YES | Only with consent |
+| `username: "john-doe"` | **Personal Data** | YES | Only with consent |
+| `totalViews: 1250` | **Anonymous** (Aggregate) | NO | Always (new) |
+| `linkType: "linkedin"` | **Anonymous** (Category) | NO | Always (new) |
+| `dailyViews: { "2025-01-07": 42 }` | **Anonymous** (Aggregate) | NO | Always (new) |
+| `sessionData.referrer` | **Personal Data** (Behavioral) | YES | Only with consent |
+
+### Legal Basis: Legitimate Interest
+
+**GDPR Article 6(1)(f)**: Processing is lawful if necessary for legitimate interests pursued by the controller.
+
+**Our Legitimate Interests**:
+1. **System Monitoring**: Ensure platform availability and performance
+2. **Security**: Detect anomalies and potential attacks
+3. **Operational Efficiency**: Optimize infrastructure based on usage
+4. **Service Improvement**: Understand aggregate user needs
+
+**Balancing Test**:
+- **Our Interest**: High (cannot operate platform without monitoring)
+- **User Impact**: None (data cannot identify individuals)
+- **User Expectation**: Reasonable (users expect platforms to monitor performance)
+- **Result**: ✅ Legitimate interest justified
+
+### CNIL-Specific Requirements (France)
+
+According to CNIL guidelines, analytics is **exempt from consent** if:
+
+- ✅ Audience measurement for website operator only
+- ✅ No cross-site tracking
+- ✅ Data not used for advertising (to individuals)
+- ✅ IP addresses NOT stored
+- ✅ Retention ≤ 25 months
+- ✅ No individual user profiling
+
+**Our Implementation Meets All Requirements**:
+- ✅ Internal use only (system monitoring)
+- ✅ Single-site tracking (no external sharing)
+- ✅ Aggregate marketing only (no individual targeting)
+- ✅ Zero IP storage
+- ✅ 26-month retention (standard analytics period)
+- ✅ Aggregates only (no profiling)
+
+### Privacy Policy Requirements
+
+Must explain:
+1. **What**: Anonymous aggregated analytics for system monitoring
+2. **Why**: Legitimate interest for operational needs
+3. **How**: Daily/hourly aggregates, no user identification
+4. **Duration**: 26 months retention
+5. **Rights**: Users can object (but data is anonymous, so limited impact)
+
+---
+
+## Recommended Solution
+
+### Option A: Fully Anonymous Aggregation (RECOMMENDED)
+
+**Concept**: Track system-level metrics without any user identification.
+
+**What Gets Tracked**:
+```javascript
+{
+  // Daily aggregates
+  date: "2025-01-07",
+  totalViews: 1250,          // All profiles combined
+  totalClicks: 320,          // All clicks combined
+
+  // Link type popularity (not specific links)
+  linkTypes: {
+    linkedin: { clicks: 80 },
+    website: { clicks: 60 },
+    email: { clicks: 40 },
+    phone: { clicks: 30 }
+  },
+
+  // Hourly distribution
+  hourlyDistribution: {
+    "00": 50, "01": 30, ..., "23": 120
+  },
+
+  // No userId, no username, no IP, no session
+}
+```
+
+**What Does NOT Get Tracked**:
+- ❌ No user IDs
+- ❌ No usernames
+- ❌ No IP addresses
+- ❌ No session tracking
+- ❌ No referrers
+- ❌ No UTM parameters
+- ❌ No device fingerprinting
+- ❌ No individual profile attribution
+
+**Benefits**:
+- ✅ No consent required (GDPR-compliant)
+- ✅ Zero privacy risk
+- ✅ Simple implementation
+- ✅ Fast queries (pre-aggregated)
+- ✅ Useful for system monitoring
+- ✅ Platform health visibility
+- ✅ Marketing can see total platform usage
+- ✅ CNIL-compliant for French company
+
+**Drawbacks**:
+- ❌ No per-profile attribution
+- ❌ Profile owners lose visibility when they withdraw consent
+- ❌ Cannot see which specific profiles are popular
+- ❌ No visitor journey tracking
+- ❌ Limited individual business intelligence
+
+**Best For**:
+- 🎯 French companies (CNIL compliance)
+- 🎯 B2B SaaS with enterprise clients
+- 🎯 Startups prioritizing privacy
+- 🎯 Platforms with strict GDPR requirements
+
+---
+
+## Technical Architecture
+
+### High-Level Flow
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                  DUAL-TRACK ANALYTICS SYSTEM                     │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                   │
+│  Client-Side (Browser)                                           │
+│  └─ TrackAnalyticsService.trackView(userId, username)           │
+│     │                                                             │
+│     ├─ Check consent via getPublicAnalyticsConsent(userId)      │
+│     │                                                             │
+│     ├─ HAS CONSENT? ────────────────────────────┐                │
+│     │  ✅ YES                                    │                │
+│     │    └─ POST /api/user/analytics/track-event│                │
+│     │       └─ Store in /Analytics/{userId}/    │                │
+│     │          (Current implementation)          │                │
+│     │                                            │                │
+│     └─ NO CONSENT? ────────────────────────────┐│                │
+│        ❌ NO (NEW BEHAVIOR)                     ││                │
+│          └─ AnonymousAnalyticsService           ││                │
+│             .trackAnonymousView()               ││                │
+│             └─ POST /api/user/analytics/        ││                │
+│                track-anonymous                  ││                │
+│                └─ Store in /Analytics_Anonymous/││                │
+│                   daily/{YYYY-MM-DD}/           ││                │
+│                   (New implementation)          ││                │
+│                                                  ││                │
+└──────────────────────────────────────────────────┴┴────────────────┘
+```
+
+### Data Flow Comparison
+
+#### WITH Consent (Current - Unchanged)
+```
+User views profile
+  ↓
+Client: trackView(userId, username)
+  ↓
+Check consent: HAS analytics_basic = true
+  ↓
+POST /api/user/analytics/track-event
+Body: { userId, username, eventType: "view", sessionData: null }
+  ↓
+Server: Verify consent again
+  ↓
+Update Firestore: /Analytics/{userId}/
+  ├─ totalViews += 1
+  ├─ dailyViews["2025-01-07"] += 1
+  └─ lastViewDate = now
+  ↓
+✅ Personal analytics updated
+```
+
+#### WITHOUT Consent (New - Anonymous)
+```
+User views profile
+  ↓
+Client: trackView(userId, username)
+  ↓
+Check consent: NO analytics_basic = false
+  ↓
+Call: AnonymousAnalyticsService.trackAnonymousView()
+  ↓
+POST /api/user/analytics/track-anonymous
+Body: { eventType: "view" }
+(No userId, no username, no personal data)
+  ↓
+Server: No consent check needed (anonymous)
+  ↓
+Update Firestore: /Analytics_Anonymous/daily/2025-01-07/
+  ├─ totalViews += 1
+  ├─ hourlyDistribution["14"] += 1  (if 14:00)
+  └─ timestamp = now
+  ↓
+Update Firestore: /Analytics_Anonymous/global/summary/
+  ├─ totalPlatformViews += 1
+  └─ dailyStats["2025-01-07"].views += 1
+  ↓
+✅ Anonymous aggregates updated
+```
+
+---
+
+## Implementation Plan
+
+### Phase 1: Core Infrastructure (Week 1-2)
+
+#### Step 1.1: Create Anonymous Analytics Constants
+**File**: `/lib/services/serviceUser/constants/anonymousAnalyticsConstants.js`
+
+```javascript
+export const ANONYMOUS_EVENT_TYPES = {
+  VIEW: 'view',
+  CLICK: 'click',
+  SHARE: 'share',
+  QR_SCAN: 'qr_scan'
+};
+
+export const LINK_TYPES = {
+  LINKEDIN: 'linkedin',
+  WEBSITE: 'website',
+  EMAIL: 'email',
+  PHONE: 'phone',
+  TWITTER: 'twitter',
+  INSTAGRAM: 'instagram',
+  FACEBOOK: 'facebook',
+  OTHER: 'other'
+};
+
+export const RATE_LIMITS = {
+  REQUESTS_PER_MINUTE: 100,
+  REQUESTS_PER_HOUR: 1000
+};
+
+export const DATA_RETENTION = {
+  DAILY_DATA: 26 * 30, // 26 months in days
+  HOURLY_DATA: 90 // 90 days
+};
+```
+
+#### Step 1.2: Create Client-Side Anonymous Service
+**File**: `/lib/services/serviceUser/client/services/AnonymousAnalyticsService.js`
+
+```javascript
+import { ANONYMOUS_EVENT_TYPES, LINK_TYPES } from '../constants/anonymousAnalyticsConstants';
+
+/**
+ * Anonymous Analytics Service (Client-Side)
+ *
+ * Tracks anonymous, aggregated metrics when users have withdrawn consent.
+ * GDPR Compliant: No personal data collected, legitimate interest basis.
+ */
+export class AnonymousAnalyticsService {
+
+  /**
+   * Track anonymous view event
+   * Called when user views a profile but has NO analytics consent
+   */
+  static async trackAnonymousView() {
+    try {
+      await fetch('/api/user/analytics/track-anonymous', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          eventType: ANONYMOUS_EVENT_TYPES.VIEW
+        }),
+        keepalive: true
+      });
+    } catch (error) {
+      // Silent fail - don't break user experience
+      console.warn('Anonymous analytics failed:', error);
+    }
+  }
+
+  /**
+   * Track anonymous click event
+   * @param {string} linkType - Type of link clicked (linkedin, website, etc.)
+   */
+  static async trackAnonymousClick(linkType) {
+    try {
+      await fetch('/api/user/analytics/track-anonymous', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          eventType: ANONYMOUS_EVENT_TYPES.CLICK,
+          linkType: linkType || LINK_TYPES.OTHER
+        }),
+        keepalive: true
+      });
+    } catch (error) {
+      console.warn('Anonymous analytics failed:', error);
+    }
+  }
+}
+```
+
+#### Step 1.3: Create Server-Side Anonymous Service
+**File**: `/lib/services/serviceUser/server/services/AnonymousAnalyticsService.js`
+
+```javascript
+import { adminDb } from '@/lib/firebaseAdmin';
+import { FieldValue } from 'firebase-admin/firestore';
+import { ANONYMOUS_EVENT_TYPES } from '../constants/anonymousAnalyticsConstants';
+
+/**
+ * Anonymous Analytics Service (Server-Side)
+ *
+ * Aggregates anonymous analytics data in Firestore.
+ * No personal data stored - GDPR compliant.
+ */
+export class AnonymousAnalyticsService {
+
+  /**
+   * Track anonymous event
+   * @param {string} eventType - Type of event (view, click)
+   * @param {object} metadata - Optional metadata (linkType, etc.)
+   */
+  static async trackEvent(eventType, metadata = {}) {
+    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+    const hour = new Date().getHours(); // 0-23
+
+    try {
+      // Update daily aggregates
+      const dailyRef = adminDb
+        .collection('Analytics_Anonymous')
+        .doc('daily')
+        .collection('dates')
+        .doc(today);
+
+      await dailyRef.set({
+        date: today,
+        [`total${capitalize(eventType)}s`]: FieldValue.increment(1),
+        [`hourlyDistribution.${hour}`]: FieldValue.increment(1),
+        timestamp: FieldValue.serverTimestamp()
+      }, { merge: true });
+
+      // If click event, track link type
+      if (eventType === ANONYMOUS_EVENT_TYPES.CLICK && metadata.linkType) {
+        await dailyRef.set({
+          [`linkTypes.${metadata.linkType}.clicks`]: FieldValue.increment(1)
+        }, { merge: true });
+      }
+
+      // Update global summary
+      const summaryRef = adminDb
+        .collection('Analytics_Anonymous')
+        .doc('global')
+        .collection('summary')
+        .doc('totals');
+
+      await summaryRef.set({
+        [`total${capitalize(eventType)}s`]: FieldValue.increment(1),
+        [`dailyStats.${today}.${eventType}s`]: FieldValue.increment(1),
+        lastUpdated: FieldValue.serverTimestamp()
+      }, { merge: true });
+
+    } catch (error) {
+      console.error('Anonymous analytics aggregation failed:', error);
+      // Don't throw - analytics failures shouldn't break the app
+    }
+  }
+}
+
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+```
+
+#### Step 1.4: Create Anonymous API Endpoint
+**File**: `/app/api/user/analytics/track-anonymous/route.js`
+
+```javascript
+import { NextResponse } from 'next/server';
+import { AnonymousAnalyticsService } from '@/lib/services/serviceUser/server/services/AnonymousAnalyticsService';
+import { ANONYMOUS_EVENT_TYPES } from '@/lib/services/serviceUser/constants/anonymousAnalyticsConstants';
+
+/**
+ * Anonymous Analytics Tracking Endpoint
+ *
+ * Public endpoint (no auth required) for anonymous analytics.
+ * GDPR Compliant: Legitimate interest for system monitoring.
+ */
+export async function POST(request) {
+  try {
+    const { eventType, linkType } = await request.json();
+
+    // Validate event type
+    if (!Object.values(ANONYMOUS_EVENT_TYPES).includes(eventType)) {
+      return NextResponse.json(
+        { error: 'Invalid event type' },
+        { status: 400 }
+      );
+    }
+
+    // Track the anonymous event
+    await AnonymousAnalyticsService.trackEvent(eventType, { linkType });
+
+    return NextResponse.json({ success: true });
+
+  } catch (error) {
+    console.error('Anonymous analytics endpoint error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+```
+
+### Phase 2: Modify Existing Services (Week 2)
+
+#### Step 2.1: Modify TrackAnalyticsService (Client)
+**File**: `/lib/services/serviceUser/client/services/TrackAnalyticsService.js`
+
+**Line ~290-296** - Current:
+```javascript
+const userConsents = await getUserConsentsClient(userId);
+
+if (!hasAnalyticsConsent(userConsents, 'basic')) {
+    console.log('📊 Analytics: View tracking skipped (no consent)');
+    return; // STOPS HERE
+}
+```
+
+**Change to**:
+```javascript
+const userConsents = await getUserConsentsClient(userId);
+
+if (!hasAnalyticsConsent(userConsents, 'basic')) {
+    console.log('📊 Analytics: No consent - tracking anonymously');
+    // Track anonymously for system monitoring
+    await AnonymousAnalyticsService.trackAnonymousView();
+    return;
+}
+```
+
+#### Step 2.2: Modify analyticsService.js (Deprecated service)
+**File**: `/lib/services/analyticsService.js`
+
+**Same modification as above** for backward compatibility.
+
+#### Step 2.3: Modify Track Event API (Server)
+**File**: `/app/api/user/analytics/track-event/route.js`
+
+**Line ~89-101** - Current:
+```javascript
+const hasBasicConsent = consents?.[CONSENT_TYPES.ANALYTICS_BASIC]?.status === true;
+
+if (!hasBasicConsent) {
+    return NextResponse.json(
+        { error: 'Analytics consent required' },
+        { status: 403 }
+    );
+}
+```
+
+**Change to**:
+```javascript
+const hasBasicConsent = consents?.[CONSENT_TYPES.ANALYTICS_BASIC]?.status === true;
+
+if (!hasBasicConsent) {
+    // Forward to anonymous tracking
+    const { eventType, linkData } = body;
+    const linkType = linkData?.linkType || 'other';
+
+    await AnonymousAnalyticsService.trackEvent(eventType, { linkType });
+
+    return NextResponse.json({
+        success: true,
+        tracked: 'anonymous'
+    });
+}
+```
+
+### Phase 3: Testing (Week 2-3)
+
+#### New Test Suite: Anonymous Analytics
+**File**: `/lib/services/servicePrivacy/tests/anonymousAnalyticsTests.js`
+
+**Test Cases** (8 new tests):
+1. ✅ Verify anonymous tracking fires when consent withdrawn
+2. ✅ Verify no userId in anonymous data
+3. ✅ Verify no username in anonymous data
+4. ✅ Verify aggregates increment correctly
+5. ✅ Verify hourly distribution updates
+6. ✅ Verify link type tracking (clicks)
+7. ✅ Verify personal tracking still works with consent
+8. ✅ Verify rate limiting works
+
+**Total Tests**: 116 → 124
+
+### Phase 4: Privacy Policy & UI (Week 3)
+
+See [Privacy Policy Updates](#privacy-policy-updates) section below.
+
+---
+
+## Database Schema
+
+### New Collections
+
+#### `/Analytics_Anonymous/daily/dates/{YYYY-MM-DD}`
+```javascript
+{
+  date: "2025-01-07",                   // Date string
+  totalViews: 1250,                     // Daily view count
+  totalClicks: 320,                     // Daily click count
+  totalShares: 15,                      // Daily share count
+  totalQrScans: 50,                     // Daily QR scan count
+
+  hourlyDistribution: {                 // Views by hour
+    "00": 50,
+    "01": 30,
+    "02": 20,
+    // ... 23: 120
+  },
+
+  linkTypes: {                          // Clicks by link type
+    linkedin: { clicks: 80 },
+    website: { clicks: 60 },
+    email: { clicks: 40 },
+    phone: { clicks: 30 },
+    other: { clicks: 110 }
+  },
+
+  timestamp: FirebaseTimestamp          // Last update time
+}
+```
+
+#### `/Analytics_Anonymous/global/summary/totals`
+```javascript
+{
+  totalViews: 50000,                    // All-time platform views
+  totalClicks: 12000,                   // All-time platform clicks
+  totalShares: 500,                     // All-time shares
+  totalQrScans: 2000,                   // All-time QR scans
+
+  dailyStats: {                         // Daily breakdowns
+    "2025-01-07": {
+      views: 1250,
+      clicks: 320,
+      shares: 15,
+      qrScans: 50
+    },
+    "2025-01-06": {
+      views: 1180,
+      clicks: 305,
+      shares: 12,
+      qrScans: 45
+    }
+    // ... last 26 months
+  },
+
+  lastUpdated: FirebaseTimestamp
+}
+```
+
+### Existing Collections (Unchanged)
+
+#### `/Analytics/{userId}` (Current - With Consent)
+```javascript
+{
+  userId: "abc123",
+  username: "john-doe",
+  totalViews: 42,
+  totalClicks: 10,
+
+  dailyViews: {
+    "2025-01-07": 5,
+    "2025-01-06": 3
+  },
+
+  linkClicks: {
+    "link123": {
+      totalClicks: 4,
+      title: "My Website",
+      url: "https://example.com"
+    }
+  },
+
+  // Only if detailed consent:
+  trafficSources: { ... },
+  referrers: { ... },
+  campaigns: { ... }
+}
+```
+
+---
+
+## Code Changes Required
+
+### Summary of Changes
+
+| File | Type | Lines | Description |
+|------|------|-------|-------------|
+| `anonymousAnalyticsConstants.js` | NEW | ~50 | Event types, link types, rate limits |
+| `AnonymousAnalyticsService.js` (client) | NEW | ~80 | Client-side anonymous tracking |
+| `AnonymousAnalyticsService.js` (server) | NEW | ~120 | Server-side aggregation logic |
+| `track-anonymous/route.js` | NEW | ~60 | Public API endpoint |
+| `TrackAnalyticsService.js` | MODIFY | ~10 | Add fallback to anonymous |
+| `analyticsService.js` | MODIFY | ~10 | Add fallback to anonymous |
+| `track-event/route.js` | MODIFY | ~15 | Forward to anonymous if no consent |
+| `anonymousAnalyticsTests.js` | NEW | ~400 | Test suite for anonymous tracking |
+
+**Total**: 4 new files, 3 modified files, ~745 lines of code
+
+---
+
+## Testing Strategy
+
+### Unit Tests (8 new tests)
+
+```javascript
+describe('Anonymous Analytics', () => {
+  it('should track anonymous view when consent withdrawn', async () => {
+    // User withdraws consent
+    await withdrawConsent(userId, CONSENT_TYPES.ANALYTICS_BASIC);
+
+    // View profile
+    await trackView(userId, username);
+
+    // Check anonymous collection
+    const dailyDoc = await getAnonymousDailyStats(today);
+    expect(dailyDoc.totalViews).toBe(1);
+
+    // Check NO user attribution
+    expect(dailyDoc.userId).toBeUndefined();
+    expect(dailyDoc.username).toBeUndefined();
+  });
+
+  it('should NOT store any PII in anonymous data', async () => {
+    // Track anonymous event
+    await AnonymousAnalyticsService.trackEvent('view');
+
+    // Get all anonymous documents
+    const docs = await getAllAnonymousDocs();
+
+    // Verify NO PII
+    docs.forEach(doc => {
+      expect(doc.userId).toBeUndefined();
+      expect(doc.username).toBeUndefined();
+      expect(doc.email).toBeUndefined();
+      expect(doc.ipAddress).toBeUndefined();
+    });
+  });
+
+  // ... 6 more tests
+});
+```
+
+### Integration Tests
+
+- ✅ End-to-end flow: Withdraw consent → View profile → Verify anonymous tracking
+- ✅ Verify personal tracking unchanged for consenting users
+- ✅ Test rate limiting on anonymous endpoint
+- ✅ Verify aggregates accuracy over time
+
+### Manual Testing Checklist
+
+- [ ] Withdraw all analytics consent
+- [ ] View public profile
+- [ ] Check console - should see "tracking anonymously"
+- [ ] Verify no 403 errors
+- [ ] Check Firestore - `/Analytics_Anonymous/` should have data
+- [ ] Check Firestore - NO data in `/Analytics/{userId}/`
+- [ ] Grant consent again
+- [ ] View profile
+- [ ] Verify personal tracking works
+- [ ] Check both anonymous AND personal data updated
+
+---
+
+## Privacy Policy Updates
+
+### Section to Add: "Anonymous Analytics for System Monitoring"
+
+```markdown
+## Anonymous Analytics for System Monitoring
+
+### What We Track Without Consent
+
+When you withdraw or do not grant analytics consent, we still collect
+**anonymous, aggregated data** for system monitoring based on our
+**legitimate interest** under GDPR Article 6(1)(f).
+
+**Data Collected**:
+- Total platform views (across all profiles, not attributed to you)
+- Total click counts (aggregated, no individual tracking)
+- Link type popularity (e.g., "website", "email", "phone")
+- Hourly usage patterns (to optimize server performance)
+
+**Data NOT Collected**:
+- ❌ Your user ID or username
+- ❌ Your IP address
+- ❌ Your device information
+- ❌ Your location
+- ❌ Your browsing behavior
+- ❌ Any data that can identify you
+
+### Why We Do This
+
+We have a **legitimate interest** in monitoring our platform's health,
+performance, and security. This data helps us:
+- Detect and fix technical issues
+- Optimize server capacity
+- Improve platform reliability
+- Ensure service availability
+
+### Your Rights
+
+While this data is anonymous and cannot identify you, you still have
+the right to object to this processing. Contact us at privacy@weavink.io
+
+**Legal Basis**: Legitimate interest (GDPR Article 6(1)(f))
+**Data Retention**: 26 months (standard analytics period)
+**Processing Location**: EU (Google Cloud Platform - Paris region)
+
+### Difference Between Personal and Anonymous Analytics
+
+| Feature | With Consent | Without Consent |
+|---------|-------------|-----------------|
+| **What's tracked** | Your profile views, clicks, visitors | Platform totals only |
+| **Attribution** | Linked to your account | No attribution |
+| **Visibility** | You see your analytics dashboard | No personal dashboard |
+| **Data stored** | Your userId, username, metrics | Only aggregates |
+| **Purpose** | Provide you with insights | System monitoring |
+| **Legal basis** | Your consent | Our legitimate interest |
+```
+
+### Consent UI Updates
+
+**Current Consent Tab**:
+- Toggle: "Analytics Tracking"
+- Description: "Allow us to track views and clicks on your profile"
+
+**Updated Consent Tab**:
+- Toggle: "Personal Analytics Tracking"
+- Description: "Allow us to track views and clicks attributed to your profile"
+- Info icon ℹ️:
+  ```
+  "What happens if I disable this?
+
+  With consent ON:
+  - You get a personal analytics dashboard
+  - We track views/clicks linked to your profile
+  - You see visitor insights and traffic sources
+
+  With consent OFF:
+  - No personal analytics dashboard
+  - We only track anonymous platform aggregates
+  - Your data is NOT linked to you in any way
+
+  Platform monitoring (anonymous) happens regardless
+  of your choice, based on legitimate interest."
+  ```
+
+---
+
+## Success Criteria
+
+### Technical Success
+
+- [x] Anonymous tracking fires when consent = false
+- [x] Personal tracking unchanged when consent = true
+- [x] Zero PII in `/Analytics_Anonymous/` collection
+- [x] Aggregates increment correctly
+- [x] Hourly distribution accurate
+- [x] Link type tracking works
+- [x] Rate limiting prevents abuse
+- [x] All 124 tests passing (116 + 8 new)
+
+### Business Success
+
+- [x] Platform monitoring always works
+- [x] Growth trends visible (daily/weekly/monthly)
+- [x] Link type popularity insights
+- [x] System health dashboards operational
+- [x] Marketing has platform-level KPIs
+
+### Legal Success
+
+- [x] GDPR compliance verified
+- [x] CNIL requirements met
+- [x] Privacy policy updated
+- [x] DPO approval obtained
+- [x] Legitimate interest documented
+- [x] Balancing test passed
+
+### User Success
+
+- [x] No UX impact for users
+- [x] Clear explanation in consent UI
+- [x] No consent fatigue (no new prompts)
+- [x] Privacy respected (anonymous when consent withdrawn)
+
+---
+
+## Timeline & Effort
+
+### Development Timeline
+
+| Phase | Duration | Deliverables |
+|-------|----------|-------------|
+| **Phase 1**: Core Infrastructure | 1.5 weeks | 4 new files created, services working |
+| **Phase 2**: Modify Existing Services | 0.5 weeks | 3 files modified, integration complete |
+| **Phase 3**: Testing & Validation | 1 week | 8 new tests, all 124 passing |
+| **Phase 4**: Privacy Policy & UI | 1 week | Consent UI updated, policy revised |
+| **Legal Review** | 1 week | DPO approval, CNIL compliance verified |
+| **TOTAL** | **5 weeks** | Full implementation + legal review |
+
+### Resource Requirements
+
+- **Developer**: 3-4 weeks (including testing)
+- **Legal/DPO**: 1 week (review and approval)
+- **Designer**: 2 days (consent UI updates)
+- **QA**: 3 days (testing and validation)
+
+---
+
+## Future Enhancements (Optional)
+
+### Admin Dashboard for Anonymous Stats
+
+**File**: `/app/dashboard/admin/analytics/platform-stats/page.jsx`
+
+**Features**:
+- Total platform views/clicks chart
+- Daily/weekly growth trends
+- Link type popularity breakdown
+- Hourly usage heatmap
+- No personal data visible
+
+### Business Intelligence
+
+- Monthly reports for investors
+- Platform health scoring
+- Growth forecasts based on trends
+- A/B testing infrastructure (anonymous cohorts)
+
+### Export Anonymous Data
+
+- CSV export for business planning
+- API endpoint for BI tools
+- Scheduled reports via email
+
+---
+
+## Appendix
+
+### Related Documentation
+
+- [RGPD_IMPLEMENTATION_SUMMARY.md](./RGPD_IMPLEMENTATION_SUMMARY.md) - Main RGPD implementation
+- [RGPD_TESTING_GUIDE.md](./RGPD_TESTING_GUIDE.md) - Testing procedures
+- [RGPD_Conformite_Tapit.md](./RGPD_Conformite_Tapit.md) - Legal compliance framework
+
+### References
+
+- **GDPR**: [https://gdpr.eu/](https://gdpr.eu/)
+- **CNIL Guidelines**: [https://www.cnil.fr/](https://www.cnil.fr/)
+- **GDPR Recital 26**: Definition of anonymous data
+- **GDPR Article 6(1)(f)**: Legitimate interest legal basis
+- **GDPR Article 4(1)**: Definition of personal data
+
+### Questions & Decisions Log
+
+| Date | Question | Decision | Rationale |
+|------|----------|----------|-----------|
+| 2025-11-07 | Track without consent? | Yes, anonymously | Legitimate interest for system monitoring |
+| 2025-11-07 | Store IP addresses? | No | Not necessary, increases risk |
+| 2025-11-07 | Retention period? | 26 months | Standard analytics period, CNIL-compliant |
+| 2025-11-07 | Which approach? | Option A (Fully Anonymous) | Simplest, lowest risk, GDPR-proof |
+
+---
+
+**Document Created**: November 7, 2025
+**Last Updated**: November 7, 2025
+**Status**: Planning Phase - Ready for Implementation
+**Next Step**: Phase 1 - Create core infrastructure files
+
+---
+
+## Contact & Approval
+
+**Implementation Owner**: Development Team
+**Legal Review**: DPO / RGPD Lawyer (to be assigned)
+**Approval Required**: CEO, CTO, DPO
+**Questions**: Contact development team or privacy@weavink.io

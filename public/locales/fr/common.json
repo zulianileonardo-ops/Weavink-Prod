@@ -133,6 +133,8 @@
     "image_read_error": "Échec de la lecture du fichier image",
     "image_display_failed": "Échec de l'affichage de l'image",
     "login_required": "Veuillez vous connecter pour utiliser le scanner de cartes de visite",
+    "consent_required": "Le scanner de cartes de visite nécessite votre consentement pour utiliser les fonctionnalités IA/OCR",
+    "enable_consent": "Activer dans les paramètres",
     "upload_success_single": "Image de la carte téléchargée avec succès !",
     "side_upload_success": "Face {{side}} téléchargée avec succès !",
     "upload_success_double": "Les deux faces de la carte ont été téléchargées avec succès !",
@@ -2145,6 +2147,308 @@
       "no_activity": "Sources de trafic trouvées mais aucune activité enregistrée pour le moment.",
       "keep_sharing": "Continuez à partager votre profil pour générer des données de trafic !",
       "source_count": "{{count}} source"
+    },
+    "consent_status": {
+      "title": "Statut du Consentement Analytics :",
+      "manage_button": "Gérer les Paramètres de Consentement",
+      "analytics_basic": "Analyses de Base",
+      "analytics_detailed": "Analyses Détaillées",
+      "cookies_analytics": "Cookies d'Analyse",
+      "yes": "oui",
+      "no": "non"
+    }
+  },
+  "account": {
+    "header": {
+      "title": "Compte et Confidentialité",
+      "subtitle": "Gérez vos données personnelles et préférences de confidentialité",
+      "deletion_warning_title": "Suppression de Compte en Attente",
+      "deletion_warning_message": "Votre compte est programmé pour suppression le {{date}}. Vous pouvez annuler cela à tout moment avant cette date."
+    },
+    "tabs": {
+      "overview": "Aperçu",
+      "export": "Exporter les Données",
+      "delete": "Supprimer le Compte",
+      "consents": "Consentements",
+      "settings": "Paramètres de Confidentialité"
+    },
+    "loading": {
+      "privacy_data": "Chargement des données de confidentialité...",
+      "settings": "Chargement des paramètres de confidentialité...",
+      "consent_data": "Chargement des données de consentement..."
+    },
+    "overview": {
+      "title": "Aperçu de la Confidentialité",
+      "welcome": "Bienvenue dans votre Centre de Compte et Confidentialité. Ici, vous pouvez gérer tous les aspects de vos données personnelles, exercer vos droits en vertu du RGPD et contrôler comment vos informations sont utilisées.",
+      "export_card": {
+        "title": "Exporter Vos Données",
+        "description": "Téléchargez toutes vos données personnelles dans des formats lisibles par machine (JSON, CSV, vCard). Compatible avec tous les gestionnaires de contacts.",
+        "cta": "Exporter les Données →"
+      },
+      "consents_card": {
+        "title": "Gérer les Consentements",
+        "description": "Consultez et mettez à jour vos consentements de confidentialité. Contrôlez quelles fonctionnalités peuvent traiter vos données.",
+        "cta": "Gérer les Consentements →"
+      },
+      "settings_card": {
+        "title": "Paramètres de Confidentialité",
+        "description": "Configurez vos préférences de confidentialité, y compris la visibilité du profil et le partage des données.",
+        "cta": "Mettre à Jour les Paramètres →"
+      },
+      "delete_card": {
+        "title": "Supprimer le Compte",
+        "description": "Supprimez définitivement votre compte et toutes les données associées. Cette action ne peut pas être annulée.",
+        "cta": "Supprimer le Compte →"
+      },
+      "gdpr_info": {
+        "title": "À Propos de la Conformité RGPD",
+        "description": "Weavink est entièrement conforme au Règlement Général sur la Protection des Données (RGPD) et prend votre confidentialité au sérieux. Toutes vos données sont stockées dans des centres de données de l'UE, chiffrées et protégées selon les normes les plus élevées. Vous avez un contrôle total sur vos informations personnelles à tout moment."
+      }
+    },
+    "export": {
+      "title": "Exporter Vos Données",
+      "description": "Téléchargez toutes vos données personnelles dans des formats lisibles par machine. Votre exportation inclura :",
+      "includes": {
+        "profile": "Profil utilisateur et informations de compte (JSON)",
+        "contacts_json": "Tous les contacts (formats JSON, CSV, vCard)",
+        "groups": "Groupes de contacts et catégories (JSON)",
+        "analytics": "Données analytiques - anonymisées (JSON)",
+        "consents": "Historique des consentements (JSON)",
+        "settings": "Paramètres et préférences (JSON)"
+      },
+      "button": {
+        "export": "Exporter Toutes les Données",
+        "exporting": "Préparation de l'Exportation..."
+      },
+      "success": {
+        "title": "Exportation Terminée !",
+        "message": "Vos données ont été exportées avec succès. Téléchargez les fichiers ci-dessous :",
+        "back": "← Exporter à Nouveau"
+      },
+      "error": {
+        "message": "{{error}}"
+      }
+    },
+    "delete": {
+      "title": "Supprimer Votre Compte",
+      "description": "Supprimez définitivement votre compte et toutes les données associées. Cette action ne peut pas être annulée.",
+      "pending": {
+        "title": "Suppression de Compte en Attente",
+        "message": "Votre compte est programmé pour suppression définitive le {{date}}.",
+        "warning": "Toutes vos données, y compris les contacts, groupes et paramètres, seront définitivement supprimées. Cette action ne peut pas être annulée après la date de suppression.",
+        "cancel_button": "Annuler la Suppression"
+      },
+      "warning": {
+        "title": "Avant de supprimer :",
+        "export": "Envisagez d'exporter vos données d'abord (vous ne pourrez pas y accéder après la suppression)",
+        "all_data": "Cela supprimera tous vos contacts, groupes et paramètres",
+        "notify": "Les utilisateurs qui vous ont comme contact seront notifiés",
+        "grace_period": "Vous avez 30 jours pour annuler la suppression avant qu'elle ne soit définitive"
+      },
+      "confirmation": {
+        "title": "Confirmer la Suppression du Compte",
+        "instruction": "Tapez {{text}} pour confirmer :",
+        "text": "SUPPRIMER MON COMPTE",
+        "placeholder": "SUPPRIMER MON COMPTE"
+      },
+      "button": {
+        "delete": "Supprimer Mon Compte",
+        "confirm": "Confirmer la Suppression",
+        "deleting": "Suppression en cours...",
+        "cancel": "Annuler"
+      }
+    },
+    "consents": {
+      "title": "Gérer les Consentements",
+      "description": "Contrôlez quelles fonctionnalités peuvent traiter vos données. Vous pouvez retirer votre consentement à tout moment. Les modifications prennent effet immédiatement.",
+      "status": {
+        "granted": "Accordé",
+        "withdrawn": "Retiré"
+      },
+      "badge": {
+        "required": "Requis"
+      },
+      "category": {
+        "essential": {
+          "name": "Essentiel",
+          "description": "Requis pour que l'application fonctionne correctement"
+        },
+        "ai_features": {
+          "name": "Fonctionnalités IA",
+          "description": "Améliorations alimentées par l'intelligence artificielle"
+        },
+        "analytics": {
+          "name": "Analytique",
+          "description": "Analytique d'utilisation et suivi des performances"
+        },
+        "communication": {
+          "name": "Communication",
+          "description": "Communications par e-mail et recommandations"
+        },
+        "personalization": {
+          "name": "Personnalisation",
+          "description": "Expérience personnalisée et paramètres de profil"
+        }
+      },
+      "type": {
+        "terms_of_service": {
+          "name": "Conditions d'Utilisation",
+          "description": "Acceptation de nos termes et conditions",
+          "gdpr": "Art. 6(1)(b) - Exécution du contrat"
+        },
+        "privacy_policy": {
+          "name": "Politique de Confidentialité",
+          "description": "Acceptation de nos pratiques de confidentialité",
+          "gdpr": "Art. 6(1)(b) - Exécution du contrat"
+        },
+        "ai_business_card": {
+          "name": "Amélioration des Cartes de Visite par IA",
+          "description": "Utilisez l'IA (Google Gemini 2.0) pour extraire des informations des images de cartes de visite avec une grande précision",
+          "gdpr": "Art. 6(1)(a) - Consentement",
+          "tier": "Premium+"
+        },
+        "ai_semantic_search": {
+          "name": "Recherche Sémantique IA",
+          "description": "Activez la recherche alimentée par l'IA avec amélioration des requêtes, embeddings, reclassement et analyse intelligente des résultats",
+          "gdpr": "Art. 6(1)(a) - Consentement",
+          "tier": "Business+"
+        },
+        "ai_auto_grouping": {
+          "name": "Groupement Automatique IA",
+          "description": "Groupez automatiquement les contacts à l'aide d'algorithmes intelligents, d'enrichissement de lieux et de détection d'événements",
+          "gdpr": "Art. 6(1)(a) - Consentement",
+          "tier": "Premium+"
+        },
+        "analytics_basic": {
+          "name": "Analyses de Base",
+          "description": "Statistiques d'utilisation de base (pages vues, utilisation des fonctionnalités) - données anonymisées uniquement",
+          "gdpr": "Art. 6(1)(f) - Intérêt légitime"
+        },
+        "analytics_detailed": {
+          "name": "Analyses Détaillées",
+          "description": "Modèles d'utilisation détaillés et analyse comportementale pour améliorer l'expérience utilisateur",
+          "gdpr": "Art. 6(1)(a) - Consentement"
+        },
+        "cookies_analytics": {
+          "name": "Cookies d'Analyse",
+          "description": "Cookies utilisés pour suivre les modèles d'utilisation et améliorer l'application",
+          "gdpr": "Art. 6(1)(a) - Consentement"
+        },
+        "marketing_emails": {
+          "name": "E-mails Marketing",
+          "description": "Recevez des newsletters, mises à jour de produits et offres promotionnelles",
+          "gdpr": "Art. 6(1)(a) - Consentement"
+        },
+        "contact_recommendations": {
+          "name": "Recommandations de Contacts",
+          "description": "Recevez des suggestions de connexions potentielles basées sur votre réseau",
+          "gdpr": "Art. 6(1)(a) - Consentement"
+        },
+        "cookies_personalization": {
+          "name": "Cookies de Personnalisation",
+          "description": "Mémorisez vos préférences et personnalisez votre expérience",
+          "gdpr": "Art. 6(1)(a) - Consentement"
+        },
+        "profile_public": {
+          "name": "Profil Public",
+          "description": "Rendez votre profil visible aux autres utilisateurs de la plateforme",
+          "gdpr": "Art. 6(1)(a) - Consentement"
+        }
+      },
+      "technologies_label": "Technologies :",
+      "last_updated": "Dernière mise à jour : {{date}}",
+      "info": {
+        "title": "À Propos de Vos Droits de Consentement",
+        "withdraw": "Vous pouvez retirer votre consentement à tout moment en basculant les interrupteurs ci-dessus.",
+        "lawfulness": "Le retrait du consentement n'affectera pas la licéité du traitement fondé sur le consentement avant le retrait (RGPD Art. 7.3).",
+        "essential": "Les consentements essentiels sont nécessaires au fonctionnement du service et ne peuvent être retirés sans supprimer votre compte.",
+        "tiers": "Certaines fonctionnalités nécessitent des niveaux d'abonnement spécifiques et peuvent être indisponibles si le consentement est retiré.",
+        "audit": "Tous les changements de consentement sont enregistrés et peuvent être audités. Contactez notre Délégué à la Protection des Données si vous avez des questions."
+      },
+      "notification": {
+        "granted": "Consentement accordé avec succès",
+        "withdrawn": "Consentement retiré avec succès"
+      }
+    },
+    "settings": {
+      "title": "Paramètres de Confidentialité",
+      "description": "Configurez vos préférences de confidentialité et contrôlez comment vos données sont utilisées.",
+      "profile_visibility": {
+        "title": "Visibilité du Profil",
+        "description": "Contrôlez qui peut voir votre profil et vos informations de contact. Lorsque votre profil est public, tout le monde peut voir vos informations. Lorsqu'il est privé, seules les connexions approuvées peuvent voir vos détails.",
+        "label": "Statut du Profil :",
+        "public": "Public",
+        "private": "Privé"
+      },
+      "allow_messages": {
+        "title": "Autoriser les Messages",
+        "description": "Permettez aux autres utilisateurs de vous envoyer des messages via la plateforme. Vous pouvez désactiver cela pour empêcher les messages non sollicités tout en maintenant vos connexions.",
+        "label": "Messages :",
+        "enabled": "Activé",
+        "disabled": "Désactivé"
+      },
+      "notifications": {
+        "title": "Préférences de Notification",
+        "description": "Contrôlez comment vous recevez des notifications sur l'activité de votre compte.",
+        "email": {
+          "title": "Notifications par E-mail",
+          "description": "Recevez des mises à jour importantes et des notifications par e-mail"
+        },
+        "push": {
+          "title": "Notifications Push",
+          "description": "Recevez des notifications push en temps réel sur vos appareils"
+        }
+      },
+      "quick_actions": {
+        "title": "Contrôles de Confidentialité Supplémentaires",
+        "consents": "Gérez les préférences de consentement détaillées dans l'onglet {{link}}",
+        "consents_link": "Consentements",
+        "export": "Exportez toutes vos données dans l'onglet {{link}}",
+        "export_link": "Exporter les Données",
+        "delete": "Demandez la suppression du compte dans l'onglet {{link}}",
+        "delete_link": "Supprimer le Compte"
+      },
+      "gdpr_info": {
+        "title": "Vos Droits à la Confidentialité",
+        "description": "En vertu du RGPD, vous avez le droit de contrôler vos données personnelles. Ces paramètres vous donnent un contrôle granulaire sur vos préférences de confidentialité. Tous les changements sont enregistrés et auditables. Pour plus d'informations sur la façon dont nous traitons vos données, veuillez consulter notre {{link}}.",
+        "privacy_policy_link": "Politique de Confidentialité"
+      },
+      "notification": {
+        "success": "Paramètre mis à jour avec succès"
+      }
+    },
+    "footer": {
+      "title": "Vos Droits en Vertu du RGPD",
+      "rights": {
+        "access": {
+          "title": "✓ Droit d'Accès",
+          "description": "Consultez et téléchargez toutes vos données personnelles"
+        },
+        "rectification": {
+          "title": "✓ Droit de Rectification",
+          "description": "Corrigez ou mettez à jour vos informations"
+        },
+        "erasure": {
+          "title": "✓ Droit à l'Effacement",
+          "description": "Supprimez votre compte et toutes les données"
+        },
+        "portability": {
+          "title": "✓ Droit à la Portabilité",
+          "description": "Exportez les données dans des formats standard"
+        },
+        "object": {
+          "title": "✓ Droit d'Opposition",
+          "description": "Refusez un traitement de données spécifique"
+        },
+        "restriction": {
+          "title": "✓ Droit à la Limitation",
+          "description": "Limitez la façon dont vos données sont traitées"
+        }
+      },
+      "dpo": {
+        "question": "Des questions sur votre confidentialité ?",
+        "link": "Contactez notre Délégué à la Protection des Données"
+      }
     }
   },
   "contacts": {
@@ -2188,7 +2492,9 @@
         "fondateurs de start-up",
         "professionnels du marketing",
         "basés en Californie"
-      ]
+      ],
+      "consent_required": "La recherche sémantique IA nécessite votre consentement",
+      "enable_consent": "Activer dans les paramètres"
     },
     "map": {
       "title": "Carte des contacts",
