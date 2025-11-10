@@ -17,7 +17,7 @@ import ExchangeButton from "./components/ExchangeButton";
 import DownloadContactButton from "./components/DownloadContactButton";
 
 export const HouseContext = React.createContext(null);
-
+////
 export default function House({ initialUserData, scanToken = null, scanAvailable = false }) {
     const [userData, setUserData] = useState(initialUserData);
     const [showSensitiveWarning, setShowSensitiveWarning] = useState(false);
