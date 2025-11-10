@@ -1966,7 +1966,8 @@
       "delete": "Eliminar Cuenta",
       "consents": "Consentimientos",
       "settings": "Configuración de Privacidad",
-      "contact_download": "Descarga de Contacto"
+      "contact_download": "Descarga de Contacto",
+      "website_config": "Configuración del Sitio Web"
     },
     "loading": {
       "privacy_data": "Cargando datos de privacidad...",
@@ -2258,6 +2259,28 @@
         "saving": "Guardando...",
         "success": "¡Configuración guardada exitosamente!",
         "error": "Error al guardar la configuración"
+      }
+    },
+    "website_config": {
+      "title": "Configuración del Sitio Web",
+      "description": "Configura tus preferencias del sitio web y ajustes predeterminados.",
+      "language": {
+        "title": "Idioma Predeterminado",
+        "description": "Establece tu idioma preferido predeterminado para el sitio web. Se aplicará automáticamente cuando inicies sesión. Todavía puedes cambiar el idioma temporalmente usando el selector de idioma en la barra de navegación.",
+        "current_label": "Predeterminado Actual:",
+        "select_label": "Seleccionar Idioma Predeterminado",
+        "updating": "Actualizando idioma...",
+        "notification": {
+          "success": "Idioma predeterminado actualizado exitosamente",
+          "error": "Error al actualizar el idioma"
+        }
+      },
+      "info": {
+        "title": "Cómo Funcionan los Ajustes de Idioma",
+        "default": "Tu idioma predeterminado se guarda y aplica automáticamente cuando inicias sesión",
+        "navbar": "Puedes cambiar temporalmente el idioma usando el selector de idioma en la barra de navegación",
+        "session": "Los cambios temporales de idioma solo afectan tu sesión actual",
+        "persistent": "Para hacer un cambio de idioma permanente, actualiza tu idioma predeterminado aquí"
       }
     },
     "footer": {

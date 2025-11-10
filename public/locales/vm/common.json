@@ -1948,7 +1948,8 @@
       "delete": "Xóa Tài Khoản",
       "consents": "Đồng Ý",
       "settings": "Cài Đặt Quyền Riêng Tư",
-      "contact_download": "Tải Liên Hệ"
+      "contact_download": "Tải Liên Hệ",
+      "website_config": "Cấu Hình Trang Web"
     },
     "loading": {
       "privacy_data": "Đang tải dữ liệu quyền riêng tư...",
@@ -2240,6 +2241,28 @@
         "saving": "Đang lưu...",
         "success": "Đã lưu cài đặt thành công!",
         "error": "Lưu cài đặt thất bại"
+      }
+    },
+    "website_config": {
+      "title": "Cấu Hình Trang Web",
+      "description": "Cấu hình tùy chọn trang web và cài đặt mặc định của bạn.",
+      "language": {
+        "title": "Ngôn Ngữ Mặc Định",
+        "description": "Đặt ngôn ngữ mặc định ưa thích của bạn cho trang web. Nó sẽ được áp dụng tự động khi bạn đăng nhập. Bạn vẫn có thể thay đổi ngôn ngữ tạm thời bằng cách sử dụng bộ chọn ngôn ngữ trong thanh điều hướng.",
+        "current_label": "Mặc Định Hiện Tại:",
+        "select_label": "Chọn Ngôn Ngữ Mặc Định",
+        "updating": "Đang cập nhật ngôn ngữ...",
+        "notification": {
+          "success": "Đã cập nhật ngôn ngữ mặc định thành công",
+          "error": "Cập nhật ngôn ngữ thất bại"
+        }
+      },
+      "info": {
+        "title": "Cách Hoạt Động Của Cài Đặt Ngôn Ngữ",
+        "default": "Ngôn ngữ mặc định của bạn được lưu và áp dụng tự động khi bạn đăng nhập",
+        "navbar": "Bạn có thể thay đổi ngôn ngữ tạm thời bằng cách sử dụng bộ chọn ngôn ngữ trong thanh điều hướng",
+        "session": "Thay đổi ngôn ngữ tạm thời chỉ ảnh hưởng đến phiên hiện tại của bạn",
+        "persistent": "Để thay đổi ngôn ngữ vĩnh viễn, hãy cập nhật ngôn ngữ mặc định của bạn tại đây"
       }
     },
     "footer": {

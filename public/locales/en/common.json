@@ -755,7 +755,8 @@
       "delete": "Delete Account",
       "consents": "Consents",
       "settings": "Privacy Settings",
-      "contact_download": "Contact Download"
+      "contact_download": "Contact Download",
+      "website_config": "Website Configuration"
     },
     "loading": {
       "privacy_data": "Loading privacy data...",
@@ -1047,6 +1048,28 @@
         "saving": "Saving...",
         "success": "Settings saved successfully!",
         "error": "Failed to save settings"
+      }
+    },
+    "website_config": {
+      "title": "Website Configuration",
+      "description": "Configure your website preferences and default settings.",
+      "language": {
+        "title": "Default Language",
+        "description": "Set your preferred default language for the website. This will be applied automatically when you log in. You can still change the language temporarily using the language switcher in the navigation bar.",
+        "current_label": "Current Default:",
+        "select_label": "Select Default Language",
+        "updating": "Updating language...",
+        "notification": {
+          "success": "Default language updated successfully",
+          "error": "Failed to update language"
+        }
+      },
+      "info": {
+        "title": "How Language Settings Work",
+        "default": "Your default language is saved and applied automatically when you log in",
+        "navbar": "You can temporarily change the language using the language switcher in the navigation bar",
+        "session": "Temporary language changes only affect your current session",
+        "persistent": "To make a language change permanent, update your default language here"
       }
     },
     "footer": {

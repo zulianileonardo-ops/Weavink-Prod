@@ -17,7 +17,7 @@
 
 import { useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Shield, Download, Trash2, CheckSquare, Settings, Info, AlertCircle, FileUser } from 'lucide-react';
+import { Shield, Download, Trash2, CheckSquare, Settings, Info, AlertCircle, FileUser, Globe } from 'lucide-react';
 import { useTranslation } from '@/lib/translation/useTranslation';
 import { AccountProvider, useAccount } from './AccountContext';
 
@@ -28,6 +28,7 @@ import DeleteAccountTab from './components/DeleteAccountTab';
 import ConsentsTab from './components/ConsentsTab';
 import PrivacySettingsTab from './components/PrivacySettingsTab';
 import ContactDownloadTab from './components/ContactDownloadTab';
+import WebsiteConfigTab from './components/WebsiteConfigTab';
 
 // Wrapper component that provides context
 export default function AccountPageWrapper() {
@@ -66,6 +67,7 @@ function AccountPage() {
     { id: 'consents', label: t('account.tabs.consents', 'Consents'), icon: CheckSquare },
     { id: 'settings', label: t('account.tabs.settings', 'Privacy Settings'), icon: Settings },
     { id: 'contact-download', label: t('account.tabs.contact_download', 'Contact Download'), icon: FileUser },
+    { id: 'website-config', label: t('account.tabs.website_config', 'Website Configuration'), icon: Globe },
   ];
 
   return (
@@ -144,6 +146,7 @@ function AccountPage() {
                 {activeTab === 'consents' && <ConsentsTab />}
                 {activeTab === 'settings' && <PrivacySettingsTab />}
                 {activeTab === 'contact-download' && <ContactDownloadTab />}
+                {activeTab === 'website-config' && <WebsiteConfigTab />}
               </>
             )}
           </div>

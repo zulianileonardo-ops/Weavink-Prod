@@ -252,6 +252,43 @@ export function AccountProvider({ children }) {
   }, [currentUser, invalidateCache, showNotification, fetchSettings]);
 
   /**
+   * Update language preference
+   */
+  const updateLanguagePreference = useCallback(async (languageCode) => {
+    if (!currentUser) return;
+
+    try {
+      console.log(`🔄 [AccountContext] Updating language preference to ${languageCode}`);
+
+      // Build update payload
+      const updatePayload = {
+        action: 'updateLanguage',
+        data: { defaultLanguage: languageCode }
+      };
+
+      // Call service
+      await SettingsService.updateSettingsData(updatePayload);
+
+      // Update local state
+      setPrivacySettings((prev) => ({
+        ...prev,
+        defaultLanguage: languageCode
+      }));
+
+      // Invalidate cache to force fresh data on next tab switch
+      invalidateCache();
+
+      console.log('✅ [AccountContext] Language preference updated successfully');
+    } catch (error) {
+      console.error('❌ [AccountContext] Error updating language preference:', error);
+      showNotification(error.message, 'error');
+      // Refresh to revert
+      await fetchSettings(true);
+      throw error;
+    }
+  }, [currentUser, invalidateCache, showNotification, fetchSettings]);
+
+  /**
    * Grant consent
    */
   const grantConsent = useCallback(async (consentType, metadata) => {
@@ -409,6 +446,7 @@ export function AccountProvider({ children }) {
     // Mutations
     updatePrivacySetting,
     updateContactDownloadSettings,
+    updateLanguagePreference,
     grantConsent,
     withdrawConsent,
     requestDeletion,

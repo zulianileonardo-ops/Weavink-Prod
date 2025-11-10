@@ -1495,7 +1495,8 @@
       "delete": "删除账户",
       "consents": "同意管理",
       "settings": "隐私设置",
-      "contact_download": "联系人下载"
+      "contact_download": "联系人下载",
+      "website_config": "网站配置"
     },
     "loading": {
       "privacy_data": "加载隐私数据中...",
@@ -1787,6 +1788,28 @@
         "saving": "保存中...",
         "success": "设置保存成功！",
         "error": "保存设置失败"
+      }
+    },
+    "website_config": {
+      "title": "网站配置",
+      "description": "配置您的网站偏好和默认设置。",
+      "language": {
+        "title": "默认语言",
+        "description": "设置您的首选默认语言。登录时将自动应用此语言。您仍可以使用导航栏中的语言切换器临时更改语言。",
+        "current_label": "当前默认：",
+        "select_label": "选择默认语言",
+        "updating": "更新语言中...",
+        "notification": {
+          "success": "默认语言更新成功",
+          "error": "更新语言失败"
+        }
+      },
+      "info": {
+        "title": "语言设置的工作原理",
+        "default": "您的默认语言将被保存并在登录时自动应用",
+        "navbar": "您可以使用导航栏中的语言切换器临时更改语言",
+        "session": "临时语言更改仅影响您当前的会话",
+        "persistent": "要永久更改语言，请在此处更新您的默认语言"
       }
     },
     "footer": {

@@ -2213,7 +2213,8 @@
       "delete": "Supprimer le Compte",
       "consents": "Consentements",
       "settings": "Paramètres de Confidentialité",
-      "contact_download": "Téléchargement de Contact"
+      "contact_download": "Téléchargement de Contact",
+      "website_config": "Configuration du Site Web"
     },
     "loading": {
       "privacy_data": "Chargement des données de confidentialité...",
@@ -2505,6 +2506,28 @@
         "saving": "Enregistrement...",
         "success": "Paramètres enregistrés avec succès !",
         "error": "Échec de l'enregistrement des paramètres"
+      }
+    },
+    "website_config": {
+      "title": "Configuration du Site Web",
+      "description": "Configurez vos préférences de site web et paramètres par défaut.",
+      "language": {
+        "title": "Langue par Défaut",
+        "description": "Définissez votre langue préférée par défaut pour le site web. Elle sera appliquée automatiquement lorsque vous vous connectez. Vous pouvez toujours changer la langue temporairement en utilisant le sélecteur de langue dans la barre de navigation.",
+        "current_label": "Défaut Actuel :",
+        "select_label": "Sélectionner la Langue par Défaut",
+        "updating": "Mise à jour de la langue...",
+        "notification": {
+          "success": "Langue par défaut mise à jour avec succès",
+          "error": "Échec de la mise à jour de la langue"
+        }
+      },
+      "info": {
+        "title": "Comment Fonctionnent les Paramètres de Langue",
+        "default": "Votre langue par défaut est enregistrée et appliquée automatiquement lorsque vous vous connectez",
+        "navbar": "Vous pouvez temporairement changer la langue en utilisant le sélecteur de langue dans la barre de navigation",
+        "session": "Les changements de langue temporaires affectent uniquement votre session actuelle",
+        "persistent": "Pour rendre un changement de langue permanent, mettez à jour votre langue par défaut ici"
       }
     },
     "footer": {

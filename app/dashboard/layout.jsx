@@ -1,5 +1,5 @@
 /**
- * THIS FILE HAS BEEN REFRACTORED 
+ * THIS FILE HAS BEEN REFRACTORED
  */
 "use client"
 import { Inter } from 'next/font/google'
@@ -10,6 +10,7 @@ import Preview from './general components/Preview'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { DashboardProvider } from './DashboardContext'
 import { MapVisibilityProvider } from './MapVisibilityContext'
+import LanguageInitializer from './LanguageInitializer'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -21,6 +22,7 @@ export default function RootLayout({ children }) {
 
     return (
         <ProtectedRoute>
+            <LanguageInitializer />
             <DashboardProvider>
                 <MapVisibilityProvider>
                     <div>
