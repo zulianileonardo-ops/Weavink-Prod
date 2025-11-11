@@ -636,7 +636,8 @@
       "carousel": {
         "title": "Băng Chuyền",
         "description": "Hiển thị nhiều mục ở định dạng băng chuyền.",
-        "no_carousels": "Chưa có băng chuyền nào được thêm."
+        "no_carousels": "Chưa có băng chuyền nào được thêm.",
+        "new_carousel_default": "Băng Chuyền Mới"
       },
       "media": {
         "title": "Nhúng Phương Tiện",

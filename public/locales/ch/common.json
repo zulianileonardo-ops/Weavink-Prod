@@ -605,7 +605,8 @@
       "carousel": {
         "title": "轮播",
         "description": "以轮播格式展示多个项目。",
-        "no_carousels": "尚未添加轮播。"
+        "no_carousels": "尚未添加轮播。",
+        "new_carousel_default": "新轮播"
       },
       "media": {
         "title": "媒体嵌入",

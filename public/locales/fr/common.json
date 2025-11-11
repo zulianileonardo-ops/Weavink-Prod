@@ -717,7 +717,8 @@
       "carousel": {
         "title": "Carrousel",
         "description": "Présentez plusieurs éléments dans un format carrousel.",
-        "no_carousels": "Aucun carrousel ajouté pour le moment."
+        "no_carousels": "Aucun carrousel ajouté pour le moment.",
+        "new_carousel_default": "Nouveau Carrousel"
       },
       "media": {
         "title": "Intégration Média",

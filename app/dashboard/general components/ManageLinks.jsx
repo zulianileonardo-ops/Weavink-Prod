@@ -124,7 +124,7 @@ export default function ManageLinks() {
         const newCarousel = {
             id: generateRandomId(),
             title: t('dashboard.links.item.carousel_title_default'),
-            isActive: true,
+            isActive: false,
             type: 2,
             carouselId: carouselId // Link to the carousel container in appearance
         };
@@ -139,8 +139,8 @@ export default function ManageLinks() {
 
             const newCarouselContainer = {
                 id: carouselId,
-                title: t('dashboard.appearance.carousel.new_carousel_default'),
-                enabled: true,
+                title: t('dashboard.appearance.carousel.new_carousel_default') || 'New Carousel',
+                enabled: false,
                 style: 'modern',
                 showTitle: true,
                 showDescription: true,

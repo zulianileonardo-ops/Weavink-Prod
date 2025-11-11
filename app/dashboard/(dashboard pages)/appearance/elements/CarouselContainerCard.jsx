@@ -12,6 +12,7 @@ import { CAROUSEL_STYLES } from "@/lib/services/constants";
 import ColorPickerFlat from "./ColorPickerFlat.jsx";
 import { AppearanceService } from "@/lib/services/serviceAppearance/client/appearanceService.js";
 import { LinksService } from "@/lib/services/serviceLinks/client/LinksService.js";
+import { useItemNavigation } from '@/LocalHooks/useItemNavigation';
 
 const BACKGROUND_TYPES = ['Color', 'Image', 'Video', 'Transparent'];
 
@@ -24,11 +25,26 @@ export default function CarouselContainerCard({ carousel, onUpdate, onDelete, di
     const [localData, setLocalData] = useState(carousel);
     const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [showPreview, setShowPreview] = useState(false);
-    const [isHighlighted, setIsHighlighted] = useState(false);
     const [isUploadingBackgroundImage, setIsUploadingBackgroundImage] = useState(false);
     const [isUploadingBackgroundVideo, setIsUploadingBackgroundVideo] = useState(false);
+    const [linkedLinkItem, setLinkedLinkItem] = useState(null);
 
-    const hasItems = Array.isArray(localData.items) && localData.items.length > 0;
+    // Navigation hook for bidirectional navigation with highlighting
+    const { isHighlighted, navigateToItem, highlightClass } = useItemNavigation({
+        itemId: carousel.id,
+        itemType: 'carousel-item'
+    });
+
+    // Helper function to check if carousel has items with valid media (image or video)
+    const hasItemsWithMedia = useCallback((items) => {
+        if (!Array.isArray(items) || items.length === 0) return false;
+        return items.some(item => {
+            const mediaUrl = item.mediaUrl || item.image || item.videoUrl || '';
+            return Boolean(mediaUrl.trim());
+        });
+    }, []);
+
+    const hasItems = hasItemsWithMedia(localData.items);
     const backgroundType = localData.backgroundType || 'Color';
     const isTitleVisible = localData.showTitle !== false;
     const isDescriptionVisible = localData.showDescription !== false;
@@ -82,20 +98,38 @@ export default function CarouselContainerCard({ carousel, onUpdate, onDelete, di
         }
     }, [carousel.id]);
 
-    // Highlight effect when navigated from links page
+    // Track linked link item (similar to CVItemCard pattern)
     useEffect(() => {
-        if (highlightId && highlightId === carousel.id) {
-            setIsHighlighted(true);
-            const timer = setTimeout(() => setIsHighlighted(false), 2000);
-            return () => clearTimeout(timer);
-        }
-    }, [highlightId, carousel.id]);
+        const findLinkedItem = async () => {
+            try {
+                const response = await LinksService.getLinks();
+                const linked = response.links?.find(
+                    link => link.type === 2 && link.carouselId === carousel.id
+                );
+                setLinkedLinkItem(linked);
+            } catch (error) {
+                console.error('Error finding linked link item:', error);
+            }
+        };
+
+        findLinkedItem();
+
+        // Subscribe to real-time updates
+        const unsubscribe = LinksService.subscribe((updatedLinks) => {
+            const linked = updatedLinks.find(
+                link => link.type === 2 && link.carouselId === carousel.id
+            );
+            setLinkedLinkItem(linked);
+        });
+
+        return () => unsubscribe();
+    }, [carousel.id]);
 
     // Toggle carousel enabled/disabled
     const handleToggleEnabled = () => {
         const nextEnabled = !localData.enabled;
         if (nextEnabled && !hasItems) {
-            toast.error('Add at least one carousel item before enabling.');
+            toast.error('Add at least one carousel item with an image or video before enabling.');
             return;
         }
         commitUpdate({ enabled: nextEnabled });
@@ -291,9 +325,11 @@ export default function CarouselContainerCard({ carousel, onUpdate, onDelete, di
         commitUpdate({ [field]: !currentlyVisible });
     };
 
-    // Navigate to linked link item
+    // Navigate to linked link item using standardized navigation
     const handleGoToLink = () => {
-        router.push(`/dashboard#carousel-${carousel.id}`);
+        if (linkedLinkItem) {
+            navigateToItem('/dashboard', linkedLinkItem.id, 'carousel-link');
+        }
     };
 
     // Delete entire carousel
@@ -305,12 +341,8 @@ export default function CarouselContainerCard({ carousel, onUpdate, onDelete, di
 
     return (
         <div
-            className={`w-full bg-white rounded-2xl p-6 border-2 transition-all ${
-                isHighlighted
-                    ? 'border-blue-500 shadow-lg shadow-blue-200'
-                    : 'border-gray-200 hover:border-gray-300'
-            }`}
-            id={`carousel-${carousel.id}`}
+            className={`w-full bg-white rounded-2xl p-6 border-2 ${highlightClass}`}
+            id={`carousel-item-${carousel.id}`}
         >
             {/* Header */}
             <div className="flex items-center justify-between mb-4">
@@ -386,7 +418,7 @@ export default function CarouselContainerCard({ carousel, onUpdate, onDelete, di
                     )}
 
                     {/* Preview Toggle */}
-                    {localData.items.length > 0 && (
+                    {hasItems && (
                         <button
                             onClick={() => setShowPreview(!showPreview)}
                             className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
@@ -398,7 +430,7 @@ export default function CarouselContainerCard({ carousel, onUpdate, onDelete, di
             </div>
 
             {/* Preview */}
-            {showPreview && localData.items.length > 0 && (
+            {showPreview && hasItems && (
                 <div className="mb-6">
                     <CarouselPreview
                         items={localData.items}

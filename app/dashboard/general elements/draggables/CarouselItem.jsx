@@ -3,13 +3,14 @@
 
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { useContext, useMemo, useState, useEffect } from 'react';
+import { useContext, useMemo, useState, useEffect, useCallback } from 'react';
 import { FaX, FaGear } from 'react-icons/fa6';
 import { ManageLinksContent } from '../../general components/ManageLinks';
 import { useTranslation } from '@/lib/translation/useTranslation';
 import { useDashboard } from '@/app/dashboard/DashboardContext';
 import { AppearanceService } from '@/lib/services/serviceAppearance/client/appearanceService.js';
 import { useDebounce } from '@/LocalHooks/useDebounce';
+import { useItemNavigation } from '@/LocalHooks/useItemNavigation';
 import { APPEARANCE_FEATURES } from '@/lib/services/constants';
 import { toast } from 'react-hot-toast';
 
@@ -23,7 +24,15 @@ export default function CarouselItem({ item, itemRef, style, listeners, attribut
     const [hasItems, setHasItems] = useState(false);
     const [linkedCarouselName, setLinkedCarouselName] = useState(null);
     const [isLoadingCarousel, setIsLoadingCarousel] = useState(true);
+    const [checkboxChecked, setCheckboxChecked] = useState(false);
+    const debounceCheckbox = useDebounce(checkboxChecked, 500);
     const router = useRouter();
+
+    // Navigation hook for bidirectional navigation with highlighting
+    const { isHighlighted, navigateToItem, highlightClass } = useItemNavigation({
+        itemId: item.id,
+        itemType: 'carousel-link'
+    });
 
     // Define the feature key for this component
     const featureKey = APPEARANCE_FEATURES.CUSTOM_CAROUSEL;
@@ -43,6 +52,15 @@ export default function CarouselItem({ item, itemRef, style, listeners, attribut
             timestamp: new Date().toISOString()
         });
     }, [canUseCarousel, subscriptionLevel]);
+
+    // Helper function to check if carousel has items with valid media (image or video)
+    const hasItemsWithMedia = useCallback((items) => {
+        if (!Array.isArray(items) || items.length === 0) return false;
+        return items.some(item => {
+            const mediaUrl = item.mediaUrl || item.image || item.videoUrl || '';
+            return Boolean(mediaUrl.trim());
+        });
+    }, []);
 
     // Pre-compute translations for performance
     const translations = useMemo(() => {
@@ -78,7 +96,7 @@ export default function CarouselItem({ item, itemRef, style, listeners, attribut
                 if (linkedCarousel) {
                     setCarouselEnabled(linkedCarousel.enabled || false);
                     setLinkedCarouselName(linkedCarousel.title || 'Untitled Carousel');
-                    setHasItems(Array.isArray(linkedCarousel.items) && linkedCarousel.items.length > 0);
+                    setHasItems(hasItemsWithMedia(linkedCarousel.items));
                 } else {
                     setCarouselEnabled(false);
                     setLinkedCarouselName(null);
@@ -103,7 +121,7 @@ export default function CarouselItem({ item, itemRef, style, listeners, attribut
                 if (linkedCarousel) {
                     setCarouselEnabled(linkedCarousel.enabled || false);
                     setLinkedCarouselName(linkedCarousel.title || 'Untitled Carousel');
-                    setHasItems(Array.isArray(linkedCarousel.items) && linkedCarousel.items.length > 0);
+                    setHasItems(hasItemsWithMedia(linkedCarousel.items));
                 } else {
                     setCarouselEnabled(false);
                     setLinkedCarouselName(null);
@@ -118,8 +136,58 @@ export default function CarouselItem({ item, itemRef, style, listeners, attribut
         };
     }, [currentUser?.uid, item.carouselId]);
 
-    const handleToggleCarousel = async (event) => {
-        // Prevent toggle if user doesn't have permission
+    // Debounced update effect - only triggers when debounced value changes
+    useEffect(() => {
+        // Skip if checkbox state matches carousel enabled state (no change needed)
+        if (checkboxChecked === carouselEnabled) return;
+
+        // Skip if still loading initial data
+        if (isLoadingCarousel) return;
+
+        // Perform the actual API update
+        const updateCarouselStatus = async () => {
+            try {
+                const appearance = await AppearanceService.getAppearanceData();
+                const carousels = appearance.carousels || [];
+
+                const updatedCarousels = carousels.map(carousel =>
+                    carousel.id === item.carouselId
+                        ? { ...carousel, enabled: checkboxChecked }
+                        : carousel
+                );
+
+                await AppearanceService.updateAppearanceData(
+                    { carousels: updatedCarousels },
+                    { origin: 'manage-links', userId: currentUser?.uid }
+                );
+
+                // Update local state to match
+                setCarouselEnabled(checkboxChecked);
+                setData(prevData => prevData.map(link =>
+                    link.id === item.id ? { ...link, isActive: checkboxChecked } : link
+                ));
+
+                toast.success(checkboxChecked ? 'Carousel enabled' : 'Carousel disabled');
+            } catch (error) {
+                console.error('Error updating carousel state:', error);
+                toast.error('Failed to update carousel state');
+                // Revert checkbox to match carousel state on error
+                setCheckboxChecked(carouselEnabled);
+            }
+        };
+
+        updateCarouselStatus();
+    }, [debounceCheckbox]); // Only fires when debounced value changes
+
+    // Sync checkbox with external changes to carousel enabled state
+    useEffect(() => {
+        setCheckboxChecked(carouselEnabled);
+    }, [carouselEnabled]);
+
+    const handleToggleCarousel = (event) => {
+        const newValue = event.target.checked;
+
+        // VALIDATION FIRST - Prevent toggle if user doesn't have permission
         if (!canUseCarousel) {
             const requiredTier = subscriptionLevel === 'base' ? 'Pro' : 'Pro';
             toast.error(`Upgrade to ${requiredTier} to enable Content Carousel`, {
@@ -130,45 +198,17 @@ export default function CarouselItem({ item, itemRef, style, listeners, attribut
                     fontWeight: 'bold',
                 }
             });
-            return;
+            return; // State is NOT updated
         }
 
-        const newEnabledState = event.target.checked;
-
-        // Update the carousel's enabled state in appearance
-        try {
-            const appearance = await AppearanceService.getAppearanceData();
-            const carousels = appearance.carousels || [];
-            const linkedCarousel = carousels.find(carousel => carousel.id === item.carouselId);
-            const linkedCarouselHasItems = !!(linkedCarousel && Array.isArray(linkedCarousel.items) && linkedCarousel.items.length > 0);
-
-            if (newEnabledState && !linkedCarouselHasItems) {
-                toast.error('Add at least one carousel item before enabling.');
-                setCarouselEnabled(false);
-                setHasItems(false);
-                return;
-            }
-
-            const updatedCarousels = carousels.map(carousel =>
-                carousel.id === item.carouselId
-                    ? { ...carousel, enabled: newEnabledState }
-                    : carousel
-            );
-
-            await AppearanceService.updateAppearanceData({ carousels: updatedCarousels }, { origin: 'manage-links', userId: currentUser?.uid });
-
-            setCarouselEnabled(newEnabledState);
-            setHasItems(linkedCarouselHasItems);
-            setData(prevData => prevData.map(link =>
-                link.id === item.id ? { ...link, isActive: newEnabledState } : link
-            ));
-
-            toast.success(newEnabledState ? 'Carousel enabled' : 'Carousel disabled');
-        } catch (error) {
-            console.error('Error updating carousel state:', error);
-            toast.error('Failed to update carousel state');
-            setCarouselEnabled(!newEnabledState); // Revert on error
+        // Validate: Prevent enabling if carousel has no items with media
+        if (newValue === true && !hasItems) {
+            toast.error('Add at least one carousel item with an image or video before enabling.');
+            return; // State is NOT updated
         }
+
+        // Only update state if all validations pass
+        setCheckboxChecked(newValue);
     };
 
     const handleDelete = async () => {
@@ -222,16 +262,10 @@ export default function CarouselItem({ item, itemRef, style, listeners, attribut
             return;
         }
 
-        // Navigate to appearance page with highlight parameter for this specific carousel
-        router.push(`/dashboard/appearance?highlight=${item.carouselId}#carousel`);
-
-        // After navigation, scroll to the specific carousel
-        setTimeout(() => {
-            const carouselElement = document.getElementById(`carousel-${item.carouselId}`);
-            if (carouselElement) {
-                carouselElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-        }, 300);
+        // Navigate using the standardized hook with reliable scroll and highlighting
+        if (item.carouselId) {
+            navigateToItem('/dashboard/appearance', item.carouselId, 'carousel-item');
+        }
     };
 
     // Grey out if user doesn't have permission
@@ -240,8 +274,7 @@ export default function CarouselItem({ item, itemRef, style, listeners, attribut
             ? 'bg-gray-100 border-gray-300 opacity-60'
             : 'bg-gradient-to-r from-purple-50 to-blue-50 border-purple-300'
     } ${isOverlay ? 'shadow-lg' : ''}`;
-    const toggleBlocked = !isLoadingCarousel && !carouselEnabled && !hasItems;
-    const toggleDisabled = isLoadingCarousel || !canUseCarousel || toggleBlocked;
+    const toggleDisabled = isLoadingCarousel || !canUseCarousel;
 
     // 🔧 ROBUST FIX: Loading state while session/permissions are loading - PREVENTS RACE CONDITION
     // This now checks BOTH isSessionLoading AND if permissions object is empty
@@ -276,7 +309,8 @@ export default function CarouselItem({ item, itemRef, style, listeners, attribut
         <div
             ref={itemRef}
             style={style}
-            className={containerClasses}
+            id={`carousel-link-${item.id}`}
+            className={`${containerClasses} ${highlightClass}`}
         >
             <div className={`h-[8rem] items-center flex`}>
                 {/* Drag handle */}
@@ -341,27 +375,18 @@ export default function CarouselItem({ item, itemRef, style, listeners, attribut
 
                 {/* Toggle and Delete Buttons */}
                 <div className='grid sm:pr-2 gap-2 place-items-center'>
-                    {/* Toggle Switch */}
-                    <div className={`scale-[0.8] sm:scale-100 ${toggleDisabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'}`}>
+                    {/* Individual Toggle Switch */}
+                    <div className='cursor-pointer scale-[0.8] sm:scale-100'>
                         <label className="relative flex justify-between items-center group p-2 text-xl">
                             <input
                                 type="checkbox"
                                 onChange={handleToggleCarousel}
-                                checked={carouselEnabled}
+                                checked={checkboxChecked}
                                 disabled={toggleDisabled}
                                 className="absolute left-1/2 -translate-x-1/2 w-full h-full peer appearance-none rounded-md"
                             />
-                            <span className={`w-9 h-6 flex items-center flex-shrink-0 ml-4 p-1 rounded-full duration-300 ease-in-out after:w-4 after:h-4 after:bg-white after:rounded-full after:shadow-md after:duration-300 ${
-                                toggleDisabled
-                                    ? 'bg-gray-300 opacity-60'
-                                    : 'bg-gray-400 peer-checked:bg-green-600 peer-checked:after:translate-x-3 group-hover:after:translate-x-[2px]'
-                            }`}></span>
+                            <span className="w-9 h-6 flex items-center flex-shrink-0 ml-4 p-1 bg-gray-400 rounded-full duration-300 ease-in-out peer-checked:bg-green-600 after:w-4 after:h-4 after:bg-white after:rounded-full after:shadow-md after:duration-300 peer-checked:after:translate-x-3 group-hover:after:translate-x-[2px]"></span>
                         </label>
-                        {toggleBlocked && (
-                            <p className="text-xs text-purple-700 mt-1 text-center">
-                                Add items to enable
-                            </p>
-                        )}
                     </div>
 
                     {/* Delete Button */}
