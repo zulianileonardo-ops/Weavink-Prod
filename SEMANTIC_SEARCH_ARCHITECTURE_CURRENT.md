@@ -1,3 +1,15 @@
+---
+id: technical-semantic-search-032
+title: Semantic Search Architecture Current
+category: technical
+tags: [semantic-search, vector-database, pinecone, embeddings, ai-features]
+status: active
+created: 2025-01-01
+updated: 2025-11-11
+related:
+  - ADMIN_VECTOR_PANEL_REFACTOR_SUMMARY.md
+---
+
 # Semantic Search & Rerank System - Complete Architecture Documentation
 
 **Status**: Current Implementation (Analyzed 2025-01-XX)

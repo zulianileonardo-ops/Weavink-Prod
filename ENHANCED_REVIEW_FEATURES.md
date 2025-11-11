@@ -1,3 +1,15 @@
+---
+id: features-enhanced-reviews-019
+title: Enhanced Review Features
+category: features
+tags: [contacts, reviews, ratings, sentiment-analysis, follow-ups, ui-components]
+status: active
+created: 2025-01-01
+updated: 2025-11-11
+related:
+  - EVENT_GROUPING_ENHANCEMENT.md
+---
+
 # Enhanced Rules Review Tab - Feature Documentation
 
 ## Overview

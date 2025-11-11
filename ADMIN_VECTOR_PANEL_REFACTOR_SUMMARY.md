@@ -1,3 +1,17 @@
+---
+id: admin-vector-panel-refactor-004
+title: Admin Vector Panel Refactor Summary
+category: admin
+tags: [admin, vector-search, refactoring, service-layer, api-routes, component-architecture, pinecone, semantic-search]
+status: active
+created: 2025-01-01
+updated: 2025-11-11
+related:
+  - ADMIN_SERVICE_SEPARATION_GUIDE.md
+  - ADMIN_SECURITY_LAYERS_GUIDE.md
+  - COMPREHENSIVE_REFACTORING_GUIDE.md
+---
+
 # AdminVectorContactTestPanel Refactoring - Summary
 
 ## Overview

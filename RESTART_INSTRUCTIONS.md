@@ -1,3 +1,14 @@
+---
+id: general-restart-instructions-041
+title: Restart Instructions
+category: general
+tags: [operations, restart, troubleshooting, server-management]
+status: active
+created: 2025-01-01
+updated: 2025-11-11
+related: []
+---
+
 # ⚠️ IMPORTANT: Restart Your Development Server
 
 ## The Problem

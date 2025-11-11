@@ -1,3 +1,16 @@
+---
+id: testing-rate-limit-036
+title: Rate Limit Testing
+category: testing
+tags: [testing, rate-limiting, security-testing, bot-simulation]
+status: active
+created: 2025-01-01
+updated: 2025-11-11
+related:
+  - BOT_DETECTION_FIX_V2.md
+  - RATE_LIMITS_COLLECTION_GUIDE.md
+---
+
 # Rate Limit Testing Guide
 
 ## 🎯 Overview

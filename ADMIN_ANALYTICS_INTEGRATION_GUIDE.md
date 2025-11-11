@@ -1,3 +1,17 @@
+---
+id: admin-analytics-integration-001
+title: Admin Analytics Integration Guide
+category: admin
+tags: [admin, analytics, cost-tracking, sessions, free-tier, google-maps, api-integration, dashboard]
+status: active
+created: 2025-01-01
+updated: 2025-11-11
+related:
+  - ADMIN_ANALYTICS_API_USAGE_GUIDE.md
+  - ADMIN_DASHBOARD_SESSION_AGGREGATION_FIX.md
+  - COST_TRACKING_MIGRATION_GUIDE.md
+---
+
 # Admin Analytics Integration Guide
 
 ## Overview

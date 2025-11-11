@@ -1,3 +1,17 @@
+---
+id: technical-cost-tracking-migration-024
+title: Cost Tracking Migration Guide
+category: technical
+tags: [cost-tracking, migration, ai-usage, api-usage, firestore, backward-compatibility, subscription-limits]
+status: active
+created: 2025-01-01
+updated: 2025-11-11
+related:
+  - BUDGET_CHECK_USAGE_GUIDE.md
+  - BUDGET_DISPLAY_IMPLEMENTATION.md
+  - ADMIN_ANALYTICS_INTEGRATION_GUIDE.md
+---
+
 # Cost Tracking Service - Migration Guide & Usage Examples
 
 ## Overview

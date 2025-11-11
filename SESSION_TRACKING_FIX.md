@@ -1,3 +1,15 @@
+---
+id: technical-session-tracking-fix-030
+title: Session Tracking Fix
+category: technical
+tags: [sessions, bug-fix, tracking, lifecycle-management]
+status: active
+created: 2025-01-01
+updated: 2025-11-11
+related:
+  - ADMIN_DASHBOARD_SESSION_AGGREGATION_FIX.md
+---
+
 # Session Tracking Fix: User Document Updates
 
 ## Problem Identified

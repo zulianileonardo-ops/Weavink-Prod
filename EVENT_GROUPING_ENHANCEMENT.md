@@ -1,3 +1,15 @@
+---
+id: features-event-grouping-018
+title: Event Grouping Enhancement
+category: features
+tags: [contacts, timeline, event-grouping, ui-enhancement, ux-improvement]
+status: active
+created: 2025-01-01
+updated: 2025-11-11
+related:
+  - ENHANCED_REVIEW_FEATURES.md
+---
+
 # Event Grouping Enhancement - GPS Proximity Check
 
 ## Overview

@@ -1,3 +1,17 @@
+---
+id: analytics-implementation-012
+title: Analytics Implementation Guide
+category: analytics
+tags: [analytics, rate-limiting, fingerprinting, session-management, sendBeacon, bot-detection, firestore, api-design]
+status: active
+created: 2025-01-01
+updated: 2025-11-11
+related:
+  - RATE_LIMITS_COLLECTION_GUIDE.md
+  - BOT_DETECTION_FIX_V2.md
+  - ANALYTICS_TESTING_GUIDE.md
+---
+
 # Analytics System - Implementation Guide
 
 ## 📚 Table of Contents

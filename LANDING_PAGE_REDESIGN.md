@@ -1,3 +1,14 @@
+---
+id: features-landing-page-022
+title: Landing Page Redesign
+category: features
+tags: [landing-page, ui-design, marketing, conversion-optimization]
+status: active
+created: 2025-01-01
+updated: 2025-11-11
+related: []
+---
+
 # Tapit Landing Page - Documentation Technique
 
 ## 🎨 Vue d'ensemble de la refonte

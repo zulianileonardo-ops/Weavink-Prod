@@ -1,3 +1,15 @@
+---
+id: features-realtime-subscription-023
+title: Real-Time Subscription Updates
+category: features
+tags: [subscription, real-time, firestore, listeners, state-management]
+status: active
+created: 2025-01-01
+updated: 2025-11-11
+related:
+  - SUBSCRIPTION_REVALIDATION_SETUP.md
+---
+
 # Real-Time Subscription Updates
 
 ## Overview

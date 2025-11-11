@@ -1,3 +1,15 @@
+---
+id: technical-subscription-revalidation-031
+title: Subscription Revalidation Setup
+category: technical
+tags: [subscription, validation, security, tier-enforcement]
+status: active
+created: 2025-01-01
+updated: 2025-11-11
+related:
+  - REAL_TIME_SUBSCRIPTION_UPDATES.md
+---
+
 # Subscription Change Revalidation Setup
 
 This document explains how to set up automatic page revalidation when a user's subscription level changes.

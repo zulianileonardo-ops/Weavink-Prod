@@ -1,3 +1,14 @@
+---
+id: technical-quick-start-integration-033
+title: Quick Start Integration
+category: technical
+tags: [integration, quick-start, onboarding, documentation]
+status: active
+created: 2025-01-01
+updated: 2025-11-11
+related: []
+---
+
 # 🚀 RGPD Quick Start Integration Guide
 ## Get Your Privacy Features Live in 30 Minutes
 

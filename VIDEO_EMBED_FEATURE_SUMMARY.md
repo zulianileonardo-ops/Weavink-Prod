@@ -1,3 +1,14 @@
+---
+id: features-video-embed-020
+title: Video Embed Feature Summary
+category: features
+tags: [video, embeds, youtube, vimeo, features, responsive-design]
+status: active
+created: 2025-01-01
+updated: 2025-11-11
+related: []
+---
+
 # Video Embed Feature - Complete Implementation Summary
 
 ## Overview

@@ -1,3 +1,16 @@
+---
+id: admin-security-logs-006
+title: Admin Security Logs Implementation
+category: admin
+tags: [admin, security, logging, monitoring, audit-trail, firestore, security-events, compliance]
+status: active
+created: 2025-01-01
+updated: 2025-11-11
+related:
+  - ADMIN_SECURITY_LAYERS_GUIDE.md
+  - ADMIN_SERVICE_SEPARATION_GUIDE.md
+---
+
 # Admin Security Logs Implementation
 
 ## Overview

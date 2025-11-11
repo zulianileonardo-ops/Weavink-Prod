@@ -1,3 +1,16 @@
+---
+id: technical-budget-affordability-028
+title: Budget Affordability Check Guide
+category: technical
+tags: [budget, permissions, subscription, cost-control, validation]
+status: active
+created: 2025-01-01
+updated: 2025-11-11
+related:
+  - BUDGET_CHECK_USAGE_GUIDE.md
+  - COST_TRACKING_MIGRATION_GUIDE.md
+---
+
 # Budget & Affordability Check Implementation Guide
 
 **Version:** 1.0

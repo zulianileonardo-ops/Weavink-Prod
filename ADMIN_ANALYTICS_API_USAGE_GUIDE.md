@@ -1,3 +1,16 @@
+---
+id: admin-analytics-api-usage-002
+title: Admin Analytics API Usage Guide
+category: admin
+tags: [admin, analytics, api-usage, ai-tracking, firestore, data-flow, cost-monitoring, dashboard-integration]
+status: active
+created: 2025-01-01
+updated: 2025-11-11
+related:
+  - ADMIN_ANALYTICS_INTEGRATION_GUIDE.md
+  - ANALYTICS_SERVICE_SUMMARY.md
+---
+
 # Admin Analytics - API Usage Integration Guide
 
 ## Overview

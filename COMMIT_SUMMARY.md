@@ -1,3 +1,15 @@
+---
+id: rgpd-commit-summary-014
+title: RGPD Implementation Summary
+category: rgpd
+tags: [gdpr, rgpd, compliance, commit-summary, implementation, privacy-center, cookies, data-export]
+status: active
+created: 2025-01-01
+updated: 2025-11-11
+related:
+  - RGPD_Conformite_Tapit.md
+---
+
 # 📦 RGPD Implementation - Commit Summary
 
 ## 🎯 Overview

@@ -1,3 +1,17 @@
+---
+id: technical-comprehensive-refactoring-025
+title: Comprehensive Refactoring Guide
+category: technical
+tags: [refactoring, best-practices, architecture, nextjs, design-patterns, testing, code-quality]
+status: active
+created: 2025-01-01
+updated: 2025-11-11
+related:
+  - ADMIN_REFACTOR_SUMMARY.md
+  - ADMIN_SERVICE_SEPARATION_GUIDE.md
+  - ADMIN_VECTOR_PANEL_REFACTOR_SUMMARY.md
+---
+
 # Comprehensive Refactoring Guide
 
 ## Overview

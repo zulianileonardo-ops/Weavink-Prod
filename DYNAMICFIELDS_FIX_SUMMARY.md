@@ -1,3 +1,14 @@
+---
+id: technical-dynamicfields-fix-029
+title: DynamicFields Fix Summary
+category: technical
+tags: [contacts, dynamic-fields, bug-fix, validation, data-integrity]
+status: active
+created: 2025-01-01
+updated: 2025-11-11
+related: []
+---
+
 # Dynamic Fields Fix Summary
 
 ## Problem

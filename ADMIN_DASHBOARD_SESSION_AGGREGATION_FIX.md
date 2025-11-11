@@ -1,3 +1,16 @@
+---
+id: admin-dashboard-session-fix-009
+title: Admin Dashboard Session Aggregation Fix
+category: admin
+tags: [admin, analytics, bug-fix, sessions, dual-write, aggregation, firestore, dashboard, cost-tracking]
+status: active
+created: 2025-01-01
+updated: 2025-11-11
+related:
+  - ADMIN_ANALYTICS_INTEGRATION_GUIDE.md
+  - COST_TRACKING_MIGRATION_GUIDE.md
+---
+
 # Admin Dashboard Session Aggregation Fix
 
 **Date:** October 15, 2025

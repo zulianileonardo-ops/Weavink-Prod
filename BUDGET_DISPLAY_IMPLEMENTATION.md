@@ -1,3 +1,16 @@
+---
+id: technical-budget-display-026
+title: Budget Display Implementation
+category: technical
+tags: [budget, dashboard, ui-components, cost-tracking, subscription, real-time-display]
+status: active
+created: 2025-01-01
+updated: 2025-11-11
+related:
+  - BUDGET_CHECK_USAGE_GUIDE.md
+  - COST_TRACKING_MIGRATION_GUIDE.md
+---
+
 # Budget Display Implementation Summary
 
 ## Overview

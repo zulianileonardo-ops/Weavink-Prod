@@ -1,3 +1,14 @@
+---
+id: technical-rules-grouping-fixes-035
+title: Rules Grouping Fixes
+category: technical
+tags: [rules-engine, bug-fix, grouping]
+status: active
+created: 2025-01-01
+updated: 2025-11-11
+related: []
+---
+
 # Rules-Based Group Generation - Complete Rewrite
 
 ## Summary

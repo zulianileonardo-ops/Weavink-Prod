@@ -1,3 +1,16 @@
+---
+id: features-bot-detection-v1-016
+title: Bot Detection Fix V1
+category: features
+tags: [bot-detection, rate-limiting, security, multi-factor-analysis, analytics, firestore-logging]
+status: superseded
+created: 2025-01-01
+updated: 2025-11-11
+related:
+  - BOT_DETECTION_FIX_V2.md
+  - RATE_LIMITS_COLLECTION_GUIDE.md
+---
+
 # Bot Detection Fix - Multi-Factor Analysis
 
 ## 🐛 Problem Identified

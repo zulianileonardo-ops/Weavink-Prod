@@ -1,3 +1,14 @@
+---
+id: features-venue-enrichment-021
+title: Venue Enrichment Feature
+category: features
+tags: [contacts, google-maps, api-integration, venue-enrichment, automation]
+status: active
+created: 2025-01-01
+updated: 2025-11-11
+related: []
+---
+
 # Venue Enrichment Feature - Technical Documentation
 
 ## Overview

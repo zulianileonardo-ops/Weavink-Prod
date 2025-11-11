@@ -1,3 +1,17 @@
+---
+id: features-bot-detection-v2-015
+title: Bot Detection Fix V2
+category: features
+tags: [bot-detection, rate-limiting, security, bug-fix, multi-factor-detection, analytics]
+status: active
+created: 2025-01-01
+updated: 2025-11-11
+related:
+  - BOT_DETECTION_FIX.md
+  - RATE_LIMITS_COLLECTION_GUIDE.md
+  - ANALYTICS_IMPLEMENTATION_GUIDE.md
+---
+
 # Bot Detection Fix V2 - Include Current Request
 
 ## 🐛 The Real Problem

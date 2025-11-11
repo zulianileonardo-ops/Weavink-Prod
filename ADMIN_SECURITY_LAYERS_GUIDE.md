@@ -1,3 +1,16 @@
+---
+id: admin-security-layers-007
+title: Admin Security Layers Guide
+category: admin
+tags: [admin, security, multi-layer-security, authentication, authorization, rate-limiting, middleware, jwt]
+status: active
+created: 2025-01-01
+updated: 2025-11-11
+related:
+  - ADMIN_VIEW_ONLY_IMPLEMENTATION.md
+  - ADMIN_SERVICE_SEPARATION_GUIDE.md
+---
+
 # Admin Security Layers - Implementation Guide
 
 ## Overview

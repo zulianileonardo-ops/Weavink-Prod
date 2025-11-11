@@ -1,3 +1,16 @@
+---
+id: analytics-testing-guide-010
+title: Analytics Testing Guide
+category: analytics
+tags: [analytics, testing, debugging, click-tracking, sendBeacon, browser-console, troubleshooting]
+status: active
+created: 2025-01-01
+updated: 2025-11-11
+related:
+  - ANALYTICS_IMPLEMENTATION_GUIDE.md
+  - ANALYTICS_SERVICE_SUMMARY.md
+---
+
 # Analytics Click Tracking - Testing & Debugging Guide
 
 ## Overview

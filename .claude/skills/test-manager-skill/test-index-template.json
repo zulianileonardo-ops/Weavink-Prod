@@ -1,0 +1,78 @@
+{
+  "metadata": {
+    "project": "Weavink Tests",
+    "lastUpdated": "2025-11-11T00:00:00Z",
+    "totalSuites": 0,
+    "totalTests": 0,
+    "overallPassRate": "0%",
+    "version": "1.0.0"
+  },
+  "categories": {
+    "rgpd": {
+      "name": "RGPD/GDPR Compliance",
+      "description": "Privacy and data protection tests",
+      "suites": []
+    },
+    "api": {
+      "name": "API Tests",
+      "description": "API endpoint and integration tests",
+      "suites": []
+    },
+    "features": {
+      "name": "Feature Tests",
+      "description": "Product feature and functionality tests",
+      "suites": []
+    },
+    "performance": {
+      "name": "Performance Tests",
+      "description": "Performance and load tests",
+      "suites": []
+    }
+  },
+  "suites": [
+    {
+      "testId": "example-test-001",
+      "testFile": "runConsentTests.mjs",
+      "testSuite": "RGPD Consent Management",
+      "category": "rgpd",
+      "totalTests": 8,
+      "passed": 8,
+      "failed": 0,
+      "successRate": "100%",
+      "duration": "1.8s",
+      "lastRun": "2025-11-11T00:00:00Z",
+      "status": "passing",
+      "relatedDocs": [
+        "CONSENT_IMPLEMENTATION_GUIDE.md",
+        "RGPD_TESTING_GUIDE.md"
+      ],
+      "testedFunctions": [
+        "recordConsent",
+        "withdrawConsent",
+        "getUserConsents",
+        "hasConsent",
+        "batchGrantConsents",
+        "getConsentHistory"
+      ],
+      "coverage": {
+        "files": ["lib/services/servicePrivacy/consentService.js"],
+        "functions": 6,
+        "percentage": 95
+      },
+      "tests": [
+        {
+          "name": "Grant Individual Consent",
+          "status": "passed",
+          "duration": "120ms",
+          "description": "Tests that individual consent can be granted"
+        },
+        {
+          "name": "Withdraw Consent",
+          "status": "passed",
+          "duration": "110ms",
+          "description": "Tests that consent can be withdrawn"
+        }
+      ]
+    }
+  ]
+}

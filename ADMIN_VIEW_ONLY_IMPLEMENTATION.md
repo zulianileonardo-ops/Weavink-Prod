@@ -1,3 +1,16 @@
+---
+id: admin-view-only-003
+title: Admin View-Only Implementation
+category: admin
+tags: [admin, security, permissions, rbac, view-only, authorization, multi-layer-security, env-variables]
+status: active
+created: 2025-01-01
+updated: 2025-11-11
+related:
+  - ADMIN_SECURITY_LAYERS_GUIDE.md
+  - ADMIN_SERVICE_SEPARATION_GUIDE.md
+---
+
 # Admin View-Only Role Implementation Guide
 
 ## Overview

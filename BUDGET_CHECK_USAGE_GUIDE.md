@@ -1,3 +1,16 @@
+---
+id: technical-budget-check-usage-027
+title: Budget Check Usage Guide
+category: technical
+tags: [budget, cost-tracking, permissions, session-management, api-design, pre-flight-checks]
+status: active
+created: 2025-01-01
+updated: 2025-11-11
+related:
+  - BUDGET_DISPLAY_IMPLEMENTATION.md
+  - COST_TRACKING_MIGRATION_GUIDE.md
+---
+
 # Budget Check Usage Guide
 
 This guide explains how to use the new real-time budget tracking and permission checking system.

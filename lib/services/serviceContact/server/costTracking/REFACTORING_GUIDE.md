@@ -1,3 +1,16 @@
+---
+id: technical-refactoring-guide-034
+title: Cost Tracking Refactoring Guide
+category: technical
+tags: [refactoring, cost-tracking, service-layer]
+status: active
+created: 2025-01-01
+updated: 2025-11-11
+related:
+  - COST_TRACKING_MIGRATION_GUIDE.md
+  - COMPREHENSIVE_REFACTORING_GUIDE.md
+---
+
 # Cost Tracking Service - Refactoring Guide
 
 ## Overview

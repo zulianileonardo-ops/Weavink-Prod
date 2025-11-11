@@ -1,3 +1,16 @@
+---
+id: admin-service-separation-005
+title: Admin Service Separation Guide
+category: admin
+tags: [admin, architecture, service-separation, scalability, analytics, user-management, client-server-separation]
+status: active
+created: 2025-01-01
+updated: 2025-11-11
+related:
+  - ADMIN_REFACTOR_SUMMARY.md
+  - ADMIN_SECURITY_LAYERS_GUIDE.md
+---
+
 # Admin Service Separation Guide
 
 ## Overview

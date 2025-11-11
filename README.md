@@ -1,3 +1,14 @@
+---
+id: general-readme-038
+title: Project README
+category: general
+tags: [readme, setup, getting-started, overview, installation]
+status: active
+created: 2025-01-01
+updated: 2025-11-11
+related: []
+---
+
 ![image](https://github.com/user-attachments/assets/1ca25cd4-ba50-437b-b86a-099c6d8d0ac0)
 
 # LinkTree Clone

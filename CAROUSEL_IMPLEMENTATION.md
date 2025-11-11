@@ -1,3 +1,14 @@
+---
+id: features-carousel-017
+title: Carousel Implementation
+category: features
+tags: [carousel, features, data-structure, component-architecture, multi-carousel, firestore, ui-components]
+status: active
+created: 2025-01-01
+updated: 2025-11-11
+related: []
+---
+
 # Carousel Implementation - Multi-Carousel Support
 
 ## Overview

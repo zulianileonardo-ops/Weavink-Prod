@@ -1,3 +1,15 @@
+---
+id: rgpd-conformite-tapit-013
+title: RGPD Conformité Tapit
+category: rgpd
+tags: [gdpr, rgpd, compliance, privacy, legal, data-protection, consent-management, cookies]
+status: active
+created: 2025-01-01
+updated: 2025-11-11
+related:
+  - COMMIT_SUMMARY.md
+---
+
 # Conformité RGPD - Weavink (Tapit SAS)
 ## Document Complémentaire - Dossier de Candidature Pépinière TARMAC
 

@@ -1,3 +1,16 @@
+---
+id: testing-rate-limits-collection-037
+title: Rate Limits Collection Guide
+category: testing
+tags: [rate-limiting, security, monitoring, firestore, logging, security-events]
+status: active
+created: 2025-01-01
+updated: 2025-11-11
+related:
+  - BOT_DETECTION_FIX_V2.md
+  - ANALYTICS_IMPLEMENTATION_GUIDE.md
+---
+
 # RateLimits Collection - Monitoring & Analysis Guide
 
 ## 📋 Overview
