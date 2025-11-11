@@ -20,9 +20,7 @@ export default function MyLinks() {
         themeTextColour = "",
         sensitiveStatus = false,
         carousels = [],
-        cvEnabled = false,
         cvItems = [],
-        cvDocument = null,
         mediaEnabled = false,
         mediaItems = [],
         subscriptionLevel = 'base'
@@ -107,8 +105,9 @@ export default function MyLinks() {
                     // Find the specific CV item this link refers to
                     const cvItem = cvItems.find(cv => cv.id === link.cvItemId);
 
-                    // Only render CV if it's enabled and the specific document exists
-                    if (cvEnabled && cvItem && cvItem.url) {
+                    // Only render CV if the specific document exists
+                    // Individual activation is controlled by link.isActive (filtered earlier)
+                    if (cvItem && cvItem.url) {
                         return (
                             <CVButton
                                 key={`cv-${link.id}`}
@@ -117,7 +116,7 @@ export default function MyLinks() {
                             />
                         );
                     }
-                    // If CV not configured or document not uploaded, don't render anything
+                    // If CV document not uploaded, don't render anything
                     return null;
                 } else if (link.type === 4) { // Media type (images or videos)
                     // Find the specific media item linked to this link

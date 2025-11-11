@@ -2,7 +2,7 @@
   "metadata": {
     "project": "Weavink Documentation",
     "last_updated": "2025-11-11",
-    "total_guides": 52,
+    "total_guides": 53,
     "version": "1.0.0"
   },
   "categories": {
@@ -57,7 +57,8 @@
         "features-landing-page-022",
         "features-realtime-subscription-023",
         "features-contact-download-024",
-        "features-onboarding-guide-025"
+        "features-onboarding-guide-025",
+        "features-cv-enhancement-026"
       ]
     },
     "technical": {
@@ -814,6 +815,20 @@
       "components": ["OnboardingWizard", "LanguageSelector"],
       "status": "active",
       "created": "2025-01-01",
+      "updated": "2025-11-11"
+    },
+    {
+      "id": "features-cv-enhancement-026",
+      "title": "CV Features Enhancement Guide",
+      "filename": "CV_FEATURES_ENHANCEMENT.md",
+      "category": "features",
+      "summary": "Comprehensive implementation of CV/resume features including service-level caching, individual link activation, bidirectional navigation with visual highlighting, and document validation with auto-activation.",
+      "tags": ["cv", "caching", "navigation", "validation", "real-time-sync", "firestore", "appearance", "links", "user-experience"],
+      "related_guides": ["features-realtime-subscription-023", "technical-refactoring-guide-034"],
+      "functions": ["AppearanceService.getAppearanceData", "AppearanceService.subscribe", "AppearanceService.invalidateCache", "AppearanceService.getCachedAppearanceData", "LinksService.updateLink", "LinksService.getLinks", "LinksService.subscribe", "useItemNavigation", "scrollToElement", "getItemHash"],
+      "components": ["CVItem", "CVItemCard", "CVManager", "MyLinks"],
+      "status": "active",
+      "created": "2025-11-11",
       "updated": "2025-11-11"
     },
     {

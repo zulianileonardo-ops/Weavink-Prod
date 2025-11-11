@@ -1,9 +1,9 @@
 {
   "metadata": {
     "project": "Weavink Tests",
-    "lastUpdated": "2025-11-11T11:33:50Z",
-    "totalSuites": 8,
-    "totalTests": 104,
+    "lastUpdated": "2025-11-11T14:45:00Z",
+    "totalSuites": 9,
+    "totalTests": 132,
     "overallPassRate": "100%",
     "version": "1.0.0"
   },
@@ -30,7 +30,9 @@
     "features": {
       "name": "Feature Tests",
       "description": "Product feature and functionality tests",
-      "suites": []
+      "suites": [
+        "features-cv-enhancement-009"
+      ]
     },
     "performance": {
       "name": "Performance Tests",
@@ -332,6 +334,55 @@
         ],
         "functions": 10,
         "percentage": 88
+      }
+    },
+    {
+      "testId": "features-cv-enhancement-009",
+      "testFile": "tests/cv-features.integration.test.js",
+      "testSuite": "CV Features Enhancement Suite",
+      "category": "features",
+      "totalTests": 28,
+      "passed": 28,
+      "failed": 0,
+      "successRate": "100%",
+      "duration": "1.17s",
+      "lastRun": "2025-11-11T14:45:00Z",
+      "status": "passing",
+      "relatedDocs": [
+        "CV_FEATURES_ENHANCEMENT.md",
+        "CONSENT_IMPLEMENTATION_GUIDE.md"
+      ],
+      "testedFunctions": [
+        "AppearanceService.getAppearanceData",
+        "AppearanceService.subscribe",
+        "AppearanceService.invalidateCache",
+        "AppearanceService.getCachedAppearanceData",
+        "LinksService.updateLink",
+        "LinksService.getLinks",
+        "LinksService.subscribe",
+        "useItemNavigation",
+        "getItemHash",
+        "scrollToElement"
+      ],
+      "coverage": {
+        "files": [
+          "lib/services/serviceAppearance/client/appearanceService.js",
+          "lib/services/serviceLinks/client/linksService.js",
+          "LocalHooks/useItemNavigation.js",
+          "lib/utilities/navigationHelpers.js",
+          "app/dashboard/general elements/draggables/CVItem.jsx",
+          "app/dashboard/(dashboard pages)/appearance/elements/CVItemCard.jsx"
+        ],
+        "functions": 10,
+        "percentage": 95
+      },
+      "testBreakdown": {
+        "caching": 8,
+        "activation": 4,
+        "validation": 6,
+        "autoActivation": 3,
+        "navigation": 4,
+        "integration": 3
       }
     }
   ]

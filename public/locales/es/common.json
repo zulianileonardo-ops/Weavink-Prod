@@ -823,7 +823,9 @@
         "no_document": "No se ha subido ningún documento",
         "uploading": "Subiendo...",
         "upload_document": "Subir documento",
-        "document": "Documento"
+        "document": "Documento",
+        "go_to_link": "Ir al enlace",
+        "link_activated": "Enlace de CV activado automáticamente"
       }
     },
     "links": {
@@ -846,7 +848,8 @@
         "customize_cv": "Personalizar CV",
         "customize_video_embed": "Personalizar media",
         "setup_link_prompt": "Ingresa tu URL de {{kind}}, luego configura tu enlace",
-        "custom_kind": "Personalizado"
+        "custom_kind": "Personalizado",
+        "cv_no_document_error": "No se puede activar. Por favor, sube un documento primero."
       }
     },
     "your_linktree": "Tu Linktree está en vivo:",

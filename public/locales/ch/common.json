@@ -792,7 +792,9 @@
         "no_document": "未上传文档",
         "uploading": "上传中...",
         "upload_document": "上传文档",
-        "document": "文档"
+        "document": "文档",
+        "go_to_link": "前往链接",
+        "link_activated": "简历链接已自动激活"
       }
     },
     "links": {
@@ -815,7 +817,8 @@
         "customize_cv": "自定义简历",
         "customize_video_embed": "自定义媒体",
         "setup_link_prompt": "输入您的{{kind}} URL，然后设置您的链接",
-        "custom_kind": "自定义"
+        "custom_kind": "自定义",
+        "cv_no_document_error": "无法激活。请先上传文档。"
       }
     },
     "your_linktree": "您的 Linktree 已上线：",

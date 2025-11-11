@@ -6,11 +6,13 @@ import Image from 'next/image';
 import { useContext, useMemo, useState, useEffect } from 'react';
 import { FaX, FaGear } from 'react-icons/fa6';
 import { FaFileAlt } from 'react-icons/fa';
+import { toast } from 'react-hot-toast';
 import { ManageLinksContent } from '../../general components/ManageLinks';
 import { useTranslation } from '@/lib/translation/useTranslation';
 import { useDashboard } from '@/app/dashboard/DashboardContext';
 import { AppearanceService } from '@/lib/services/serviceAppearance/client/appearanceService.js';
 import { useDebounce } from '@/LocalHooks/useDebounce';
+import { useItemNavigation } from '@/LocalHooks/useItemNavigation';
 
 // CV Item Component - Type 3
 export default function CVItem({ item, itemRef, style, listeners, attributes, isOverlay = false }) {
@@ -18,12 +20,16 @@ export default function CVItem({ item, itemRef, style, listeners, attributes, is
     const { setData } = useContext(ManageLinksContent);
     const { currentUser } = useDashboard();
     const [wantsToDelete, setWantsToDelete] = useState(false);
-    const [cvEnabled, setCvEnabled] = useState(false);
     const [cvItems, setCvItems] = useState([]);
-    const [isLoadingToggle, setIsLoadingToggle] = useState(true);
-    const [userToggledCV, setUserToggledCV] = useState(false);
+    const [checkboxChecked, setCheckboxChecked] = useState(item.isActive);
+    const debounceCheckbox = useDebounce(checkboxChecked, 500);
     const router = useRouter();
-    const debouncedCvEnabled = useDebounce(cvEnabled, 500);
+
+    // Use navigation hook for highlighting
+    const { isHighlighted, navigateToItem, highlightClass } = useItemNavigation({
+        itemId: item.id,
+        itemType: 'cv-link'
+    });
 
     // Get the specific CV item this link refers to
     const linkedCvItem = cvItems.find(cv => cv.id === item.cvItemId);
@@ -44,10 +50,9 @@ export default function CVItem({ item, itemRef, style, listeners, attributes, is
         };
     }, [t, isInitialized]);
 
-    // Load CV enabled state on mount and listen for real-time updates
+    // Load CV items on mount and listen for real-time updates
     useEffect(() => {
         if (!currentUser?.uid) {
-            setIsLoadingToggle(false);
             return;
         }
 
@@ -55,24 +60,19 @@ export default function CVItem({ item, itemRef, style, listeners, attributes, is
         const loadInitialState = async () => {
             try {
                 const appearance = await AppearanceService.getAppearanceData();
-                setCvEnabled(appearance.cvEnabled || false);
                 setCvItems(appearance.cvItems || []);
             } catch (error) {
-                console.error('Error loading CV state:', error);
-            } finally {
-                setIsLoadingToggle(false);
+                console.error('Error loading CV items:', error);
             }
         };
 
         loadInitialState();
 
-        // Set up real-time listener for CV changes
+        // Set up real-time listener for CV item changes
         const unsubscribe = AppearanceService.listenToAppearanceData(
             currentUser.uid,
             (appearance) => {
-                const newCvEnabled = appearance.cvEnabled || false;
                 const newCvItems = appearance.cvItems || [];
-                setCvEnabled(newCvEnabled);
                 setCvItems(newCvItems);
             }
         );
@@ -83,26 +83,44 @@ export default function CVItem({ item, itemRef, style, listeners, attributes, is
         };
     }, [currentUser?.uid]);
 
-    // Save CV enabled state when toggled by user
-    useEffect(() => {
-        if (isLoadingToggle || !userToggledCV) return; // Don't save on initial load or listener updates
+    // Handle toggle change
+    const handleCheckboxChange = (event) => {
+        const newValue = event.target.checked;
 
-        const saveCvState = async () => {
-            try {
-                await AppearanceService.updateAppearanceData({ cvEnabled }, { origin: 'manage-links', userId: currentUser?.uid });
-                setUserToggledCV(false); // Reset flag after save
-            } catch (error) {
-                console.error('Error saving CV state:', error);
+        // Validate: Prevent activating if no document uploaded
+        if (newValue === true) {
+            // Check if linked CV item has a document
+            if (!linkedCvItem?.url || linkedCvItem.url.trim() === '') {
+                // Show error toast
+                toast.error(
+                    t('dashboard.links.item.cv_no_document_error') ||
+                    'Cannot activate. Please upload a document first.'
+                );
+                // Don't update the checkbox
+                return;
             }
-        };
+        }
 
-        saveCvState();
-    }, [currentUser?.uid, debouncedCvEnabled, isLoadingToggle, cvEnabled, userToggledCV]);
-
-    const handleToggleCV = (event) => {
-        setCvEnabled(event.target.checked);
-        setUserToggledCV(true); // Mark as user action
+        // Proceed with toggle
+        setCheckboxChecked(newValue);
     };
+
+    // Update link's active status in the data array
+    const editArrayActiveStatus = () => {
+        setData(prevData =>
+            prevData.map(i =>
+                i.id === item.id ? { ...i, isActive: checkboxChecked } : i
+            )
+        );
+    };
+
+    // Trigger update when checkbox changes (debounced)
+    useEffect(() => {
+        if (checkboxChecked !== item.isActive) {
+            editArrayActiveStatus();
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [debounceCheckbox]);
 
     const handleDelete = async () => {
         // Remove from links
@@ -126,19 +144,16 @@ export default function CVItem({ item, itemRef, style, listeners, attributes, is
     };
 
     const handleManage = () => {
-        // Navigate to appearance page with CV hash
-        router.push('/dashboard/appearance#cv');
-
-        // After navigation, scroll to the CV section
-        setTimeout(() => {
-            const cvSection = document.getElementById('cv');
-            if (cvSection) {
-                cvSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-        }, 300);
+        // Navigate to specific CV item in appearance page
+        if (item.cvItemId) {
+            navigateToItem('/dashboard/appearance', item.cvItemId, 'cv-item');
+        } else {
+            // Fallback to section navigation if no specific item ID
+            router.push('/dashboard/appearance#cv');
+        }
     };
 
-    const containerClasses = `rounded-3xl border flex flex-col bg-gradient-to-r from-indigo-50 to-cyan-50 border-indigo-300 ${isOverlay ? 'shadow-lg' : ''}`;
+    const containerClasses = `rounded-3xl border flex flex-col bg-gradient-to-r from-indigo-50 to-cyan-50 border-indigo-300 ${isOverlay ? 'shadow-lg' : ''} ${highlightClass}`;
 
     // Loading state while translations load
     if (!isInitialized) {
@@ -150,6 +165,7 @@ export default function CVItem({ item, itemRef, style, listeners, attributes, is
 
     return (
         <div
+            id={`cv-link-${item.id}`}
             ref={itemRef}
             style={style}
             className={containerClasses}
@@ -195,14 +211,13 @@ export default function CVItem({ item, itemRef, style, listeners, attributes, is
 
                 {/* Toggle and Delete Buttons */}
                 <div className='grid sm:pr-2 gap-2 place-items-center'>
-                    {/* Toggle Switch */}
+                    {/* Individual Toggle Switch */}
                     <div className='cursor-pointer scale-[0.8] sm:scale-100'>
                         <label className="relative flex justify-between items-center group p-2 text-xl">
                             <input
                                 type="checkbox"
-                                onChange={handleToggleCV}
-                                checked={cvEnabled}
-                                disabled={isLoadingToggle}
+                                onChange={handleCheckboxChange}
+                                checked={checkboxChecked}
                                 className="absolute left-1/2 -translate-x-1/2 w-full h-full peer appearance-none rounded-md"
                             />
                             <span className="w-9 h-6 flex items-center flex-shrink-0 ml-4 p-1 bg-gray-400 rounded-full duration-300 ease-in-out peer-checked:bg-green-600 after:w-4 after:h-4 after:bg-white after:rounded-full after:shadow-md after:duration-300 peer-checked:after:translate-x-3 group-hover:after:translate-x-[2px]"></span>

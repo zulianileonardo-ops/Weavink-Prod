@@ -906,7 +906,9 @@
         "no_document": "Aucun document téléchargé",
         "uploading": "Téléchargement en cours...",
         "upload_document": "Télécharger un document",
-        "document": "Document"
+        "document": "Document",
+        "go_to_link": "Aller au lien",
+        "link_activated": "Lien CV automatiquement activé"
       }
     },
     "links": {
@@ -963,7 +965,8 @@
         "cancel_button": "Annuler",
         "delete_button": "Supprimer",
         "setup_link_prompt": "Entrez votre URL {{kind}}, puis configurez votre lien",
-        "custom_kind": "Personnalisé"
+        "custom_kind": "Personnalisé",
+        "cv_no_document_error": "Impossible d'activer. Veuillez d'abord télécharger un document."
       },
       "toasts": {
         "carousel_added": "Lien carrousel ajouté - rendez-vous dans Apparence pour ajouter des éléments",

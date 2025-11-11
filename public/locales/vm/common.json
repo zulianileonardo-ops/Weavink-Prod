@@ -823,7 +823,9 @@
         "no_document": "Chưa tải lên tài liệu",
         "uploading": "Đang tải lên...",
         "upload_document": "Tải lên tài liệu",
-        "document": "Tài liệu"
+        "document": "Tài liệu",
+        "go_to_link": "Đi đến liên kết",
+        "link_activated": "Liên kết CV được kích hoạt tự động"
       }
     },
     "links": {
@@ -846,7 +848,8 @@
         "customize_cv": "Tùy chỉnh CV",
         "customize_video_embed": "Tùy chỉnh phương tiện",
         "setup_link_prompt": "Nhập URL {{kind}} của bạn, sau đó thiết lập liên kết",
-        "custom_kind": "Tùy chỉnh"
+        "custom_kind": "Tùy chỉnh",
+        "cv_no_document_error": "Không thể kích hoạt. Vui lòng tải lên tài liệu trước."
       }
     },
     "your_linktree": "Linktree của bạn đang hoạt động:",

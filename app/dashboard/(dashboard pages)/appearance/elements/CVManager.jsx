@@ -2,7 +2,7 @@
 "use client"
 
 import React, { useContext, useMemo } from 'react';
-import { FaPlus, FaToggleOn, FaToggleOff } from 'react-icons/fa6';
+import { FaPlus } from 'react-icons/fa6';
 import { toast } from 'react-hot-toast';
 import { AppearanceContext } from '../AppearanceContext';
 import { useTranslation } from '@/lib/translation/useTranslation';
@@ -14,8 +14,7 @@ export default function CVManager() {
     const { t, isInitialized } = useTranslation();
     const { appearance, updateAppearance, isSaving } = useContext(AppearanceContext);
 
-    // Derive CV state from appearance
-    const cvEnabled = appearance?.cvEnabled || false;
+    // Derive CV items from appearance
     const cvItems = useMemo(() => appearance?.cvItems || [], [appearance]);
 
     // Pre-compute translations
@@ -23,21 +22,16 @@ export default function CVManager() {
         if (!isInitialized) return {};
         return {
             title: t('dashboard.appearance.cv.title') || 'Curriculum / Documents',
-            enabled: t('dashboard.appearance.cv.enabled') || 'Enabled',
-            disabled: t('dashboard.appearance.cv.disabled') || 'Disabled',
-            description: t('dashboard.appearance.cv.description') || 'Manage multiple CV documents and resumes.',
+            description: t('dashboard.appearance.cv.description') || 'Manage multiple CV documents and resumes. Toggle visibility in Manage Links.',
             addItem: t('dashboard.appearance.cv.add_item') || 'Add CV Item',
             noItems: t('dashboard.appearance.cv.no_items') || 'No CV items yet. Add your first document to get started!',
             cvItems: t('dashboard.appearance.cv.cv_items') || 'CV Items',
-            enabledToast: t('dashboard.appearance.cv.enabled_toast') || 'CV enabled',
-            disabledToast: t('dashboard.appearance.cv.disabled_toast') || 'CV disabled',
             missingLinksCreated: t('dashboard.appearance.cv.missing_links_created') || 'Created {{count}} missing link(s) for existing CV items',
             itemAndLinkAdded: t('dashboard.appearance.cv.item_and_link_added') || 'CV item and link added successfully',
             itemAddedLinkFailed: t('dashboard.appearance.cv.item_added_link_failed') || 'CV item added but failed to create link',
             itemAndLinkDeleted: t('dashboard.appearance.cv.item_and_link_deleted') || 'CV item and link deleted',
             itemDeleted: t('dashboard.appearance.cv.item_deleted') || 'CV item deleted',
             itemDeletedLinkMayExist: t('dashboard.appearance.cv.item_deleted_link_may_exist') || 'CV item deleted (link may still exist)',
-            enableFeatureMessage: t('dashboard.appearance.cv.enable_feature_message') || 'Enable the CV feature to start managing your documents.',
         };
     }, [t, isInitialized]);
 
@@ -84,12 +78,6 @@ export default function CVManager() {
 
         migrateExistingCvItems();
     }, [cvItems, hasMigrated, t, translations.missingLinksCreated]);
-
-    // Toggle CV enabled/disabled
-    const handleToggleCV = () => {
-        updateAppearance('cvEnabled', !cvEnabled);
-        toast.success(cvEnabled ? translations.disabledToast : translations.enabledToast);
-    };
 
     // Add new CV item
     const handleAddItem = async () => {
@@ -181,25 +169,9 @@ export default function CVManager() {
 
     return (
         <div className="w-full bg-white rounded-3xl my-3 flex flex-col p-6">
-            {/* Header with enable/disable toggle */}
+            {/* Header */}
             <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                    <h3 className="text-xl font-semibold">{translations.title}</h3>
-                    <button
-                        onClick={handleToggleCV}
-                        disabled={isSaving}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
-                            cvEnabled
-                                ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                        }`}
-                    >
-                        {cvEnabled ? <FaToggleOn className="text-xl" /> : <FaToggleOff className="text-xl" />}
-                        <span className="text-sm font-medium">
-                            {cvEnabled ? translations.enabled : translations.disabled}
-                        </span>
-                    </button>
-                </div>
+                <h3 className="text-xl font-semibold">{translations.title}</h3>
             </div>
 
             {/* Description */}
@@ -208,52 +180,41 @@ export default function CVManager() {
             </p>
 
             {/* CV items list */}
-            {cvEnabled && (
-                <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                        <h4 className="text-sm font-semibold text-gray-700">
-                            {translations.cvItems} ({cvItems.length})
-                        </h4>
-                        <button
-                            onClick={handleAddItem}
-                            disabled={isSaving}
-                            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-                        >
-                            <FaPlus />
-                            <span className="text-sm font-medium">{translations.addItem}</span>
-                        </button>
+            <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                    <h4 className="text-sm font-semibold text-gray-700">
+                        {translations.cvItems} ({cvItems.length})
+                    </h4>
+                    <button
+                        onClick={handleAddItem}
+                        disabled={isSaving}
+                        className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                    >
+                        <FaPlus />
+                        <span className="text-sm font-medium">{translations.addItem}</span>
+                    </button>
+                </div>
+
+                {cvItems.length === 0 ? (
+                    <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+                        <p className="text-gray-500">{translations.noItems}</p>
                     </div>
-
-                    {cvItems.length === 0 ? (
-                        <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-                            <p className="text-gray-500">{translations.noItems}</p>
-                        </div>
-                    ) : (
-                        <div className="space-y-4">
-                            {cvItems
-                                .sort((a, b) => a.order - b.order)
-                                .map((item) => (
-                                    <CVItemCard
-                                        key={item.id}
-                                        item={item}
-                                        onUpdate={(updatedData) => handleUpdateItem(item.id, updatedData)}
-                                        onDelete={() => handleDeleteItem(item.id)}
-                                        disabled={isSaving}
-                                    />
-                                ))}
-                        </div>
-                    )}
-                </div>
-            )}
-
-            {/* Disabled state message */}
-            {!cvEnabled && (
-                <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-                    <p className="text-gray-500">
-                        {translations.enableFeatureMessage}
-                    </p>
-                </div>
-            )}
+                ) : (
+                    <div className="space-y-4">
+                        {cvItems
+                            .sort((a, b) => a.order - b.order)
+                            .map((item) => (
+                                <CVItemCard
+                                    key={item.id}
+                                    item={item}
+                                    onUpdate={(updatedData) => handleUpdateItem(item.id, updatedData)}
+                                    onDelete={() => handleDeleteItem(item.id)}
+                                    disabled={isSaving}
+                                />
+                            ))}
+                    </div>
+                )}
+            </div>
         </div>
     );
 }
