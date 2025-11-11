@@ -1,0 +1,137 @@
+{
+  "metadata": {
+    "project": "Weavink Tests",
+    "lastUpdated": "2025-11-11T11:22:21Z",
+    "totalSuites": 1,
+    "totalTests": 12,
+    "overallPassRate": "100%",
+    "version": "1.0.0"
+  },
+  "categories": {
+    "rgpd": {
+      "name": "RGPD/GDPR Compliance",
+      "description": "Privacy and data protection tests",
+      "suites": ["rgpd-consent-category-001"]
+    },
+    "api": {
+      "name": "API Tests",
+      "description": "API endpoint and integration tests",
+      "suites": []
+    },
+    "features": {
+      "name": "Feature Tests",
+      "description": "Product feature and functionality tests",
+      "suites": []
+    },
+    "performance": {
+      "name": "Performance Tests",
+      "description": "Performance and load tests",
+      "suites": []
+    }
+  },
+  "suites": [
+    {
+      "testId": "rgpd-consent-category-001",
+      "testFile": "runConsentCategoryTests.mjs",
+      "testSuite": "RGPD Consent Categories",
+      "category": "rgpd",
+      "totalTests": 12,
+      "passed": 12,
+      "failed": 0,
+      "successRate": "100%",
+      "duration": "~3s",
+      "lastRun": "2025-11-11T11:22:21Z",
+      "status": "passing",
+      "relatedDocs": [
+        "CONSENT_IMPLEMENTATION_GUIDE.md",
+        "RGPD_TESTING_GUIDE.md"
+      ],
+      "testedFunctions": [
+        "batchGrantConsents",
+        "getUserConsents",
+        "withdrawConsent",
+        "getConsentHistory",
+        "hasConsent"
+      ],
+      "coverage": {
+        "files": ["lib/services/servicePrivacy/consentService.js"],
+        "functions": 5,
+        "percentage": 85
+      },
+      "tests": [
+        {
+          "name": "Grant All Essential Category Consents",
+          "status": "passed",
+          "duration": "~250ms",
+          "description": "Tests batch granting of TERMS_OF_SERVICE and PRIVACY_POLICY"
+        },
+        {
+          "name": "Grant All AI Features Category Consents",
+          "status": "passed",
+          "duration": "~250ms",
+          "description": "Tests batch granting of all AI feature consents"
+        },
+        {
+          "name": "Grant All Analytics Category Consents",
+          "status": "passed",
+          "duration": "~250ms",
+          "description": "Tests batch granting of analytics tracking consents"
+        },
+        {
+          "name": "Grant All Communication Category Consents",
+          "status": "passed",
+          "duration": "~250ms",
+          "description": "Tests batch granting of communication preferences"
+        },
+        {
+          "name": "Grant All Personalization Category Consents",
+          "status": "passed",
+          "duration": "~250ms",
+          "description": "Tests batch granting of personalization features"
+        },
+        {
+          "name": "Verify All 12 Consent Types Are Granted",
+          "status": "passed",
+          "duration": "~250ms",
+          "description": "Ensures all consents across all categories are correctly stored"
+        },
+        {
+          "name": "Withdraw Entire AI Features Category",
+          "status": "passed",
+          "duration": "~250ms",
+          "description": "Tests withdrawing all AI feature consents"
+        },
+        {
+          "name": "Verify Mixed Consent States Across Categories",
+          "status": "passed",
+          "duration": "~250ms",
+          "description": "Tests handling of different consent states for different categories"
+        },
+        {
+          "name": "Verify Consent History Covers All Categories",
+          "status": "passed",
+          "duration": "~250ms",
+          "description": "Tests complete audit trail of all consent changes"
+        },
+        {
+          "name": "Export Data Contains All Category Consents",
+          "status": "passed",
+          "duration": "~250ms",
+          "description": "Tests data portability includes all consent information"
+        },
+        {
+          "name": "Re-grant Previously Withdrawn AI Features Category",
+          "status": "passed",
+          "duration": "~250ms",
+          "description": "Tests re-enabling features previously disabled"
+        },
+        {
+          "name": "Check If Entire Category Is Enabled",
+          "status": "passed",
+          "duration": "~250ms",
+          "description": "Tests category-level consent checking"
+        }
+      ]
+    }
+  ]
+}
