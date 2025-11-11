@@ -2564,6 +2564,39 @@
       }
     }
   },
+  "onboarding": {
+    "welcome": {
+      "title": "Bienvenue sur Weavink !",
+      "subtitle": "Configurons votre compte en quelques étapes"
+    },
+    "progress": {
+      "step_of": "Étape {{current}} sur {{total}}"
+    },
+    "language": {
+      "title": "Choisissez Votre Langue",
+      "description": "Sélectionnez votre langue préférée pour l'interface. Vous pourrez la modifier plus tard dans les paramètres de votre compte.",
+      "label": "Langue",
+      "options": {
+        "en": "English",
+        "fr": "Français",
+        "es": "Español",
+        "vm": "Tiếng Việt",
+        "zh": "中文"
+      },
+      "current": "Langue actuelle : {{language}}"
+    },
+    "buttons": {
+      "next": "Suivant",
+      "back": "Retour",
+      "complete": "Terminer la Configuration",
+      "skip": "Ignorer pour l'instant"
+    },
+    "saving": "Enregistrement de vos préférences...",
+    "success": "Configuration terminée avec succès !",
+    "error": "Échec de l'enregistrement des préférences. Veuillez réessayer.",
+    "ready_to_complete": "🎉 Prêt à finaliser votre configuration !",
+    "step_indicator": "Étape {{current}} sur {{total}}"
+  },
   "contacts": {
     "title": "Contacts",
     "subtitle": "Gérez vos contacts et connexions professionnelles",

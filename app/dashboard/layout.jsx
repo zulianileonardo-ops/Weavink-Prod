@@ -11,20 +11,22 @@ import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { DashboardProvider } from './DashboardContext'
 import { MapVisibilityProvider } from './MapVisibilityContext'
 import LanguageInitializer from './LanguageInitializer'
+import OnboardingGuard from './components/OnboardingGuard'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export default function RootLayout({ children }) {
     const pathname = usePathname()
-    
+
     // Check if we're on the enterprise page
     const isEnterprisePage = pathname?.includes('/enterprise')
 
     return (
         <ProtectedRoute>
-            <LanguageInitializer />
-            <DashboardProvider>
-                <MapVisibilityProvider>
+            <OnboardingGuard>
+                <LanguageInitializer />
+                <DashboardProvider>
+                    <MapVisibilityProvider>
                     <div>
                         <Toaster position="bottom-right" />
                         <div className='w-full min-h-screen overflow-x-hidden overflow-y-auto relative bg-black bg-opacity-[.05] p-2 flex flex-col'>
@@ -39,6 +41,7 @@ export default function RootLayout({ children }) {
                     </div>
                 </MapVisibilityProvider>
             </DashboardProvider>
+            </OnboardingGuard>
         </ProtectedRoute>
     )
 }

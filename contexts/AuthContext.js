@@ -93,13 +93,15 @@
       const unsubscribe = onAuthStateChanged(auth, (user) => {
         setCurrentUser(user);
         setLoading(false);
-        
+
         // ✅ Clear token cache when user changes
         if (!user) {
           tokenCache.current = { token: null, expiresAt: 0, refreshPromise: null };
+          return;
         }
-        
+
         // Automatically redirect user if they are on a login/signup page while authenticated
+        // OnboardingGuard in dashboard layout will handle onboarding check
         if (user && (pathname === '/login' || pathname === '/signup')) {
           router.push('/dashboard');
         }

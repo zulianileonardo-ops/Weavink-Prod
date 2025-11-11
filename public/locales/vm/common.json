@@ -2299,6 +2299,39 @@
       }
     }
   },
+  "onboarding": {
+    "welcome": {
+      "title": "Chào mừng đến với Weavink!",
+      "subtitle": "Hãy thiết lập tài khoản của bạn chỉ trong vài bước"
+    },
+    "progress": {
+      "step_of": "Bước {{current}} trên {{total}}"
+    },
+    "language": {
+      "title": "Chọn Ngôn Ngữ Của Bạn",
+      "description": "Chọn ngôn ngữ ưa thích của bạn cho giao diện. Bạn có thể thay đổi điều này sau trong cài đặt tài khoản.",
+      "label": "Ngôn ngữ",
+      "options": {
+        "en": "English",
+        "fr": "Français",
+        "es": "Español",
+        "vm": "Tiếng Việt",
+        "zh": "中文"
+      },
+      "current": "Ngôn ngữ hiện tại: {{language}}"
+    },
+    "buttons": {
+      "next": "Tiếp theo",
+      "back": "Quay lại",
+      "complete": "Hoàn Tất Thiết Lập",
+      "skip": "Bỏ qua bây giờ"
+    },
+    "saving": "Đang lưu tùy chọn của bạn...",
+    "success": "Thiết lập hoàn tất thành công!",
+    "error": "Không thể lưu tùy chọn. Vui lòng thử lại.",
+    "ready_to_complete": "🎉 Sẵn sàng hoàn tất thiết lập của bạn!",
+    "step_indicator": "Bước {{current}} trên {{total}}"
+  },
   "contacts": {
     "title": "Danh bạ",
     "subtitle": "Quản lý danh bạ và kết nối chuyên nghiệp của bạn",
