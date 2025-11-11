@@ -908,7 +908,13 @@
         "upload_document": "Télécharger un document",
         "document": "Document",
         "go_to_link": "Aller au lien",
-        "link_activated": "Lien CV automatiquement activé"
+        "link_activated": "Lien CV automatiquement activé",
+        "display_title": "Titre d'affichage",
+        "current_file": "Fichier actuel",
+        "new_file_selected": "Nouveau fichier sélectionné",
+        "choose_new_file": "Choisir un nouveau fichier",
+        "save_changes": "Enregistrer les modifications",
+        "cancel": "Annuler"
       }
     },
     "links": {

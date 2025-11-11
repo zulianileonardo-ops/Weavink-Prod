@@ -510,11 +510,46 @@ export function AppearanceProvider({ children }) {
         // Appearance data will be refreshed through manual saves and page loads
         console.log(`✅ [${id}] Using DashboardContext as single source of truth for permissions`);
 
-        // No cleanup needed since we removed the listener
+        // ✅ Subscribe to AppearanceService cache invalidation events
+        // This ensures the UI updates when changes are made from other pages (e.g., ManageLinks)
+        console.log(`🔔 [${id}] Subscribing to cache invalidation events`);
+        const unsubscribeCache = AppearanceService.subscribe((updatedData) => {
+            // Check if this is a cache invalidation (data is null)
+            if (updatedData === null) {
+                console.log(`🔄 [${id}] Cache invalidated, refetching fresh data...`);
+                // Mark as listener update to prevent save loop
+                isListenerUpdate.current = true;
+                fetchAppearanceData(true);
+            } else if (updatedData) {
+                // Fresh data received directly from cache update
+                console.log(`📦 [${id}] Received fresh data from cache update`);
+                const enhancedData = applyAppearanceDefaults(updatedData);
+                // Mark as listener update to prevent save loop
+                isListenerUpdate.current = true;
+                setAppearance(enhancedData);
+                lastSavedHashRef.current = createAppearanceHash(enhancedData);
+                setIsFromCache(false);
+                setIsLoading(false);
+                setHasLoadError(false);
+
+                // Update cache
+                if (cacheKeyRef.current) {
+                    appearanceCache.set(cacheKeyRef.current, {
+                        data: enhancedData,
+                        timestamp: Date.now()
+                    });
+                }
+            }
+        });
+
+        // Cleanup: unsubscribe from cache updates
         return () => {
-            console.log(`👋 [${id}] Cleaning up AppearanceContext`);
+            console.log(`👋 [${id}] Cleaning up AppearanceContext and cache subscription`);
+            if (typeof unsubscribeCache === 'function') {
+                unsubscribeCache();
+            }
         };
-}, [currentUser, isInitialized, isSessionLoading, fetchAppearanceData, createAppearanceHash]);
+}, [currentUser, isInitialized, isSessionLoading, fetchAppearanceData, createAppearanceHash, applyAppearanceDefaults]);
 
     // Listen for local appearance updates triggered outside of this provider (e.g., Manage Links page)
     useEffect(() => {

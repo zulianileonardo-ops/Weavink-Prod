@@ -171,7 +171,7 @@ export default function ManageLinks() {
         const newCV = {
             id: generateRandomId(),
             title: t('dashboard.links.add_cv'),
-            isActive: true,
+            isActive: false,
             type: 3,
             cvItemId: cvItemId // Link to the CV item in appearance
         };

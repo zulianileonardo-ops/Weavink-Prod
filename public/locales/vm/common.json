@@ -825,7 +825,13 @@
         "upload_document": "Tải lên tài liệu",
         "document": "Tài liệu",
         "go_to_link": "Đi đến liên kết",
-        "link_activated": "Liên kết CV được kích hoạt tự động"
+        "link_activated": "Liên kết CV được kích hoạt tự động",
+        "display_title": "Tiêu đề hiển thị",
+        "current_file": "Tệp hiện tại",
+        "new_file_selected": "Đã chọn tệp mới",
+        "choose_new_file": "Chọn tệp mới",
+        "save_changes": "Lưu thay đổi",
+        "cancel": "Hủy"
       }
     },
     "links": {

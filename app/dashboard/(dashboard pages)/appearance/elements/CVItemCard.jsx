@@ -9,13 +9,17 @@ import { AppearanceService } from "@/lib/services/serviceAppearance/client/appea
 import { LinksService } from "@/lib/services/serviceLinks/client/LinksService";
 import { useTranslation } from '@/lib/translation/useTranslation';
 import { useItemNavigation } from '@/LocalHooks/useItemNavigation';
+import { useDebounce } from '@/LocalHooks/useDebounce';
 
 export default function CVItemCard({ item, onUpdate, onDelete, disabled }) {
     const { t, isInitialized } = useTranslation();
-    const [isEditingTitle, setIsEditingTitle] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
     const [tempTitle, setTempTitle] = useState(item.displayTitle || '');
+    const [tempFile, setTempFile] = useState(null);
     const [isUploading, setIsUploading] = useState(false);
     const [linkedLinkItem, setLinkedLinkItem] = useState(null);
+    const [checkboxChecked, setCheckboxChecked] = useState(false);
+    const debounceCheckbox = useDebounce(checkboxChecked, 500);
     const fileInputRef = useRef(null);
 
     // Use navigation hook for highlighting
@@ -43,6 +47,12 @@ export default function CVItemCard({ item, onUpdate, onDelete, disabled }) {
             document: t('dashboard.appearance.cv_item.document') || 'Document',
             goToLink: t('dashboard.appearance.cv_item.go_to_link') || 'Go to Link',
             linkActivated: t('dashboard.appearance.cv_item.link_activated') || 'CV link automatically activated',
+            chooseNewFile: t('dashboard.appearance.cv_item.choose_new_file') || 'Choose New File',
+            saveChanges: t('dashboard.appearance.cv_item.save_changes') || 'Save Changes',
+            cancel: t('dashboard.appearance.cv_item.cancel') || 'Cancel',
+            currentFile: t('dashboard.appearance.cv_item.current_file') || 'Current file',
+            newFileSelected: t('dashboard.appearance.cv_item.new_file_selected') || 'New file selected',
+            displayTitle: t('dashboard.appearance.cv_item.display_title') || 'Display Title',
         };
     }, [t, isInitialized]);
 
@@ -72,6 +82,28 @@ export default function CVItemCard({ item, onUpdate, onDelete, disabled }) {
 
         return () => unsubscribe();
     }, [item.id]);
+
+    // Sync checkbox state when linkedLinkItem changes
+    useEffect(() => {
+        if (linkedLinkItem) {
+            setCheckboxChecked(linkedLinkItem.isActive);
+        }
+    }, [linkedLinkItem?.isActive]);
+
+    // Update linked link status when toggle changes
+    useEffect(() => {
+        if (linkedLinkItem && checkboxChecked !== linkedLinkItem.isActive) {
+            const updateLinkStatus = async () => {
+                try {
+                    await LinksService.updateLink(linkedLinkItem.id, { isActive: checkboxChecked });
+                } catch (error) {
+                    console.error('Error updating CV link status:', error);
+                    toast.error('Failed to update link status');
+                }
+            };
+            updateLinkStatus();
+        }
+    }, [debounceCheckbox]);
 
     // Handle file upload
     const handleFileUpload = async (e) => {
@@ -136,12 +168,87 @@ export default function CVItemCard({ item, onUpdate, onDelete, disabled }) {
         }
     };
 
-    // Save title edit
-    const handleSaveTitle = () => {
-        if (tempTitle.trim() !== '') {
-            onUpdate({ ...item, displayTitle: tempTitle.trim() });
+    // Handle file selection (store in temp, don't upload yet)
+    const handleFileSelect = (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        // File validation
+        const allowedTypes = [
+            'application/pdf',
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        ];
+        const maxSize = 10 * 1024 * 1024; // 10MB
+
+        if (!allowedTypes.includes(file.type)) {
+            toast.error(translations.invalidFileType);
+            return;
         }
-        setIsEditingTitle(false);
+        if (file.size > maxSize) {
+            toast.error(translations.fileTooLarge);
+            return;
+        }
+
+        setTempFile(file);
+        // Clear the file input so the same file can be selected again
+        if (fileInputRef.current) fileInputRef.current.value = '';
+    };
+
+    // Save all changes (title and/or file)
+    const handleSaveChanges = async () => {
+        setIsUploading(true);
+
+        try {
+            // If there's a new file, upload it first
+            if (tempFile) {
+                const result = await AppearanceService.uploadCVDocument(tempFile);
+                const defaultTitle = result.fileInfo.originalName.replace(/\.[^/.]+$/, "");
+
+                // Update with new file info and use filename as title
+                onUpdate({
+                    ...item,
+                    url: result.downloadURL,
+                    fileName: result.fileInfo.originalName,
+                    displayTitle: defaultTitle,
+                    uploadDate: new Date().toISOString(),
+                    fileSize: result.fileInfo.size,
+                    fileType: result.fileInfo.type
+                });
+
+                toast.success(translations.uploadSuccess);
+
+                // Auto-activate the linked CV link if it exists and is currently inactive
+                if (linkedLinkItem && !linkedLinkItem.isActive) {
+                    try {
+                        await LinksService.updateLink(linkedLinkItem.id, { isActive: true });
+                        toast.success(translations.linkActivated);
+                    } catch (error) {
+                        console.error('Error auto-activating CV link:', error);
+                    }
+                }
+            } else if (tempTitle.trim() !== '' && tempTitle.trim() !== item.displayTitle) {
+                // Only title changed
+                onUpdate({ ...item, displayTitle: tempTitle.trim() });
+            }
+
+            // Exit edit mode
+            setIsEditing(false);
+            setTempFile(null);
+        } catch (error) {
+            console.error('Save error:', error);
+            toast.error(error.message || translations.uploadFailed);
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
+    // Cancel editing
+    const handleCancelEdit = () => {
+        setTempTitle(item.displayTitle || '');
+        setTempFile(null);
+        setIsEditing(false);
+        if (fileInputRef.current) fileInputRef.current.value = '';
     };
 
     // Delete item
@@ -156,6 +263,24 @@ export default function CVItemCard({ item, onUpdate, onDelete, disabled }) {
         if (linkedLinkItem) {
             navigateToItem('/dashboard', linkedLinkItem.id, 'cv-link');
         }
+    };
+
+    // Handle toggle active/inactive
+    const handleToggleActive = (event) => {
+        const newValue = event.target.checked;
+
+        // Validate: Prevent activating if no document uploaded
+        if (newValue === true) {
+            if (!item.url || item.url.trim() === '') {
+                toast.error(
+                    t('dashboard.appearance.cv_item.no_document_error') ||
+                    'Cannot activate. Please upload a document first.'
+                );
+                return;
+            }
+        }
+
+        setCheckboxChecked(newValue);
     };
 
     const formatFileSize = (bytes) => {
@@ -173,8 +298,23 @@ export default function CVItemCard({ item, onUpdate, onDelete, disabled }) {
     return (
         <div
             id={`cv-item-${item.id}`}
-            className={`border-2 border-gray-200 rounded-lg p-4 bg-white hover:border-gray-300 ${highlightClass}`}
+            className={`relative border-2 border-gray-200 rounded-lg p-4 bg-white hover:border-gray-300 ${highlightClass}`}
         >
+            {/* Toggle at top-right - only show if there's a linked link */}
+            {linkedLinkItem && (
+                <div className="absolute top-2 right-2 cursor-pointer scale-[0.8] sm:scale-100 z-10">
+                    <label className="relative flex justify-between items-center group p-2 text-xl">
+                        <input
+                            type="checkbox"
+                            onChange={handleToggleActive}
+                            checked={checkboxChecked}
+                            className="absolute left-1/2 -translate-x-1/2 w-full h-full peer appearance-none rounded-md cursor-pointer"
+                        />
+                        <span className="w-9 h-6 flex items-center flex-shrink-0 ml-4 p-1 bg-gray-400 rounded-full duration-300 ease-in-out peer-checked:bg-green-600 after:w-4 after:h-4 after:bg-white after:rounded-full after:shadow-md after:duration-300 peer-checked:after:translate-x-3 group-hover:after:translate-x-[2px]"></span>
+                    </label>
+                </div>
+            )}
+
             <input
                 ref={fileInputRef}
                 type="file"
@@ -197,67 +337,152 @@ export default function CVItemCard({ item, onUpdate, onDelete, disabled }) {
             )}
 
             {item.url ? (
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4 flex-1">
-                        <FaFileAlt className="text-2xl text-indigo-500" />
-                        <div className="flex-1">
-                            {isEditingTitle ? (
+                isEditing ? (
+                    // Enhanced Edit Mode
+                    <div className="border-2 border-blue-500 rounded-lg p-4 bg-blue-50">
+                        <div className="space-y-4">
+                            {/* Title Input */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    {translations.displayTitle}
+                                </label>
                                 <input
                                     type="text"
                                     value={tempTitle}
                                     onChange={(e) => setTempTitle(e.target.value)}
-                                    onBlur={handleSaveTitle}
-                                    onKeyPress={(e) => e.key === 'Enter' && handleSaveTitle()}
-                                    className="text-md font-medium text-gray-800 outline-none border-b-2 border-blue-500 bg-gray-50 w-full"
-                                    autoFocus
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    placeholder={translations.displayTitle}
                                 />
-                            ) : (
+                            </div>
+
+                            {/* File Information & Replacement */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Document File
+                                </label>
+
+                                {/* Current File Info */}
+                                <div className="bg-white rounded-md p-3 mb-2 border border-gray-200">
+                                    <div className="flex items-center gap-2 text-sm">
+                                        <FaFileAlt className="text-indigo-500" />
+                                        <div className="flex-1">
+                                            <p className="font-medium text-gray-800">
+                                                {translations.currentFile}: {item.fileName}
+                                            </p>
+                                            <p className="text-xs text-gray-500">
+                                                {formatFileSize(item.fileSize)} - {getFileExtension(item.fileName)}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* New File Selected Info */}
+                                {tempFile && (
+                                    <div className="bg-green-50 rounded-md p-3 mb-2 border border-green-200">
+                                        <div className="flex items-center gap-2 text-sm">
+                                            <FaUpload className="text-green-600" />
+                                            <div className="flex-1">
+                                                <p className="font-medium text-green-800">
+                                                    {translations.newFileSelected}: {tempFile.name}
+                                                </p>
+                                                <p className="text-xs text-green-600">
+                                                    {formatFileSize(tempFile.size)} - {tempFile.name.split('.').pop()?.toUpperCase()}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* File Selection Button */}
+                                <button
+                                    onClick={() => {
+                                        const input = document.createElement('input');
+                                        input.type = 'file';
+                                        input.accept = '.pdf,.doc,.docx';
+                                        input.onchange = handleFileSelect;
+                                        input.click();
+                                    }}
+                                    className="w-full px-4 py-2 bg-white border-2 border-dashed border-gray-300 rounded-md hover:border-blue-500 hover:bg-blue-50 transition-colors text-sm font-medium text-gray-700 flex items-center justify-center gap-2"
+                                >
+                                    <FaUpload />
+                                    {translations.chooseNewFile}
+                                </button>
+                            </div>
+
+                            {/* Action Buttons */}
+                            <div className="flex gap-2 pt-2">
+                                <button
+                                    onClick={handleSaveChanges}
+                                    disabled={isUploading}
+                                    className="flex-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    {isUploading ? translations.uploading : translations.saveChanges}
+                                </button>
+                                <button
+                                    onClick={handleCancelEdit}
+                                    disabled={isUploading}
+                                    className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    {translations.cancel}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                ) : (
+                    // Normal Display Mode
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4 flex-1">
+                            <FaFileAlt className="text-2xl text-indigo-500" />
+                            <div className="flex-1">
                                 <h4 className="text-md font-medium text-gray-800">
                                     {item.displayTitle || item.fileName?.replace(/\.[^/.]+$/, "") || translations.document}
                                 </h4>
-                            )}
-                            <p className="text-xs text-gray-500">
-                                {formatFileSize(item.fileSize)} - {getFileExtension(item.fileName)}
-                            </p>
+                                <p className="text-xs text-gray-500">
+                                    {formatFileSize(item.fileSize)} - {getFileExtension(item.fileName)}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => {
+                                    setTempTitle(item.displayTitle || '');
+                                    setIsEditing(true);
+                                }}
+                                disabled={disabled}
+                                className="p-2 rounded-full hover:bg-gray-100 text-gray-600"
+                                title={translations.editTitle}
+                            >
+                                <FaPencil />
+                            </button>
+                            <a
+                                href={item.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="p-2 rounded-full hover:bg-gray-100 text-gray-600"
+                                title={translations.download}
+                            >
+                                <FaDownload />
+                            </a>
+                            <button
+                                onClick={() => fileInputRef.current?.click()}
+                                disabled={disabled || isUploading}
+                                className="p-2 rounded-full hover:bg-blue-100 text-blue-600"
+                                title={translations.replaceDocument}
+                            >
+                                <FaUpload />
+                            </button>
+                            <button
+                                onClick={handleDelete}
+                                disabled={disabled}
+                                className="p-2 rounded-full hover:bg-red-100 text-red-600"
+                                title={translations.delete}
+                            >
+                                <FaTrash />
+                            </button>
                         </div>
                     </div>
-
-                    <div className="flex items-center gap-2">
-                        <button
-                            onClick={() => setIsEditingTitle(true)}
-                            disabled={disabled}
-                            className="p-2 rounded-full hover:bg-gray-100 text-gray-600"
-                            title={translations.editTitle}
-                        >
-                            <FaPencil />
-                        </button>
-                        <a
-                            href={item.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="p-2 rounded-full hover:bg-gray-100 text-gray-600"
-                            title={translations.download}
-                        >
-                            <FaDownload />
-                        </a>
-                        <button
-                            onClick={() => fileInputRef.current?.click()}
-                            disabled={disabled || isUploading}
-                            className="p-2 rounded-full hover:bg-blue-100 text-blue-600"
-                            title={translations.replaceDocument}
-                        >
-                            <FaUpload />
-                        </button>
-                        <button
-                            onClick={handleDelete}
-                            disabled={disabled}
-                            className="p-2 rounded-full hover:bg-red-100 text-red-600"
-                            title={translations.delete}
-                        >
-                            <FaTrash />
-                        </button>
-                    </div>
-                </div>
+                )
             ) : (
                 <div className="flex items-center justify-between">
                     <div className="flex-1 text-center py-4">

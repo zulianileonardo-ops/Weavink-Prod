@@ -58,7 +58,7 @@ export default function CVManager() {
                     const newLinks = orphanedCvItems.map(cv => ({
                         id: generateRandomId(),
                         title: cv.displayTitle || t('dashboard.appearance.cv.default_cv_title') || "CV / Document",
-                        isActive: true,
+                        isActive: false,
                         type: 3,
                         cvItemId: cv.id
                     }));
@@ -109,7 +109,7 @@ export default function CVManager() {
             const newLink = {
                 id: generateRandomId(),
                 title: t('dashboard.appearance.cv.default_cv_title') || "CV / Document",
-                isActive: true,
+                isActive: false,
                 type: 3,
                 cvItemId: cvItemId // Link to the CV item we just created
             };

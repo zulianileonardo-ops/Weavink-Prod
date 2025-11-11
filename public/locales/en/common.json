@@ -509,7 +509,16 @@
         "upload_document": "Upload Document",
         "document": "Document",
         "go_to_link": "Go to Link",
-        "link_activated": "CV link automatically activated"
+        "link_activated": "CV link automatically activated",
+        "display_title": "Display Title",
+        "current_file": "Current file",
+        "new_file_selected": "New file selected",
+        "choose_new_file": "Choose New File",
+        "save_changes": "Save Changes",
+        "cancel": "Cancel",
+        "no_document_error": "Cannot activate. Please upload a document first.",
+        "active": "Active",
+        "inactive": "Inactive"
       }
     },
     "toasts": {

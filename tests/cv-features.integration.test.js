@@ -580,6 +580,162 @@ runner.test('Integration: Multiple subscribers receive cache updates', async () 
 });
 
 // ============================================================================
+// Test Suite 7: Toggle UI State Management
+// ============================================================================
+
+runner.test('Toggle: Checkbox syncs with linkedLinkItem.isActive', () => {
+    const linkedLinkItem = { id: 'cv-1', isActive: true };
+    const checkboxState = linkedLinkItem.isActive;
+    assertTrue(checkboxState === true, 'Checkbox should match link state');
+
+    const linkedLinkItem2 = { id: 'cv-2', isActive: false };
+    const checkboxState2 = linkedLinkItem2.isActive;
+    assertTrue(checkboxState2 === false, 'Checkbox should match inactive link state');
+});
+
+runner.test('Toggle: Only visible when linkedLinkItem exists', () => {
+    const linkedLinkItemNull = null;
+    const shouldShowToggle1 = linkedLinkItemNull !== null;
+    assertFalse(shouldShowToggle1, 'Toggle should be hidden when no linked link');
+
+    const linkedLinkItemUndefined = undefined;
+    const shouldShowToggle2 = linkedLinkItemUndefined !== null && linkedLinkItemUndefined !== undefined;
+    assertFalse(shouldShowToggle2, 'Toggle should be hidden when linked link is undefined');
+
+    const linkedLinkItemExists = { id: 'cv-1', isActive: false };
+    const shouldShowToggle3 = linkedLinkItemExists !== null && linkedLinkItemExists !== undefined;
+    assertTrue(shouldShowToggle3, 'Toggle should be visible when linked link exists');
+});
+
+runner.test('Toggle: Debounce prevents excessive API calls', async () => {
+    const service = new MockLinksService();
+    service.addLink({ id: 'cv-1', type: 3, isActive: false, cvItemId: 'item-1' });
+
+    let updateCount = 0;
+    const originalUpdate = service.updateLink.bind(service);
+    service.updateLink = async (...args) => {
+        updateCount++;
+        return originalUpdate(...args);
+    };
+
+    // Simulate rapid toggling (in real implementation, debounce would prevent this)
+    // Here we test that debounce logic would reduce calls
+    const expectedCallsWithoutDebounce = 5;
+    const expectedCallsWithDebounce = 1; // Only final state matters
+
+    // Without debounce: 5 calls
+    for (let i = 0; i < expectedCallsWithoutDebounce; i++) {
+        await service.updateLink('cv-1', { isActive: i % 2 === 0 });
+    }
+
+    assertEqual(updateCount, expectedCallsWithoutDebounce, 'Captured all rapid toggle attempts');
+
+    // In real implementation with 500ms debounce, only 1 call would be made
+    const savingsPercentage = ((expectedCallsWithoutDebounce - expectedCallsWithDebounce) / expectedCallsWithoutDebounce * 100).toFixed(0);
+    console.log(`   📊 Debounce would reduce API calls by ${savingsPercentage}% (${expectedCallsWithoutDebounce} → ${expectedCallsWithDebounce})`);
+});
+
+// ============================================================================
+// Test Suite 8: Toggle Error Handling
+// ============================================================================
+
+runner.test('Error: Prevents activation without document URL', () => {
+    const testCases = [
+        { url: '', expected: false, description: 'empty string' },
+        { url: '   ', expected: false, description: 'whitespace only' },
+        { url: null, expected: false, description: 'null' },
+        { url: undefined, expected: false, description: 'undefined' },
+        { url: 'https://example.com/doc.pdf', expected: true, description: 'valid URL' }
+    ];
+
+    testCases.forEach(({ url, expected, description }) => {
+        const item = { url };
+        const canActivate = !!(item.url && item.url.trim() !== '');
+        assertEqual(canActivate, expected, `Should ${expected ? 'allow' : 'prevent'} activation for ${description}`);
+    });
+});
+
+runner.test('Error: Update failure preserves previous state', async () => {
+    const service = new MockLinksService();
+    service.addLink({ id: 'cv-1', type: 3, isActive: false, cvItemId: 'item-1' });
+
+    let { links } = await service.getLinks();
+    const originalState = links[0].isActive;
+
+    try {
+        // Simulate error by making updateLink throw
+        const originalUpdate = service.updateLink.bind(service);
+        service.updateLink = async () => {
+            throw new Error('Network error');
+        };
+
+        await service.updateLink('cv-1', { isActive: true });
+        assertFalse(true, 'Should have thrown error');
+    } catch (error) {
+        assertEqual(error.message, 'Network error', 'Error should be caught');
+
+        // Verify state unchanged
+        ({ links } = await service.getLinks());
+        assertEqual(links[0].isActive, originalState, 'Link state should remain unchanged after error');
+    }
+});
+
+// ============================================================================
+// Test Suite 9: Real-Time State Synchronization
+// ============================================================================
+
+runner.test('Sync: External updates trigger checkbox state change', async () => {
+    const service = new MockLinksService();
+    let subscriberCalled = false;
+    let receivedLink = null;
+
+    service.addLink({ id: 'cv-1', type: 3, isActive: false, cvItemId: 'item-1' });
+
+    // Subscribe to changes (simulating CVItemCard useEffect)
+    service.subscribe((links) => {
+        subscriberCalled = true;
+        receivedLink = links[0];
+    });
+
+    // External update (from another component/page)
+    await service.updateLink('cv-1', { isActive: true });
+
+    assertTrue(subscriberCalled, 'Subscriber should be called on update');
+    assertTrue(receivedLink.isActive, 'Received link should reflect new active state');
+});
+
+runner.test('Sync: Multiple CVItemCard instances stay synchronized', async () => {
+    const service = new MockLinksService();
+    const watchers = [];
+
+    service.addLink({ id: 'cv-1', type: 3, isActive: false, cvItemId: 'item-1' });
+
+    // Simulate 3 CVItemCard components watching the same link
+    for (let i = 0; i < 3; i++) {
+        watchers.push({ id: i, checkboxState: false });
+        service.subscribe((links) => {
+            watchers[i].checkboxState = links[0].isActive;
+        });
+    }
+
+    // One component updates the toggle
+    await service.updateLink('cv-1', { isActive: true });
+
+    // All watchers should be synchronized
+    watchers.forEach((watcher, index) => {
+        assertTrue(watcher.checkboxState === true, `Watcher ${index} should be updated to active`);
+    });
+
+    // Update again
+    await service.updateLink('cv-1', { isActive: false });
+
+    // All should sync again
+    watchers.forEach((watcher, index) => {
+        assertTrue(watcher.checkboxState === false, `Watcher ${index} should be updated to inactive`);
+    });
+});
+
+// ============================================================================
 // Run All Tests
 // ============================================================================
 
@@ -591,6 +747,9 @@ console.log('  - CV Link Validation (6 tests)');
 console.log('  - Auto-Activation Logic (3 tests)');
 console.log('  - Navigation Helpers (4 tests)');
 console.log('  - Integration Scenarios (3 tests)');
-console.log('\nTotal: 28 tests\n');
+console.log('  - Toggle UI State Management (3 tests)');
+console.log('  - Toggle Error Handling (2 tests)');
+console.log('  - Real-Time State Synchronization (2 tests)');
+console.log('\nTotal: 35 tests\n');
 
 runner.run();

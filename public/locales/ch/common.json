@@ -794,7 +794,13 @@
         "upload_document": "上传文档",
         "document": "文档",
         "go_to_link": "前往链接",
-        "link_activated": "简历链接已自动激活"
+        "link_activated": "简历链接已自动激活",
+        "display_title": "显示标题",
+        "current_file": "当前文件",
+        "new_file_selected": "已选择新文件",
+        "choose_new_file": "选择新文件",
+        "save_changes": "保存更改",
+        "cancel": "取消"
       }
     },
     "links": {

@@ -825,7 +825,13 @@
         "upload_document": "Subir documento",
         "document": "Documento",
         "go_to_link": "Ir al enlace",
-        "link_activated": "Enlace de CV activado automáticamente"
+        "link_activated": "Enlace de CV activado automáticamente",
+        "display_title": "Título de visualización",
+        "current_file": "Archivo actual",
+        "new_file_selected": "Nuevo archivo seleccionado",
+        "choose_new_file": "Elegir nuevo archivo",
+        "save_changes": "Guardar cambios",
+        "cancel": "Cancelar"
       }
     },
     "links": {
