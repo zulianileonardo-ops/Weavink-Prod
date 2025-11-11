@@ -1,3 +1,4 @@
+//app/dashboard/layout.jsx
 /**
  * THIS FILE HAS BEEN REFRACTORED
  */

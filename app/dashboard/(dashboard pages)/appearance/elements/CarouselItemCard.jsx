@@ -7,6 +7,7 @@ import Image from "next/image";
 import { FaTrash, FaEdit, FaSave, FaTimes, FaImage, FaPlay, FaGripVertical, FaVideo } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import { AppearanceService } from "@/lib/services/serviceAppearance/client/appearanceService";
+import ImageCropModal from "./ImageCropModal";
 
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
 const MAX_VIDEO_SIZE = 50 * 1024 * 1024; // 50MB
@@ -62,6 +63,8 @@ export default function CarouselItemCard({ item, onUpdate, onDelete, disabled })
     const [localData, setLocalData] = useState(() => normalizeItem(item));
     const [isUploadingImage, setIsUploadingImage] = useState(false);
     const [isUploadingVideo, setIsUploadingVideo] = useState(false);
+    const [showCropModal, setShowCropModal] = useState(false);
+    const [selectedImageFile, setSelectedImageFile] = useState(null);
     const fileInputRef = useRef(null);
     const videoInputRef = useRef(null);
 
@@ -100,10 +103,22 @@ export default function CarouselItemCard({ item, onUpdate, onDelete, disabled })
             return;
         }
 
+        // Open crop modal instead of uploading directly
+        setSelectedImageFile(file);
+        setShowCropModal(true);
+
+        // Reset file input
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
+    };
+
+    const handleCroppedImageSave = async (croppedFile) => {
+        setShowCropModal(false);
         setIsUploadingImage(true);
 
         try {
-            const result = await AppearanceService.uploadCarouselImage(file);
+            const result = await AppearanceService.uploadCarouselImage(croppedFile);
             setLocalData(prev => ({
                 ...prev,
                 mediaType: MEDIA_TYPES.IMAGE,
@@ -117,7 +132,13 @@ export default function CarouselItemCard({ item, onUpdate, onDelete, disabled })
             toast.error(error.message || "Failed to upload image");
         } finally {
             setIsUploadingImage(false);
+            setSelectedImageFile(null);
         }
+    };
+
+    const handleCropModalClose = () => {
+        setShowCropModal(false);
+        setSelectedImageFile(null);
     };
 
     const handleVideoUpload = async (event) => {
@@ -295,7 +316,7 @@ export default function CarouselItemCard({ item, onUpdate, onDelete, disabled })
                                         src={previewMediaUrl}
                                         alt={localData.title || "Carousel media"}
                                         fill
-                                        style={{ objectFit: "cover" }}
+                                        style={{ objectFit: "contain" }}
                                         sizes="(max-width: 768px) 100vw, 50vw"
                                     />
                                 )
@@ -456,7 +477,7 @@ export default function CarouselItemCard({ item, onUpdate, onDelete, disabled })
                                     src={previewMediaUrl}
                                     alt={localData.title || "Carousel media"}
                                     fill
-                                    style={{ objectFit: "cover" }}
+                                    style={{ objectFit: "contain" }}
                                     sizes="(max-width: 768px) 100vw, 50vw"
                                 />
                             )
@@ -493,6 +514,15 @@ export default function CarouselItemCard({ item, onUpdate, onDelete, disabled })
                         )}
                     </div>
                 </div>
+            )}
+
+            {/* Image Crop Modal */}
+            {showCropModal && selectedImageFile && (
+                <ImageCropModal
+                    imageFile={selectedImageFile}
+                    onClose={handleCropModalClose}
+                    onSave={handleCroppedImageSave}
+                />
             )}
         </div>
     );

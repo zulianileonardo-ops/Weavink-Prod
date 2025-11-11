@@ -2,7 +2,7 @@
   "metadata": {
     "project": "Weavink Documentation",
     "last_updated": "2025-11-11",
-    "total_guides": 53,
+    "total_guides": 54,
     "version": "1.0.0"
   },
   "categories": {
@@ -58,7 +58,8 @@
         "features-realtime-subscription-023",
         "features-contact-download-024",
         "features-onboarding-guide-025",
-        "features-cv-enhancement-026"
+        "features-cv-enhancement-026",
+        "features-image-handling-027"
       ]
     },
     "technical": {
@@ -843,6 +844,20 @@
       "components": ["SessionService"],
       "status": "active",
       "created": "2025-01-01",
+      "updated": "2025-11-11"
+    },
+    {
+      "id": "features-image-handling-027",
+      "title": "Image Handling Improvements",
+      "filename": "IMAGE_HANDLING_IMPROVEMENTS.md",
+      "category": "features",
+      "summary": "Fixes three critical image handling issues: IndexSizeError in cropping, white line bug with 'Free' aspect ratio, and incorrect aspect ratio display in carousel items.",
+      "tags": ["carousel", "image-cropping", "aspect-ratio", "object-fit", "bug-fix", "image-display", "react-easy-crop", "ui-enhancement"],
+      "related_guides": ["features-carousel-017", "features-cv-enhancement-026"],
+      "functions": ["getCroppedImg", "handleAspectRatioChange", "createImage"],
+      "components": ["ImageCropModal", "CarouselItemCard"],
+      "status": "active",
+      "created": "2025-11-11",
       "updated": "2025-11-11"
     }
   ]
