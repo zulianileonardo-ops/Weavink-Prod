@@ -1,9 +1,9 @@
 {
   "metadata": {
     "project": "Weavink Tests",
-    "lastUpdated": "2025-11-11T11:22:21Z",
-    "totalSuites": 1,
-    "totalTests": 12,
+    "lastUpdated": "2025-11-11T11:33:50Z",
+    "totalSuites": 8,
+    "totalTests": 104,
     "overallPassRate": "100%",
     "version": "1.0.0"
   },
@@ -11,7 +11,16 @@
     "rgpd": {
       "name": "RGPD/GDPR Compliance",
       "description": "Privacy and data protection tests",
-      "suites": ["rgpd-consent-category-001"]
+      "suites": [
+        "rgpd-all-tests-001",
+        "rgpd-consent-002",
+        "rgpd-consent-category-003",
+        "rgpd-privacy-settings-004",
+        "rgpd-data-export-005",
+        "rgpd-account-deletion-006",
+        "rgpd-phase3-007",
+        "rgpd-phase4-008"
+      ]
     },
     "api": {
       "name": "API Tests",
@@ -31,7 +40,105 @@
   },
   "suites": [
     {
-      "testId": "rgpd-consent-category-001",
+      "testId": "rgpd-all-tests-001",
+      "testFile": "runAllRGPDTests.mjs",
+      "testSuite": "RGPD Complete Test Suite",
+      "category": "rgpd",
+      "totalTests": 104,
+      "passed": 104,
+      "failed": 0,
+      "successRate": "100%",
+      "duration": "~90s",
+      "lastRun": "2025-11-11T11:33:50Z",
+      "status": "passing",
+      "relatedDocs": [
+        "RGPD_TESTING_GUIDE.md",
+        "RGPD_IMPLEMENTATION_SUMMARY.md",
+        "CONSENT_IMPLEMENTATION_GUIDE.md"
+      ],
+      "testedFunctions": [
+        "recordConsent",
+        "getUserConsents",
+        "hasConsent",
+        "batchGrantConsents",
+        "getConsentHistory",
+        "withdrawConsent",
+        "exportConsentData",
+        "updatePrivacySettings",
+        "getPrivacySettings",
+        "requestDataExport",
+        "getExportStatus",
+        "requestAccountDeletion",
+        "getDeletionStatus",
+        "cancelDeletionRequest",
+        "runDataMinimizationAudit",
+        "getRetentionPolicies",
+        "updateRetentionPolicy",
+        "createDPIA",
+        "reportSecurityIncident",
+        "exportToXML",
+        "exportToPDF",
+        "notifyBreach"
+      ],
+      "coverage": {
+        "files": [
+          "lib/services/servicePrivacy/consentService.js",
+          "lib/services/servicePrivacy/privacySettingsService.js",
+          "lib/services/servicePrivacy/dataExportService.js",
+          "lib/services/servicePrivacy/accountDeletionService.js",
+          "lib/services/servicePrivacy/dataMinimizationService.js",
+          "lib/services/servicePrivacy/retentionPolicyService.js",
+          "lib/services/servicePrivacy/dpiaService.js",
+          "lib/services/servicePrivacy/incidentReportingService.js",
+          "lib/services/servicePrivacy/dataPortabilityService.js",
+          "lib/services/servicePrivacy/breachNotificationService.js"
+        ],
+        "functions": 22,
+        "percentage": 92
+      },
+      "subSuites": [
+        "rgpd-consent-002",
+        "rgpd-consent-category-003",
+        "rgpd-privacy-settings-004",
+        "rgpd-data-export-005",
+        "rgpd-account-deletion-006",
+        "rgpd-phase3-007",
+        "rgpd-phase4-008"
+      ]
+    },
+    {
+      "testId": "rgpd-consent-002",
+      "testFile": "runConsentTests.mjs",
+      "testSuite": "RGPD Consent Management",
+      "category": "rgpd",
+      "totalTests": 8,
+      "passed": 8,
+      "failed": 0,
+      "successRate": "100%",
+      "duration": "~8s",
+      "lastRun": "2025-11-11T11:33:50Z",
+      "status": "passing",
+      "relatedDocs": [
+        "CONSENT_IMPLEMENTATION_GUIDE.md",
+        "RGPD_TESTING_GUIDE.md"
+      ],
+      "testedFunctions": [
+        "recordConsent",
+        "getUserConsents",
+        "hasConsent",
+        "batchGrantConsents",
+        "getConsentHistory",
+        "withdrawConsent",
+        "exportConsentData"
+      ],
+      "coverage": {
+        "files": ["lib/services/servicePrivacy/consentService.js"],
+        "functions": 7,
+        "percentage": 95
+      }
+    },
+    {
+      "testId": "rgpd-consent-category-003",
       "testFile": "runConsentCategoryTests.mjs",
       "testSuite": "RGPD Consent Categories",
       "category": "rgpd",
@@ -39,8 +146,8 @@
       "passed": 12,
       "failed": 0,
       "successRate": "100%",
-      "duration": "~3s",
-      "lastRun": "2025-11-11T11:22:21Z",
+      "duration": "~10s",
+      "lastRun": "2025-11-11T11:33:58Z",
       "status": "passing",
       "relatedDocs": [
         "CONSENT_IMPLEMENTATION_GUIDE.md",
@@ -57,81 +164,175 @@
         "files": ["lib/services/servicePrivacy/consentService.js"],
         "functions": 5,
         "percentage": 85
-      },
-      "tests": [
-        {
-          "name": "Grant All Essential Category Consents",
-          "status": "passed",
-          "duration": "~250ms",
-          "description": "Tests batch granting of TERMS_OF_SERVICE and PRIVACY_POLICY"
-        },
-        {
-          "name": "Grant All AI Features Category Consents",
-          "status": "passed",
-          "duration": "~250ms",
-          "description": "Tests batch granting of all AI feature consents"
-        },
-        {
-          "name": "Grant All Analytics Category Consents",
-          "status": "passed",
-          "duration": "~250ms",
-          "description": "Tests batch granting of analytics tracking consents"
-        },
-        {
-          "name": "Grant All Communication Category Consents",
-          "status": "passed",
-          "duration": "~250ms",
-          "description": "Tests batch granting of communication preferences"
-        },
-        {
-          "name": "Grant All Personalization Category Consents",
-          "status": "passed",
-          "duration": "~250ms",
-          "description": "Tests batch granting of personalization features"
-        },
-        {
-          "name": "Verify All 12 Consent Types Are Granted",
-          "status": "passed",
-          "duration": "~250ms",
-          "description": "Ensures all consents across all categories are correctly stored"
-        },
-        {
-          "name": "Withdraw Entire AI Features Category",
-          "status": "passed",
-          "duration": "~250ms",
-          "description": "Tests withdrawing all AI feature consents"
-        },
-        {
-          "name": "Verify Mixed Consent States Across Categories",
-          "status": "passed",
-          "duration": "~250ms",
-          "description": "Tests handling of different consent states for different categories"
-        },
-        {
-          "name": "Verify Consent History Covers All Categories",
-          "status": "passed",
-          "duration": "~250ms",
-          "description": "Tests complete audit trail of all consent changes"
-        },
-        {
-          "name": "Export Data Contains All Category Consents",
-          "status": "passed",
-          "duration": "~250ms",
-          "description": "Tests data portability includes all consent information"
-        },
-        {
-          "name": "Re-grant Previously Withdrawn AI Features Category",
-          "status": "passed",
-          "duration": "~250ms",
-          "description": "Tests re-enabling features previously disabled"
-        },
-        {
-          "name": "Check If Entire Category Is Enabled",
-          "status": "passed",
-          "duration": "~250ms",
-          "description": "Tests category-level consent checking"
-        }
-      ]
+      }
+    },
+    {
+      "testId": "rgpd-privacy-settings-004",
+      "testFile": "runPrivacySettingsTests.mjs",
+      "testSuite": "RGPD Privacy Settings",
+      "category": "rgpd",
+      "totalTests": 8,
+      "passed": 8,
+      "failed": 0,
+      "successRate": "100%",
+      "duration": "~7s",
+      "lastRun": "2025-11-11T11:34:17Z",
+      "status": "passing",
+      "relatedDocs": [
+        "RGPD_TESTING_GUIDE.md"
+      ],
+      "testedFunctions": [
+        "getPrivacySettings",
+        "updatePrivacySettings",
+        "updateProfileVisibility",
+        "updateMessagingSettings",
+        "updateNotificationPreferences"
+      ],
+      "coverage": {
+        "files": ["lib/services/servicePrivacy/privacySettingsService.js"],
+        "functions": 5,
+        "percentage": 90
+      }
+    },
+    {
+      "testId": "rgpd-data-export-005",
+      "testFile": "runDataExportTests.mjs",
+      "testSuite": "RGPD Data Export",
+      "category": "rgpd",
+      "totalTests": 8,
+      "passed": 8,
+      "failed": 0,
+      "successRate": "100%",
+      "duration": "~7s",
+      "lastRun": "2025-11-11T11:34:24Z",
+      "status": "passing",
+      "relatedDocs": [
+        "RGPD_TESTING_GUIDE.md",
+        "RGPD_PHASE4_SUMMARY.md"
+      ],
+      "testedFunctions": [
+        "requestDataExport",
+        "getExportStatus",
+        "deleteExportRequest",
+        "validateJSONExport",
+        "validateCSVExport",
+        "validateVCardExport"
+      ],
+      "coverage": {
+        "files": ["lib/services/servicePrivacy/dataExportService.js"],
+        "functions": 6,
+        "percentage": 88
+      }
+    },
+    {
+      "testId": "rgpd-account-deletion-006",
+      "testFile": "runAccountDeletionTests.mjs",
+      "testSuite": "RGPD Account Deletion",
+      "category": "rgpd",
+      "totalTests": 8,
+      "passed": 8,
+      "failed": 0,
+      "successRate": "100%",
+      "duration": "~4s",
+      "lastRun": "2025-11-11T11:34:28Z",
+      "status": "passing",
+      "relatedDocs": [
+        "RGPD_TESTING_GUIDE.md"
+      ],
+      "testedFunctions": [
+        "requestAccountDeletion",
+        "getDeletionStatus",
+        "cancelDeletionRequest",
+        "processPendingDeletions"
+      ],
+      "coverage": {
+        "files": ["lib/services/servicePrivacy/accountDeletionService.js"],
+        "functions": 4,
+        "percentage": 85
+      }
+    },
+    {
+      "testId": "rgpd-phase3-007",
+      "testFile": "runPhase3Tests.mjs",
+      "testSuite": "RGPD Phase 3 - Advanced Compliance",
+      "category": "rgpd",
+      "totalTests": 38,
+      "passed": 38,
+      "failed": 0,
+      "successRate": "100%",
+      "duration": "~35s",
+      "lastRun": "2025-11-11T11:34:32Z",
+      "status": "passing",
+      "relatedDocs": [
+        "RGPD_TESTING_GUIDE.md",
+        "RGPD_IMPLEMENTATION_SUMMARY.md"
+      ],
+      "testedFunctions": [
+        "runDataMinimizationAudit",
+        "getMinimizationStatistics",
+        "getRetentionPolicies",
+        "updateRetentionPolicy",
+        "findEligibleDataForDeletion",
+        "executeRetentionCleanup",
+        "addLegalHold",
+        "removeLegalHold",
+        "createDPIA",
+        "submitDPIAAssessment",
+        "addMitigationMeasure",
+        "requestDPIAApproval",
+        "approveDPIA",
+        "reportSecurityIncident",
+        "addContainmentAction",
+        "updateIncidentStatus"
+      ],
+      "coverage": {
+        "files": [
+          "lib/services/servicePrivacy/dataMinimizationService.js",
+          "lib/services/servicePrivacy/retentionPolicyService.js",
+          "lib/services/servicePrivacy/dpiaService.js",
+          "lib/services/servicePrivacy/incidentReportingService.js"
+        ],
+        "functions": 16,
+        "percentage": 90
+      }
+    },
+    {
+      "testId": "rgpd-phase4-008",
+      "testFile": "runPhase4Tests.mjs",
+      "testSuite": "RGPD Phase 4 - Enterprise Features",
+      "category": "rgpd",
+      "totalTests": 22,
+      "passed": 22,
+      "failed": 0,
+      "successRate": "100%",
+      "duration": "~19s",
+      "lastRun": "2025-11-11T11:35:07Z",
+      "status": "passing",
+      "relatedDocs": [
+        "RGPD_TESTING_GUIDE.md",
+        "RGPD_PHASE4_SUMMARY.md"
+      ],
+      "testedFunctions": [
+        "exportToXML",
+        "exportToPDF",
+        "importFromJSON",
+        "importFromXML",
+        "notifyBreach",
+        "getBreachStatus",
+        "generateBreachReport",
+        "runComplianceCheck",
+        "getComplianceScore",
+        "generateComplianceReport"
+      ],
+      "coverage": {
+        "files": [
+          "lib/services/servicePrivacy/dataPortabilityService.js",
+          "lib/services/servicePrivacy/breachNotificationService.js",
+          "lib/services/servicePrivacy/complianceMonitorService.js"
+        ],
+        "functions": 10,
+        "percentage": 88
+      }
     }
   ]
 }
