@@ -744,7 +744,17 @@
         "no_video_configured_error": "无法激活。请先配置视频平台和URL。",
         "invalid_video_url_error": "无法激活。请提供有效的视频URL。",
         "no_image_configured_error": "无法激活。请先上传图片。",
-        "link_activated": "媒体链接已自动激活"
+        "link_activated": "媒体链接已自动激活",
+        "media_type_video_embed": "视频嵌入",
+        "media_type_video_upload": "视频上传",
+        "media_type_image_url": "图片链接",
+        "media_type_image_upload": "图片上传",
+        "upload_custom_image": "上传图片",
+        "upload_custom_video": "上传视频",
+        "image_too_large": "图片太大（最大 5MB）",
+        "video_too_large": "视频太大（最大 50MB）",
+        "select_image_file": "请选择图片文件",
+        "select_video_file": "请选择视频文件"
       },
       "video_embed_card": {
         "editing_video_embed": "编辑视频嵌入",

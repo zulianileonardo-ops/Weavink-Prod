@@ -13,12 +13,16 @@ export const createImage = (url) =>
         const image = new Image();
         image.addEventListener('load', () => resolve(image));
         image.addEventListener('error', (error) => reject(error));
-        image.setAttribute('crossOrigin', 'anonymous');
 
+        // Only set crossOrigin for remote HTTP/HTTPS URLs
+        // Setting it for data URLs or blob URLs taints the canvas
         if (typeof url === 'string') {
+            if (url.startsWith('http://') || url.startsWith('https://')) {
+                image.setAttribute('crossOrigin', 'anonymous');
+            }
             image.src = url;
         } else {
-            // If it's a File object, create a URL
+            // File objects create blob URLs which don't need CORS
             image.src = URL.createObjectURL(url);
         }
     });

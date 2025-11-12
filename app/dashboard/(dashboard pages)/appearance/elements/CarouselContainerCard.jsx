@@ -1,7 +1,7 @@
 // app/dashboard/(dashboard pages)/appearance/elements/CarouselContainerCard.jsx
 "use client"
 
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { FaPlus, FaToggleOn, FaToggleOff, FaEdit, FaSave, FaTimes, FaExternalLinkAlt, FaImages, FaVideo } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
@@ -13,6 +13,7 @@ import ColorPickerFlat from "./ColorPickerFlat.jsx";
 import { AppearanceService } from "@/lib/services/serviceAppearance/client/appearanceService.js";
 import { LinksService } from "@/lib/services/serviceLinks/client/LinksService.js";
 import { useItemNavigation } from '@/LocalHooks/useItemNavigation';
+import { useTranslation } from '@/lib/translation/useTranslation';
 
 const BACKGROUND_TYPES = ['Color', 'Image', 'Video', 'Transparent'];
 
@@ -21,6 +22,7 @@ function formatStyleName(style) {
 }
 
 export default function CarouselContainerCard({ carousel, onUpdate, onDelete, disabled, highlightId }) {
+    const { t, isInitialized } = useTranslation();
     const router = useRouter();
     const [localData, setLocalData] = useState(carousel);
     const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -34,6 +36,68 @@ export default function CarouselContainerCard({ carousel, onUpdate, onDelete, di
         itemId: carousel.id,
         itemType: 'carousel-item'
     });
+
+    // Pre-compute translations
+    const translations = useMemo(() => {
+        if (!isInitialized) return {};
+        return {
+            // Toasts
+            toastEnableValidation: t('dashboard.appearance.carousel_container.toasts.enable_validation_error') || 'Add at least one carousel item with an image or video before enabling.',
+            toastEnabled: t('dashboard.appearance.carousel_container.toasts.enabled') || 'Carousel enabled',
+            toastDisabled: t('dashboard.appearance.carousel_container.toasts.disabled') || 'Carousel disabled',
+            toastTitleEmpty: t('dashboard.appearance.carousel_container.toasts.title_empty_error') || 'Title cannot be empty',
+            toastTitleUpdated: t('dashboard.appearance.carousel_container.toasts.title_updated') || 'Title updated',
+            toastItemAdded: t('dashboard.appearance.carousel_container.toasts.item_added') || 'Item added',
+            toastItemRemoved: t('dashboard.appearance.carousel_container.toasts.item_removed') || 'Item removed',
+            toastDisabledNoItems: t('dashboard.appearance.carousel_container.toasts.disabled_no_items') || 'Carousel disabled because it has no items.',
+            toastStyleUpdated: t('dashboard.appearance.carousel_container.toasts.style_updated') || 'Style set to {{style}}',
+            toastBgImageUpdated: t('dashboard.appearance.carousel_container.toasts.background_image_updated') || 'Background image updated',
+            toastBgImageFailed: t('dashboard.appearance.carousel_container.toasts.background_image_upload_failed') || 'Failed to upload background image',
+            toastBgVideoUpdated: t('dashboard.appearance.carousel_container.toasts.background_video_updated') || 'Background video updated',
+            toastBgVideoFailed: t('dashboard.appearance.carousel_container.toasts.background_video_upload_failed') || 'Failed to upload background video',
+            toastBgImageRemoved: t('dashboard.appearance.carousel_container.toasts.background_image_removed') || 'Background image removed',
+            toastBgVideoRemoved: t('dashboard.appearance.carousel_container.toasts.background_video_removed') || 'Background video removed',
+            // Labels
+            titlePlaceholder: t('dashboard.appearance.carousel_container.labels.title_placeholder') || 'Carousel Title',
+            goToLink: t('dashboard.appearance.carousel_container.labels.go_to_link') || 'Go to Link',
+            enabled: t('dashboard.appearance.carousel_container.labels.enabled') || 'Enabled',
+            disabled: t('dashboard.appearance.carousel_container.labels.disabled') || 'Disabled',
+            addItemsToEnable: t('dashboard.appearance.carousel_container.labels.add_items_to_enable') || 'Add carousel items to enable',
+            preview: t('dashboard.appearance.carousel_container.labels.preview') || 'Preview',
+            hidePreview: t('dashboard.appearance.carousel_container.labels.hide_preview') || 'Hide Preview',
+            carouselStyle: t('dashboard.appearance.carousel_container.labels.carousel_style') || 'Carousel Style',
+            carouselBackground: t('dashboard.appearance.carousel_container.labels.carousel_background') || 'Carousel Background',
+            backgroundImage: t('dashboard.appearance.carousel_container.labels.background_image') || 'Background Image',
+            backgroundVideo: t('dashboard.appearance.carousel_container.labels.background_video') || 'Background Video',
+            contentVisibility: t('dashboard.appearance.carousel_container.labels.content_visibility') || 'Content Visibility',
+            carouselItems: t('dashboard.appearance.carousel_container.labels.carousel_items') || 'Carousel Items',
+            addItem: t('dashboard.appearance.carousel_container.labels.add_item') || 'Add Item',
+            // Buttons
+            remove: t('dashboard.appearance.carousel_container.buttons.remove') || 'Remove',
+            uploadImage: t('dashboard.appearance.carousel_container.buttons.upload_image') || 'Upload Image',
+            uploadVideo: t('dashboard.appearance.carousel_container.buttons.upload_video') || 'Upload Video',
+            uploading: t('dashboard.appearance.carousel_container.buttons.uploading') || 'Uploading...',
+            showTitle: t('dashboard.appearance.carousel_container.buttons.show_title') || 'Show Title',
+            hideTitle: t('dashboard.appearance.carousel_container.buttons.hide_title') || 'Hide Title',
+            showDescription: t('dashboard.appearance.carousel_container.buttons.show_description') || 'Show Description',
+            hideDescription: t('dashboard.appearance.carousel_container.buttons.hide_description') || 'Hide Description',
+            deleteCarousel: t('dashboard.appearance.carousel_container.buttons.delete_carousel') || 'Delete Entire Carousel',
+            // Messages
+            imageHelper: t('dashboard.appearance.carousel_container.messages.image_helper') || 'Upload an image to use as the carousel background.',
+            videoHelper: t('dashboard.appearance.carousel_container.messages.video_helper') || 'Upload a video to use as the carousel background.',
+            transparentDescription: t('dashboard.appearance.carousel_container.messages.transparent_description') || 'Carousel background will be transparent and inherit the page background. Remove any uploaded media automatically.',
+            emptyState: t('dashboard.appearance.carousel_container.messages.empty_state') || 'No items yet. Add your first item to get started!',
+            deleteConfirmation: t('dashboard.appearance.carousel_container.messages.delete_confirmation') || 'Are you sure you want to delete this entire carousel? This will also remove the link item.',
+            // Background types
+            bgTypeColor: t('dashboard.appearance.carousel_container.background_types.color') || 'Color',
+            bgTypeImage: t('dashboard.appearance.carousel_container.background_types.image') || 'Image',
+            bgTypeVideo: t('dashboard.appearance.carousel_container.background_types.video') || 'Video',
+            bgTypeTransparent: t('dashboard.appearance.carousel_container.background_types.transparent') || 'Transparent',
+            // Defaults
+            newItemTitle: t('dashboard.appearance.carousel_container.defaults.new_item_title') || 'New Item',
+            newItemDescription: t('dashboard.appearance.carousel_container.defaults.new_item_description') || 'Click to edit this item',
+        };
+    }, [t, isInitialized]);
 
     // Helper function to check if carousel has items with valid media (image or video)
     const hasItemsWithMedia = useCallback((items) => {
@@ -129,24 +193,24 @@ export default function CarouselContainerCard({ carousel, onUpdate, onDelete, di
     const handleToggleEnabled = () => {
         const nextEnabled = !localData.enabled;
         if (nextEnabled && !hasItems) {
-            toast.error('Add at least one carousel item with an image or video before enabling.');
+            toast.error(translations.toastEnableValidation);
             return;
         }
         commitUpdate({ enabled: nextEnabled });
         syncLinkActiveState(nextEnabled);
-        toast.success(nextEnabled ? 'Carousel enabled' : 'Carousel disabled');
+        toast.success(nextEnabled ? translations.toastEnabled : translations.toastDisabled);
     };
 
     // Update carousel title
     const handleSaveTitle = () => {
         if (!localData.title.trim()) {
-            toast.error('Title cannot be empty');
+            toast.error(translations.toastTitleEmpty);
             return;
         }
         const trimmedTitle = localData.title.trim();
         commitUpdate({ title: trimmedTitle });
         setIsEditingTitle(false);
-        toast.success('Title updated');
+        toast.success(translations.toastTitleUpdated);
     };
 
     const handleCancelTitle = () => {
@@ -161,8 +225,8 @@ export default function CarouselContainerCard({ carousel, onUpdate, onDelete, di
             image: '',
             mediaType: 'image',
             mediaUrl: '',
-            title: 'New Item',
-            description: 'Click to edit this item',
+            title: translations.newItemTitle,
+            description: translations.newItemDescription,
             category: '',
             link: '',
             author: '',
@@ -173,7 +237,7 @@ export default function CarouselContainerCard({ carousel, onUpdate, onDelete, di
 
         const updatedItems = [...(localData.items || []), newItem];
         commitUpdate({ items: updatedItems });
-        toast.success('Item added');
+        toast.success(translations.toastItemAdded);
     };
 
     // Update an item within this carousel
@@ -196,9 +260,9 @@ export default function CarouselContainerCard({ carousel, onUpdate, onDelete, di
             ...(disabledDueToEmpty ? { enabled: false } : {})
         });
 
-        toast.success('Item removed');
+        toast.success(translations.toastItemRemoved);
         if (disabledDueToEmpty) {
-            toast('Carousel disabled because it has no items.', {
+            toast(translations.toastDisabledNoItems, {
                 icon: 'ℹ️'
             });
             syncLinkActiveState(false);
@@ -209,7 +273,7 @@ export default function CarouselContainerCard({ carousel, onUpdate, onDelete, di
     const handleStyleChange = (style) => {
         if (localData.style === style) return;
         commitUpdate({ style });
-        toast.success(`Style set to ${formatStyleName(style)}`);
+        toast.success(translations.toastStyleUpdated.replace('{{style}}', formatStyleName(style)));
     };
 
     const handleBackgroundTypeChange = (type) => {
@@ -266,11 +330,11 @@ export default function CarouselContainerCard({ carousel, onUpdate, onDelete, di
                     backgroundImage: result.downloadURL,
                     backgroundVideo: ''
                 });
-                toast.success('Background image updated');
+                toast.success(translations.toastBgImageUpdated);
             }
         } catch (error) {
             console.error('Error uploading carousel background image:', error);
-            toast.error(error.message || 'Failed to upload background image');
+            toast.error(error.message || translations.toastBgImageFailed);
         } finally {
             setIsUploadingBackgroundImage(false);
             if (event.target) {
@@ -291,12 +355,12 @@ export default function CarouselContainerCard({ carousel, onUpdate, onDelete, di
                     backgroundVideo: result.downloadURL,
                     backgroundImage: ''
                 });
-                toast.success('Background video updated');
+                toast.success(translations.toastBgVideoUpdated);
             }
         } catch (error) {
             console.error('Error uploading carousel background video:', error);
-            toast.error(error.message || 'Failed to upload background video');
-        } finally {
+            toast.error(error.message || translations.toastBgVideoFailed);
+        } finally{
             setIsUploadingBackgroundVideo(false);
             if (event.target) {
                 event.target.value = '';
@@ -310,13 +374,13 @@ export default function CarouselContainerCard({ carousel, onUpdate, onDelete, di
                 backgroundImage: '',
                 backgroundType: 'Color'
             });
-            toast.success('Background image removed');
+            toast.success(translations.toastBgImageRemoved);
         } else if (type === 'Video') {
             commitUpdate({
                 backgroundVideo: '',
                 backgroundType: 'Color'
             });
-            toast.success('Background video removed');
+            toast.success(translations.toastBgVideoRemoved);
         }
     };
 
@@ -334,7 +398,7 @@ export default function CarouselContainerCard({ carousel, onUpdate, onDelete, di
 
     // Delete entire carousel
     const handleDeleteCarousel = () => {
-        if (confirm('Are you sure you want to delete this entire carousel? This will also remove the link item.')) {
+        if (confirm(translations.deleteConfirmation)) {
             onDelete();
         }
     };
@@ -354,7 +418,7 @@ export default function CarouselContainerCard({ carousel, onUpdate, onDelete, di
                                 value={localData.title}
                                 onChange={(e) => setLocalData({ ...localData, title: e.target.value })}
                                 className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                placeholder="Carousel Title"
+                                placeholder={translations.titlePlaceholder}
                                 maxLength={50}
                             />
                             <button
@@ -391,7 +455,7 @@ export default function CarouselContainerCard({ carousel, onUpdate, onDelete, di
                         className="flex items-center gap-2 px-3 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors text-sm"
                     >
                         <FaExternalLinkAlt />
-                        <span>Go to Link</span>
+                        <span>{translations.goToLink}</span>
                     </button>
 
                     {/* Enable/Disable Toggle */}
@@ -408,12 +472,12 @@ export default function CarouselContainerCard({ carousel, onUpdate, onDelete, di
                     >
                         {localData.enabled ? <FaToggleOn className="text-xl" /> : <FaToggleOff className="text-xl" />}
                         <span className="text-sm font-medium">
-                            {localData.enabled ? 'Enabled' : 'Disabled'}
+                            {localData.enabled ? translations.enabled : translations.disabled}
                         </span>
                     </button>
                     {enableBlocked && (
                         <p className="text-xs text-gray-500 text-right">
-                            Add carousel items to enable
+                            {translations.addItemsToEnable}
                         </p>
                     )}
 
@@ -423,7 +487,7 @@ export default function CarouselContainerCard({ carousel, onUpdate, onDelete, di
                             onClick={() => setShowPreview(!showPreview)}
                             className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
                         >
-                            {showPreview ? 'Hide Preview' : 'Preview'}
+                            {showPreview ? translations.hidePreview : translations.preview}
                         </button>
                     )}
                 </div>
@@ -448,7 +512,7 @@ export default function CarouselContainerCard({ carousel, onUpdate, onDelete, di
             {/* Style Selector */}
             <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-3">
-                    Carousel Style
+                    {translations.carouselStyle}
                 </label>
                 <div className="flex gap-3 flex-wrap">
                     {Object.values(CAROUSEL_STYLES).map((style) => (
@@ -471,24 +535,32 @@ export default function CarouselContainerCard({ carousel, onUpdate, onDelete, di
             {/* Background Customization */}
             <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-3">
-                    Carousel Background
+                    {translations.carouselBackground}
                 </label>
 
                 <div className="flex flex-wrap gap-2 mb-4">
-                    {BACKGROUND_TYPES.map((type) => (
-                        <button
-                            key={type}
-                            onClick={() => handleBackgroundTypeChange(type)}
-                            disabled={disabled}
-                            className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
-                                backgroundType === type
-                                    ? 'border-purple-600 bg-purple-50 text-purple-700'
-                                    : 'border-gray-200 text-gray-600 hover:border-gray-300'
-                            } ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}
-                        >
-                            {type}
-                        </button>
-                    ))}
+                    {BACKGROUND_TYPES.map((type) => {
+                        const typeLabels = {
+                            'Color': translations.bgTypeColor,
+                            'Image': translations.bgTypeImage,
+                            'Video': translations.bgTypeVideo,
+                            'Transparent': translations.bgTypeTransparent
+                        };
+                        return (
+                            <button
+                                key={type}
+                                onClick={() => handleBackgroundTypeChange(type)}
+                                disabled={disabled}
+                                className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                                    backgroundType === type
+                                        ? 'border-purple-600 bg-purple-50 text-purple-700'
+                                        : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                                } ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}
+                            >
+                                {typeLabels[type] || type}
+                            </button>
+                        );
+                    })}
                 </div>
 
                 {backgroundType === 'Color' && (
@@ -496,7 +568,7 @@ export default function CarouselContainerCard({ carousel, onUpdate, onDelete, di
                         currentColor={localData.backgroundColor || '#FFFFFF'}
                         onColorChange={handleBackgroundColorChange}
                         disabled={disabled}
-                        fieldName="Carousel Background"
+                        fieldName={translations.carouselBackground}
                     />
                 )}
 
@@ -504,7 +576,7 @@ export default function CarouselContainerCard({ carousel, onUpdate, onDelete, di
                     <div className="space-y-3 p-4 border rounded-lg bg-gray-50">
                         <div className="flex items-center justify-between">
                             <span className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                                <FaImages /> Background Image
+                                <FaImages /> {translations.backgroundImage}
                             </span>
                             {localData.backgroundImage && (
                                 <button
@@ -512,7 +584,7 @@ export default function CarouselContainerCard({ carousel, onUpdate, onDelete, di
                                     disabled={disabled}
                                     className="text-xs text-red-600 hover:text-red-700 disabled:opacity-50"
                                 >
-                                    Remove
+                                    {translations.remove}
                                 </button>
                             )}
                         </div>
@@ -528,7 +600,7 @@ export default function CarouselContainerCard({ carousel, onUpdate, onDelete, di
                             </div>
                         ) : (
                             <p className="text-xs text-gray-500">
-                                Upload an image to use as the carousel background.
+                                {translations.imageHelper}
                             </p>
                         )}
                         <div>
@@ -540,7 +612,7 @@ export default function CarouselContainerCard({ carousel, onUpdate, onDelete, di
                                     disabled={disabled || isUploadingBackgroundImage}
                                     className="hidden"
                                 />
-                                {isUploadingBackgroundImage ? 'Uploading...' : 'Upload Image'}
+                                {isUploadingBackgroundImage ? translations.uploading : translations.uploadImage}
                             </label>
                         </div>
                     </div>
@@ -550,7 +622,7 @@ export default function CarouselContainerCard({ carousel, onUpdate, onDelete, di
                     <div className="space-y-3 p-4 border rounded-lg bg-gray-50">
                         <div className="flex items-center justify-between">
                             <span className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                                <FaVideo /> Background Video
+                                <FaVideo /> {translations.backgroundVideo}
                             </span>
                             {localData.backgroundVideo && (
                                 <button
@@ -558,7 +630,7 @@ export default function CarouselContainerCard({ carousel, onUpdate, onDelete, di
                                     disabled={disabled}
                                     className="text-xs text-red-600 hover:text-red-700 disabled:opacity-50"
                                 >
-                                    Remove
+                                    {translations.remove}
                                 </button>
                             )}
                         </div>
@@ -574,7 +646,7 @@ export default function CarouselContainerCard({ carousel, onUpdate, onDelete, di
                             />
                         ) : (
                             <p className="text-xs text-gray-500">
-                                Upload a video to use as the carousel background.
+                                {translations.videoHelper}
                             </p>
                         )}
                         <div>
@@ -586,7 +658,7 @@ export default function CarouselContainerCard({ carousel, onUpdate, onDelete, di
                                     disabled={disabled || isUploadingBackgroundVideo}
                                     className="hidden"
                                 />
-                                {isUploadingBackgroundVideo ? 'Uploading...' : 'Upload Video'}
+                                {isUploadingBackgroundVideo ? translations.uploading : translations.uploadVideo}
                             </label>
                         </div>
                     </div>
@@ -594,7 +666,7 @@ export default function CarouselContainerCard({ carousel, onUpdate, onDelete, di
 
                 {backgroundType === 'Transparent' && (
                     <div className="p-4 border rounded-lg bg-gray-50 text-sm text-gray-600">
-                        Carousel background will be transparent and inherit the page background. Remove any uploaded media automatically.
+                        {translations.transparentDescription}
                     </div>
                 )}
             </div>
@@ -602,7 +674,7 @@ export default function CarouselContainerCard({ carousel, onUpdate, onDelete, di
             {/* Content Visibility */}
             <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-3">
-                    Content Visibility
+                    {translations.contentVisibility}
                 </label>
                 <div className="flex flex-wrap gap-3">
                     <button
@@ -615,7 +687,7 @@ export default function CarouselContainerCard({ carousel, onUpdate, onDelete, di
                                 : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
                         } ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}
                     >
-                        {isTitleVisible ? 'Hide Title' : 'Show Title'}
+                        {isTitleVisible ? translations.hideTitle : translations.showTitle}
                     </button>
                     <button
                         type="button"
@@ -627,7 +699,7 @@ export default function CarouselContainerCard({ carousel, onUpdate, onDelete, di
                                 : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
                         } ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}
                     >
-                        {isDescriptionVisible ? 'Hide Description' : 'Show Description'}
+                        {isDescriptionVisible ? translations.hideDescription : translations.showDescription}
                     </button>
                 </div>
             </div>
@@ -636,7 +708,7 @@ export default function CarouselContainerCard({ carousel, onUpdate, onDelete, di
             <div className="space-y-4">
                 <div className="flex items-center justify-between">
                     <h4 className="text-sm font-semibold text-gray-700">
-                        Carousel Items ({localData.items.length})
+                        {translations.carouselItems} ({localData.items.length})
                     </h4>
                     <button
                         onClick={handleAddItem}
@@ -644,13 +716,13 @@ export default function CarouselContainerCard({ carousel, onUpdate, onDelete, di
                         className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                     >
                         <FaPlus />
-                        <span className="text-sm font-medium">Add Item</span>
+                        <span className="text-sm font-medium">{translations.addItem}</span>
                     </button>
                 </div>
 
                 {localData.items.length === 0 ? (
                     <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-                        <p className="text-gray-500">No items yet. Add your first item to get started!</p>
+                        <p className="text-gray-500">{translations.emptyState}</p>
                     </div>
                 ) : (
                     <div className="space-y-4">
@@ -676,7 +748,7 @@ export default function CarouselContainerCard({ carousel, onUpdate, onDelete, di
                     disabled={disabled}
                     className="px-4 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors text-sm font-medium"
                 >
-                    Delete Entire Carousel
+                    {translations.deleteCarousel}
                 </button>
             </div>
         </div>

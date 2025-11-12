@@ -424,7 +424,17 @@
         "no_video_configured_error": "Cannot activate. Please configure video platform and URL first.",
         "invalid_video_url_error": "Cannot activate. Please provide a valid video URL.",
         "no_image_configured_error": "Cannot activate. Please upload an image first.",
-        "link_activated": "Media link automatically activated"
+        "link_activated": "Media link automatically activated",
+        "media_type_video_embed": "Video Embed",
+        "media_type_video_upload": "Video Upload",
+        "media_type_image_url": "Image URL",
+        "media_type_image_upload": "Image Upload",
+        "upload_custom_image": "Upload Image",
+        "upload_custom_video": "Upload Video",
+        "image_too_large": "Image too large (max 5MB)",
+        "video_too_large": "Video too large (max 50MB)",
+        "select_image_file": "Please select an image file",
+        "select_video_file": "Please select a video file"
       },
       "video_embed_card": {
         "editing_video_embed": "Editing Video Embed",

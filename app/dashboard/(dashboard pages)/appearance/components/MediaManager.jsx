@@ -85,7 +85,7 @@ export default function MediaManager() {
 
         const newItem = {
             id: mediaItemId,
-            mediaType: 'video', // Default to video
+            mediaType: 'video-embed', // Default to video embed (modern type)
             title: t('dashboard.appearance.media.new_item_default'),
             url: '',
             platform: 'youtube',

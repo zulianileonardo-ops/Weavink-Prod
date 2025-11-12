@@ -775,7 +775,17 @@
         "no_video_configured_error": "Không thể kích hoạt. Vui lòng cấu hình nền tảng và URL video trước.",
         "invalid_video_url_error": "Không thể kích hoạt. Vui lòng cung cấp URL video hợp lệ.",
         "no_image_configured_error": "Không thể kích hoạt. Vui lòng tải lên hình ảnh trước.",
-        "link_activated": "Liên kết phương tiện đã được kích hoạt tự động"
+        "link_activated": "Liên kết phương tiện đã được kích hoạt tự động",
+        "media_type_video_embed": "Nhúng Video",
+        "media_type_video_upload": "Tải Lên Video",
+        "media_type_image_url": "URL Hình Ảnh",
+        "media_type_image_upload": "Tải Lên Hình Ảnh",
+        "upload_custom_image": "Tải Lên Hình Ảnh",
+        "upload_custom_video": "Tải Lên Video",
+        "image_too_large": "Hình ảnh quá lớn (tối đa 5MB)",
+        "video_too_large": "Video quá lớn (tối đa 50MB)",
+        "select_image_file": "Vui lòng chọn tệp hình ảnh",
+        "select_video_file": "Vui lòng chọn tệp video"
       },
       "video_embed_card": {
         "editing_video_embed": "Chỉnh Sửa Nhúng Video",

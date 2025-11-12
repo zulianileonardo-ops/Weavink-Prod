@@ -270,7 +270,7 @@ function ContactsPage() {
 
     // Main render
     return (
-        <div className="flex-1 w-full py-3 sm:py-4 max-h-full overflow-y-auto">
+        <div className="flex-1 w-full py-3 sm:py-4">
             <div className="w-full">
                 {/* Header */}
                 <div className="mb-4 sm:mb-6">

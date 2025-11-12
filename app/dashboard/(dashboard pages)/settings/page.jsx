@@ -101,7 +101,7 @@ function SettingsPage() {
 
     // Main render
     return (
-        <div className="flex-1 py-2 flex flex-col max-h-full overflow-y-auto scroll-smooth">
+        <div className="flex-1 py-2 flex flex-col scroll-smooth">
             {/* Save indicator */}
             {isSaving && (
                 <div className="fixed top-20 right-6 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg z-50 flex items-center gap-2">
@@ -109,7 +109,7 @@ function SettingsPage() {
                     {translations.saving}
                 </div>
             )}
-            
+
             <Controller />
             <SocialSetting />
             <SupportBanner />

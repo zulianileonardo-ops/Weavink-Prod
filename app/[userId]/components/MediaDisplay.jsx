@@ -8,8 +8,8 @@ export default function MediaDisplay({ items }) {
     // Get the first media item (since we only allow 1 media embed per link)
     const mediaItem = items && items.length > 0 ? items[0] : null;
 
-    // Return null if no media item or no URL
-    if (!mediaItem || !mediaItem.url) {
+    // Return null if no media item or no URL (check both url and imageUrl for flexibility)
+    if (!mediaItem || (!mediaItem.url && !mediaItem.imageUrl)) {
         return null;
     }
 
@@ -59,8 +59,8 @@ export default function MediaDisplay({ items }) {
     // Determine media type (default to video for backward compatibility)
     const mediaType = mediaItem.mediaType || 'video';
 
-    // Handle video display
-    if (mediaType === 'video') {
+    // Handle video embed display (YouTube/Vimeo)
+    if (mediaType === 'video-embed' || mediaType === 'video') {
         const embedUrl = getEmbedUrl();
 
         if (!embedUrl) {
@@ -99,8 +99,43 @@ export default function MediaDisplay({ items }) {
         );
     }
 
-    // Handle image display
-    if (mediaType === 'image') {
+    // Handle custom video upload display (HTML5 video)
+    if (mediaType === 'video-upload') {
+        return (
+            <div className="w-full max-w-2xl mx-auto">
+                {/* Optional title */}
+                {mediaItem.title && (
+                    <h3 className="text-lg font-semibold mb-3 text-center">
+                        {mediaItem.title}
+                    </h3>
+                )}
+
+                {/* Video container with 16:9 aspect ratio */}
+                <div className="relative w-full rounded-2xl overflow-hidden shadow-lg" style={{ paddingBottom: '56.25%' }}>
+                    <video
+                        src={mediaItem.url}
+                        className="absolute top-0 left-0 w-full h-full object-cover"
+                        controls
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        title={mediaItem.title || 'Uploaded Video'}
+                    />
+                </div>
+
+                {/* Optional description */}
+                {mediaItem.description && (
+                    <p className="text-sm text-gray-600 mt-3 text-center">
+                        {mediaItem.description}
+                    </p>
+                )}
+            </div>
+        );
+    }
+
+    // Handle image display (both URL and upload types)
+    if (mediaType === 'image' || mediaType === 'image-url' || mediaType === 'image-upload') {
         // Use imageUrl if available, otherwise fall back to url
         const imageUrl = mediaItem.imageUrl || mediaItem.url;
 

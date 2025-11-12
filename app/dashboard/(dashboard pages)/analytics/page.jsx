@@ -162,9 +162,9 @@ function AnalyticsContent() {
     }
     
     return (
-        <div className="flex-1 py-2 flex flex-col max-h-full overflow-y-auto pb-20">
+        <div className="flex-1 py-2 flex flex-col pb-20">
             <div className="p-4 space-y-6">
-                
+
                 {impersonationContext && (
                     <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg shadow-sm">
                         <div className="flex items-center justify-between flex-wrap gap-3">

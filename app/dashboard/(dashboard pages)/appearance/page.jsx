@@ -173,7 +173,7 @@ function AppearanceContent() {
     // Loading states
     if (!isInitialized) {
         return (
-            <div className="flex-1 py-2 flex flex-col overflow-y-auto">
+            <div className="flex-1 py-2 flex flex-col">
                 <div className="p-6 text-center">
                     <div className="animate-pulse">Loading translations...</div>
                 </div>
@@ -183,7 +183,7 @@ function AppearanceContent() {
 
     if (isLoading && !appearance) {
         return (
-            <div className="flex-1 py-2 flex flex-col overflow-y-auto">
+            <div className="flex-1 py-2 flex flex-col">
                 <div className="p-6 text-center">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
                     <div className="text-gray-500">
@@ -196,7 +196,7 @@ function AppearanceContent() {
 
     if (!appearance && hasLoadError) {
         return (
-            <div className="flex-1 py-2 flex flex-col overflow-y-auto">
+            <div className="flex-1 py-2 flex flex-col">
                 <div className="p-6 text-center">
                     <div className="text-red-500 mb-4">Failed to load appearance settings</div>
                     <button
@@ -213,7 +213,7 @@ function AppearanceContent() {
     // Permission check
     if (!permissions[APPEARANCE_FEATURES.CAN_UPDATE_APPEARANCE]) {
         return (
-            <div className="flex-1 py-2 flex flex-col overflow-y-auto items-center justify-center">
+            <div className="flex-1 py-2 flex flex-col items-center justify-center">
                 <div className="p-6 text-center bg-white rounded-lg shadow-md">
                     <div className="text-xl font-semibold text-amber-600 mb-4">
                         Appearance Customization
@@ -228,7 +228,7 @@ function AppearanceContent() {
     }
 
     return (
-        <div className="flex-1 py-1 flex flex-col overflow-y-auto">
+        <div className="flex-1 py-1 flex flex-col">
             {/* Saving indicator */}
             {isSaving && (
                 <div className="fixed top-20 right-6 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg z-50 flex items-center gap-2">
