@@ -10,6 +10,7 @@ import { useTranslation } from '@/lib/translation/useTranslation';
 import { useDashboard } from '@/app/dashboard/DashboardContext';
 import { AppearanceService } from '@/lib/services/serviceAppearance/client/appearanceService.js';
 import { useDebounce } from '@/LocalHooks/useDebounce';
+import { useItemNavigation } from '@/LocalHooks/useItemNavigation';
 import { APPEARANCE_FEATURES } from '@/lib/services/constants';
 import { toast } from 'react-hot-toast';
 
@@ -19,13 +20,16 @@ export default function VideoEmbedItem({ item, itemRef, style, listeners, attrib
     const { setData } = useContext(ManageLinksContent);
     const { currentUser, permissions, subscriptionLevel, isLoading: isSessionLoading } = useDashboard();
     const [wantsToDelete, setWantsToDelete] = useState(false);
-    const [videoEmbedEnabled, setVideoEmbedEnabled] = useState(false);
-    const [isLoadingToggle, setIsLoadingToggle] = useState(true);
-    const [userToggledVideoEmbed, setUserToggledVideoEmbed] = useState(false);
-    const [linkedVideoName, setLinkedVideoName] = useState(null);
-    const [isHighlighted, setIsHighlighted] = useState(false);
+    const [checkboxChecked, setCheckboxChecked] = useState(item.isActive);
+    const [linkedMedia, setLinkedMedia] = useState(null);
     const router = useRouter();
-    const debouncedVideoEmbedEnabled = useDebounce(videoEmbedEnabled, 500);
+    const debounceCheckbox = useDebounce(checkboxChecked, 500);
+
+    // Use navigation hook for highlighting
+    const { isHighlighted, navigateToItem, highlightClass } = useItemNavigation({
+        itemId: item.id,
+        itemType: 'media-link'
+    });
 
     // Define the feature key for this component
     const featureKey = APPEARANCE_FEATURES.CUSTOM_MEDIA_EMBED;
@@ -35,7 +39,6 @@ export default function VideoEmbedItem({ item, itemRef, style, listeners, attrib
 
     // Check if user has permission to use video embed (only after permissions are fully loaded)
     const canUseVideoEmbed = permissions[featureKey];
-    const hasExistingVideoEmbeds = videoEmbedEnabled; // User had video embeds before downgrade
 
     // 🆕 Monitor permission changes in real-time
     useEffect(() => {
@@ -63,55 +66,44 @@ export default function VideoEmbedItem({ item, itemRef, style, listeners, attrib
         };
     }, [t, isInitialized]);
 
-    // Load video embed enabled state and linked video name
+    // Load linked media item for validation
     useEffect(() => {
-        if (!currentUser?.uid) {
-            setIsLoadingToggle(false);
-            return;
-        }
+        if (!currentUser?.uid) return;
 
         // Initial load
-        const loadInitialState = async () => {
+        const loadLinkedMedia = async () => {
             try {
                 const appearance = await AppearanceService.getAppearanceData();
-                setVideoEmbedEnabled(appearance.mediaEnabled || false);
 
                 // Find the linked media item by ID
                 if (item.mediaItemId) {
                     const mediaItems = appearance.mediaItems || [];
-                    const linkedMedia = mediaItems.find(m => m.id === item.mediaItemId);
-                    // Only show linked media name if media has been configured (has URL)
-                    if (linkedMedia && linkedMedia.title && linkedMedia.url?.trim()) {
-                        setLinkedVideoName(linkedMedia.title);
+                    const linkedMediaItem = mediaItems.find(m => m.id === item.mediaItemId);
+                    if (linkedMediaItem) {
+                        setLinkedMedia(linkedMediaItem);
                     } else {
-                        setLinkedVideoName(null);
+                        setLinkedMedia(null);
                     }
                 }
             } catch (error) {
-                console.error('Error loading media state:', error);
-            } finally {
-                setIsLoadingToggle(false);
+                console.error('Error loading media:', error);
             }
         };
 
-        loadInitialState();
+        loadLinkedMedia();
 
         // Set up real-time listener for media changes
         const unsubscribe = AppearanceService.listenToAppearanceData(
             currentUser.uid,
             (appearance) => {
-                const newMediaEnabled = appearance.mediaEnabled || false;
-                setVideoEmbedEnabled(newMediaEnabled);
-
-                // Update linked media name in real-time
+                // Update linked media object in real-time
                 if (item.mediaItemId) {
                     const mediaItems = appearance.mediaItems || [];
-                    const linkedMedia = mediaItems.find(m => m.id === item.mediaItemId);
-                    // Only show linked media name if media has been configured (has URL)
-                    if (linkedMedia && linkedMedia.title && linkedMedia.url?.trim()) {
-                        setLinkedVideoName(linkedMedia.title);
+                    const linkedMediaItem = mediaItems.find(m => m.id === item.mediaItemId);
+                    if (linkedMediaItem) {
+                        setLinkedMedia(linkedMediaItem);
                     } else {
-                        setLinkedVideoName(null);
+                        setLinkedMedia(null);
                     }
                 }
             }
@@ -123,39 +115,37 @@ export default function VideoEmbedItem({ item, itemRef, style, listeners, attrib
         };
     }, [currentUser?.uid, item.mediaItemId]);
 
-    // Check for highlight parameter in URL hash
+    // Update link's active status in the data array
+    const editArrayActiveStatus = () => {
+        setData(prevData =>
+            prevData.map(i =>
+                i.id === item.id ? { ...i, isActive: checkboxChecked } : i
+            )
+        );
+    };
+
+    // Trigger update when checkbox changes (debounced)
     useEffect(() => {
-        const hash = window.location.hash;
-        if (hash === `#video-link-${item.id}`) {
-            setIsHighlighted(true);
-            // Remove highlight after 3 seconds
-            setTimeout(() => {
-                setIsHighlighted(false);
-                // Clear the hash
-                window.history.replaceState(null, '', window.location.pathname);
-            }, 3000);
+        if (checkboxChecked !== item.isActive) {
+            editArrayActiveStatus();
         }
-    }, [item.id]);
+    }, [debounceCheckbox]);
 
-    // Save video embed enabled state when toggled by user
-    useEffect(() => {
-        if (isLoadingToggle || !userToggledVideoEmbed) return;
+    const handleCheckboxChange = (event) => {
+        const newValue = event.target.checked;
 
-        const saveVideoEmbedState = async () => {
-            try {
-                await AppearanceService.updateAppearanceData({
-                    mediaEnabled: videoEmbedEnabled
-                }, { origin: 'manage-links', userId: currentUser?.uid });
-                setUserToggledVideoEmbed(false);
-            } catch (error) {
-                console.error('Error saving media state:', error);
+        // Validate: Prevent activating if no media content configured
+        if (newValue === true) {
+            // Check if linked media item has content
+            if (!linkedMedia?.url || linkedMedia.url.trim() === '') {
+                toast.error(
+                    t('dashboard.links.item.media_no_content_error') ||
+                    'Cannot activate. Please add media content first.'
+                );
+                return; // Prevent activation
             }
-        };
+        }
 
-        saveVideoEmbedState();
-    }, [currentUser?.uid, debouncedVideoEmbedEnabled, isLoadingToggle, videoEmbedEnabled, userToggledVideoEmbed]);
-
-    const handleToggleVideoEmbed = (event) => {
         // Prevent toggle if user doesn't have permission
         if (!canUseVideoEmbed) {
             const requiredTier = subscriptionLevel === 'base' ? 'Pro' : 'Pro';
@@ -169,12 +159,29 @@ export default function VideoEmbedItem({ item, itemRef, style, listeners, attrib
             });
             return;
         }
-        setVideoEmbedEnabled(event.target.checked);
-        setUserToggledVideoEmbed(true);
+
+        setCheckboxChecked(newValue);
     };
 
-    const handleDelete = () => {
+    const handleDelete = async () => {
+        // Remove from links
         setData(prevData => prevData.filter(i => i.id !== item.id));
+
+        // Also remove the corresponding media item from appearance
+        if (item.mediaItemId) {
+            try {
+                const appearance = await AppearanceService.getAppearanceData();
+                const updatedMediaItems = (appearance.mediaItems || [])
+                    .filter(m => m.id !== item.mediaItemId)
+                    .map((m, index) => ({ ...m, order: index }));
+
+                await AppearanceService.updateAppearanceData({
+                    mediaItems: updatedMediaItems
+                }, { origin: 'manage-links', userId: currentUser?.uid });
+            } catch (error) {
+                console.error('Error deleting media item from appearance:', error);
+            }
+        }
     };
 
     const handleCustomize = () => {
@@ -192,45 +199,21 @@ export default function VideoEmbedItem({ item, itemRef, style, listeners, attrib
             return;
         }
 
-        // Navigate to appearance page with specific item hash or general media section
-        const specificItemHash = item.mediaItemId ? `#media-item-${item.mediaItemId}` : '#video-embed';
-        router.push(`/dashboard/appearance${specificItemHash}`);
-
-        // After navigation, scroll to the media section or specific item
-        // Use a longer timeout and retry mechanism to ensure the page has loaded
-        const scrollToTarget = (attempts = 0) => {
-            if (attempts > 10) return; // Give up after 10 attempts
-
-            // Try to scroll to specific media item first
-            if (item.mediaItemId) {
-                const specificElement = document.getElementById(`media-item-${item.mediaItemId}`);
-                if (specificElement) {
-                    specificElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    return;
-                }
-            }
-
-            // Fallback: scroll to the media section
-            const mediaSection = document.getElementById('video-embed');
-            if (mediaSection) {
-                mediaSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            } else {
-                // Element not found, try again after a short delay
-                setTimeout(() => scrollToTarget(attempts + 1), 200);
-            }
-        };
-
-        setTimeout(() => scrollToTarget(), 500);
+        // Navigate to specific media item in appearance page
+        if (item.mediaItemId) {
+            navigateToItem('/dashboard/appearance', item.mediaItemId, 'media-item');
+        } else {
+            // Fallback to section navigation if no specific item ID
+            router.push('/dashboard/appearance#video-embed');
+        }
     };
 
     // Grey out if user doesn't have permission, add highlight effect if highlighted
-    const containerClasses = `rounded-3xl border flex flex-col transition-all duration-300 ${
+    const containerClasses = `rounded-3xl border flex flex-col ${
         !canUseVideoEmbed
             ? 'bg-gray-100 border-gray-300 opacity-60'
             : 'bg-gradient-to-r from-red-50 to-orange-50 border-red-300'
-    } ${isOverlay ? 'shadow-lg' : ''} ${
-        isHighlighted ? 'ring-4 ring-amber-400 shadow-xl scale-[1.02]' : ''
-    }`;
+    } ${isOverlay ? 'shadow-lg' : ''} ${highlightClass}`;
 
     // 🔧 ROBUST FIX: Loading state while session/permissions are loading - PREVENTS RACE CONDITION
     // This now checks BOTH isSessionLoading AND if permissions object is empty
@@ -263,7 +246,7 @@ export default function VideoEmbedItem({ item, itemRef, style, listeners, attrib
 
     return (
         <div
-            id={`video-link-${item.id}`}
+            id={`media-link-${item.id}`}
             ref={itemRef}
             style={style}
             className={containerClasses}
@@ -292,7 +275,7 @@ export default function VideoEmbedItem({ item, itemRef, style, listeners, attrib
                             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                                 <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
                             </svg>
-                            {linkedVideoName || translations.videoEmbedTitle}
+                            {(linkedMedia?.title && linkedMedia?.url?.trim()) ? linkedMedia.title : translations.videoEmbedTitle}
                         </span>
                         {/* Show upgrade badge if no permission */}
                         {!canUseVideoEmbed && (
@@ -301,7 +284,7 @@ export default function VideoEmbedItem({ item, itemRef, style, listeners, attrib
                             </span>
                         )}
                         {/* Show link indicator if video is linked */}
-                        {linkedVideoName && canUseVideoEmbed && (
+                        {linkedMedia?.title && linkedMedia?.url?.trim() && canUseVideoEmbed && (
                             <span className='text-xs px-2 py-0.5 bg-green-100 text-green-700 rounded-full font-semibold border border-green-300'>
                                 {translations.linkedBadge}
                             </span>
@@ -342,9 +325,9 @@ export default function VideoEmbedItem({ item, itemRef, style, listeners, attrib
                         <label className="relative flex justify-between items-center group p-2 text-xl">
                             <input
                                 type="checkbox"
-                                onChange={handleToggleVideoEmbed}
-                                checked={videoEmbedEnabled}
-                                disabled={isLoadingToggle || !canUseVideoEmbed}
+                                onChange={handleCheckboxChange}
+                                checked={checkboxChecked}
+                                disabled={!canUseVideoEmbed}
                                 className="absolute left-1/2 -translate-x-1/2 w-full h-full peer appearance-none rounded-md"
                             />
                             <span className={`w-9 h-6 flex items-center flex-shrink-0 ml-4 p-1 rounded-full duration-300 ease-in-out after:w-4 after:h-4 after:bg-white after:rounded-full after:shadow-md after:duration-300 ${

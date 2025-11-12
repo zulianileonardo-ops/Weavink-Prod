@@ -608,6 +608,69 @@
         "no_carousels": "尚未添加轮播。",
         "new_carousel_default": "新轮播"
       },
+      "carousel_container": {
+        "toasts": {
+          "enable_validation_error": "启用前请至少添加一个包含图像或视频的轮播项目。",
+          "enabled": "轮播已启用",
+          "disabled": "轮播已禁用",
+          "title_empty_error": "标题不能为空",
+          "title_updated": "标题已更新",
+          "item_added": "项目已添加",
+          "item_removed": "项目已移除",
+          "disabled_no_items": "轮播已禁用，因为它没有项目。",
+          "style_updated": "样式已设置为 {{style}}",
+          "background_image_updated": "背景图片已更新",
+          "background_image_upload_failed": "上传背景图片失败",
+          "background_video_updated": "背景视频已更新",
+          "background_video_upload_failed": "上传背景视频失败",
+          "background_image_removed": "背景图片已移除",
+          "background_video_removed": "背景视频已移除"
+        },
+        "labels": {
+          "title_placeholder": "轮播标题",
+          "go_to_link": "前往链接",
+          "enabled": "已启用",
+          "disabled": "已禁用",
+          "add_items_to_enable": "添加轮播项目以启用",
+          "preview": "预览",
+          "hide_preview": "隐藏预览",
+          "carousel_style": "轮播样式",
+          "carousel_background": "轮播背景",
+          "background_image": "背景图片",
+          "background_video": "背景视频",
+          "content_visibility": "内容可见性",
+          "carousel_items": "轮播项目",
+          "add_item": "添加项目"
+        },
+        "buttons": {
+          "remove": "移除",
+          "upload_image": "上传图片",
+          "upload_video": "上传视频",
+          "uploading": "上传中...",
+          "show_title": "显示标题",
+          "hide_title": "隐藏标题",
+          "show_description": "显示描述",
+          "hide_description": "隐藏描述",
+          "delete_carousel": "删除整个轮播"
+        },
+        "messages": {
+          "image_helper": "上传图片作为轮播背景。",
+          "video_helper": "上传视频作为轮播背景。",
+          "transparent_description": "轮播背景将透明并继承页面背景。自动移除任何已上传的媒体。",
+          "empty_state": "暂无项目。添加第一个项目开始使用！",
+          "delete_confirmation": "您确定要删除整个轮播吗？这也将移除链接项目。"
+        },
+        "background_types": {
+          "color": "颜色",
+          "image": "图片",
+          "video": "视频",
+          "transparent": "透明"
+        },
+        "defaults": {
+          "new_item_title": "新项目",
+          "new_item_description": "点击编辑此项目"
+        }
+      },
       "media": {
         "title": "媒体嵌入",
         "enabled": "已启用",
@@ -619,6 +682,7 @@
         "disabled_message": "启用媒体以开始在个人资料中添加视频和图像。",
         "link_title": "媒体",
         "default_item_title": "新媒体项目",
+        "new_item_default": "新媒体项目",
         "errors": {
           "max_items": "根据您的方案最多允许 {{max}} 个媒体项目。"
         },
@@ -676,7 +740,11 @@
         "delete_confirm": "您确定要删除此媒体项目吗？",
         "supported_youtube": "支持：youtube.com/watch?v=..., youtu.be/...",
         "supported_vimeo": "支持：vimeo.com/...",
-        "select_platform_first": "请先选择平台"
+        "select_platform_first": "请先选择平台",
+        "no_video_configured_error": "无法激活。请先配置视频平台和URL。",
+        "invalid_video_url_error": "无法激活。请提供有效的视频URL。",
+        "no_image_configured_error": "无法激活。请先上传图片。",
+        "link_activated": "媒体链接已自动激活"
       },
       "video_embed_card": {
         "editing_video_embed": "编辑视频嵌入",
@@ -813,6 +881,26 @@
       "saved_success": "链接已保存！",
       "saved_error": "无法保存链接。",
       "loading_error": "加载链接失败。",
+      "errors": {
+        "carousel_permission": "升级到 {{tier}} 以使用内容轮播功能。",
+        "carousel_limit": "{{plan}} 方案已达到 {{count}} 个轮播链接的上限。",
+        "media_permission": "升级到 {{tier}} 以使用媒体功能。",
+        "media_limit": "{{plan}} 方案已达到 {{count}} 个媒体链接的上限。",
+        "update_failed": "更新链接失败。"
+      },
+      "status": {
+        "loading": "正在加载您的链接...",
+        "saving": "正在保存链接...",
+        "syncing": "正在与服务器同步..."
+      },
+      "toasts": {
+        "carousel_added": "轮播链接已添加 - 前往外观添加项目",
+        "carousel_creation_failed": "轮播链接已添加，但创建轮播容器失败",
+        "cv_added": "简历项目已添加 - 前往外观上传文档",
+        "cv_creation_failed": "简历链接已添加，但创建文档空间失败",
+        "media_added": "媒体链接已添加 - 前往外观配置您的媒体",
+        "media_creation_failed": "媒体链接已添加，但创建媒体项目空间失败"
+      },
       "empty_state": {
         "title": "向世界展示你是谁。",
         "subtitle": "添加一个链接开始吧。"
@@ -825,7 +913,8 @@
         "customize_video_embed": "自定义媒体",
         "setup_link_prompt": "输入您的{{kind}} URL，然后设置您的链接",
         "custom_kind": "自定义",
-        "cv_no_document_error": "无法激活。请先上传文档。"
+        "cv_no_document_error": "无法激活。请先上传文档。",
+        "media_no_content_error": "无法激活。请先添加媒体内容。"
       }
     },
     "your_linktree": "您的 Linktree 已上线：",

@@ -639,6 +639,69 @@
         "no_carousels": "Chưa có băng chuyền nào được thêm.",
         "new_carousel_default": "Băng Chuyền Mới"
       },
+      "carousel_container": {
+        "toasts": {
+          "enable_validation_error": "Thêm ít nhất một mục băng chuyền có hình ảnh hoặc video trước khi bật.",
+          "enabled": "Băng chuyền đã được bật",
+          "disabled": "Băng chuyền đã tắt",
+          "title_empty_error": "Tiêu đề không thể trống",
+          "title_updated": "Tiêu đề đã được cập nhật",
+          "item_added": "Mục đã được thêm",
+          "item_removed": "Mục đã được xóa",
+          "disabled_no_items": "Băng chuyền đã tắt vì không có mục nào.",
+          "style_updated": "Phong cách đã được đặt thành {{style}}",
+          "background_image_updated": "Hình nền đã được cập nhật",
+          "background_image_upload_failed": "Tải lên hình nền thất bại",
+          "background_video_updated": "Video nền đã được cập nhật",
+          "background_video_upload_failed": "Tải lên video nền thất bại",
+          "background_image_removed": "Hình nền đã được xóa",
+          "background_video_removed": "Video nền đã được xóa"
+        },
+        "labels": {
+          "title_placeholder": "Tiêu Đề Băng Chuyền",
+          "go_to_link": "Đi đến liên kết",
+          "enabled": "Đã Bật",
+          "disabled": "Đã Tắt",
+          "add_items_to_enable": "Thêm mục băng chuyền để bật",
+          "preview": "Xem trước",
+          "hide_preview": "Ẩn xem trước",
+          "carousel_style": "Phong Cách Băng Chuyền",
+          "carousel_background": "Nền Băng Chuyền",
+          "background_image": "Hình Nền",
+          "background_video": "Video Nền",
+          "content_visibility": "Hiển Thị Nội Dung",
+          "carousel_items": "Mục Băng Chuyền",
+          "add_item": "Thêm mục"
+        },
+        "buttons": {
+          "remove": "Xóa",
+          "upload_image": "Tải lên hình ảnh",
+          "upload_video": "Tải lên video",
+          "uploading": "Đang tải lên...",
+          "show_title": "Hiển thị tiêu đề",
+          "hide_title": "Ẩn tiêu đề",
+          "show_description": "Hiển thị mô tả",
+          "hide_description": "Ẩn mô tả",
+          "delete_carousel": "Xóa Toàn Bộ Băng Chuyền"
+        },
+        "messages": {
+          "image_helper": "Tải lên hình ảnh để sử dụng làm nền băng chuyền.",
+          "video_helper": "Tải lên video để sử dụng làm nền băng chuyền.",
+          "transparent_description": "Nền băng chuyền sẽ trong suốt và kế thừa nền trang. Tự động xóa mọi phương tiện đã tải lên.",
+          "empty_state": "Chưa có mục nào. Thêm mục đầu tiên của bạn để bắt đầu!",
+          "delete_confirmation": "Bạn có chắc chắn muốn xóa toàn bộ băng chuyền này không? Điều này cũng sẽ xóa mục liên kết."
+        },
+        "background_types": {
+          "color": "Màu",
+          "image": "Hình ảnh",
+          "video": "Video",
+          "transparent": "Trong suốt"
+        },
+        "defaults": {
+          "new_item_title": "Mục Mới",
+          "new_item_description": "Nhấp để chỉnh sửa mục này"
+        }
+      },
       "media": {
         "title": "Nhúng Phương Tiện",
         "enabled": "Đã Bật",
@@ -650,6 +713,7 @@
         "disabled_message": "Bật phương tiện để bắt đầu thêm video và hình ảnh vào hồ sơ của bạn.",
         "link_title": "Phương tiện",
         "default_item_title": "Mục phương tiện mới",
+        "new_item_default": "Mục phương tiện mới",
         "errors": {
           "max_items": "Tối đa {{max}} mục phương tiện được phép trong gói của bạn."
         },
@@ -707,7 +771,11 @@
         "delete_confirm": "Bạn có chắc chắn muốn xóa mục phương tiện này không?",
         "supported_youtube": "Hỗ trợ: youtube.com/watch?v=..., youtu.be/...",
         "supported_vimeo": "Hỗ trợ: vimeo.com/...",
-        "select_platform_first": "Vui lòng chọn nền tảng trước"
+        "select_platform_first": "Vui lòng chọn nền tảng trước",
+        "no_video_configured_error": "Không thể kích hoạt. Vui lòng cấu hình nền tảng và URL video trước.",
+        "invalid_video_url_error": "Không thể kích hoạt. Vui lòng cung cấp URL video hợp lệ.",
+        "no_image_configured_error": "Không thể kích hoạt. Vui lòng tải lên hình ảnh trước.",
+        "link_activated": "Liên kết phương tiện đã được kích hoạt tự động"
       },
       "video_embed_card": {
         "editing_video_embed": "Chỉnh Sửa Nhúng Video",
@@ -844,6 +912,26 @@
       "saved_success": "Liên kết đã được lưu!",
       "saved_error": "Không thể lưu liên kết.",
       "loading_error": "Không tải được liên kết.",
+      "errors": {
+        "carousel_permission": "Nâng cấp lên {{tier}} để sử dụng tính năng Băng Chuyền Nội Dung.",
+        "carousel_limit": "Đã đạt giới hạn {{count}} liên kết băng chuyền cho gói {{plan}}.",
+        "media_permission": "Nâng cấp lên {{tier}} để sử dụng tính năng Phương Tiện.",
+        "media_limit": "Đã đạt giới hạn {{count}} liên kết phương tiện cho gói {{plan}}.",
+        "update_failed": "Không thể cập nhật liên kết."
+      },
+      "status": {
+        "loading": "Đang tải liên kết của bạn...",
+        "saving": "Đang lưu liên kết...",
+        "syncing": "Đang đồng bộ với máy chủ..."
+      },
+      "toasts": {
+        "carousel_added": "Liên kết băng chuyền đã được thêm - đi đến Giao Diện để thêm mục",
+        "carousel_creation_failed": "Liên kết băng chuyền đã được thêm nhưng không thể tạo vùng chứa băng chuyền",
+        "cv_added": "Mục CV đã được thêm - đi đến Giao Diện để tải lên tài liệu",
+        "cv_creation_failed": "Liên kết CV đã được thêm nhưng không thể tạo vùng chứa tài liệu",
+        "media_added": "Liên kết phương tiện đã được thêm - đi đến Giao Diện để cấu hình phương tiện của bạn",
+        "media_creation_failed": "Liên kết phương tiện đã được thêm nhưng không thể tạo vùng chứa mục phương tiện"
+      },
       "empty_state": {
         "title": "Cho thế giới thấy bạn là ai.",
         "subtitle": "Thêm một liên kết để bắt đầu."
@@ -856,7 +944,8 @@
         "customize_video_embed": "Tùy chỉnh phương tiện",
         "setup_link_prompt": "Nhập URL {{kind}} của bạn, sau đó thiết lập liên kết",
         "custom_kind": "Tùy chỉnh",
-        "cv_no_document_error": "Không thể kích hoạt. Vui lòng tải lên tài liệu trước."
+        "cv_no_document_error": "Không thể kích hoạt. Vui lòng tải lên tài liệu trước.",
+        "media_no_content_error": "Không thể kích hoạt. Vui lòng thêm nội dung phương tiện trước."
       }
     },
     "your_linktree": "Linktree của bạn đang hoạt động:",

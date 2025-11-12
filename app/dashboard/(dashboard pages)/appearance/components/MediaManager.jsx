@@ -104,7 +104,7 @@ export default function MediaManager() {
             const newLinkItem = {
                 id: generateRandomId(),
                 title: t('dashboard.links.add_media'),
-                isActive: true,
+                isActive: false,
                 type: 4,
                 mediaItemId: mediaItemId // Link to the media item
             };

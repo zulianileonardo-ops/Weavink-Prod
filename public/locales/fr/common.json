@@ -720,6 +720,69 @@
         "no_carousels": "Aucun carrousel ajouté pour le moment.",
         "new_carousel_default": "Nouveau Carrousel"
       },
+      "carousel_container": {
+        "toasts": {
+          "enable_validation_error": "Ajoutez au moins un élément de carrousel avec une image ou une vidéo avant de l'activer.",
+          "enabled": "Carrousel activé",
+          "disabled": "Carrousel désactivé",
+          "title_empty_error": "Le titre ne peut pas être vide",
+          "title_updated": "Titre mis à jour",
+          "item_added": "Élément ajouté",
+          "item_removed": "Élément supprimé",
+          "disabled_no_items": "Carrousel désactivé car il ne contient aucun élément.",
+          "style_updated": "Style défini sur {{style}}",
+          "background_image_updated": "Image d'arrière-plan mise à jour",
+          "background_image_upload_failed": "Échec du téléchargement de l'image d'arrière-plan",
+          "background_video_updated": "Vidéo d'arrière-plan mise à jour",
+          "background_video_upload_failed": "Échec du téléchargement de la vidéo d'arrière-plan",
+          "background_image_removed": "Image d'arrière-plan supprimée",
+          "background_video_removed": "Vidéo d'arrière-plan supprimée"
+        },
+        "labels": {
+          "title_placeholder": "Titre du Carrousel",
+          "go_to_link": "Aller au lien",
+          "enabled": "Activé",
+          "disabled": "Désactivé",
+          "add_items_to_enable": "Ajoutez des éléments de carrousel pour activer",
+          "preview": "Aperçu",
+          "hide_preview": "Masquer l'aperçu",
+          "carousel_style": "Style du Carrousel",
+          "carousel_background": "Arrière-plan du Carrousel",
+          "background_image": "Image d'Arrière-plan",
+          "background_video": "Vidéo d'Arrière-plan",
+          "content_visibility": "Visibilité du Contenu",
+          "carousel_items": "Éléments du Carrousel",
+          "add_item": "Ajouter un élément"
+        },
+        "buttons": {
+          "remove": "Supprimer",
+          "upload_image": "Télécharger une image",
+          "upload_video": "Télécharger une vidéo",
+          "uploading": "Téléchargement...",
+          "show_title": "Afficher le titre",
+          "hide_title": "Masquer le titre",
+          "show_description": "Afficher la description",
+          "hide_description": "Masquer la description",
+          "delete_carousel": "Supprimer Tout le Carrousel"
+        },
+        "messages": {
+          "image_helper": "Téléchargez une image à utiliser comme arrière-plan du carrousel.",
+          "video_helper": "Téléchargez une vidéo à utiliser comme arrière-plan du carrousel.",
+          "transparent_description": "L'arrière-plan du carrousel sera transparent et héritera de l'arrière-plan de la page. Supprime automatiquement tout média téléchargé.",
+          "empty_state": "Aucun élément pour le moment. Ajoutez votre premier élément pour commencer !",
+          "delete_confirmation": "Êtes-vous sûr de vouloir supprimer ce carrousel entier ? Cela supprimera également l'élément de lien."
+        },
+        "background_types": {
+          "color": "Couleur",
+          "image": "Image",
+          "video": "Vidéo",
+          "transparent": "Transparent"
+        },
+        "defaults": {
+          "new_item_title": "Nouvel Élément",
+          "new_item_description": "Cliquez pour modifier cet élément"
+        }
+      },
       "media": {
         "title": "Intégration Média",
         "enabled": "Activé",
@@ -790,7 +853,11 @@
         "delete_confirm": "Êtes-vous sûr de vouloir supprimer cet élément multimédia ?",
         "supported_youtube": "Supporté : youtube.com/watch?v=..., youtu.be/...",
         "supported_vimeo": "Supporté : vimeo.com/...",
-        "select_platform_first": "Sélectionnez d'abord une plateforme"
+        "select_platform_first": "Sélectionnez d'abord une plateforme",
+        "no_video_configured_error": "Impossible d'activer. Veuillez d'abord configurer la plateforme et l'URL de la vidéo.",
+        "invalid_video_url_error": "Impossible d'activer. Veuillez fournir une URL de vidéo valide.",
+        "no_image_configured_error": "Impossible d'activer. Veuillez d'abord télécharger une image.",
+        "link_activated": "Lien média automatiquement activé"
       },
       "video_embed_card": {
         "editing_video_embed": "Modification de l'Intégration Vidéo",
@@ -973,7 +1040,8 @@
         "delete_button": "Supprimer",
         "setup_link_prompt": "Entrez votre URL {{kind}}, puis configurez votre lien",
         "custom_kind": "Personnalisé",
-        "cv_no_document_error": "Impossible d'activer. Veuillez d'abord télécharger un document."
+        "cv_no_document_error": "Impossible d'activer. Veuillez d'abord télécharger un document.",
+        "media_no_content_error": "Impossible d'activer. Veuillez d'abord ajouter du contenu média."
       },
       "toasts": {
         "carousel_added": "Lien carrousel ajouté - rendez-vous dans Apparence pour ajouter des éléments",

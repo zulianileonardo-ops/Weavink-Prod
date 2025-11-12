@@ -639,6 +639,69 @@
         "no_carousels": "Aún no se han agregado carruseles.",
         "new_carousel_default": "Nuevo Carrusel"
       },
+      "carousel_container": {
+        "toasts": {
+          "enable_validation_error": "Agregue al menos un elemento de carrusel con una imagen o video antes de habilitarlo.",
+          "enabled": "Carrusel habilitado",
+          "disabled": "Carrusel deshabilitado",
+          "title_empty_error": "El título no puede estar vacío",
+          "title_updated": "Título actualizado",
+          "item_added": "Elemento agregado",
+          "item_removed": "Elemento eliminado",
+          "disabled_no_items": "Carrusel deshabilitado porque no tiene elementos.",
+          "style_updated": "Estilo establecido en {{style}}",
+          "background_image_updated": "Imagen de fondo actualizada",
+          "background_image_upload_failed": "Error al cargar la imagen de fondo",
+          "background_video_updated": "Video de fondo actualizado",
+          "background_video_upload_failed": "Error al cargar el video de fondo",
+          "background_image_removed": "Imagen de fondo eliminada",
+          "background_video_removed": "Video de fondo eliminado"
+        },
+        "labels": {
+          "title_placeholder": "Título del Carrusel",
+          "go_to_link": "Ir al enlace",
+          "enabled": "Habilitado",
+          "disabled": "Deshabilitado",
+          "add_items_to_enable": "Agregue elementos de carrusel para habilitar",
+          "preview": "Vista previa",
+          "hide_preview": "Ocultar vista previa",
+          "carousel_style": "Estilo del Carrusel",
+          "carousel_background": "Fondo del Carrusel",
+          "background_image": "Imagen de Fondo",
+          "background_video": "Video de Fondo",
+          "content_visibility": "Visibilidad del Contenido",
+          "carousel_items": "Elementos del Carrusel",
+          "add_item": "Agregar elemento"
+        },
+        "buttons": {
+          "remove": "Eliminar",
+          "upload_image": "Cargar imagen",
+          "upload_video": "Cargar video",
+          "uploading": "Cargando...",
+          "show_title": "Mostrar título",
+          "hide_title": "Ocultar título",
+          "show_description": "Mostrar descripción",
+          "hide_description": "Ocultar descripción",
+          "delete_carousel": "Eliminar Todo el Carrusel"
+        },
+        "messages": {
+          "image_helper": "Cargue una imagen para usar como fondo del carrusel.",
+          "video_helper": "Cargue un video para usar como fondo del carrusel.",
+          "transparent_description": "El fondo del carrusel será transparente y heredará el fondo de la página. Elimina automáticamente cualquier medio cargado.",
+          "empty_state": "Aún no hay elementos. ¡Agrega tu primer elemento para comenzar!",
+          "delete_confirmation": "¿Está seguro de que desea eliminar este carrusel completo? Esto también eliminará el elemento de enlace."
+        },
+        "background_types": {
+          "color": "Color",
+          "image": "Imagen",
+          "video": "Video",
+          "transparent": "Transparente"
+        },
+        "defaults": {
+          "new_item_title": "Nuevo Elemento",
+          "new_item_description": "Haz clic para editar este elemento"
+        }
+      },
       "media": {
         "title": "Inserción de Medios",
         "enabled": "Habilitado",
@@ -650,6 +713,7 @@
         "disabled_message": "Activa los medios para comenzar a añadir videos e imágenes a tu perfil.",
         "link_title": "Medios",
         "default_item_title": "Nuevo elemento multimedia",
+        "new_item_default": "Nuevo elemento multimedia",
         "errors": {
           "max_items": "Máximo de {{max}} elementos multimedia permitidos para tu plan."
         },
@@ -707,7 +771,11 @@
         "delete_confirm": "¿Está seguro de que desea eliminar este elemento multimedia?",
         "supported_youtube": "Admitido: youtube.com/watch?v=..., youtu.be/...",
         "supported_vimeo": "Admitido: vimeo.com/...",
-        "select_platform_first": "Seleccione primero una plataforma"
+        "select_platform_first": "Seleccione primero una plataforma",
+        "no_video_configured_error": "No se puede activar. Por favor, configure la plataforma y URL del video primero.",
+        "invalid_video_url_error": "No se puede activar. Por favor, proporcione una URL de video válida.",
+        "no_image_configured_error": "No se puede activar. Por favor, suba una imagen primero.",
+        "link_activated": "Enlace multimedia activado automáticamente"
       },
       "video_embed_card": {
         "editing_video_embed": "Editando Inserción de Video",
@@ -844,6 +912,26 @@
       "saved_success": "¡Enlaces guardados!",
       "saved_error": "No se pudieron guardar los enlaces.",
       "loading_error": "Error al cargar los enlaces.",
+      "errors": {
+        "carousel_permission": "Actualiza a {{tier}} para usar la función de Carrusel de Contenido.",
+        "carousel_limit": "Máximo de {{count}} enlace(s) de carrusel alcanzado(s) para el plan {{plan}}.",
+        "media_permission": "Actualiza a {{tier}} para usar la función de Medios.",
+        "media_limit": "Máximo de {{count}} enlace(s) de medios alcanzado(s) para el plan {{plan}}.",
+        "update_failed": "Error al actualizar el enlace."
+      },
+      "status": {
+        "loading": "Cargando tus enlaces...",
+        "saving": "Guardando enlaces...",
+        "syncing": "Sincronizando con el servidor..."
+      },
+      "toasts": {
+        "carousel_added": "Enlace de carrusel agregado - ve a Apariencia para añadir elementos",
+        "carousel_creation_failed": "Enlace de carrusel agregado pero falló al crear el contenedor del carrusel",
+        "cv_added": "Elemento de CV agregado - ve a Apariencia para subir el documento",
+        "cv_creation_failed": "Enlace de CV agregado pero falló al crear el espacio del documento",
+        "media_added": "Enlace de medios agregado - ve a Apariencia para configurar tus medios",
+        "media_creation_failed": "Enlace de medios agregado pero falló al crear el espacio del elemento multimedia"
+      },
       "empty_state": {
         "title": "Muestra al mundo quién eres.",
         "subtitle": "Agrega un enlace para comenzar."
@@ -856,7 +944,8 @@
         "customize_video_embed": "Personalizar media",
         "setup_link_prompt": "Ingresa tu URL de {{kind}}, luego configura tu enlace",
         "custom_kind": "Personalizado",
-        "cv_no_document_error": "No se puede activar. Por favor, sube un documento primero."
+        "cv_no_document_error": "No se puede activar. Por favor, sube un documento primero.",
+        "media_no_content_error": "No se puede activar. Por favor, añade contenido multimedia primero."
       }
     },
     "your_linktree": "Tu Linktree está en vivo:",

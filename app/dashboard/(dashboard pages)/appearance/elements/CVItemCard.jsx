@@ -252,9 +252,21 @@ export default function CVItemCard({ item, onUpdate, onDelete, disabled }) {
     };
 
     // Delete item
-    const handleDelete = () => {
+    const handleDelete = async () => {
         if (confirm(translations.deleteConfirm)) {
+            // First delete the parent CV item
             onDelete();
+
+            // Also remove the linked CV link if it exists
+            if (linkedLinkItem) {
+                try {
+                    const links = await LinksService.getLinks();
+                    const updatedLinks = links.links.filter(link => link.id !== linkedLinkItem.id);
+                    await LinksService.saveLinks(updatedLinks);
+                } catch (error) {
+                    console.error('Error deleting linked CV link:', error);
+                }
+            }
         }
     };
 

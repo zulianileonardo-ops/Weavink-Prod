@@ -9,6 +9,8 @@ import Image from 'next/image';
 import { LinksService } from '@/lib/services/serviceLinks/client/LinksService.js';
 import { AppearanceService } from '@/lib/services/serviceAppearance/client/appearanceService.js';
 import { useTranslation } from "@/lib/translation/useTranslation";
+import { useDebounce } from '@/LocalHooks/useDebounce';
+import { useItemNavigation } from '@/LocalHooks/useItemNavigation';
 
 export default function MediaCard({ item, onUpdate, onDelete, disabled }) {
     const { t } = useTranslation();
@@ -64,11 +66,18 @@ export default function MediaCard({ item, onUpdate, onDelete, disabled }) {
     const [isEditing, setIsEditing] = useState(false);
     const [localData, setLocalData] = useState(item);
     const [linkedLinkItem, setLinkedLinkItem] = useState(null);
-    const [isHighlighted, setIsHighlighted] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [checkboxChecked, setCheckboxChecked] = useState(false);
+    const debounceCheckbox = useDebounce(checkboxChecked, 500);
     const menuRef = useRef(null);
     const router = useRouter();
+
+    // Use navigation hook for highlighting
+    const { isHighlighted, navigateToItem, highlightClass } = useItemNavigation({
+        itemId: item.id,
+        itemType: 'media-item'
+    });
 
     // Find the link item that's linked to this media
     useEffect(() => {
@@ -97,19 +106,27 @@ export default function MediaCard({ item, onUpdate, onDelete, disabled }) {
         return () => unsubscribe();
     }, [item.id]);
 
-    // Check for highlight parameter in URL hash
+    // Sync checkbox state when linkedLinkItem changes
     useEffect(() => {
-        const hash = window.location.hash;
-        if (hash === `#media-item-${item.id}`) {
-            setIsHighlighted(true);
-            // Remove highlight after 3 seconds
-            setTimeout(() => {
-                setIsHighlighted(false);
-                // Clear the hash
-                window.history.replaceState(null, '', window.location.pathname);
-            }, 3000);
+        if (linkedLinkItem) {
+            setCheckboxChecked(linkedLinkItem.isActive);
         }
-    }, [item.id]);
+    }, [linkedLinkItem?.isActive]);
+
+    // Update linked link status when toggle changes
+    useEffect(() => {
+        if (linkedLinkItem && checkboxChecked !== linkedLinkItem.isActive) {
+            const updateLinkStatus = async () => {
+                try {
+                    await LinksService.updateLink(linkedLinkItem.id, { isActive: checkboxChecked });
+                } catch (error) {
+                    console.error('Error updating media link status:', error);
+                    toast.error('Failed to update link status');
+                }
+            };
+            updateLinkStatus();
+        }
+    }, [debounceCheckbox]);
 
     // Sync localData with item prop when item changes (but only when not editing to avoid conflicts)
     useEffect(() => {
@@ -253,6 +270,20 @@ export default function MediaCard({ item, onUpdate, onDelete, disabled }) {
         onUpdate(localData);
         setIsEditing(false);
         toast.success(translations.mediaUpdated);
+
+        // Auto-activate the linked media link if it exists and is currently inactive
+        if (linkedLinkItem && !linkedLinkItem.isActive) {
+            try {
+                LinksService.updateLink(linkedLinkItem.id, { isActive: true });
+                toast.success(
+                    t('dashboard.appearance.media_card.link_activated') ||
+                    'Media link automatically activated'
+                );
+            } catch (error) {
+                console.error('Error auto-activating media link:', error);
+                // Non-critical error - don't show to user
+            }
+        }
     };
 
     // Cancel editing
@@ -262,31 +293,68 @@ export default function MediaCard({ item, onUpdate, onDelete, disabled }) {
     };
 
     // Delete item
-    const handleDelete = () => {
+    const handleDelete = async () => {
         if (confirm(translations.deleteConfirm)) {
+            // First delete the parent media item
             onDelete();
+
+            // Also remove the linked media link if it exists
+            if (linkedLinkItem) {
+                try {
+                    const links = await LinksService.getLinks();
+                    const updatedLinks = links.links.filter(link => link.id !== linkedLinkItem.id);
+                    await LinksService.saveLinks(updatedLinks);
+                } catch (error) {
+                    console.error('Error deleting linked media link:', error);
+                }
+            }
         }
+    };
+
+    // Handle toggle active/inactive
+    const handleToggleActive = (event) => {
+        const newValue = event.target.checked;
+
+        // Validate: Prevent activating if media not configured
+        if (newValue === true) {
+            if (localData.mediaType === 'video') {
+                // Video validation: must have platform and valid URL
+                if (!localData.platform || !localData.url || localData.url.trim() === '') {
+                    toast.error(
+                        t('dashboard.appearance.media_card.no_video_configured_error') ||
+                        'Cannot activate. Please configure video platform and URL first.'
+                    );
+                    return;
+                }
+                // Validate video ID can be extracted
+                const videoId = extractVideoId(localData.url, localData.platform);
+                if (!videoId) {
+                    toast.error(
+                        t('dashboard.appearance.media_card.invalid_video_url_error') ||
+                        'Cannot activate. Please provide a valid video URL.'
+                    );
+                    return;
+                }
+            } else if (localData.mediaType === 'image') {
+                // Image validation: must have imageUrl or url
+                if ((!localData.imageUrl || localData.imageUrl.trim() === '') &&
+                    (!localData.url || localData.url.trim() === '')) {
+                    toast.error(
+                        t('dashboard.appearance.media_card.no_image_configured_error') ||
+                        'Cannot activate. Please upload an image first.'
+                    );
+                    return;
+                }
+            }
+        }
+
+        setCheckboxChecked(newValue);
     };
 
     // Navigate to linked item in links page
     const handleGoToLinkedItem = () => {
         if (linkedLinkItem) {
-            router.push(`/dashboard#media-link-${linkedLinkItem.id}`);
-
-            // After navigation, scroll to the highlighted item with retry mechanism
-            const scrollToTarget = (attempts = 0) => {
-                if (attempts > 10) return; // Give up after 10 attempts
-
-                const targetElement = document.getElementById(`media-link-${linkedLinkItem.id}`);
-                if (targetElement) {
-                    targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                } else {
-                    // Element not found, try again after a short delay
-                    setTimeout(() => scrollToTarget(attempts + 1), 200);
-                }
-            };
-
-            setTimeout(() => scrollToTarget(), 500);
+            navigateToItem('/dashboard', linkedLinkItem.id, 'media-link');
         }
     };
 
@@ -294,13 +362,12 @@ export default function MediaCard({ item, onUpdate, onDelete, disabled }) {
     const displayImageUrl = localData.imageUrl || localData.url;
 
     return (
-        <div className={`border-2 rounded-lg p-4 bg-white transition-all duration-300 ${
-            isHighlighted
-                ? 'border-amber-400 ring-4 ring-amber-400 shadow-xl scale-[1.02]'
-                : 'border-gray-200 hover:border-gray-300'
-        }`}>
+        <div
+            id={`media-item-${item.id}`}
+            className={`relative border-2 rounded-lg p-4 bg-white hover:border-gray-300 ${highlightClass}`}
+        >
             {/* Header with drag handle and actions */}
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-4 relative">
                 <div className="flex items-center gap-3">
                     <FaGripVertical className="text-gray-400 cursor-grab" />
                     <h5 className="font-semibold text-gray-800">
@@ -327,6 +394,21 @@ export default function MediaCard({ item, onUpdate, onDelete, disabled }) {
                 </div>
 
                 <div className="flex items-center gap-2">
+                    {/* Toggle - only show if there's a linked link */}
+                    {linkedLinkItem && (
+                        <div className="cursor-pointer scale-[0.85] sm:scale-95">
+                            <label className="relative flex justify-between items-center group text-xl">
+                                <input
+                                    type="checkbox"
+                                    onChange={handleToggleActive}
+                                    checked={checkboxChecked}
+                                    className="absolute left-1/2 -translate-x-1/2 w-full h-full peer appearance-none rounded-md cursor-pointer"
+                                />
+                                <span className="w-9 h-6 flex items-center flex-shrink-0 p-1 bg-gray-400 rounded-full duration-300 ease-in-out peer-checked:bg-green-600 after:w-4 after:h-4 after:bg-white after:rounded-full after:shadow-md after:duration-300 peer-checked:after:translate-x-3 group-hover:after:translate-x-[2px]"></span>
+                            </label>
+                        </div>
+                    )}
+
                     {/* Mobile Menu - Visible only on small screens */}
                     {!isEditing && (
                         <div className="relative md:hidden" ref={menuRef}>
