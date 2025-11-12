@@ -2471,6 +2471,14 @@
         "success": "Paramètre mis à jour avec succès"
       }
     },
+    "consents": {
+      "title": "Gérer les Consentements",
+      "description": "Contrôlez quelles fonctionnalités peuvent traiter vos données. Vous pouvez retirer votre consentement à tout moment. Les modifications prennent effet immédiatement."
+    },
+    "contact_download": {
+      "title": "Paramètres de Téléchargement de Contact",
+      "description": "Contrôlez qui peut télécharger vos informations de contact et quels champs sont disponibles"
+    },
     "contact_download_settings": {
       "title": "Paramètres de Téléchargement de Contact",
       "description": "Contrôlez qui peut télécharger vos informations de contact et quels champs sont disponibles",
@@ -2540,6 +2548,19 @@
         "persistent": "Pour rendre un changement de langue permanent, mettez à jour votre langue par défaut ici"
       }
     },
+    "tutorial_progression": {
+      "title": "Progression du Tutoriel",
+      "subtitle": "Suivez votre progression d'intégration et revisitez n'importe quelle étape",
+      "steps_completed": "{{completed}} sur {{total}} étapes terminées",
+      "status": {
+        "completed": "Terminé",
+        "not_started": "Non commencé"
+      },
+      "actions": {
+        "jump_to_step": "Aller à l'Étape"
+      },
+      "skipped_message": "Vous avez ignoré le tutoriel. Vous pouvez toujours accéder à n'importe quelle étape pour en savoir plus."
+    },
     "footer": {
       "title": "Vos Droits en Vertu du RGPD",
       "rights": {
@@ -2606,6 +2627,107 @@
     "error": "Échec de l'enregistrement des préférences. Veuillez réessayer.",
     "ready_to_complete": "🎉 Prêt à finaliser votre configuration !",
     "step_indicator": "Étape {{current}} sur {{total}}"
+  },
+  "tutorial": {
+    "steps": {
+      "welcome": {
+        "title": "Bienvenue sur Weavink !",
+        "description": "Créons votre première carte de visite numérique. Cette visite rapide vous montrera les fonctionnalités clés.",
+        "duration": "Prend environ 2 minutes"
+      },
+      "navbar": {
+        "title": "Barre de Navigation",
+        "description": "Accédez à toutes les fonctionnalités depuis ici. Vous pouvez gérer vos liens, personnaliser votre apparence, voir les statistiques, gérer vos contacts et ajuster les paramètres.",
+        "features": {
+          "links": "Liens - Gérez vos liens de profil",
+          "appearance": "Apparence - Personnalisez le design de votre carte",
+          "analytics": "Analytiques - Suivez les vues de votre profil",
+          "contacts": "Contacts - Gérez votre réseau",
+          "settings": "Paramètres - Configurez votre compte"
+        }
+      },
+      "create_link": {
+        "title": "Créez Votre Premier Lien",
+        "description": "Cliquez sur le bouton ci-dessous pour ajouter votre premier lien à votre carte de visite numérique.",
+        "action_prompt": "Cliquez ici pour continuer !"
+      },
+      "link_form": {
+        "title": "Formulaire d'Ajout de Lien",
+        "description": "Ici, vous pouvez ajouter n'importe quel lien à votre profil. Les options populaires incluent les réseaux sociaux, les sites web ou les méthodes de contact.",
+        "features": {
+          "url": "Entrez n'importe quelle URL (réseaux sociaux, site web, etc.)",
+          "title": "Personnalisez le titre du lien",
+          "icon": "Choisissez une icône pour votre lien"
+        }
+      },
+      "appearance": {
+        "title": "Personnalisez Votre Apparence",
+        "description": "Rendez votre carte de visite numérique unique ! Personnalisez les couleurs, les thèmes, les polices et les mises en page pour correspondre à votre marque.",
+        "features": {
+          "theme": "Choisissez parmi plusieurs thèmes",
+          "colors": "Personnalisez votre palette de couleurs",
+          "fonts": "Sélectionnez vos polices préférées",
+          "layout": "Ajustez la mise en page de votre carte"
+        }
+      },
+      "completion": {
+        "title": "Vous Êtes Prêt !",
+        "description": "Félicitations ! Vous savez maintenant comment utiliser Weavink. Commencez à créer d'incroyables connexions !",
+        "next_steps": "Commencez à ajouter des liens et à personnaliser votre profil"
+      }
+    },
+    "actions": {
+      "back": "Retour",
+      "next": "Suivant",
+      "skip": "Ignorer le Tutoriel",
+      "close": "Fermer",
+      "finish": "Terminer"
+    },
+    "completion": {
+      "success": "Tutoriel terminé avec succès !",
+      "error": "Échec de l'enregistrement de la progression du tutoriel. Veuillez réessayer."
+    },
+    "skip": {
+      "success": "Tutoriel ignoré. Vous pouvez toujours accéder à l'aide depuis les paramètres.",
+      "error": "Échec de l'ignorance du tutoriel. Veuillez réessayer."
+    },
+    "tabs": {
+      "overview": "Aperçu",
+      "navbar": "Barre de Navigation",
+      "links": "Liens",
+      "appearance": "Apparence",
+      "completion": "Achèvement",
+      "analytics": "Statistiques",
+      "contacts": "Contacts",
+      "settings": "Paramètres"
+    },
+    "coming_soon": {
+      "title": "Bientôt Disponible",
+      "message": "Les étapes du tutoriel pour cette section seront ajoutées bientôt. Restez à l'écoute !"
+    },
+    "overview_cards": {
+      "navbar": {
+        "title": "Premiers Pas",
+        "description": "Apprenez les bases de la navigation dans Weavink et comprenez l'interface principale.",
+        "cta": "Commencer l'apprentissage"
+      },
+      "links": {
+        "title": "Gérer Vos Liens",
+        "description": "Créez et personnalisez des liens à partager sur votre carte de visite numérique.",
+        "cta": "Voir le Tutoriel Liens"
+      },
+      "appearance": {
+        "title": "Personnaliser l'Apparence",
+        "description": "Rendez votre carte unique avec des thèmes, couleurs et mises en page personnalisés.",
+        "cta": "Personnaliser Maintenant"
+      },
+      "completion": {
+        "title": "Terminer le Tutoriel",
+        "description": "Terminez le tutoriel et commencez à utiliser Weavink à son plein potentiel.",
+        "cta": "Terminer"
+      },
+      "steps_completed": "étapes"
+    }
   },
   "contacts": {
     "title": "Contacts",

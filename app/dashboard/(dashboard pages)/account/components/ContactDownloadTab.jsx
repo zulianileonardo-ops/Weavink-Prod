@@ -136,14 +136,6 @@ export default function ContactDownloadTab() {
 
     return (
         <div className="space-y-6">
-            {/* Header */}
-            <div>
-                <h2 className="text-2xl font-bold text-gray-900">Contact Download Settings</h2>
-                <p className="mt-1 text-sm text-gray-600">
-                    Control who can download your contact information and what fields are available
-                </p>
-            </div>
-
             {/* Master Toggle Card */}
             <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
                 <div className="flex items-start justify-between">

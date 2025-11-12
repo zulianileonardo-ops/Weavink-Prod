@@ -2224,6 +2224,14 @@
         "success": "Configuración actualizada exitosamente"
       }
     },
+    "consents": {
+      "title": "Gestionar Consentimientos",
+      "description": "Controla qué funciones pueden procesar tus datos. Puedes retirar el consentimiento en cualquier momento. Los cambios surten efecto inmediatamente."
+    },
+    "contact_download": {
+      "title": "Configuración de Descarga de Contacto",
+      "description": "Controla quién puede descargar tu información de contacto y qué campos están disponibles"
+    },
     "contact_download_settings": {
       "title": "Configuración de Descarga de Contacto",
       "description": "Controla quién puede descargar tu información de contacto y qué campos están disponibles",
@@ -2293,6 +2301,19 @@
         "persistent": "Para hacer un cambio de idioma permanente, actualiza tu idioma predeterminado aquí"
       }
     },
+    "tutorial_progression": {
+      "title": "Progreso del Tutorial",
+      "subtitle": "Sigue tu progreso de incorporación y vuelve a visitar cualquier paso",
+      "steps_completed": "{{completed}} de {{total}} pasos completados",
+      "status": {
+        "completed": "Completado",
+        "not_started": "No iniciado"
+      },
+      "actions": {
+        "jump_to_step": "Ir al Paso"
+      },
+      "skipped_message": "Omitiste el tutorial. Todavía puedes ir a cualquier paso para aprender más."
+    },
     "footer": {
       "title": "Tus Derechos Bajo RGPD",
       "rights": {
@@ -2359,6 +2380,107 @@
     "error": "Error al guardar las preferencias. Por favor, inténtalo de nuevo.",
     "ready_to_complete": "🎉 ¡Listo para completar tu configuración!",
     "step_indicator": "Paso {{current}} de {{total}}"
+  },
+  "tutorial": {
+    "steps": {
+      "welcome": {
+        "title": "¡Bienvenido a Weavink!",
+        "description": "Creemos tu primera tarjeta de presentación digital. Este recorrido rápido te mostrará las funciones clave.",
+        "duration": "Toma alrededor de 2 minutos"
+      },
+      "navbar": {
+        "title": "Barra de Navegación",
+        "description": "Accede a todas las funciones desde aquí. Puedes gestionar tus enlaces, personalizar tu apariencia, ver analíticas, gestionar contactos y ajustar configuraciones.",
+        "features": {
+          "links": "Enlaces - Gestiona tus enlaces de perfil",
+          "appearance": "Apariencia - Personaliza el diseño de tu tarjeta",
+          "analytics": "Analíticas - Rastrea las vistas de tu perfil",
+          "contacts": "Contactos - Gestiona tu red",
+          "settings": "Configuración - Configura tu cuenta"
+        }
+      },
+      "create_link": {
+        "title": "Crea Tu Primer Enlace",
+        "description": "Haz clic en el botón de abajo para agregar tu primer enlace a tu tarjeta de presentación digital.",
+        "action_prompt": "¡Haz clic aquí para continuar!"
+      },
+      "link_form": {
+        "title": "Formulario de Agregar Enlace",
+        "description": "Aquí puedes agregar cualquier enlace a tu perfil. Las opciones populares incluyen redes sociales, sitios web o métodos de contacto.",
+        "features": {
+          "url": "Ingresa cualquier URL (redes sociales, sitio web, etc.)",
+          "title": "Personaliza el título del enlace",
+          "icon": "Elige un ícono para tu enlace"
+        }
+      },
+      "appearance": {
+        "title": "Personaliza Tu Apariencia",
+        "description": "¡Haz única tu tarjeta de presentación digital! Personaliza colores, temas, fuentes y diseños para que coincidan con tu marca.",
+        "features": {
+          "theme": "Elige entre múltiples temas",
+          "colors": "Personaliza tu paleta de colores",
+          "fonts": "Selecciona tus fuentes preferidas",
+          "layout": "Ajusta el diseño de tu tarjeta"
+        }
+      },
+      "completion": {
+        "title": "¡Estás Listo!",
+        "description": "¡Felicitaciones! Ahora sabes cómo usar Weavink. ¡Comienza a crear conexiones increíbles!",
+        "next_steps": "Comienza a agregar enlaces y personalizar tu perfil"
+      }
+    },
+    "actions": {
+      "back": "Atrás",
+      "next": "Siguiente",
+      "skip": "Omitir Tutorial",
+      "close": "Cerrar",
+      "finish": "Finalizar"
+    },
+    "completion": {
+      "success": "¡Tutorial completado con éxito!",
+      "error": "Error al guardar el progreso del tutorial. Por favor, inténtalo de nuevo."
+    },
+    "skip": {
+      "success": "Tutorial omitido. Siempre puedes acceder a la ayuda desde la configuración.",
+      "error": "Error al omitir el tutorial. Por favor, inténtalo de nuevo."
+    },
+    "tabs": {
+      "overview": "Vista General",
+      "navbar": "Barra de Navegación",
+      "links": "Enlaces",
+      "appearance": "Apariencia",
+      "completion": "Finalización",
+      "analytics": "Estadísticas",
+      "contacts": "Contactos",
+      "settings": "Configuración"
+    },
+    "coming_soon": {
+      "title": "Próximamente",
+      "message": "Los pasos del tutorial para esta sección se agregarán pronto. ¡Mantente atento!"
+    },
+    "overview_cards": {
+      "navbar": {
+        "title": "Primeros Pasos",
+        "description": "Aprende los conceptos básicos de navegación en Weavink y comprende la interfaz principal.",
+        "cta": "Comenzar a Aprender"
+      },
+      "links": {
+        "title": "Gestionar Tus Enlaces",
+        "description": "Crea y personaliza enlaces para compartir en tu tarjeta de visita digital.",
+        "cta": "Ver Tutorial de Enlaces"
+      },
+      "appearance": {
+        "title": "Personalizar Apariencia",
+        "description": "Haz única tu tarjeta con temas, colores y diseños personalizados.",
+        "cta": "Personalizar Ahora"
+      },
+      "completion": {
+        "title": "Completar Tutorial",
+        "description": "Finaliza el tutorial y comienza a usar Weavink en todo su potencial.",
+        "cta": "Finalizar"
+      },
+      "steps_completed": "pasos"
+    }
   },
   "contacts": {
     "title": "Contactos",

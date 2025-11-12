@@ -41,13 +41,6 @@ export default function ExportDataTab() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('account.export.title', 'Export Your Data')}</h2>
-        <p className="text-gray-600">
-          {t('account.export.description', 'Download all your personal data in machine-readable formats. Your export will include:')}
-        </p>
-      </div>
-
       <div className="bg-gray-50 rounded-lg p-6">
         <ul className="space-y-2 text-sm text-gray-700">
           <li>✓ {t('account.export.includes.profile', 'User profile and account information (JSON)')}</li>

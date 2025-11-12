@@ -1753,6 +1753,14 @@
         "success": "设置更新成功"
       }
     },
+    "consents": {
+      "title": "管理同意",
+      "description": "控制哪些功能可以处理您的数据。您可以随时撤回同意。更改立即生效。"
+    },
+    "contact_download": {
+      "title": "联系人下载设置",
+      "description": "控制谁可以下载您的联系信息以及哪些字段可用"
+    },
     "contact_download_settings": {
       "title": "联系人下载设置",
       "description": "控制谁可以下载您的联系信息以及哪些字段可用",
@@ -1822,6 +1830,19 @@
         "persistent": "要永久更改语言，请在此处更新您的默认语言"
       }
     },
+    "tutorial_progression": {
+      "title": "教程进度",
+      "subtitle": "跟踪您的入门进度并重新访问任何步骤",
+      "steps_completed": "已完成 {{completed}} / {{total}} 步",
+      "status": {
+        "completed": "已完成",
+        "not_started": "未开始"
+      },
+      "actions": {
+        "jump_to_step": "跳转到步骤"
+      },
+      "skipped_message": "您跳过了教程。您仍然可以跳转到任何步骤以了解更多信息。"
+    },
     "footer": {
       "title": "您在 GDPR 下的权利",
       "rights": {
@@ -1888,6 +1909,107 @@
     "error": "保存偏好设置失败。请重试。",
     "ready_to_complete": "🎉 准备完成您的设置！",
     "step_indicator": "第 {{current}} 步，共 {{total}} 步"
+  },
+  "tutorial": {
+    "steps": {
+      "welcome": {
+        "title": "欢迎来到 Weavink！",
+        "description": "让我们创建您的第一张数字名片。这个快速指南将向您展示关键功能。",
+        "duration": "大约需要2分钟"
+      },
+      "navbar": {
+        "title": "导航栏",
+        "description": "从这里访问所有功能。您可以管理链接、自定义外观、查看分析、管理联系人和调整设置。",
+        "features": {
+          "links": "链接 - 管理您的个人资料链接",
+          "appearance": "外观 - 自定义您的名片设计",
+          "analytics": "分析 - 跟踪您的个人资料浏览量",
+          "contacts": "联系人 - 管理您的人脉网络",
+          "settings": "设置 - 配置您的账户"
+        }
+      },
+      "create_link": {
+        "title": "创建您的第一个链接",
+        "description": "点击下面的按钮，将第一个链接添加到您的数字名片。",
+        "action_prompt": "点击这里继续！"
+      },
+      "link_form": {
+        "title": "添加链接表单",
+        "description": "在这里您可以向个人资料添加任何链接。热门选项包括社交媒体、网站或联系方式。",
+        "features": {
+          "url": "输入任何URL（社交媒体、网站等）",
+          "title": "自定义链接标题",
+          "icon": "为您的链接选择图标"
+        }
+      },
+      "appearance": {
+        "title": "自定义您的外观",
+        "description": "让您的数字名片独一无二！自定义颜色、主题、字体和布局以匹配您的品牌。",
+        "features": {
+          "theme": "从多个主题中选择",
+          "colors": "自定义您的调色板",
+          "fonts": "选择您喜欢的字体",
+          "layout": "调整您的名片布局"
+        }
+      },
+      "completion": {
+        "title": "一切就绪！",
+        "description": "恭喜！您现在已经知道如何使用 Weavink。开始创建精彩的人脉吧！",
+        "next_steps": "开始添加链接并自定义您的个人资料"
+      }
+    },
+    "actions": {
+      "back": "返回",
+      "next": "下一步",
+      "skip": "跳过教程",
+      "close": "关闭",
+      "finish": "完成"
+    },
+    "completion": {
+      "success": "教程成功完成！",
+      "error": "保存教程进度失败。请重试。"
+    },
+    "skip": {
+      "success": "已跳过教程。您随时可以从设置中访问帮助。",
+      "error": "跳过教程失败。请重试。"
+    },
+    "tabs": {
+      "overview": "概览",
+      "navbar": "导航栏",
+      "links": "链接",
+      "appearance": "外观",
+      "completion": "完成",
+      "analytics": "统计",
+      "contacts": "联系人",
+      "settings": "设置"
+    },
+    "coming_soon": {
+      "title": "即将推出",
+      "message": "此部分的教程步骤将很快添加。敬请期待！"
+    },
+    "overview_cards": {
+      "navbar": {
+        "title": "入门指南",
+        "description": "学习Weavink的基本导航操作，了解主界面。",
+        "cta": "开始学习"
+      },
+      "links": {
+        "title": "管理链接",
+        "description": "创建和自定义要在数字名片上分享的链接。",
+        "cta": "查看链接教程"
+      },
+      "appearance": {
+        "title": "自定义外观",
+        "description": "使用自定义主题、颜色和布局使您的名片独一无二。",
+        "cta": "立即自定义"
+      },
+      "completion": {
+        "title": "完成教程",
+        "description": "完成教程并开始充分使用Weavink的全部功能。",
+        "cta": "完成"
+      },
+      "steps_completed": "步骤"
+    }
   },
   "contacts": {
     "title": "联系人",

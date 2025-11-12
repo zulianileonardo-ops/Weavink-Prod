@@ -2206,6 +2206,14 @@
         "success": "Đã cập nhật cài đặt thành công"
       }
     },
+    "consents": {
+      "title": "Quản Lý Sự Đồng Ý",
+      "description": "Kiểm soát các tính năng nào có thể xử lý dữ liệu của bạn. Bạn có thể rút lại sự đồng ý bất cứ lúc nào. Các thay đổi có hiệu lực ngay lập tức."
+    },
+    "contact_download": {
+      "title": "Cài Đặt Tải Liên Hệ",
+      "description": "Kiểm soát ai có thể tải thông tin liên hệ của bạn và trường nào có sẵn"
+    },
     "contact_download_settings": {
       "title": "Cài Đặt Tải Liên Hệ",
       "description": "Kiểm soát ai có thể tải thông tin liên hệ của bạn và trường nào có sẵn",
@@ -2275,6 +2283,19 @@
         "persistent": "Để thay đổi ngôn ngữ vĩnh viễn, hãy cập nhật ngôn ngữ mặc định của bạn tại đây"
       }
     },
+    "tutorial_progression": {
+      "title": "Tiến Trình Hướng Dẫn",
+      "subtitle": "Theo dõi tiến trình hòa nhập của bạn và xem lại bất kỳ bước nào",
+      "steps_completed": "{{completed}} trên {{total}} bước đã hoàn thành",
+      "status": {
+        "completed": "Đã hoàn thành",
+        "not_started": "Chưa bắt đầu"
+      },
+      "actions": {
+        "jump_to_step": "Đi đến Bước"
+      },
+      "skipped_message": "Bạn đã bỏ qua hướng dẫn. Bạn vẫn có thể đi đến bất kỳ bước nào để tìm hiểu thêm."
+    },
     "footer": {
       "title": "Quyền Của Bạn Theo GDPR",
       "rights": {
@@ -2341,6 +2362,107 @@
     "error": "Không thể lưu tùy chọn. Vui lòng thử lại.",
     "ready_to_complete": "🎉 Sẵn sàng hoàn tất thiết lập của bạn!",
     "step_indicator": "Bước {{current}} trên {{total}}"
+  },
+  "tutorial": {
+    "steps": {
+      "welcome": {
+        "title": "Chào mừng đến với Weavink!",
+        "description": "Hãy tạo thẻ danh thiếp kỹ thuật số đầu tiên của bạn. Hướng dẫn nhanh này sẽ cho bạn thấy các tính năng chính.",
+        "duration": "Mất khoảng 2 phút"
+      },
+      "navbar": {
+        "title": "Thanh Điều Hướng",
+        "description": "Truy cập tất cả các tính năng từ đây. Bạn có thể quản lý liên kết, tùy chỉnh giao diện, xem phân tích, quản lý danh bạ và điều chỉnh cài đặt.",
+        "features": {
+          "links": "Liên kết - Quản lý liên kết hồ sơ của bạn",
+          "appearance": "Giao diện - Tùy chỉnh thiết kế thẻ của bạn",
+          "analytics": "Phân tích - Theo dõi lượt xem hồ sơ của bạn",
+          "contacts": "Danh bạ - Quản lý mạng lưới của bạn",
+          "settings": "Cài đặt - Cấu hình tài khoản của bạn"
+        }
+      },
+      "create_link": {
+        "title": "Tạo Liên Kết Đầu Tiên Của Bạn",
+        "description": "Nhấp vào nút bên dưới để thêm liên kết đầu tiên vào thẻ danh thiếp kỹ thuật số của bạn.",
+        "action_prompt": "Nhấp vào đây để tiếp tục!"
+      },
+      "link_form": {
+        "title": "Biểu Mẫu Thêm Liên Kết",
+        "description": "Tại đây bạn có thể thêm bất kỳ liên kết nào vào hồ sơ của mình. Các tùy chọn phổ biến bao gồm mạng xã hội, trang web hoặc phương thức liên hệ.",
+        "features": {
+          "url": "Nhập bất kỳ URL nào (mạng xã hội, trang web, v.v.)",
+          "title": "Tùy chỉnh tiêu đề liên kết",
+          "icon": "Chọn biểu tượng cho liên kết của bạn"
+        }
+      },
+      "appearance": {
+        "title": "Tùy Chỉnh Giao Diện Của Bạn",
+        "description": "Làm cho thẻ danh thiếp kỹ thuật số của bạn trở nên độc đáo! Tùy chỉnh màu sắc, chủ đề, phông chữ và bố cục để phù hợp với thương hiệu của bạn.",
+        "features": {
+          "theme": "Chọn từ nhiều chủ đề",
+          "colors": "Tùy chỉnh bảng màu của bạn",
+          "fonts": "Chọn phông chữ ưa thích của bạn",
+          "layout": "Điều chỉnh bố cục thẻ của bạn"
+        }
+      },
+      "completion": {
+        "title": "Bạn Đã Sẵn Sàng!",
+        "description": "Chúc mừng! Bây giờ bạn đã biết cách sử dụng Weavink. Bắt đầu tạo các kết nối tuyệt vời!",
+        "next_steps": "Bắt đầu thêm liên kết và tùy chỉnh hồ sơ của bạn"
+      }
+    },
+    "actions": {
+      "back": "Quay lại",
+      "next": "Tiếp theo",
+      "skip": "Bỏ qua Hướng dẫn",
+      "close": "Đóng",
+      "finish": "Hoàn thành"
+    },
+    "completion": {
+      "success": "Hướng dẫn hoàn tất thành công!",
+      "error": "Không thể lưu tiến trình hướng dẫn. Vui lòng thử lại."
+    },
+    "skip": {
+      "success": "Đã bỏ qua hướng dẫn. Bạn luôn có thể truy cập trợ giúp từ cài đặt.",
+      "error": "Không thể bỏ qua hướng dẫn. Vui lòng thử lại."
+    },
+    "tabs": {
+      "overview": "Tổng Quan",
+      "navbar": "Thanh Điều Hướng",
+      "links": "Liên Kết",
+      "appearance": "Giao Diện",
+      "completion": "Hoàn Thành",
+      "analytics": "Thống Kê",
+      "contacts": "Danh Bạ",
+      "settings": "Cài Đặt"
+    },
+    "coming_soon": {
+      "title": "Sắp Ra Mắt",
+      "message": "Các bước hướng dẫn cho phần này sẽ sớm được thêm vào. Hãy theo dõi!"
+    },
+    "overview_cards": {
+      "navbar": {
+        "title": "Bắt Đầu",
+        "description": "Tìm hiểu các kiến thức cơ bản về điều hướng Weavink và hiểu giao diện chính.",
+        "cta": "Bắt Đầu Học"
+      },
+      "links": {
+        "title": "Quản Lý Liên Kết",
+        "description": "Tạo và tùy chỉnh các liên kết để chia sẻ trên danh thiếp kỹ thuật số của bạn.",
+        "cta": "Xem Hướng Dẫn Liên Kết"
+      },
+      "appearance": {
+        "title": "Tùy Chỉnh Giao Diện",
+        "description": "Làm cho thẻ của bạn trở nên độc đáo với các chủ đề, màu sắc và bố cục tùy chỉnh.",
+        "cta": "Tùy Chỉnh Ngay"
+      },
+      "completion": {
+        "title": "Hoàn Thành Hướng Dẫn",
+        "description": "Hoàn thành hướng dẫn và bắt đầu sử dụng Weavink với đầy đủ tiềm năng.",
+        "cta": "Hoàn Thành"
+      },
+      "steps_completed": "bước"
+    }
   },
   "contacts": {
     "title": "Danh bạ",

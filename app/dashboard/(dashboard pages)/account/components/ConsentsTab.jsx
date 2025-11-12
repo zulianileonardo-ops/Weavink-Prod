@@ -221,15 +221,6 @@ export default function ConsentsTab() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Manage Consents</h2>
-        <p className="text-gray-600">
-          Control which features can process your data. You can withdraw consent at any time.
-          Changes take effect immediately.
-        </p>
-      </div>
-
       {/* Notification */}
       {notification && (
         <div

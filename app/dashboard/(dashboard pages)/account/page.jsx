@@ -70,6 +70,38 @@ function AccountPage() {
     { id: 'website-config', label: t('account.tabs.website_config', 'Website Configuration'), icon: Globe },
   ];
 
+  // Tab title and description mapping
+  const tabContent = {
+    'overview': {
+      titleKey: 'account.overview.title',
+      descKey: 'account.overview.welcome',
+    },
+    'export': {
+      titleKey: 'account.export.title',
+      descKey: 'account.export.description',
+    },
+    'delete': {
+      titleKey: 'account.delete.title',
+      descKey: 'account.delete.description',
+    },
+    'consents': {
+      titleKey: 'account.consents.title',
+      descKey: 'account.consents.description',
+    },
+    'settings': {
+      titleKey: 'account.settings.title',
+      descKey: 'account.settings.description',
+    },
+    'contact-download': {
+      titleKey: 'account.contact_download.title',
+      descKey: 'account.contact_download.description',
+    },
+    'website-config': {
+      titleKey: 'account.website_config.title',
+      descKey: 'account.website_config.description',
+    },
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
@@ -105,6 +137,16 @@ function AccountPage() {
 
         {/* Tabs */}
         <div className="bg-white shadow-sm rounded-lg mb-6">
+          {/* Dynamic Title Section */}
+          <div className="px-6 pt-6">
+            <h2 className="text-2xl font-bold text-gray-900">
+              {t(tabContent[activeTab]?.titleKey, 'Page Title')}
+            </h2>
+            <p className="text-sm text-gray-600 mt-1">
+              {t(tabContent[activeTab]?.descKey, 'Page description')}
+            </p>
+          </div>
+
           <div className="border-b border-gray-200">
             <nav className="flex space-x-8 px-6" aria-label="Tabs">
               {tabs.map((tab) => {

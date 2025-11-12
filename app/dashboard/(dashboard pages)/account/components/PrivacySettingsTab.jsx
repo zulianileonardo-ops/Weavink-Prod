@@ -32,14 +32,6 @@ export default function PrivacySettingsTab() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('account.settings.title', 'Privacy Settings')}</h2>
-        <p className="text-gray-600">
-          {t('account.settings.description', 'Configure your privacy preferences and control how your data is used.')}
-        </p>
-      </div>
-
       {/* Notification */}
       {notification && (
         <div

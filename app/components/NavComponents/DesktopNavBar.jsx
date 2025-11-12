@@ -18,7 +18,10 @@ export default function DesktopNavBar({
     ShareCard
 }) {
     return (
-        <div className="w-full justify-between flex items-center rounded-[3rem] py-3 sticky top-0 z-[9999999999] px-3 mx-auto bg-white border backdrop-blur-lg hidden md:flex">
+        <div
+            data-tutorial="navbar"
+            className="w-full justify-between flex items-center rounded-[3rem] py-3 sticky top-0 z-[9999999999] px-3 mx-auto bg-white border backdrop-blur-lg hidden md:flex"
+        >
             <div className="flex items-center gap-8">
                 <Link href={'/dashboard'} className="ml-3">
                     <Image

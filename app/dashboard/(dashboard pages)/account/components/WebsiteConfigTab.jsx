@@ -42,16 +42,6 @@ export default function WebsiteConfigTab() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          {t('account.website_config.title', 'Website Configuration')}
-        </h2>
-        <p className="text-gray-600">
-          {t('account.website_config.description', 'Configure your website preferences and default settings.')}
-        </p>
-      </div>
-
       {/* Notification */}
       {notification && (
         <div

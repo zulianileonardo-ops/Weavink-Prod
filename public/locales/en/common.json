@@ -1015,6 +1015,14 @@
         "success": "Setting updated successfully"
       }
     },
+    "consents": {
+      "title": "Manage Consents",
+      "description": "Control which features can process your data. You can withdraw consent at any time. Changes take effect immediately."
+    },
+    "contact_download": {
+      "title": "Contact Download Settings",
+      "description": "Control who can download your contact information and what fields are available"
+    },
     "contact_download_settings": {
       "title": "Contact Download Settings",
       "description": "Control who can download your contact information and what fields are available",
@@ -1084,6 +1092,19 @@
         "persistent": "To make a language change permanent, update your default language here"
       }
     },
+    "tutorial_progression": {
+      "title": "Tutorial Progression",
+      "subtitle": "Track your onboarding progress and revisit any step",
+      "steps_completed": "{{completed}} of {{total}} steps completed",
+      "status": {
+        "completed": "Completed",
+        "not_started": "Not Started"
+      },
+      "actions": {
+        "jump_to_step": "Jump to Step"
+      },
+      "skipped_message": "You skipped the tutorial. You can still jump to any step to learn more."
+    },
     "footer": {
       "title": "Your Rights Under GDPR",
       "rights": {
@@ -1150,6 +1171,107 @@
     "error": "Failed to save preferences. Please try again.",
     "ready_to_complete": "🎉 Ready to complete your setup!",
     "step_indicator": "Step {{current}} of {{total}}"
+  },
+  "tutorial": {
+    "steps": {
+      "welcome": {
+        "title": "Welcome to Weavink!",
+        "description": "Let's create your first digital business card. This quick tour will show you the key features.",
+        "duration": "Takes about 2 minutes"
+      },
+      "navbar": {
+        "title": "Navigation Bar",
+        "description": "Access all features from here. You can manage your links, customize your appearance, view analytics, manage contacts, and adjust settings.",
+        "features": {
+          "links": "Links - Manage your profile links",
+          "appearance": "Appearance - Customize your card design",
+          "analytics": "Analytics - Track your profile views",
+          "contacts": "Contacts - Manage your network",
+          "settings": "Settings - Configure your account"
+        }
+      },
+      "create_link": {
+        "title": "Create Your First Link",
+        "description": "Click the button below to add your first link to your digital business card.",
+        "action_prompt": "Click here to continue!"
+      },
+      "link_form": {
+        "title": "Add Link Form",
+        "description": "Here you can add any link to your profile. Popular options include social media, websites, or contact methods.",
+        "features": {
+          "url": "Enter any URL (social media, website, etc.)",
+          "title": "Customize the link title",
+          "icon": "Choose an icon for your link"
+        }
+      },
+      "appearance": {
+        "title": "Customize Your Appearance",
+        "description": "Make your digital business card unique! Customize colors, themes, fonts, and layouts to match your brand.",
+        "features": {
+          "theme": "Choose from multiple themes",
+          "colors": "Customize your color palette",
+          "fonts": "Select your preferred fonts",
+          "layout": "Adjust your card layout"
+        }
+      },
+      "completion": {
+        "title": "You're All Set!",
+        "description": "Congratulations! You now know how to use Weavink. Start creating amazing connections!",
+        "next_steps": "Start adding links and customizing your profile"
+      }
+    },
+    "actions": {
+      "back": "Back",
+      "next": "Next",
+      "skip": "Skip Tutorial",
+      "close": "Close",
+      "finish": "Finish"
+    },
+    "completion": {
+      "success": "Tutorial completed successfully!",
+      "error": "Failed to save tutorial progress. Please try again."
+    },
+    "skip": {
+      "success": "Tutorial skipped. You can always access help from settings.",
+      "error": "Failed to skip tutorial. Please try again."
+    },
+    "tabs": {
+      "overview": "Overview",
+      "navbar": "Navbar",
+      "links": "Links",
+      "appearance": "Appearance",
+      "completion": "Completion",
+      "analytics": "Statistics",
+      "contacts": "Contacts",
+      "settings": "Settings"
+    },
+    "coming_soon": {
+      "title": "Coming Soon",
+      "message": "Tutorial steps for this section will be added soon. Stay tuned!"
+    },
+    "overview_cards": {
+      "navbar": {
+        "title": "Getting Started",
+        "description": "Learn the basics of navigating Weavink and understanding the main interface.",
+        "cta": "Start Learning"
+      },
+      "links": {
+        "title": "Manage Your Links",
+        "description": "Create and customize links to share on your digital business card.",
+        "cta": "View Links Tutorial"
+      },
+      "appearance": {
+        "title": "Customize Appearance",
+        "description": "Make your card unique with custom themes, colors, and layouts.",
+        "cta": "Customize Now"
+      },
+      "completion": {
+        "title": "Complete Tutorial",
+        "description": "Finish the tutorial and start using Weavink to its full potential.",
+        "cta": "Finish Up"
+      },
+      "steps_completed": "steps"
+    }
   },
   "contacts": {
     "title": "Contacts",

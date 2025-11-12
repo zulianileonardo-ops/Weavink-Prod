@@ -8,11 +8,14 @@ import { FaAngleRight, FaPlus, FaX } from "react-icons/fa6";
 import BrandItem from "./BrandItem";
 import PickBrandModal from "../general components/PickBrandModal";
 import { ManageLinksContent } from "../general components/ManageLinks";
+import { useTutorial } from "@/contexts/TutorialContext"; // Tutorial context
+import { TUTORIAL_STEP_IDS } from "@/lib/tutorial/tutorialSteps"; // Step IDs
 
 export const addBtnContext = React.createContext();
 
 export default function AddBtn() {
     const { t, isInitialized } = useTranslation(); // ADD TRANSLATION HOOK
+    const { stepIndex, advanceToNextStep, run } = useTutorial(); // Tutorial state
     const [btnState, setBtnState] = useState(0);
     const [btnStyle, setBtnStyle] = useState(`p-3 cursor-pointer active:scale-95 active:opacity-60 active:translate-y-1 hover:scale-[1.005] text-white bg-btnPrimary hover:bg-btnPrimaryAlt`)
     const [url, setUrl] = useState('');
@@ -86,6 +89,16 @@ export default function AddBtn() {
     const handleInitialClick = () => {
         if (btnState === 0) {
             setBtnState(1);
+
+            // Tutorial: If we're on step 3 (Create Link), advance to next step
+            // Step 3 is index 2 (0-based), which waits for user to click Add Link button
+            if (run && stepIndex === 2) {
+                console.log('📍 Tutorial: User clicked Add Link button, advancing to step 4');
+                // Advance to step 4 (Link Form)
+                setTimeout(() => {
+                    advanceToNextStep(TUTORIAL_STEP_IDS.CREATE_LINK);
+                }, 300); // Small delay to let form render
+            }
         }
     }
 
@@ -129,7 +142,7 @@ export default function AddBtn() {
                     <span className={'font-semibold'}>{translations.enterUrl}</span>
                     <div className={'p-2 hover:bg-black hover:bg-opacity-[0.05] active:scale-90 font-light rounded-full cursor-pointer'} onClick={handleClose}><FaX /></div>
                 </div>
-                <form className={'flex items-center gap-4 py-4 px-6 border-b max-w-full'} onSubmit={handleSubmit}>
+                <form data-tutorial="link-form" className={'flex items-center gap-4 py-4 px-6 border-b max-w-full'} onSubmit={handleSubmit}>
                     <div className="flex-1 relative flex items-center rounded-lg bg-black bg-opacity-[0.05] focus-within:border-black focus-within:border border border-transparent">
                         <input
                             type="text"
@@ -169,7 +182,11 @@ export default function AddBtn() {
 
     return (
         <addBtnContext.Provider value={{ addItem }}>
-            <div className={`${btnStyle} rounded-3xl transition-[min-height]`} onClick={handleInitialClick}>
+            <div
+                className={`${btnStyle} rounded-3xl transition-[min-height]`}
+                onClick={handleInitialClick}
+                data-tutorial="add-link-btn"
+            >
                 {content}
                 {modalShowing && <PickBrandModal closeFunction={setModalShowing} />}
             </div>
