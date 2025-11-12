@@ -4,7 +4,6 @@
 import { Download, CheckSquare, Settings, Trash2 } from 'lucide-react';
 import { useTranslation } from '@/lib/translation/useTranslation';
 import { useAccount } from '../AccountContext';
-import TutorialProgressionSection from './TutorialProgressionSection';
 
 export default function OverviewTab() {
   const { t } = useTranslation();
@@ -75,11 +74,6 @@ export default function OverviewTab() {
         <p className="text-sm text-blue-800">
           {t('account.overview.gdpr_info.description', 'Weavink is fully compliant with the General Data Protection Regulation (GDPR) and takes your privacy seriously. All your data is stored in EU data centers, encrypted, and protected according to the highest standards. You have full control over your personal information at all times.')}
         </p>
-      </div>
-
-      {/* Tutorial Progression Section */}
-      <div className="bg-white border border-gray-200 rounded-lg p-6 mt-6">
-        <TutorialProgressionSection />
       </div>
     </div>
   );

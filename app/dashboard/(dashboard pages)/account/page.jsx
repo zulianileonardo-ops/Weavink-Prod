@@ -29,6 +29,7 @@ import ConsentsTab from './components/ConsentsTab';
 import PrivacySettingsTab from './components/PrivacySettingsTab';
 import ContactDownloadTab from './components/ContactDownloadTab';
 import WebsiteConfigTab from './components/WebsiteConfigTab';
+import TutorialProgressionSection from './components/TutorialProgressionSection';
 
 // Wrapper component that provides context
 export default function AccountPageWrapper() {
@@ -192,6 +193,11 @@ function AccountPage() {
               </>
             )}
           </div>
+        </div>
+
+        {/* Tutorial Progression Section */}
+        <div className="bg-white shadow-sm rounded-lg p-6 mb-6">
+          <TutorialProgressionSection />
         </div>
 
         {/* Footer */}

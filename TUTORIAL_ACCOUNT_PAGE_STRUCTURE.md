@@ -2,7 +2,7 @@
 id: features-tutorial-account-018
 title: Tutorial and Account Page Structure
 category: features
-tags: [tutorial, account, tabs, navigation, ui, structure, progressive-disclosure]
+tags: [tutorial, account, tabs, navigation, ui, structure, progressive-disclosure, independence, component-separation]
 status: active
 created: 2025-11-12
 updated: 2025-11-12
@@ -131,18 +131,48 @@ The tutorial system is organized into a multi-tab interface with category-based 
 
 **Solution:** Dynamic title section added before tab navigation.
 
+### Component Independence
+
+**Critical Design Decision:** The Privacy Overview and Tutorial Progression sections are completely independent and detached from each other.
+
+**Implementation:**
+- **Privacy Overview**: Managed by account page tabs (Overview, Export, Delete, etc.)
+- **Tutorial Progression**: Rendered at page level, always visible regardless of active Privacy tab
+
+**Why This Matters:**
+- Tutorial Progression remains visible when switching between Privacy tabs
+- Users can reference tutorial steps while exploring different Privacy settings
+- Both sections maintain their own state and navigation independently
+
 ### Visual Hierarchy Pattern
 
 ```
 ┌─────────────────────────────────────┐
-│ [Page Title]                        │ ← Dynamic based on active tab
-│ [Page Description]                  │ ← Changes with each tab
+│ Header: Account & Privacy           │
 ├─────────────────────────────────────┤
-│ [Tab1] [Tab2] [Tab3] [Tab4]...     │ ← Tab Navigation
+│ [Privacy Tab Title]                 │ ← Dynamic based on active tab
+│ [Privacy Tab Description]           │ ← Changes with each tab
+├─────────────────────────────────────┤
+│ [Overview] [Export] [Delete]...     │ ← Privacy Tab Navigation
 ├─────────────────────────────────────┤
 │                                     │
-│  Tab Content (no title)             │ ← Content only
+│  Privacy Tab Content (no title)     │ ← Content only
 │                                     │
+└─────────────────────────────────────┘
+        ↓ (24px spacing)
+┌─────────────────────────────────────┐
+│ Progression du Tutoriel             │ ← Always visible
+│ Suivez votre progression...         │
+├─────────────────────────────────────┤
+│ [Overview] [Navbar] [Links]...      │ ← Tutorial Tab Navigation
+├─────────────────────────────────────┤
+│                                     │
+│  Tutorial Tab Content               │
+│                                     │
+└─────────────────────────────────────┘
+        ↓ (24px spacing)
+┌─────────────────────────────────────┐
+│ Footer: Your Rights Under GDPR      │
 └─────────────────────────────────────┘
 ```
 
@@ -179,13 +209,29 @@ const tabContent = {
 
 All tab components had their title sections removed to prevent duplication:
 
-1. **OverviewTab.jsx** - Privacy Overview (GDPR cards)
+1. **OverviewTab.jsx** - Privacy Overview (GDPR cards) - Also removed Tutorial Progression section (moved to page level)
 2. **ExportDataTab.jsx** - Data export functionality
 3. **DeleteAccountTab.jsx** - Account deletion (preserved pending state title)
 4. **ConsentsTab.jsx** - Manage consents
 5. **PrivacySettingsTab.jsx** - Privacy settings
 6. **ContactDownloadTab.jsx** - Contact download settings
 7. **WebsiteConfigTab.jsx** - Website configuration
+
+### Tutorial Progression Section Placement
+
+**Previous Location:** Inside `OverviewTab.jsx` (only visible on Overview tab)
+
+**New Location:** `page.jsx` at page level (always visible)
+
+**Implementation:**
+```jsx
+{/* Tutorial Progression Section */}
+<div className="bg-white shadow-sm rounded-lg p-6 mb-6">
+  <TutorialProgressionSection />
+</div>
+```
+
+This ensures Tutorial Progression is rendered as a separate section between Privacy tabs and Footer, independent of which Privacy tab is active.
 
 ## Color Scheme
 
@@ -292,11 +338,16 @@ AccountPage
 ├── AccountProvider (context)
 ├── Header (Account & Privacy)
 ├── Pending Deletion Warning (conditional)
-└── Tabs Container
-    ├── Dynamic Title Section (NEW)
-    ├── Tab Navigation (7 tabs)
-    └── Tab Content (titles removed)
+├── Privacy Section (white card)
+│   ├── Dynamic Title Section
+│   ├── Tab Navigation (7 tabs)
+│   └── Tab Content (titles removed)
+├── Tutorial Progression Section (white card - ALWAYS VISIBLE)
+│   └── TutorialProgressionSection
+└── Footer (GDPR Rights)
 ```
+
+**Key Change:** Tutorial Progression is now a sibling to Privacy Section, not a child of OverviewTab.
 
 ## User Experience Benefits
 
@@ -305,7 +356,9 @@ AccountPage
 3. **Progressive Disclosure** - Overview tab provides high-level view, detail tabs provide depth
 4. **Reduced Cognitive Load** - Titles don't jump around when switching tabs
 5. **Improved Scannability** - Users can quickly understand what each tab contains
-6. **Bilingual Support** - All text properly internationalized
+6. **Complete Independence** - Tutorial Progression always visible regardless of active Privacy tab
+7. **Persistent Reference** - Users can reference tutorial while exploring Privacy settings
+8. **Multilingual Support** - All text properly internationalized across 5 languages
 
 ## Implementation Files
 
@@ -316,8 +369,8 @@ AccountPage
 
 ### Modified Files
 - `TutorialProgressionSection.jsx` - Added navbar/completion tabs
-- `page.jsx` - Added dynamic title section
-- `OverviewTab.jsx` (account) - Removed title section
+- `page.jsx` - Added dynamic title section + Tutorial Progression at page level
+- `OverviewTab.jsx` (account) - Removed title section + removed Tutorial Progression (moved to page level)
 - `ExportDataTab.jsx` - Removed title section
 - `DeleteAccountTab.jsx` - Removed title section
 - `ConsentsTab.jsx` - Removed title section
@@ -372,6 +425,8 @@ All tutorial and account page text uses i18n keys. Update in `/public/locales/{l
 - [ ] Description changes when switching tabs
 - [ ] No duplicate titles appear in content
 - [ ] All 7 tabs display correctly
+- [ ] Tutorial Progression section visible on ALL Privacy tabs (Overview, Export, Delete, Consents, Settings, Contact Download, Website Config)
+- [ ] Tutorial Progression maintains its own tab state independently from Privacy tabs
 - [ ] Translations work in all 5 languages
 
 ## Future Enhancements

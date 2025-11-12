@@ -1563,7 +1563,7 @@
       "title": "Tutorial and Account Page Structure",
       "filename": "TUTORIAL_ACCOUNT_PAGE_STRUCTURE.md",
       "category": "features",
-      "summary": "Documents restructured tutorial progression system and account page layout with unified title-before-tabs pattern for consistent visual hierarchy.",
+      "summary": "Documents restructured tutorial progression and account page with complete independence between Privacy Overview and Tutorial Progression sections. Tutorial now renders at page level, always visible regardless of active Privacy tab.",
       "tags": [
         "tutorial",
         "account",
@@ -1571,7 +1571,9 @@
         "navigation",
         "ui",
         "structure",
-        "progressive-disclosure"
+        "progressive-disclosure",
+        "independence",
+        "component-separation"
       ],
       "related_guides": [],
       "functions": [],
@@ -1583,7 +1585,8 @@
         "LinksTab",
         "AppearanceTab",
         "CompletionTab",
-        "OverviewTab"
+        "OverviewTab",
+        "AccountPage"
       ],
       "status": "active",
       "created": "2025-11-12",
