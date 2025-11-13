@@ -3,6 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import LanguageSwitcher from "../LanguageSwitcher/LanguageSwitcher";
+import { useNavbarHighlight } from "@/LocalHooks/useNavbarHighlight";
+import { useTutorial } from '@/contexts/TutorialContext';
 
 export default function DesktopNavBar({
     activePage,
@@ -17,10 +19,22 @@ export default function DesktopNavBar({
     ProfileCard,
     ShareCard
 }) {
+    // Get tutorial state for conditional z-index
+    const { run, isFirstStep } = useTutorial();
+
+    // Initialize highlight hooks for each navbar item
+    const { highlightClass: linksHighlight } = useNavbarHighlight('links');
+    const { highlightClass: appearanceHighlight } = useNavbarHighlight('appearance');
+    const { highlightClass: analyticsHighlight } = useNavbarHighlight('analytics');
+    const { highlightClass: contactsHighlight } = useNavbarHighlight('contacts');
+    const { highlightClass: settingsHighlight } = useNavbarHighlight('settings');
+    const { highlightClass: shareHighlight } = useNavbarHighlight('share');
+    const { highlightClass: accountHighlight } = useNavbarHighlight('account');
+
     return (
         <div
             data-tutorial="navbar"
-            className="w-full justify-between flex items-center rounded-[3rem] py-3 sticky top-0 z-[9999999999] px-3 mx-auto bg-white border backdrop-blur-lg hidden md:flex"
+            className={`w-full justify-between flex items-center rounded-[3rem] py-3 sticky top-0 ${run && isFirstStep ? 'z-[9998]' : 'z-[10000]'} px-3 mx-auto bg-white border backdrop-blur-lg hidden md:flex`}
         >
             <div className="flex items-center gap-8">
                 <Link href={'/dashboard'} className="ml-3">
@@ -36,7 +50,8 @@ export default function DesktopNavBar({
                     {/* Links */}
                     <Link
                         href={'/dashboard'}
-                        className={`flex items-center gap-2 px-2 py-2 active:scale-90 active:opacity-40 hover:bg-black hover:bg-opacity-[0.075] rounded-lg text-sm font-semibold ${activePage === 0 ? "opacity-100" : "opacity-50 hover:opacity-70"}`}
+                        data-tutorial="navbar-links"
+                        className={`flex items-center gap-2 px-2 py-2 active:scale-90 active:opacity-40 hover:bg-black hover:bg-opacity-[0.075] rounded-lg text-sm font-semibold ${activePage === 0 ? "opacity-100" : "opacity-50 hover:opacity-70"} ${linksHighlight}`}
                     >
                         <Image
                             src={"https://linktree.sirv.com/Images/icons/links.svg"}
@@ -50,7 +65,8 @@ export default function DesktopNavBar({
                     {/* Appearance */}
                     <Link
                         href={'/dashboard/appearance'}
-                        className={`flex items-center gap-2 px-2 py-2 active:scale-90 active:opacity-40 hover:bg-black hover:bg-opacity-[0.075] rounded-lg text-sm font-semibold ${activePage === 1 ? "opacity-100" : "opacity-50 hover:opacity-70"}`}
+                        data-tutorial="navbar-appearance"
+                        className={`flex items-center gap-2 px-2 py-2 active:scale-90 active:opacity-40 hover:bg-black hover:bg-opacity-[0.075] rounded-lg text-sm font-semibold ${activePage === 1 ? "opacity-100" : "opacity-50 hover:opacity-70"} ${appearanceHighlight}`}
                     >
                         <Image
                             src={"https://linktree.sirv.com/Images/icons/appearance.svg"}
@@ -64,7 +80,8 @@ export default function DesktopNavBar({
                     {/* Analytics */}
                     <Link
                         href={'/dashboard/analytics'}
-                        className={`flex items-center gap-2 px-2 py-2 active:scale-90 active:opacity-40 hover:bg-black hover:bg-opacity-[0.075] rounded-lg text-sm font-semibold ${activePage === 2 ? "opacity-100" : "opacity-50 hover:opacity-70"}`}
+                        data-tutorial="navbar-analytics"
+                        className={`flex items-center gap-2 px-2 py-2 active:scale-90 active:opacity-40 hover:bg-black hover:bg-opacity-[0.075] rounded-lg text-sm font-semibold ${activePage === 2 ? "opacity-100" : "opacity-50 hover:opacity-70"} ${analyticsHighlight}`}
                     >
                         <Image
                             src={"https://linktree.sirv.com/Images/icons/analytics.svg"}
@@ -78,7 +95,8 @@ export default function DesktopNavBar({
                     {/* Contacts */}
                     <Link
                         href={'/dashboard/contacts'}
-                        className={`flex items-center gap-2 px-2 py-2 active:scale-90 active:opacity-40 hover:bg-black hover:bg-opacity-[0.075] rounded-lg text-sm font-semibold ${activePage === 3 ? "opacity-100" : "opacity-50 hover:opacity-70"}`}
+                        data-tutorial="navbar-contacts"
+                        className={`flex items-center gap-2 px-2 py-2 active:scale-90 active:opacity-40 hover:bg-black hover:bg-opacity-[0.075] rounded-lg text-sm font-semibold ${activePage === 3 ? "opacity-100" : "opacity-50 hover:opacity-70"} ${contactsHighlight}`}
                     >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -89,7 +107,8 @@ export default function DesktopNavBar({
                     {/* Settings */}
                     <Link
                         href={'/dashboard/settings'}
-                        className={`flex items-center gap-2 px-2 py-2 active:scale-90 active:opacity-40 hover:bg-black hover:bg-opacity-[0.075] rounded-lg text-sm font-semibold ${activePage === 4 ? "opacity-100" : "opacity-50 hover:opacity-70"}`}
+                        data-tutorial="navbar-settings"
+                        className={`flex items-center gap-2 px-2 py-2 active:scale-90 active:opacity-40 hover:bg-black hover:bg-opacity-[0.075] rounded-lg text-sm font-semibold ${activePage === 4 ? "opacity-100" : "opacity-50 hover:opacity-70"} ${settingsHighlight}`}
                     >
                         <Image
                             src={"https://linktree.sirv.com/Images/icons/setting.svg"}
@@ -122,7 +141,8 @@ export default function DesktopNavBar({
                 {/* Share Button */}
                 <button
                     id="share-button"
-                    className="p-3 flex items-center relative gap-2 rounded-3xl border cursor-pointer hover:bg-gray-100 active:scale-90 overflow-hidden disabled:cursor-not-allowed disabled:opacity-50"
+                    data-tutorial="navbar-share"
+                    className={`p-3 flex items-center relative gap-2 rounded-3xl border cursor-pointer hover:bg-gray-100 active:scale-90 overflow-hidden disabled:cursor-not-allowed disabled:opacity-50 ${shareHighlight}`}
                     onClick={handleShowShareCard}
                     disabled={isLoading}
                 >
@@ -138,7 +158,8 @@ export default function DesktopNavBar({
                 <div className="relative">
                     <button
                         id="profile-button"
-                        className="grid place-items-center relative rounded-full border h-[2.5rem] w-[2.5rem] cursor-pointer hover:scale-110 active:scale-95 overflow-hidden disabled:cursor-not-allowed disabled:opacity-50"
+                        data-tutorial="navbar-account"
+                        className={`grid place-items-center relative rounded-full border h-[2.5rem] w-[2.5rem] cursor-pointer hover:scale-110 active:scale-95 overflow-hidden disabled:cursor-not-allowed disabled:opacity-50 ${accountHighlight}`}
                         onClick={handleShowProfileCard}
                         disabled={isLoading}
                     >

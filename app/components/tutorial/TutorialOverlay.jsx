@@ -6,6 +6,7 @@ import { useTutorial } from '@/contexts/TutorialContext';
 import { useTranslation } from '@/lib/translation/useTranslation';
 import { getTutorialSteps, getStepNavigation, TUTORIAL_STEP_IDS } from '@/lib/tutorial/tutorialSteps';
 import { getTutorialStyles, tutorialLocale } from '@/lib/tutorial/tutorialStyles';
+import CustomTutorialTooltip from './CustomTutorialTooltip';
 
 // Dynamically import Joyride to prevent SSR issues
 const Joyride = dynamic(
@@ -104,6 +105,33 @@ export default function TutorialOverlay() {
       return;
     }
 
+    // Handle entering a step - check for special actions
+    if (type === 'step:before') {
+      // Set hash for navbar highlighting if step has navbarItemId metadata
+      if (step?.navbarItemId) {
+        console.log('📖 Tutorial: Setting navbar highlight hash for', step.stepId, '→', step.navbarItemId);
+
+        // Clear any existing hash to force immediate cleanup of previous highlights
+        window.location.hash = '';
+
+        // Small delay to:
+        // 1. Let useNavbarHighlight hooks detect empty hash and clear previous highlights
+        // 2. Let Joyride stabilize spotlight position before DOM updates
+        setTimeout(() => {
+          window.location.hash = `navbar-${step.navbarItemId}`;
+        }, 100);
+      }
+
+      // Open Share modal if this step requires it
+      if (step?.openShareModal) {
+        console.log('📖 Tutorial: Opening Share modal for step', step.stepId);
+        // Dispatch custom event to trigger Share modal opening
+        setTimeout(() => {
+          window.dispatchEvent(new CustomEvent('tutorial:open-share'));
+        }, 500); // Small delay to ensure step is visible first
+      }
+    }
+
     // Handle step changes
     if (type === 'step:after') {
       const currentStepId = step?.stepId;
@@ -179,6 +207,7 @@ export default function TutorialOverlay() {
           callback={handleJoyrideCallback}
           styles={styles}
           locale={locale}
+          tooltipComponent={CustomTutorialTooltip}
           floaterProps={{
             disableAnimation: false,
             styles: {
@@ -191,33 +220,7 @@ export default function TutorialOverlay() {
         />
       )}
 
-      {/* Progress indicator (optional - shown in top-right) */}
-      {run && (
-        <div
-          className="fixed top-4 right-4 bg-white dark:bg-gray-800 rounded-lg shadow-lg px-4 py-2 z-[10001]"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-          }}
-        >
-          <div
-            className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden"
-            style={{ width: '100px' }}
-          >
-            <div
-              className="h-full rounded-full transition-all duration-300"
-              style={{
-                width: `${((stepIndex + 1) / steps.length) * 100}%`,
-                background: 'linear-gradient(135deg, #8129D9 0%, #5D18A2 100%)',
-              }}
-            />
-          </div>
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            {stepIndex + 1} / {steps.length}
-          </span>
-        </div>
-      )}
+  
     </>
   );
 }

@@ -2465,20 +2465,53 @@
   "tutorial": {
     "steps": {
       "welcome": {
-        "title": "Chào mừng đến với Weavink!",
-        "description": "Hãy tạo thẻ danh thiếp kỹ thuật số đầu tiên của bạn. Hướng dẫn nhanh này sẽ cho bạn thấy các tính năng chính.",
+        "title": "Cảm ơn bạn đã chọn Weavink!",
+        "description": "Chúng tôi thực sự trân trọng người dùng của mình. Hướng dẫn mini này sẽ giúp bạn bắt đầu và sử dụng ứng dụng ở mức tối đa.",
         "duration": "Mất khoảng 2 phút"
       },
       "navbar": {
         "title": "Thanh Điều Hướng",
-        "description": "Truy cập tất cả các tính năng từ đây. Bạn có thể quản lý liên kết, tùy chỉnh giao diện, xem phân tích, quản lý danh bạ và điều chỉnh cài đặt.",
-        "features": {
-          "links": "Liên kết - Quản lý liên kết hồ sơ của bạn",
-          "appearance": "Giao diện - Tùy chỉnh thiết kế thẻ của bạn",
-          "analytics": "Phân tích - Theo dõi lượt xem hồ sơ của bạn",
-          "contacts": "Danh bạ - Quản lý mạng lưới của bạn",
-          "settings": "Cài đặt - Cấu hình tài khoản của bạn"
-        }
+        "description": "Truy cập tất cả các tính năng từ đây. Bạn có thể quản lý liên kết, tùy chỉnh giao diện, xem phân tích, quản lý danh bạ và điều chỉnh cài đặt."
+      },
+      "navbar_links": {
+        "title": "Trang Liên Kết",
+        "description": "Quản lý tất cả liên kết và nội dung của bạn. Thêm, chỉnh sửa, sắp xếp lại và tùy chỉnh liên kết để chia sẻ với khán giả."
+      },
+      "navbar_appearance": {
+        "title": "Trang Giao Diện",
+        "description": "Tùy chỉnh giao diện hồ sơ của bạn. Chọn chủ đề, màu sắc, phông chữ và hình nền phù hợp với thương hiệu."
+      },
+      "navbar_analytics": {
+        "title": "Trang Phân Tích",
+        "description": "Theo dõi hiệu suất hồ sơ của bạn. Xem lượt xem hồ sơ, lượt nhấp vào liên kết, nguồn lưu lượng và thông tin về khách truy cập."
+      },
+      "navbar_contacts": {
+        "title": "Trang Danh Bạ",
+        "description": "Quản lý mạng lưới của bạn. Xem và tổ chức các liên hệ đã chia sẻ thông tin qua hồ sơ của bạn."
+      },
+      "navbar_settings": {
+        "title": "Trang Cài Đặt",
+        "description": "Cấu hình tài khoản của bạn. Quản lý biểu tượng xã hội, SEO, cảnh báo nội dung nhạy cảm và banner hỗ trợ."
+      },
+      "navbar_share": {
+        "title": "Chia Sẻ Hồ Sơ",
+        "description": "Chia sẻ hồ sơ Weavink của bạn ở mọi nơi. Thêm vào mạng xã hội, tạo mã QR hoặc sao chép liên kết của bạn."
+      },
+      "navbar_account": {
+        "title": "Tài Khoản & Quyền Riêng Tư",
+        "description": "Bây giờ hãy tham quan ngắn trang Tài Khoản & Quyền Riêng Tư, nơi bạn có thể quản lý cài đặt quyền riêng tư và theo dõi tiến trình hướng dẫn của mình."
+      },
+      "account_privacy_overview": {
+        "title": "Tổng Quan Quyền Riêng Tư",
+        "description": "Phần này chứa nhiều tab để quản lý dữ liệu của bạn: xuất dữ liệu, xóa tài khoản, quản lý sự đồng ý và cấu hình cài đặt quyền riêng tư."
+      },
+      "account_privacy_tabs": {
+        "title": "Tab Quyền Riêng Tư",
+        "description": "Khám phá các tab này: Tổng Quan hiển thị tất cả các tùy chọn, Xuất Dữ Liệu cho phép bạn tải xuống thông tin của mình, Xóa Tài Khoản để xóa tài khoản, Sự Đồng Ý cho quyền và Cài Đặt cho tùy chọn quyền riêng tư."
+      },
+      "account_tutorial_progression": {
+        "title": "Tiến Trình Hướng Dẫn",
+        "description": "Theo dõi tiến trình của bạn qua hướng dẫn tại đây. Bạn có thể xem lại bất kỳ phần nào, xem các bước bạn đã hoàn thành và tiếp tục từ nơi bạn đã dừng lại."
       },
       "create_link": {
         "title": "Tạo Liên Kết Đầu Tiên Của Bạn",
@@ -2523,7 +2556,11 @@
     },
     "skip": {
       "success": "Đã bỏ qua hướng dẫn. Bạn luôn có thể truy cập trợ giúp từ cài đặt.",
-      "error": "Không thể bỏ qua hướng dẫn. Vui lòng thử lại."
+      "error": "Không thể bỏ qua hướng dẫn. Vui lòng thử lại.",
+      "modal_title": "Đã Bỏ Qua Hướng Dẫn",
+      "modal_message": "Bạn có thể tiếp tục hướng dẫn bất cứ lúc nào từ Cài Đặt Tài Khoản",
+      "go_to_tutorial": "Đến Hướng Dẫn",
+      "close": "Đóng"
     },
     "tabs": {
       "overview": "Tổng Quan",

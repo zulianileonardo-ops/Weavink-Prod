@@ -3,6 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import LanguageSwitcher from "../LanguageSwitcher/LanguageSwitcher";
+import { useNavbarHighlight } from "@/LocalHooks/useNavbarHighlight";
+import { useTutorial } from '@/contexts/TutorialContext';
 
 export default function MobileTopBar({
     isLoading,
@@ -15,10 +17,17 @@ export default function MobileTopBar({
     ProfileCard,
     ShareCard
 }) {
+    // Get tutorial state for conditional z-index
+    const { run, isFirstStep } = useTutorial();
+
+    // Initialize highlight hooks for Share and Account buttons
+    const { highlightClass: shareHighlight } = useNavbarHighlight('share');
+    const { highlightClass: accountHighlight } = useNavbarHighlight('account');
+
     return (
         <div
             data-tutorial="navbar"
-            className="w-full justify-between flex items-center rounded-[3rem] py-3 sticky top-0 z-[9999999999] px-3 mx-auto bg-white border backdrop-blur-lg md:hidden"
+            className={`w-full justify-between flex items-center rounded-[3rem] py-3 sticky top-0 ${run && isFirstStep ? 'z-[9998]' : 'z-[10000]'} px-3 mx-auto bg-white border backdrop-blur-lg md:hidden`}
         >
             <div className="flex items-center gap-3">
                 <Link href={'/dashboard'} className="ml-1">
@@ -51,7 +60,8 @@ export default function MobileTopBar({
                 {/* Share Button */}
                 <button
                     id="share-button"
-                    className="p-3 flex items-center relative gap-2 rounded-3xl border cursor-pointer hover:bg-gray-100 active:scale-90 overflow-hidden disabled:cursor-not-allowed disabled:opacity-50"
+                    data-tutorial="navbar-share"
+                    className={`p-3 flex items-center relative gap-2 rounded-3xl border cursor-pointer hover:bg-gray-100 active:scale-90 overflow-hidden disabled:cursor-not-allowed disabled:opacity-50 ${shareHighlight}`}
                     onClick={handleShowShareCard}
                     disabled={isLoading}
                 >
@@ -67,7 +77,8 @@ export default function MobileTopBar({
                 <div className="relative">
                     <button
                         id="profile-button"
-                        className="grid place-items-center relative rounded-full border h-[2.5rem] w-[2.5rem] cursor-pointer hover:scale-110 active:scale-95 overflow-hidden disabled:cursor-not-allowed disabled:opacity-50"
+                        data-tutorial="navbar-account"
+                        className={`grid place-items-center relative rounded-full border h-[2.5rem] w-[2.5rem] cursor-pointer hover:scale-110 active:scale-95 overflow-hidden disabled:cursor-not-allowed disabled:opacity-50 ${accountHighlight}`}
                         onClick={handleShowProfileCard}
                         disabled={isLoading}
                     >

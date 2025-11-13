@@ -5,6 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { toast } from 'react-hot-toast';
 import { useTranslation } from '@/lib/translation/useTranslation';
 import { getAuth } from 'firebase/auth';
+import TutorialSkipModal from '@/app/components/tutorial/TutorialSkipModal';
 
 const TutorialContext = createContext(null);
 
@@ -36,9 +37,10 @@ export function TutorialProvider({ children }) {
   const [isSubmitting, setIsSubmitting] = useState(false); // Loading state for API calls
   const [tutorialCompleted, setTutorialCompleted] = useState(false); // Tutorial completion status
   const [isMounted, setIsMounted] = useState(false); // SSR safety flag
+  const [showSkipModal, setShowSkipModal] = useState(false); // Skip modal visibility
 
   // Total number of steps in the tutorial
-  const totalSteps = 6;
+  const totalSteps = 16;
 
   // SSR safety - only enable tutorial after client-side mount
   useEffect(() => {
@@ -281,7 +283,8 @@ export function TutorialProvider({ children }) {
       setTutorialCompleted(true);
       setRun(false);
 
-      toast.success(t('tutorial.skip.success'));
+      // Show modal instead of toast
+      setShowSkipModal(true);
     } catch (error) {
       console.error('Error skipping tutorial:', error);
       toast.error(t('tutorial.skip.error'));
@@ -289,6 +292,13 @@ export function TutorialProvider({ children }) {
       setIsSubmitting(false);
     }
   }, [t]);
+
+  /**
+   * Close the skip modal
+   */
+  const handleCloseSkipModal = useCallback(() => {
+    setShowSkipModal(false);
+  }, []);
 
   /**
    * Navigate to a specific page as part of tutorial flow
@@ -331,6 +341,10 @@ export function TutorialProvider({ children }) {
   return (
     <TutorialContext.Provider value={value}>
       {children}
+      <TutorialSkipModal
+        isOpen={showSkipModal}
+        onClose={handleCloseSkipModal}
+      />
     </TutorialContext.Provider>
   );
 }

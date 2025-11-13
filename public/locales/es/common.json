@@ -2483,20 +2483,53 @@
   "tutorial": {
     "steps": {
       "welcome": {
-        "title": "¡Bienvenido a Weavink!",
-        "description": "Creemos tu primera tarjeta de presentación digital. Este recorrido rápido te mostrará las funciones clave.",
+        "title": "¡Gracias por elegir Weavink!",
+        "description": "Valoramos mucho a nuestros usuarios. Este mini tutorial te ayudará a comenzar y usar la aplicación a su máximo potencial.",
         "duration": "Toma alrededor de 2 minutos"
       },
       "navbar": {
         "title": "Barra de Navegación",
-        "description": "Accede a todas las funciones desde aquí. Puedes gestionar tus enlaces, personalizar tu apariencia, ver analíticas, gestionar contactos y ajustar configuraciones.",
-        "features": {
-          "links": "Enlaces - Gestiona tus enlaces de perfil",
-          "appearance": "Apariencia - Personaliza el diseño de tu tarjeta",
-          "analytics": "Analíticas - Rastrea las vistas de tu perfil",
-          "contacts": "Contactos - Gestiona tu red",
-          "settings": "Configuración - Configura tu cuenta"
-        }
+        "description": "Accede a todas las funciones desde aquí. Puedes gestionar tus enlaces, personalizar tu apariencia, ver analíticas, gestionar contactos y ajustar configuraciones."
+      },
+      "navbar_links": {
+        "title": "Página de Enlaces",
+        "description": "Gestiona todos tus enlaces y contenido. Agrega, edita, reorganiza y personaliza tus enlaces para compartir con tu audiencia."
+      },
+      "navbar_appearance": {
+        "title": "Página de Apariencia",
+        "description": "Personaliza el aspecto de tu perfil. Elige temas, colores, fuentes y fondos para que coincidan con tu marca."
+      },
+      "navbar_analytics": {
+        "title": "Página de Analíticas",
+        "description": "Rastrea el rendimiento de tu perfil. Consulta vistas de perfil, clics en enlaces, fuentes de tráfico e información de visitantes."
+      },
+      "navbar_contacts": {
+        "title": "Página de Contactos",
+        "description": "Gestiona tu red. Visualiza y organiza contactos que han compartido su información a través de tu perfil."
+      },
+      "navbar_settings": {
+        "title": "Página de Configuración",
+        "description": "Configura tu cuenta. Gestiona iconos sociales, SEO, advertencias de contenido sensible y banners de apoyo."
+      },
+      "navbar_share": {
+        "title": "Comparte Tu Perfil",
+        "description": "Comparte tu perfil de Weavink en todas partes. Agrega a redes sociales, genera códigos QR o copia tu enlace."
+      },
+      "navbar_account": {
+        "title": "Cuenta y Privacidad",
+        "description": "Ahora hagamos un breve recorrido por la página de Cuenta y Privacidad, donde puedes gestionar tu configuración de privacidad y seguir el progreso de tu tutorial."
+      },
+      "account_privacy_overview": {
+        "title": "Resumen de Privacidad",
+        "description": "Esta sección contiene múltiples pestañas para gestionar tus datos: exportar tus datos, eliminar tu cuenta, gestionar consentimientos y configurar ajustes de privacidad."
+      },
+      "account_privacy_tabs": {
+        "title": "Pestañas de Privacidad",
+        "description": "Explora estas pestañas: Resumen muestra todas las opciones, Exportar Datos te permite descargar tu información, Eliminar Cuenta para la eliminación de cuenta, Consentimientos para permisos y Configuración para preferencias de privacidad."
+      },
+      "account_tutorial_progression": {
+        "title": "Progreso del Tutorial",
+        "description": "Sigue tu progreso a través del tutorial aquí. Puedes revisitar cualquier sección, ver qué pasos has completado y continuar donde lo dejaste."
       },
       "create_link": {
         "title": "Crea Tu Primer Enlace",
@@ -2541,7 +2574,11 @@
     },
     "skip": {
       "success": "Tutorial omitido. Siempre puedes acceder a la ayuda desde la configuración.",
-      "error": "Error al omitir el tutorial. Por favor, inténtalo de nuevo."
+      "error": "Error al omitir el tutorial. Por favor, inténtalo de nuevo.",
+      "modal_title": "Tutorial Omitido",
+      "modal_message": "Puedes reanudar el tutorial en cualquier momento desde la Configuración de Cuenta",
+      "go_to_tutorial": "Ir al Tutorial",
+      "close": "Cerrar"
     },
     "tabs": {
       "overview": "Vista General",

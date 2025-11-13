@@ -24,10 +24,17 @@ export default function OverviewTab() {
   const [tutorialProgress, setTutorialProgress] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // All 6 tutorial steps for progress calculation
+  // All 13 tutorial steps for progress calculation
   const allSteps = [
     TUTORIAL_STEP_IDS.WELCOME,
     TUTORIAL_STEP_IDS.NAVBAR,
+    TUTORIAL_STEP_IDS.NAVBAR_LINKS,
+    TUTORIAL_STEP_IDS.NAVBAR_APPEARANCE,
+    TUTORIAL_STEP_IDS.NAVBAR_ANALYTICS,
+    TUTORIAL_STEP_IDS.NAVBAR_CONTACTS,
+    TUTORIAL_STEP_IDS.NAVBAR_SETTINGS,
+    TUTORIAL_STEP_IDS.NAVBAR_SHARE,
+    TUTORIAL_STEP_IDS.NAVBAR_ACCOUNT,
     TUTORIAL_STEP_IDS.CREATE_LINK,
     TUTORIAL_STEP_IDS.LINK_FORM,
     TUTORIAL_STEP_IDS.APPEARANCE,
@@ -104,7 +111,17 @@ export default function OverviewTab() {
       titleKey: 'tutorial.overview_cards.navbar.title',
       descriptionKey: 'tutorial.overview_cards.navbar.description',
       ctaKey: 'tutorial.overview_cards.navbar.cta',
-      steps: [TUTORIAL_STEP_IDS.WELCOME, TUTORIAL_STEP_IDS.NAVBAR],
+      steps: [
+        TUTORIAL_STEP_IDS.WELCOME,
+        TUTORIAL_STEP_IDS.NAVBAR,
+        TUTORIAL_STEP_IDS.NAVBAR_LINKS,
+        TUTORIAL_STEP_IDS.NAVBAR_APPEARANCE,
+        TUTORIAL_STEP_IDS.NAVBAR_ANALYTICS,
+        TUTORIAL_STEP_IDS.NAVBAR_CONTACTS,
+        TUTORIAL_STEP_IDS.NAVBAR_SETTINGS,
+        TUTORIAL_STEP_IDS.NAVBAR_SHARE,
+        TUTORIAL_STEP_IDS.NAVBAR_ACCOUNT,
+      ],
     },
     {
       id: 'links',

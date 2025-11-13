@@ -2012,20 +2012,53 @@
   "tutorial": {
     "steps": {
       "welcome": {
-        "title": "欢迎来到 Weavink！",
-        "description": "让我们创建您的第一张数字名片。这个快速指南将向您展示关键功能。",
+        "title": "感谢您选择 Weavink！",
+        "description": "我们真诚地重视我们的用户。这个迷你教程将帮助您开始使用该应用程序并充分发挥其潜力。",
         "duration": "大约需要2分钟"
       },
       "navbar": {
         "title": "导航栏",
-        "description": "从这里访问所有功能。您可以管理链接、自定义外观、查看分析、管理联系人和调整设置。",
-        "features": {
-          "links": "链接 - 管理您的个人资料链接",
-          "appearance": "外观 - 自定义您的名片设计",
-          "analytics": "分析 - 跟踪您的个人资料浏览量",
-          "contacts": "联系人 - 管理您的人脉网络",
-          "settings": "设置 - 配置您的账户"
-        }
+        "description": "从这里访问所有功能。您可以管理链接、自定义外观、查看分析、管理联系人和调整设置。"
+      },
+      "navbar_links": {
+        "title": "链接页面",
+        "description": "管理您的所有链接和内容。添加、编辑、重新排序和自定义您的链接，与您的受众分享。"
+      },
+      "navbar_appearance": {
+        "title": "外观页面",
+        "description": "自定义您的个人资料外观。选择主题、颜色、字体和背景，以匹配您的品牌。"
+      },
+      "navbar_analytics": {
+        "title": "分析页面",
+        "description": "跟踪您的个人资料表现。查看个人资料浏览量、链接点击、流量来源和访客见解。"
+      },
+      "navbar_contacts": {
+        "title": "联系人页面",
+        "description": "管理您的网络。查看和组织通过您的个人资料分享信息的联系人。"
+      },
+      "navbar_settings": {
+        "title": "设置页面",
+        "description": "配置您的账户。管理社交图标、SEO、敏感内容警告和支持横幅。"
+      },
+      "navbar_share": {
+        "title": "分享您的个人资料",
+        "description": "随处分享您的 Weavink 个人资料。添加到社交媒体、生成二维码或复制您的链接。"
+      },
+      "navbar_account": {
+        "title": "账户与隐私",
+        "description": "现在让我们快速浏览账户与隐私页面，您可以在这里管理隐私设置并跟踪教程进度。"
+      },
+      "account_privacy_overview": {
+        "title": "隐私概览",
+        "description": "此部分包含多个用于管理数据的选项卡：导出数据、删除账户、管理同意和配置隐私设置。"
+      },
+      "account_privacy_tabs": {
+        "title": "隐私选项卡",
+        "description": "探索这些选项卡：概览显示所有选项，导出数据让您下载信息，删除账户用于账户删除，同意用于权限，设置用于隐私偏好。"
+      },
+      "account_tutorial_progression": {
+        "title": "教程进度",
+        "description": "在这里跟踪您的教程进度。您可以重新访问任何部分，查看已完成的步骤，并从中断的地方继续。"
       },
       "create_link": {
         "title": "创建您的第一个链接",
@@ -2070,7 +2103,11 @@
     },
     "skip": {
       "success": "已跳过教程。您随时可以从设置中访问帮助。",
-      "error": "跳过教程失败。请重试。"
+      "error": "跳过教程失败。请重试。",
+      "modal_title": "已跳过教程",
+      "modal_message": "您可以随时从账户设置中恢复教程",
+      "go_to_tutorial": "前往教程",
+      "close": "关闭"
     },
     "tabs": {
       "overview": "概览",

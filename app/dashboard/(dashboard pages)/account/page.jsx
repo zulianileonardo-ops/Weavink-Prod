@@ -137,7 +137,7 @@ function AccountPage() {
         </div>
 
         {/* Tabs */}
-        <div className="bg-white shadow-sm rounded-lg mb-6">
+        <div className="bg-white shadow-sm rounded-lg mb-6" data-tutorial="privacy-overview-section">
           {/* Dynamic Title Section */}
           <div className="px-6 pt-6">
             <h2 className="text-2xl font-bold text-gray-900">
@@ -149,7 +149,7 @@ function AccountPage() {
           </div>
 
           <div className="border-b border-gray-200">
-            <nav className="flex space-x-8 px-6" aria-label="Tabs">
+            <nav className="flex space-x-8 px-6" aria-label="Tabs" data-tutorial="privacy-overview-tabs">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
                 return (
@@ -196,7 +196,7 @@ function AccountPage() {
         </div>
 
         {/* Tutorial Progression Section */}
-        <div className="bg-white shadow-sm rounded-lg p-6 mb-6">
+        <div id="tutorial-progression-section" className="bg-white shadow-sm rounded-lg p-6 mb-6" data-tutorial="tutorial-progression-section">
           <TutorialProgressionSection />
         </div>
 

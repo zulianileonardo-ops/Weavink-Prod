@@ -244,6 +244,26 @@ export default function NavBar() {
         };
     }, [currentUser?.uid, updateNavbarState]);
 
+    // Tutorial integration: Listen for Share modal open event
+    useEffect(() => {
+        const handleTutorialOpenShare = () => {
+            console.log('📖 Tutorial: Request to open Share modal');
+            if (!isLoading && username && myLink) {
+                console.log('✅ Opening Share modal for tutorial');
+                setShowShareCard(true);
+                setShowProfileCard(false);
+            } else {
+                console.warn('⚠️ Cannot open Share modal - data not ready', { isLoading, username, myLink });
+            }
+        };
+
+        window.addEventListener('tutorial:open-share', handleTutorialOpenShare);
+
+        return () => {
+            window.removeEventListener('tutorial:open-share', handleTutorialOpenShare);
+        };
+    }, [isLoading, username, myLink]);
+
     const handleShowProfileCard = () => {
         if (isLoading || !username) {
             console.warn("Profile button clicked but data is not ready or username is empty.");

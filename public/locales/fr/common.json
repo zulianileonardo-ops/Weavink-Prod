@@ -2709,20 +2709,53 @@
   "tutorial": {
     "steps": {
       "welcome": {
-        "title": "Bienvenue sur Weavink !",
-        "description": "Créons votre première carte de visite numérique. Cette visite rapide vous montrera les fonctionnalités clés.",
+        "title": "Merci d'avoir choisi Weavink !",
+        "description": "Nous apprécions vraiment nos utilisateurs. Ce mini tutoriel vous aidera à démarrer et à utiliser l'application à son plein potentiel.",
         "duration": "Prend environ 2 minutes"
       },
       "navbar": {
         "title": "Barre de Navigation",
-        "description": "Accédez à toutes les fonctionnalités depuis ici. Vous pouvez gérer vos liens, personnaliser votre apparence, voir les statistiques, gérer vos contacts et ajuster les paramètres.",
-        "features": {
-          "links": "Liens - Gérez vos liens de profil",
-          "appearance": "Apparence - Personnalisez le design de votre carte",
-          "analytics": "Analytiques - Suivez les vues de votre profil",
-          "contacts": "Contacts - Gérez votre réseau",
-          "settings": "Paramètres - Configurez votre compte"
-        }
+        "description": "Accédez à toutes les fonctionnalités depuis ici. Vous pouvez gérer vos liens, personnaliser votre apparence, voir les statistiques, gérer vos contacts et ajuster les paramètres."
+      },
+      "navbar_links": {
+        "title": "Page Liens",
+        "description": "Gérez tous vos liens et contenu. Ajoutez, modifiez, réorganisez et personnalisez vos liens à partager avec votre audience."
+      },
+      "navbar_appearance": {
+        "title": "Page Apparence",
+        "description": "Personnalisez l'apparence de votre profil. Choisissez des thèmes, des couleurs, des polices et des arrière-plans pour correspondre à votre marque."
+      },
+      "navbar_analytics": {
+        "title": "Page Analytiques",
+        "description": "Suivez les performances de votre profil. Consultez les vues du profil, les clics sur les liens, les sources de trafic et les informations sur les visiteurs."
+      },
+      "navbar_contacts": {
+        "title": "Page Contacts",
+        "description": "Gérez votre réseau. Consultez et organisez les contacts qui ont partagé leurs informations via votre profil."
+      },
+      "navbar_settings": {
+        "title": "Page Paramètres",
+        "description": "Configurez votre compte. Gérez les icônes sociales, le référencement, les avertissements de contenu sensible et les bannières de soutien."
+      },
+      "navbar_share": {
+        "title": "Partagez Votre Profil",
+        "description": "Partagez votre profil Weavink partout. Ajoutez aux réseaux sociaux, générez des codes QR ou copiez votre lien."
+      },
+      "navbar_account": {
+        "title": "Compte et Confidentialité",
+        "description": "Faisons maintenant un bref tour de la page Compte et Confidentialité, où vous pouvez gérer vos paramètres de confidentialité et suivre la progression de votre tutoriel."
+      },
+      "account_privacy_overview": {
+        "title": "Aperçu de la Confidentialité",
+        "description": "Cette section contient plusieurs onglets pour gérer vos données : exporter vos données, supprimer votre compte, gérer les consentements et configurer les paramètres de confidentialité."
+      },
+      "account_privacy_tabs": {
+        "title": "Onglets de Confidentialité",
+        "description": "Explorez ces onglets : Aperçu affiche toutes les options, Exporter les Données vous permet de télécharger vos informations, Supprimer le Compte pour la suppression du compte, Consentements pour les autorisations et Paramètres pour les préférences de confidentialité."
+      },
+      "account_tutorial_progression": {
+        "title": "Progression du Tutoriel",
+        "description": "Suivez votre progression dans le tutoriel ici. Vous pouvez revisiter n'importe quelle section, voir quelles étapes vous avez terminées et reprendre là où vous vous étiez arrêté."
       },
       "create_link": {
         "title": "Créez Votre Premier Lien",
@@ -2767,7 +2800,11 @@
     },
     "skip": {
       "success": "Tutoriel ignoré. Vous pouvez toujours accéder à l'aide depuis les paramètres.",
-      "error": "Échec de l'ignorance du tutoriel. Veuillez réessayer."
+      "error": "Échec de l'ignorance du tutoriel. Veuillez réessayer.",
+      "modal_title": "Tutoriel Ignoré",
+      "modal_message": "Vous pouvez reprendre le tutoriel à tout moment depuis les Paramètres du Compte",
+      "go_to_tutorial": "Aller au Tutoriel",
+      "close": "Fermer"
     },
     "tabs": {
       "overview": "Aperçu",

@@ -10,8 +10,9 @@ import TutorialStepCard from './TutorialStepCard';
 
 /**
  * Navbar Tab Component
- * Shows tutorial steps related to getting started and navbar navigation
- * Steps: welcome (0), navbar (1)
+ * Shows tutorial steps related to navbar navigation and all page intros
+ * Steps: navbar (1), Links (2), Appearance (3), Analytics (4),
+ *        Contacts (5), Settings (6), Share (7), Account (8)
  */
 export default function NavbarTab() {
   const { currentUser } = useAuth();
@@ -23,16 +24,52 @@ export default function NavbarTab() {
   // Navbar-specific tutorial steps
   const navbarSteps = [
     {
-      id: TUTORIAL_STEP_IDS.WELCOME,
-      index: 0,
-      titleKey: 'tutorial.steps.welcome.title',
-      descriptionKey: 'tutorial.steps.welcome.description',
-    },
-    {
       id: TUTORIAL_STEP_IDS.NAVBAR,
       index: 1,
       titleKey: 'tutorial.steps.navbar.title',
       descriptionKey: 'tutorial.steps.navbar.description',
+    },
+    {
+      id: TUTORIAL_STEP_IDS.NAVBAR_LINKS,
+      index: 2,
+      titleKey: 'tutorial.steps.navbar_links.title',
+      descriptionKey: 'tutorial.steps.navbar_links.description',
+    },
+    {
+      id: TUTORIAL_STEP_IDS.NAVBAR_APPEARANCE,
+      index: 3,
+      titleKey: 'tutorial.steps.navbar_appearance.title',
+      descriptionKey: 'tutorial.steps.navbar_appearance.description',
+    },
+    {
+      id: TUTORIAL_STEP_IDS.NAVBAR_ANALYTICS,
+      index: 4,
+      titleKey: 'tutorial.steps.navbar_analytics.title',
+      descriptionKey: 'tutorial.steps.navbar_analytics.description',
+    },
+    {
+      id: TUTORIAL_STEP_IDS.NAVBAR_CONTACTS,
+      index: 5,
+      titleKey: 'tutorial.steps.navbar_contacts.title',
+      descriptionKey: 'tutorial.steps.navbar_contacts.description',
+    },
+    {
+      id: TUTORIAL_STEP_IDS.NAVBAR_SETTINGS,
+      index: 6,
+      titleKey: 'tutorial.steps.navbar_settings.title',
+      descriptionKey: 'tutorial.steps.navbar_settings.description',
+    },
+    {
+      id: TUTORIAL_STEP_IDS.NAVBAR_SHARE,
+      index: 7,
+      titleKey: 'tutorial.steps.navbar_share.title',
+      descriptionKey: 'tutorial.steps.navbar_share.description',
+    },
+    {
+      id: TUTORIAL_STEP_IDS.NAVBAR_ACCOUNT,
+      index: 8,
+      titleKey: 'tutorial.steps.navbar_account.title',
+      descriptionKey: 'tutorial.steps.navbar_account.description',
     },
   ];
 

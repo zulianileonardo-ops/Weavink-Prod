@@ -1,6 +1,7 @@
 //app/dashboard/(dashboard pages)/account/components/TutorialProgressionSection.jsx
 'use client';
 
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Info, Menu, Trophy } from 'lucide-react';
 import { useTranslation } from '@/lib/translation/useTranslation';
@@ -31,6 +32,56 @@ export default function TutorialProgressionSection() {
 function TutorialProgressionContent() {
   const { t } = useTranslation();
   const { activeTutorialTab, setActiveTutorialTab } = useTutorialTab();
+  const [isHighlighted, setIsHighlighted] = useState(false);
+
+  // Highlight detection - watches for hash navigation from skip modal
+  useEffect(() => {
+    const checkHighlight = () => {
+      const hash = window.location.hash;
+
+      if (hash === '#tutorial-progression-section') {
+        setIsHighlighted(true);
+
+        // Scroll to section with retry mechanism
+        const scrollToSection = (attempts = 0) => {
+          const maxAttempts = 10;
+          if (attempts >= maxAttempts) {
+            console.warn('Failed to scroll to tutorial-progression-section');
+            return;
+          }
+
+          const element = document.getElementById('tutorial-progression-section');
+          if (element) {
+            element.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start',
+            });
+          } else {
+            setTimeout(() => scrollToSection(attempts + 1), 200);
+          }
+        };
+
+        setTimeout(() => scrollToSection(), 500);
+
+        // Auto-dismiss highlight after 3 seconds
+        const timer = setTimeout(() => {
+          setIsHighlighted(false);
+          // Clear hash from URL
+          window.history.replaceState(
+            null,
+            '',
+            window.location.pathname + window.location.search
+          );
+        }, 3000);
+
+        return () => clearTimeout(timer);
+      }
+    };
+
+    checkHighlight();
+    window.addEventListener('hashchange', checkHighlight);
+    return () => window.removeEventListener('hashchange', checkHighlight);
+  }, []);
 
   // Tab configuration with icons from navbar
   const tabs = [
@@ -87,7 +138,11 @@ function TutorialProgressionContent() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className={`space-y-6 ${
+      isHighlighted
+        ? 'ring-4 ring-amber-400 shadow-xl scale-[1.02] transition-all duration-300 rounded-lg p-2 -m-2'
+        : 'transition-all duration-300'
+    }`}>
       {/* Header */}
       <div>
         <h2 className="text-2xl font-bold text-gray-900">

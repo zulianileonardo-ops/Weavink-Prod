@@ -1093,10 +1093,6 @@
         "success": "Setting updated successfully"
       }
     },
-    "consents": {
-      "title": "Manage Consents",
-      "description": "Control which features can process your data. You can withdraw consent at any time. Changes take effect immediately."
-    },
     "contact_download": {
       "title": "Contact Download Settings",
       "description": "Control who can download your contact information and what fields are available"
@@ -1253,20 +1249,53 @@
   "tutorial": {
     "steps": {
       "welcome": {
-        "title": "Welcome to Weavink!",
-        "description": "Let's create your first digital business card. This quick tour will show you the key features.",
+        "title": "Thank you for choosing Weavink!",
+        "description": "We truly value our users. This mini tutorial will help you get started and use the app to its full potential.",
         "duration": "Takes about 2 minutes"
       },
       "navbar": {
         "title": "Navigation Bar",
-        "description": "Access all features from here. You can manage your links, customize your appearance, view analytics, manage contacts, and adjust settings.",
-        "features": {
-          "links": "Links - Manage your profile links",
-          "appearance": "Appearance - Customize your card design",
-          "analytics": "Analytics - Track your profile views",
-          "contacts": "Contacts - Manage your network",
-          "settings": "Settings - Configure your account"
-        }
+        "description": "Access all features from here. You can manage your links, customize your appearance, view analytics, manage contacts, and adjust settings."
+      },
+      "navbar_links": {
+        "title": "Links Page",
+        "description": "Manage all your links and content. Add, edit, reorder, and customize your links to share with your audience."
+      },
+      "navbar_appearance": {
+        "title": "Appearance Page",
+        "description": "Customize your profile's look and feel. Choose themes, colors, fonts, and backgrounds to match your brand."
+      },
+      "navbar_analytics": {
+        "title": "Analytics Page",
+        "description": "Track your profile performance. View profile views, link clicks, traffic sources, and visitor insights."
+      },
+      "navbar_contacts": {
+        "title": "Contacts Page",
+        "description": "Manage your network. View and organize contacts who have shared their information through your profile."
+      },
+      "navbar_settings": {
+        "title": "Settings Page",
+        "description": "Configure your account. Manage social icons, SEO, sensitive content warnings, and support banners."
+      },
+      "navbar_share": {
+        "title": "Share Your Profile",
+        "description": "Share your Weavink profile everywhere. Add to social media, generate QR codes, or copy your link."
+      },
+      "navbar_account": {
+        "title": "Account & Privacy",
+        "description": "Now let's take a short tour of the Account & Privacy page, where you can manage your privacy settings and track your tutorial progress."
+      },
+      "account_privacy_overview": {
+        "title": "Privacy Overview",
+        "description": "This section contains multiple tabs for managing your data: export your data, delete your account, manage consents, and configure privacy settings."
+      },
+      "account_privacy_tabs": {
+        "title": "Privacy Tabs",
+        "description": "Explore these tabs: Overview shows all options, Export Data lets you download your information, Delete Account for account removal, Consents for permissions, and Settings for privacy preferences."
+      },
+      "account_tutorial_progression": {
+        "title": "Tutorial Progression",
+        "description": "Track your progress through the tutorial here. You can revisit any section, see which steps you've completed, and pick up where you left off."
       },
       "create_link": {
         "title": "Create Your First Link",
@@ -1311,7 +1340,11 @@
     },
     "skip": {
       "success": "Tutorial skipped. You can always access help from settings.",
-      "error": "Failed to skip tutorial. Please try again."
+      "error": "Failed to skip tutorial. Please try again.",
+      "modal_title": "Tutorial Skipped",
+      "modal_message": "You can resume the tutorial anytime from Account Settings",
+      "go_to_tutorial": "Go to Tutorial",
+      "close": "Close"
     },
     "tabs": {
       "overview": "Overview",
