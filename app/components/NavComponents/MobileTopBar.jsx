@@ -18,7 +18,7 @@ export default function MobileTopBar({
     ShareCard
 }) {
     // Get tutorial state for conditional z-index
-    const { run, isFirstStep } = useTutorial();
+    const { run, isFirstStep, stepIndex } = useTutorial();
 
     // Initialize highlight hooks for Share and Account buttons
     const { highlightClass: shareHighlight } = useNavbarHighlight('share');
@@ -27,7 +27,7 @@ export default function MobileTopBar({
     return (
         <div
             data-tutorial="navbar"
-            className={`w-full justify-between flex items-center rounded-[3rem] py-3 sticky top-0 ${run && isFirstStep ? 'z-[9998]' : 'z-[10000]'} px-3 mx-auto bg-white border backdrop-blur-lg md:hidden`}
+            className={`w-full justify-between flex items-center rounded-[3rem] py-3 sticky top-0 ${run && (isFirstStep || stepIndex === 9) ? 'z-[9998]' : 'z-[10000]'} px-3 mx-auto bg-white border backdrop-blur-lg md:hidden`}
         >
             <div className="flex items-center gap-3">
                 <Link href={'/dashboard'} className="ml-1">

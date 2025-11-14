@@ -136,9 +136,9 @@ export default function TutorialOverlay() {
     if (type === 'step:after') {
       const currentStepId = step?.stepId;
 
-      // Auto-navigate for appearance step
+      // Auto-navigate ONLY when moving forward (not when going back)
       const navigationPath = getStepNavigation(index, t);
-      if (navigationPath) {
+      if (navigationPath && action === 'next') {
         console.log(`🚀 Auto-navigating to: ${navigationPath}`);
         navigateToPage(navigationPath);
 
@@ -198,6 +198,7 @@ export default function TutorialOverlay() {
           run={run}
           continuous={true}
           scrollToFirstStep={true}
+          scrollOffset={200}
           showProgress={true}
           showSkipButton={true}
           disableOverlayClose={false}

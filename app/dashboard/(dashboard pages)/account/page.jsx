@@ -20,6 +20,7 @@ import { useSearchParams } from 'next/navigation';
 import { Shield, Download, Trash2, CheckSquare, Settings, Info, AlertCircle, FileUser, Globe } from 'lucide-react';
 import { useTranslation } from '@/lib/translation/useTranslation';
 import { AccountProvider, useAccount } from './AccountContext';
+import { useTutorial } from '@/contexts/TutorialContext';
 
 // Import tab components
 import OverviewTab from './components/OverviewTab';
@@ -50,6 +51,7 @@ function AccountPage() {
     pendingDeletion,
     isLoading,
   } = useAccount();
+  const { run, stepIndex } = useTutorial();
 
   // Read URL parameters for deep-linking
   const tabParam = searchParams.get('tab');
@@ -137,7 +139,7 @@ function AccountPage() {
         </div>
 
         {/* Tabs */}
-        <div className="bg-white shadow-sm rounded-lg mb-6" data-tutorial="privacy-overview-section">
+        <div className={`bg-white shadow-sm rounded-lg mb-6 relative ${run && stepIndex === 9 ? 'z-[10000]' : 'z-0'}`} data-tutorial="privacy-overview-section">
           {/* Dynamic Title Section */}
           <div className="px-6 pt-6">
             <h2 className="text-2xl font-bold text-gray-900">

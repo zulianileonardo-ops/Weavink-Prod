@@ -10,7 +10,7 @@ export default function MobileBottomBar({ activePage, translations }) {
     const { isMapOpen } = useMapVisibility();
 
     // Get tutorial state for conditional z-index
-    const { run, isFirstStep } = useTutorial();
+    const { run, isFirstStep, stepIndex } = useTutorial();
 
     // Initialize highlight hooks for each navbar item
     const { highlightClass: linksHighlight } = useNavbarHighlight('links');
@@ -20,7 +20,7 @@ export default function MobileBottomBar({ activePage, translations }) {
     const { highlightClass: settingsHighlight } = useNavbarHighlight('settings');
 
     return (
-        <div className={`fixed bottom-0 left-0 right-0 ${run && isFirstStep ? 'z-[9998]' : 'z-[10000]'} md:hidden transition-transform duration-300 ${isMapOpen ? 'translate-y-full' : 'translate-y-0'}`}>
+        <div className={`fixed bottom-0 left-0 right-0 ${run && (isFirstStep || stepIndex === 9) ? 'z-[9998]' : 'z-[10000]'} md:hidden transition-transform duration-300 ${isMapOpen ? 'translate-y-full' : 'translate-y-0'}`}>
             <div className="flex justify-around items-center py-3 px-2 m-2 rounded-2xl bg-white border shadow-lg backdrop-blur-lg">
                 {/* Links */}
                 <Link
