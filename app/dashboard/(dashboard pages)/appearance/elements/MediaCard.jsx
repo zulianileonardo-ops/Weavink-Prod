@@ -121,7 +121,7 @@ export default function MediaCard({ item, onUpdate, onDelete, disabled }) {
         if (linkedLinkItem) {
             setCheckboxChecked(linkedLinkItem.isActive);
         }
-    }, [linkedLinkItem?.isActive]);
+    }, [linkedLinkItem]);
 
     // Update linked link status when toggle changes
     useEffect(() => {
@@ -136,7 +136,7 @@ export default function MediaCard({ item, onUpdate, onDelete, disabled }) {
             };
             updateLinkStatus();
         }
-    }, [debounceCheckbox]);
+    }, [debounceCheckbox, checkboxChecked, linkedLinkItem]);
 
     // Sync localData with item prop when item changes (but only when not editing to avoid conflicts)
     useEffect(() => {

@@ -40,7 +40,7 @@ export function TutorialProvider({ children }) {
   const [showSkipModal, setShowSkipModal] = useState(false); // Skip modal visibility
 
   // Total number of steps in the tutorial
-  const totalSteps = 16;
+  const totalSteps = 23;
 
   // SSR safety - only enable tutorial after client-side mount
   useEffect(() => {

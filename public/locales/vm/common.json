@@ -2509,6 +2509,34 @@
         "title": "Tab Quyền Riêng Tư",
         "description": "Khám phá các tab này: Tổng Quan hiển thị tất cả các tùy chọn, Xuất Dữ Liệu cho phép bạn tải xuống thông tin của mình, Xóa Tài Khoản để xóa tài khoản, Sự Đồng Ý cho quyền và Cài Đặt cho tùy chọn quyền riêng tư."
       },
+      "account_tab_overview": {
+        "title": "Tab Tổng Quan",
+        "description": "Xem tóm tắt tất cả các tùy chọn quyền riêng tư có sẵn ở một nơi."
+      },
+      "account_tab_export": {
+        "title": "Tab Xuất Dữ Liệu",
+        "description": "Tải xuống tất cả dữ liệu cá nhân của bạn ở định dạng có thể đọc được bằng máy để chuyển đổi."
+      },
+      "account_tab_delete": {
+        "title": "Tab Xóa Tài Khoản",
+        "description": "Xóa vĩnh viễn tài khoản của bạn và tất cả dữ liệu liên quan - hành động này không thể hoàn tác."
+      },
+      "account_tab_consents": {
+        "title": "Tab Sự Đồng Ý",
+        "description": "Xem xét và quản lý sự đồng ý quyền riêng tư của bạn và kiểm soát các tính năng nào có thể xử lý dữ liệu của bạn."
+      },
+      "account_tab_settings": {
+        "title": "Tab Cài Đặt Quyền Riêng Tư",
+        "description": "Cấu hình tùy chọn quyền riêng tư của bạn, bao gồm khả năng hiển thị hồ sơ và tùy chọn chia sẻ dữ liệu."
+      },
+      "account_tab_contact_download": {
+        "title": "Tab Tải Xuống Liên Hệ",
+        "description": "Xuất thông tin liên hệ của bạn ở các định dạng tương thích với trình quản lý liên hệ."
+      },
+      "account_tab_website_config": {
+        "title": "Tab Cấu Hình Trang Web",
+        "description": "Tùy chỉnh cách hồ sơ của bạn xuất hiện trên các trang web bên ngoài và nhúng."
+      },
       "account_tutorial_progression": {
         "title": "Tiến Trình Hướng Dẫn",
         "description": "Theo dõi tiến trình của bạn qua hướng dẫn tại đây. Bạn có thể xem lại bất kỳ phần nào, xem các bước bạn đã hoàn thành và tiếp tục từ nơi bạn đã dừng lại."
@@ -2565,6 +2593,7 @@
     "tabs": {
       "overview": "Tổng Quan",
       "navbar": "Thanh Điều Hướng",
+      "account": "Tài Khoản",
       "links": "Liên Kết",
       "appearance": "Giao Diện",
       "completion": "Hoàn Thành",
@@ -2598,6 +2627,13 @@
         "cta": "Hoàn Thành"
       },
       "steps_completed": "bước"
+    },
+    "categories": {
+      "account": {
+        "title": "Tài Khoản & Quyền Riêng Tư",
+        "description": "Quản lý dữ liệu cá nhân và tùy chọn quyền riêng tư của bạn trên tất cả các tab quyền riêng tư.",
+        "cta": "Xem Hướng Dẫn Tài Khoản"
+      }
     }
   },
   "contacts": {

@@ -549,7 +549,8 @@ export function AppearanceProvider({ children }) {
                 unsubscribeCache();
             }
         };
-}, [currentUser, isInitialized, isSessionLoading, fetchAppearanceData, createAppearanceHash, applyAppearanceDefaults]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [currentUser, isInitialized, isSessionLoading, fetchAppearanceData, createAppearanceHash]);
 
     // Listen for local appearance updates triggered outside of this provider (e.g., Manage Links page)
     useEffect(() => {

@@ -3,13 +3,14 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { Info, Menu, Trophy } from 'lucide-react';
+import { Info, Menu, Shield, Trophy } from 'lucide-react';
 import { useTranslation } from '@/lib/translation/useTranslation';
 import { TutorialTabProvider, useTutorialTab } from './TutorialTabContext';
 
 // Import tab components
 import OverviewTab from './tutorial-tabs/OverviewTab';
 import NavbarTab from './tutorial-tabs/NavbarTab';
+import AccountTab from './tutorial-tabs/AccountTab';
 import LinksTab from './tutorial-tabs/LinksTab';
 import AppearanceTab from './tutorial-tabs/AppearanceTab';
 import CompletionTab from './tutorial-tabs/CompletionTab';
@@ -94,6 +95,11 @@ function TutorialProgressionContent() {
       id: 'navbar',
       labelKey: 'tutorial.tabs.navbar',
       iconComponent: Menu,
+    },
+    {
+      id: 'account',
+      labelKey: 'tutorial.tabs.account',
+      iconComponent: Shield,
     },
     {
       id: 'links',
@@ -192,6 +198,7 @@ function TutorialProgressionContent() {
       <div>
         {activeTutorialTab === 'overview' && <OverviewTab />}
         {activeTutorialTab === 'navbar' && <NavbarTab />}
+        {activeTutorialTab === 'account' && <AccountTab />}
         {activeTutorialTab === 'links' && <LinksTab />}
         {activeTutorialTab === 'appearance' && <AppearanceTab />}
         {activeTutorialTab === 'completion' && <CompletionTab />}

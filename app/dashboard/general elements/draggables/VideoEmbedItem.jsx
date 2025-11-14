@@ -129,7 +129,8 @@ export default function VideoEmbedItem({ item, itemRef, style, listeners, attrib
         if (checkboxChecked !== item.isActive) {
             editArrayActiveStatus();
         }
-    }, [debounceCheckbox]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [debounceCheckbox]); // Only trigger on debounce changes (guard condition checks other values)
 
     const handleCheckboxChange = (event) => {
         const newValue = event.target.checked;

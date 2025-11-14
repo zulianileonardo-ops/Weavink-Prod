@@ -138,10 +138,10 @@ function AccountPage() {
           )}
         </div>
 
-        {/* Tabs */}
+        {/* Privacy Overview Section */}
         <div className={`bg-white shadow-sm rounded-lg mb-6 relative ${run && stepIndex === 9 ? 'z-[10000]' : 'z-0'}`} data-tutorial="privacy-overview-section">
           {/* Dynamic Title Section */}
-          <div className="px-6 pt-6">
+          <div className="px-6 pt-6 pb-6">
             <h2 className="text-2xl font-bold text-gray-900">
               {t(tabContent[activeTab]?.titleKey, 'Page Title')}
             </h2>
@@ -149,7 +149,10 @@ function AccountPage() {
               {t(tabContent[activeTab]?.descKey, 'Page description')}
             </p>
           </div>
+        </div>
 
+        {/* Tabs and Content Section */}
+        <div className={`bg-white shadow-sm rounded-lg mb-6 relative ${run && stepIndex === 10 ? 'z-[10000]' : 'z-0'}`}>
           <div className="border-b border-gray-200">
             <nav className="flex space-x-8 px-6" aria-label="Tabs" data-tutorial="privacy-overview-tabs">
               {tabs.map((tab) => {
@@ -158,6 +161,7 @@ function AccountPage() {
                   <button
                     key={tab.id}
                     data-tab={tab.id}
+                    data-tutorial={`tab-${tab.id}`}
                     onClick={() => setActiveTab(tab.id)}
                     className={`
                       flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm

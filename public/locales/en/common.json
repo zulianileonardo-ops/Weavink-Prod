@@ -1293,6 +1293,34 @@
         "title": "Privacy Tabs",
         "description": "Explore these tabs: Overview shows all options, Export Data lets you download your information, Delete Account for account removal, Consents for permissions, and Settings for privacy preferences."
       },
+      "account_tab_overview": {
+        "title": "Overview Tab",
+        "description": "View a summary of all privacy options available to you in one place."
+      },
+      "account_tab_export": {
+        "title": "Export Data Tab",
+        "description": "Download all your personal data in machine-readable formats for portability."
+      },
+      "account_tab_delete": {
+        "title": "Delete Account Tab",
+        "description": "Permanently delete your account and all associated data - this action cannot be undone."
+      },
+      "account_tab_consents": {
+        "title": "Consents Tab",
+        "description": "Review and manage your privacy consents and control which features can process your data."
+      },
+      "account_tab_settings": {
+        "title": "Privacy Settings Tab",
+        "description": "Configure your privacy preferences, including profile visibility and data sharing options."
+      },
+      "account_tab_contact_download": {
+        "title": "Contact Download Tab",
+        "description": "Export your contact information in formats compatible with contact managers."
+      },
+      "account_tab_website_config": {
+        "title": "Website Configuration Tab",
+        "description": "Customize how your profile appears on external websites and embeds."
+      },
       "account_tutorial_progression": {
         "title": "Tutorial Progression",
         "description": "Track your progress through the tutorial here. You can revisit any section, see which steps you've completed, and pick up where you left off."
@@ -1349,6 +1377,7 @@
     "tabs": {
       "overview": "Overview",
       "navbar": "Navbar",
+      "account": "Account",
       "links": "Links",
       "appearance": "Appearance",
       "completion": "Completion",
@@ -1382,6 +1411,13 @@
         "cta": "Finish Up"
       },
       "steps_completed": "steps"
+    },
+    "categories": {
+      "account": {
+        "title": "Account & Privacy",
+        "description": "Manage your personal data and privacy preferences across all privacy tabs.",
+        "cta": "View Account Tutorial"
+      }
     }
   },
   "contacts": {

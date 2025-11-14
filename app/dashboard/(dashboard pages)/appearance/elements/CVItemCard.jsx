@@ -88,7 +88,7 @@ export default function CVItemCard({ item, onUpdate, onDelete, disabled }) {
         if (linkedLinkItem) {
             setCheckboxChecked(linkedLinkItem.isActive);
         }
-    }, [linkedLinkItem?.isActive]);
+    }, [linkedLinkItem]);
 
     // Update linked link status when toggle changes
     useEffect(() => {
@@ -103,7 +103,7 @@ export default function CVItemCard({ item, onUpdate, onDelete, disabled }) {
             };
             updateLinkStatus();
         }
-    }, [debounceCheckbox]);
+    }, [debounceCheckbox, checkboxChecked, linkedLinkItem]);
 
     // Handle file upload
     const handleFileUpload = async (e) => {

@@ -1,0 +1,69 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Helper functions
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    function isServerWrite(userId) {
+      return request.auth != null && request.auth.token.admin == true;
+    }
+
+    // Profile photos
+    match /profilePhoto/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if (isOwner(userId) && request.resource.size < 5 * 1024 * 1024) || isServerWrite(userId);
+    }
+
+    // Background images
+    match /backgroundImage/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if (isOwner(userId) && request.resource.size < 5 * 1024 * 1024) || isServerWrite(userId);
+    }
+
+    // Background videos
+    match /backgroundVideo/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if (isOwner(userId) && request.resource.size < 50 * 1024 * 1024) || isServerWrite(userId);
+    }
+
+    // Banner images
+    match /bannerImage/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if (isOwner(userId) && request.resource.size < 5 * 1024 * 1024) || isServerWrite(userId);
+    }
+
+    // Banner videos
+    match /bannerVideo/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if (isOwner(userId) && request.resource.size < 50 * 1024 * 1024) || isServerWrite(userId);
+    }
+
+    // Carousel images
+    match /carouselImages/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if (isOwner(userId) && request.resource.size < 5 * 1024 * 1024) || isServerWrite(userId);
+    }
+
+    // CV documents
+    match /cvDocuments/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if (isOwner(userId) && request.resource.size < 10 * 1024 * 1024) || isServerWrite(userId);
+    }
+
+    // Media images (NEW)
+    match /mediaImages/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if (isOwner(userId) && request.resource.size < 5 * 1024 * 1024) || isServerWrite(userId);
+    }
+
+    // Media videos (NEW)
+    match /mediaVideos/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if (isOwner(userId) && request.resource.size < 50 * 1024 * 1024) || isServerWrite(userId);
+    }
+  }
+}

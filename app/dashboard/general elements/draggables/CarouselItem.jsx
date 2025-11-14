@@ -134,7 +134,7 @@ export default function CarouselItem({ item, itemRef, style, listeners, attribut
         return () => {
             unsubscribe();
         };
-    }, [currentUser?.uid, item.carouselId]);
+    }, [currentUser?.uid, item.carouselId, hasItemsWithMedia]);
 
     // Debounced update effect - only triggers when debounced value changes
     useEffect(() => {
@@ -177,7 +177,8 @@ export default function CarouselItem({ item, itemRef, style, listeners, attribut
         };
 
         updateCarouselStatus();
-    }, [debounceCheckbox]); // Only fires when debounced value changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [debounceCheckbox]); // Only fires when debounced value changes (other values used have proper guards)
 
     // Sync checkbox with external changes to carousel enabled state
     useEffect(() => {

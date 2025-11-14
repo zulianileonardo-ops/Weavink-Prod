@@ -2527,6 +2527,34 @@
         "title": "Pestañas de Privacidad",
         "description": "Explora estas pestañas: Resumen muestra todas las opciones, Exportar Datos te permite descargar tu información, Eliminar Cuenta para la eliminación de cuenta, Consentimientos para permisos y Configuración para preferencias de privacidad."
       },
+      "account_tab_overview": {
+        "title": "Pestaña Resumen",
+        "description": "Ver un resumen de todas las opciones de privacidad disponibles en un solo lugar."
+      },
+      "account_tab_export": {
+        "title": "Pestaña Exportar Datos",
+        "description": "Descarga todos tus datos personales en formatos legibles por máquina para portabilidad."
+      },
+      "account_tab_delete": {
+        "title": "Pestaña Eliminar Cuenta",
+        "description": "Elimina permanentemente tu cuenta y todos los datos asociados - esta acción no se puede deshacer."
+      },
+      "account_tab_consents": {
+        "title": "Pestaña Consentimientos",
+        "description": "Revisa y administra tus consentimientos de privacidad y controla qué funciones pueden procesar tus datos."
+      },
+      "account_tab_settings": {
+        "title": "Pestaña Configuración de Privacidad",
+        "description": "Configura tus preferencias de privacidad, incluyendo la visibilidad del perfil y las opciones de compartir datos."
+      },
+      "account_tab_contact_download": {
+        "title": "Pestaña Descarga de Contactos",
+        "description": "Exporta tu información de contacto en formatos compatibles con gestores de contactos."
+      },
+      "account_tab_website_config": {
+        "title": "Pestaña Configuración del Sitio Web",
+        "description": "Personaliza cómo aparece tu perfil en sitios web externos e integraciones."
+      },
       "account_tutorial_progression": {
         "title": "Progreso del Tutorial",
         "description": "Sigue tu progreso a través del tutorial aquí. Puedes revisitar cualquier sección, ver qué pasos has completado y continuar donde lo dejaste."
@@ -2583,6 +2611,7 @@
     "tabs": {
       "overview": "Vista General",
       "navbar": "Barra de Navegación",
+      "account": "Cuenta",
       "links": "Enlaces",
       "appearance": "Apariencia",
       "completion": "Finalización",
@@ -2616,6 +2645,13 @@
         "cta": "Finalizar"
       },
       "steps_completed": "pasos"
+    },
+    "categories": {
+      "account": {
+        "title": "Cuenta y Privacidad",
+        "description": "Gestiona tus datos personales y preferencias de privacidad en todas las pestañas de privacidad.",
+        "cta": "Ver Tutorial de Cuenta"
+      }
     }
   },
   "contacts": {

@@ -2753,6 +2753,34 @@
         "title": "Onglets de Confidentialité",
         "description": "Explorez ces onglets : Aperçu affiche toutes les options, Exporter les Données vous permet de télécharger vos informations, Supprimer le Compte pour la suppression du compte, Consentements pour les autorisations et Paramètres pour les préférences de confidentialité."
       },
+      "account_tab_overview": {
+        "title": "Onglet Aperçu",
+        "description": "Affichez un résumé de toutes les options de confidentialité disponibles en un seul endroit."
+      },
+      "account_tab_export": {
+        "title": "Onglet Exporter les Données",
+        "description": "Téléchargez toutes vos données personnelles dans des formats lisibles par machine pour la portabilité."
+      },
+      "account_tab_delete": {
+        "title": "Onglet Supprimer le Compte",
+        "description": "Supprimez définitivement votre compte et toutes les données associées - cette action ne peut pas être annulée."
+      },
+      "account_tab_consents": {
+        "title": "Onglet Consentements",
+        "description": "Consultez et gérez vos consentements de confidentialité et contrôlez quelles fonctionnalités peuvent traiter vos données."
+      },
+      "account_tab_settings": {
+        "title": "Onglet Paramètres de Confidentialité",
+        "description": "Configurez vos préférences de confidentialité, y compris la visibilité du profil et les options de partage de données."
+      },
+      "account_tab_contact_download": {
+        "title": "Onglet Téléchargement de Contacts",
+        "description": "Exportez vos informations de contact dans des formats compatibles avec les gestionnaires de contacts."
+      },
+      "account_tab_website_config": {
+        "title": "Onglet Configuration du Site Web",
+        "description": "Personnalisez l'apparence de votre profil sur les sites Web externes et les intégrations."
+      },
       "account_tutorial_progression": {
         "title": "Progression du Tutoriel",
         "description": "Suivez votre progression dans le tutoriel ici. Vous pouvez revisiter n'importe quelle section, voir quelles étapes vous avez terminées et reprendre là où vous vous étiez arrêté."
@@ -2809,6 +2837,7 @@
     "tabs": {
       "overview": "Aperçu",
       "navbar": "Barre de Navigation",
+      "account": "Compte",
       "links": "Liens",
       "appearance": "Apparence",
       "completion": "Achèvement",
@@ -2842,6 +2871,13 @@
         "cta": "Terminer"
       },
       "steps_completed": "étapes"
+    },
+    "categories": {
+      "account": {
+        "title": "Compte et Confidentialité",
+        "description": "Gérez vos données personnelles et préférences de confidentialité dans tous les onglets de confidentialité.",
+        "cta": "Voir le Tutoriel Compte"
+      }
     }
   },
   "contacts": {

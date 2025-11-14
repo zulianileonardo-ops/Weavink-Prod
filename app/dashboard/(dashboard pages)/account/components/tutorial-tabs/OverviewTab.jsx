@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
 import { fireApp } from '@/important/firebase';
-import { Menu, Link2, Palette, Trophy } from 'lucide-react';
+import { Menu, Shield, Link2, Palette, Trophy } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTutorial } from '@/contexts/TutorialContext';
 import { useTranslation } from '@/lib/translation/useTranslation';
@@ -24,7 +24,7 @@ export default function OverviewTab() {
   const [tutorialProgress, setTutorialProgress] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // All 13 tutorial steps for progress calculation
+  // All 23 tutorial steps for progress calculation
   const allSteps = [
     TUTORIAL_STEP_IDS.WELCOME,
     TUTORIAL_STEP_IDS.NAVBAR,
@@ -35,6 +35,16 @@ export default function OverviewTab() {
     TUTORIAL_STEP_IDS.NAVBAR_SETTINGS,
     TUTORIAL_STEP_IDS.NAVBAR_SHARE,
     TUTORIAL_STEP_IDS.NAVBAR_ACCOUNT,
+    TUTORIAL_STEP_IDS.ACCOUNT_PRIVACY_OVERVIEW,
+    TUTORIAL_STEP_IDS.ACCOUNT_PRIVACY_TABS,
+    TUTORIAL_STEP_IDS.ACCOUNT_TAB_OVERVIEW,
+    TUTORIAL_STEP_IDS.ACCOUNT_TAB_EXPORT,
+    TUTORIAL_STEP_IDS.ACCOUNT_TAB_DELETE,
+    TUTORIAL_STEP_IDS.ACCOUNT_TAB_CONSENTS,
+    TUTORIAL_STEP_IDS.ACCOUNT_TAB_SETTINGS,
+    TUTORIAL_STEP_IDS.ACCOUNT_TAB_CONTACT_DOWNLOAD,
+    TUTORIAL_STEP_IDS.ACCOUNT_TAB_WEBSITE_CONFIG,
+    TUTORIAL_STEP_IDS.ACCOUNT_TUTORIAL_PROGRESSION,
     TUTORIAL_STEP_IDS.CREATE_LINK,
     TUTORIAL_STEP_IDS.LINK_FORM,
     TUTORIAL_STEP_IDS.APPEARANCE,
@@ -121,6 +131,27 @@ export default function OverviewTab() {
         TUTORIAL_STEP_IDS.NAVBAR_SETTINGS,
         TUTORIAL_STEP_IDS.NAVBAR_SHARE,
         TUTORIAL_STEP_IDS.NAVBAR_ACCOUNT,
+      ],
+    },
+    {
+      id: 'account',
+      icon: Shield,
+      iconColor: 'text-indigo-600',
+      iconBgColor: 'bg-indigo-100',
+      titleKey: 'tutorial.categories.account.title',
+      descriptionKey: 'tutorial.categories.account.description',
+      ctaKey: 'tutorial.categories.account.cta',
+      steps: [
+        TUTORIAL_STEP_IDS.ACCOUNT_PRIVACY_OVERVIEW,
+        TUTORIAL_STEP_IDS.ACCOUNT_PRIVACY_TABS,
+        TUTORIAL_STEP_IDS.ACCOUNT_TAB_OVERVIEW,
+        TUTORIAL_STEP_IDS.ACCOUNT_TAB_EXPORT,
+        TUTORIAL_STEP_IDS.ACCOUNT_TAB_DELETE,
+        TUTORIAL_STEP_IDS.ACCOUNT_TAB_CONSENTS,
+        TUTORIAL_STEP_IDS.ACCOUNT_TAB_SETTINGS,
+        TUTORIAL_STEP_IDS.ACCOUNT_TAB_CONTACT_DOWNLOAD,
+        TUTORIAL_STEP_IDS.ACCOUNT_TAB_WEBSITE_CONFIG,
+        TUTORIAL_STEP_IDS.ACCOUNT_TUTORIAL_PROGRESSION,
       ],
     },
     {
