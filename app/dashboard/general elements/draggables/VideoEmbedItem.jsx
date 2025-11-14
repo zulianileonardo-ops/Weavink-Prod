@@ -11,7 +11,7 @@ import { useDashboard } from '@/app/dashboard/DashboardContext';
 import { AppearanceService } from '@/lib/services/serviceAppearance/client/appearanceService.js';
 import { useDebounce } from '@/LocalHooks/useDebounce';
 import { useItemNavigation } from '@/LocalHooks/useItemNavigation';
-import { APPEARANCE_FEATURES } from '@/lib/services/constants';
+import { APPEARANCE_FEATURES, SUBSCRIPTION_LEVELS } from '@/lib/services/constants';
 import { toast } from 'react-hot-toast';
 
 // Video Embed Item Component - Type 4
@@ -149,7 +149,7 @@ export default function VideoEmbedItem({ item, itemRef, style, listeners, attrib
 
         // Prevent toggle if user doesn't have permission
         if (!canUseVideoEmbed) {
-            const requiredTier = subscriptionLevel === 'base' ? 'Pro' : 'Pro';
+            const requiredTier = subscriptionLevel === SUBSCRIPTION_LEVELS.BASE ? 'Pro' : 'Pro';
             toast.error(`Upgrade to ${requiredTier} to enable Video Embed`, {
                 duration: 4000,
                 style: {
@@ -188,7 +188,7 @@ export default function VideoEmbedItem({ item, itemRef, style, listeners, attrib
     const handleCustomize = () => {
         // Prevent customization if user doesn't have permission
         if (!canUseVideoEmbed) {
-            const requiredTier = subscriptionLevel === 'base' ? 'Pro' : 'Pro';
+            const requiredTier = subscriptionLevel === SUBSCRIPTION_LEVELS.BASE ? 'Pro' : 'Pro';
             toast.error(`Upgrade to ${requiredTier} to customize Video Embed`, {
                 duration: 4000,
                 style: {

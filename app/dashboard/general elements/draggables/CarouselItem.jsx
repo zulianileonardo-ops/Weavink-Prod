@@ -11,7 +11,7 @@ import { useDashboard } from '@/app/dashboard/DashboardContext';
 import { AppearanceService } from '@/lib/services/serviceAppearance/client/appearanceService.js';
 import { useDebounce } from '@/LocalHooks/useDebounce';
 import { useItemNavigation } from '@/LocalHooks/useItemNavigation';
-import { APPEARANCE_FEATURES } from '@/lib/services/constants';
+import { APPEARANCE_FEATURES, SUBSCRIPTION_LEVELS } from '@/lib/services/constants';
 import { toast } from 'react-hot-toast';
 
 // Carousel Item Component - Type 2
@@ -190,7 +190,7 @@ export default function CarouselItem({ item, itemRef, style, listeners, attribut
 
         // VALIDATION FIRST - Prevent toggle if user doesn't have permission
         if (!canUseCarousel) {
-            const requiredTier = subscriptionLevel === 'base' ? 'Pro' : 'Pro';
+            const requiredTier = subscriptionLevel === SUBSCRIPTION_LEVELS.BASE ? 'Pro' : 'Pro';
             toast.error(`Upgrade to ${requiredTier} to enable Content Carousel`, {
                 duration: 4000,
                 style: {
@@ -251,7 +251,7 @@ export default function CarouselItem({ item, itemRef, style, listeners, attribut
     const handleCustomize = () => {
         // Prevent customization if user doesn't have permission
         if (!canUseCarousel) {
-            const requiredTier = subscriptionLevel === 'base' ? 'Pro' : 'Pro';
+            const requiredTier = subscriptionLevel === SUBSCRIPTION_LEVELS.BASE ? 'Pro' : 'Pro';
             toast.error(`Upgrade to ${requiredTier} to customize Content Carousel`, {
                 duration: 4000,
                 style: {

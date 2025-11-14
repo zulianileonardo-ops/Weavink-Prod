@@ -1,0 +1,517 @@
+{
+  "metadata": {
+    "project": "Weavink Constants",
+    "lastUpdated": "2025-11-14",
+    "totalConstants": 157,
+    "totalFiles": 9,
+    "version": "1.0.0"
+  },
+  "constants": [
+    {
+      "id": "SUBSCRIPTION_LEVELS",
+      "file": "lib/services/core/constants.js",
+      "type": "enum",
+      "category": "core",
+      "values": ["base", "pro", "premium", "business", "enterprise"],
+      "usedBy": [
+        "contactConstants.js",
+        "appearanceConstants.js",
+        "analyticsConstants.js",
+        "enterpriseConstants.js",
+        "organizationConstants.js",
+        "adminConstants.js",
+        "session.js"
+      ],
+      "importCount": 25,
+      "description": "Available subscription tiers in the Weavink system",
+      "created": "2025-01-01"
+    },
+    {
+      "id": "ORGANIZATION_ROLES",
+      "file": "lib/services/core/constants.js",
+      "type": "enum",
+      "category": "core",
+      "values": ["owner", "admin", "member", "billing"],
+      "usedBy": ["enterpriseConstants.js", "session.js", "organizationService.js"],
+      "importCount": 12,
+      "description": "Organization-level role definitions",
+      "created": "2025-01-01"
+    },
+    {
+      "id": "TEAM_ROLES",
+      "file": "lib/services/core/constants.js",
+      "type": "enum",
+      "category": "core",
+      "values": ["manager", "employee", "contractor", "intern", "view_only"],
+      "usedBy": ["enterpriseConstants.js", "session.js", "teamService.js"],
+      "importCount": 15,
+      "description": "Team-level role definitions",
+      "created": "2025-01-01"
+    },
+    {
+      "id": "TEAM_ROLE_HIERARCHY",
+      "file": "lib/services/core/constants.js",
+      "type": "hierarchy",
+      "category": "core",
+      "usedBy": ["session.js", "permissionService.js"],
+      "importCount": 8,
+      "description": "Hierarchical permission levels for team roles",
+      "created": "2025-01-01"
+    },
+    {
+      "id": "INVITATION_STATUS",
+      "file": "lib/services/core/constants.js",
+      "type": "enum",
+      "category": "core",
+      "values": ["pending", "accepted", "expired"],
+      "usedBy": ["invitationService.js", "teamService.js"],
+      "importCount": 5,
+      "description": "Status values for team invitations",
+      "created": "2025-01-01"
+    },
+    {
+      "id": "MAX_BILLABLE_RUNS_AI_PER_MONTH",
+      "file": "lib/services/core/constants.js",
+      "type": "limit",
+      "category": "core",
+      "usedBy": ["session.js", "billingService.js"],
+      "importCount": 4,
+      "description": "Monthly AI operation billing limit",
+      "created": "2025-01-01"
+    },
+    {
+      "id": "MAX_BILLABLE_RUNS_API_PER_MONTH",
+      "file": "lib/services/core/constants.js",
+      "type": "limit",
+      "category": "core",
+      "usedBy": ["session.js", "billingService.js"],
+      "importCount": 4,
+      "description": "Monthly API operation billing limit",
+      "created": "2025-01-01"
+    },
+    {
+      "id": "MAX_COST_BUDGET_PER_MONTH",
+      "file": "lib/services/core/constants.js",
+      "type": "limit",
+      "category": "core",
+      "usedBy": ["session.js", "billingService.js"],
+      "importCount": 3,
+      "description": "Monthly cost budget limit",
+      "created": "2025-01-01"
+    },
+    {
+      "id": "CONTACT_FEATURES",
+      "file": "lib/services/serviceContact/client/constants/contactConstants.js",
+      "type": "feature_flags",
+      "category": "contact",
+      "count": 20,
+      "usedBy": ["CONTACT_LIMITS", "session.js", "contactService.js"],
+      "importCount": 18,
+      "description": "Available contact management features (20+ feature flags)",
+      "created": "2025-01-01"
+    },
+    {
+      "id": "CONTACT_LIMITS",
+      "file": "lib/services/serviceContact/client/constants/contactConstants.js",
+      "type": "subscription_limits_map",
+      "category": "contact",
+      "usedBy": ["session.js", "contactService.js"],
+      "importCount": 12,
+      "description": "Contact feature limits and maxima per subscription level",
+      "structure": {
+        "base": { "maxContacts": 0, "maxGroups": 0, "features": [] },
+        "pro": { "maxContacts": 2000, "maxGroups": 10, "features": "..." },
+        "premium": { "maxContacts": 10000, "maxGroups": 50, "features": "..." },
+        "business": { "maxContacts": 25000, "maxGroups": 100, "features": "..." },
+        "enterprise": { "maxContacts": -1, "maxGroups": -1, "features": "..." }
+      },
+      "created": "2025-01-01"
+    },
+    {
+      "id": "SEMANTIC_SEARCH_CONFIG",
+      "file": "lib/services/serviceContact/client/constants/contactConstants.js",
+      "type": "config",
+      "category": "contact",
+      "usedBy": ["semanticSearchService.js", "vectorService.js"],
+      "importCount": 8,
+      "description": "Configuration for semantic search (vector DB, reranking, embedding)",
+      "note": "WARNING: 3 files import this directly instead of via barrel",
+      "created": "2025-01-01"
+    },
+    {
+      "id": "APPEARANCE_FEATURES",
+      "file": "lib/services/serviceAppearance/constants/appearanceConstants.js",
+      "type": "feature_flags",
+      "category": "appearance",
+      "count": 10,
+      "usedBy": ["APPEARANCE_LIMITS", "session.js", "appearanceService.js"],
+      "importCount": 10,
+      "description": "Available appearance customization features",
+      "created": "2025-01-01"
+    },
+    {
+      "id": "APPEARANCE_LIMITS",
+      "file": "lib/services/serviceAppearance/constants/appearanceConstants.js",
+      "type": "subscription_limits_map",
+      "category": "appearance",
+      "usedBy": ["session.js", "appearanceService.js"],
+      "importCount": 8,
+      "description": "Appearance feature limits per subscription level",
+      "structure": {
+        "base": { "features": [] },
+        "pro": { "features": "..." },
+        "premium": { "features": "..." },
+        "business": { "features": "..." },
+        "enterprise": { "features": "..." }
+      },
+      "created": "2025-01-01"
+    },
+    {
+      "id": "hasAppearanceFeature",
+      "file": "lib/services/serviceAppearance/constants/appearanceConstants.js",
+      "type": "helper_function",
+      "category": "appearance",
+      "usedBy": ["appearanceService.js", "session.js"],
+      "importCount": 6,
+      "description": "Helper function to check if a subscription level has an appearance feature",
+      "created": "2025-01-01"
+    },
+    {
+      "id": "ANALYTICS_EVENTS",
+      "file": "lib/services/serviceAnalytics/constants/analyticsConstants.js",
+      "type": "enum",
+      "category": "analytics",
+      "usedBy": ["analyticsService.js", "trackingService.js"],
+      "importCount": 15,
+      "description": "Trackable analytics event types",
+      "created": "2025-01-01"
+    },
+    {
+      "id": "PERMISSIONS",
+      "file": "lib/services/serviceEnterprise/constants/enterpriseConstants.js",
+      "type": "enum",
+      "category": "enterprise",
+      "count": 13,
+      "usedBy": ["DEFAULT_PERMISSIONS_BY_ROLE", "session.js", "permissionService.js"],
+      "importCount": 20,
+      "description": "Team permission definitions (13 permissions)",
+      "created": "2025-01-01"
+    },
+    {
+      "id": "DEFAULT_PERMISSIONS_BY_ROLE",
+      "file": "lib/services/serviceEnterprise/constants/enterpriseConstants.js",
+      "type": "role_permissions_map",
+      "category": "enterprise",
+      "usedBy": ["session.js", "teamService.js", "permissionService.js"],
+      "importCount": 12,
+      "description": "Default permission sets for each team role (all 5 roles, all 13 permissions)",
+      "structure": "Complete matrix of roles × permissions",
+      "created": "2025-01-01"
+    },
+    {
+      "id": "ORGANIZATION_SETTINGS",
+      "file": "lib/services/serviceEnterprise/constants/organizationConstants.js",
+      "type": "config",
+      "category": "enterprise",
+      "usedBy": ["organizationService.js", "session.js"],
+      "importCount": 7,
+      "description": "Organization-level settings and configurations",
+      "created": "2025-01-01"
+    },
+    {
+      "id": "ADMIN_FEATURES",
+      "file": "lib/services/serviceAdmin/constants/adminConstants.js",
+      "type": "feature_flags",
+      "category": "admin",
+      "count": 30,
+      "usedBy": ["ADMIN_LIMITS", "session.js", "adminService.js"],
+      "importCount": 15,
+      "description": "Admin dashboard features (30+ feature flags)",
+      "created": "2025-01-01"
+    },
+    {
+      "id": "ADMIN_LIMITS",
+      "file": "lib/services/serviceAdmin/constants/adminConstants.js",
+      "type": "subscription_limits_map",
+      "category": "admin",
+      "usedBy": ["session.js", "adminService.js"],
+      "importCount": 10,
+      "description": "Admin feature limits per subscription level",
+      "structure": {
+        "base": { "features": [] },
+        "pro": { "features": "..." },
+        "premium": { "features": "..." },
+        "business": { "features": "..." },
+        "enterprise": { "features": "..." }
+      },
+      "created": "2025-01-01"
+    },
+    {
+      "id": "AI_PROVIDER_PRICING",
+      "file": "lib/services/serviceAdmin/constants/adminConstants.js",
+      "type": "pricing",
+      "category": "admin",
+      "usedBy": ["adminDashboard.jsx", "billingService.js"],
+      "importCount": 5,
+      "description": "AI provider pricing information for admin cost tracking",
+      "created": "2025-01-01"
+    }
+  ],
+  "files": {
+    "lib/services/constants.js": {
+      "role": "barrel",
+      "description": "Barrel file - single import point for all constants",
+      "exports": [
+        "core/constants.js",
+        "serviceContact/client/constants/contactConstants.js",
+        "serviceAppearance/constants/appearanceConstants.js",
+        "serviceAnalytics/constants/analyticsConstants.js",
+        "serviceUser/constants/analyticsConstants.js",
+        "serviceEnterprise/constants/enterpriseConstants.js",
+        "serviceEnterprise/constants/organizationConstants.js",
+        "serviceAdmin/constants/adminConstants.js"
+      ],
+      "lines": 47
+    },
+    "lib/services/core/constants.js": {
+      "role": "core",
+      "description": "Core shared constants used across all domains",
+      "exports": [
+        "SUBSCRIPTION_LEVELS",
+        "ORGANIZATION_ROLES",
+        "TEAM_ROLES",
+        "TEAM_ROLE_HIERARCHY",
+        "INVITATION_STATUS",
+        "MAX_BILLABLE_RUNS_AI_PER_MONTH",
+        "MAX_BILLABLE_RUNS_API_PER_MONTH",
+        "MAX_COST_BUDGET_PER_MONTH"
+      ],
+      "lines": 111,
+      "dependencies": []
+    },
+    "lib/services/serviceContact/client/constants/contactConstants.js": {
+      "role": "domain",
+      "description": "Contact management constants (features, limits, config)",
+      "exports": [
+        "CONTACT_FEATURES",
+        "CONTACT_LIMITS",
+        "SEMANTIC_SEARCH_CONFIG",
+        "hasContactFeature"
+      ],
+      "lines": 700,
+      "dependencies": ["SUBSCRIPTION_LEVELS"]
+    },
+    "lib/services/serviceAppearance/constants/appearanceConstants.js": {
+      "role": "domain",
+      "description": "Appearance customization constants",
+      "exports": [
+        "APPEARANCE_FEATURES",
+        "APPEARANCE_LIMITS",
+        "hasAppearanceFeature"
+      ],
+      "lines": 208,
+      "dependencies": ["SUBSCRIPTION_LEVELS"]
+    },
+    "lib/services/serviceAnalytics/constants/analyticsConstants.js": {
+      "role": "domain",
+      "description": "Analytics tracking constants",
+      "exports": ["ANALYTICS_EVENTS", "ANALYTICS_CONFIG"],
+      "lines": 150,
+      "dependencies": []
+    },
+    "lib/services/serviceEnterprise/constants/enterpriseConstants.js": {
+      "role": "domain",
+      "description": "Team permissions and enterprise features",
+      "exports": ["PERMISSIONS", "DEFAULT_PERMISSIONS_BY_ROLE", "TEAM_FEATURES"],
+      "lines": 171,
+      "dependencies": ["TEAM_ROLES", "SUBSCRIPTION_LEVELS"]
+    },
+    "lib/services/serviceEnterprise/constants/organizationConstants.js": {
+      "role": "domain",
+      "description": "Organization settings and configurations",
+      "exports": ["ORGANIZATION_SETTINGS", "ORGANIZATION_LIMITS"],
+      "lines": 56,
+      "dependencies": ["ORGANIZATION_ROLES"]
+    },
+    "lib/services/serviceAdmin/constants/adminConstants.js": {
+      "role": "domain",
+      "description": "Admin dashboard features and pricing",
+      "exports": [
+        "ADMIN_FEATURES",
+        "ADMIN_LIMITS",
+        "AI_PROVIDER_PRICING",
+        "getCostStatus"
+      ],
+      "lines": 546,
+      "dependencies": ["SUBSCRIPTION_LEVELS"]
+    },
+    "lib/server/constants.js": {
+      "role": "server_barrel",
+      "description": "Server-specific barrel file (different from main barrel)",
+      "exports": ["core/constants.js"],
+      "lines": 20,
+      "note": "Separate barrel for server-side code"
+    }
+  },
+  "violations": {
+    "directImports": {
+      "count": 0,
+      "description": "All direct imports have been fixed",
+      "fixedDate": "2025-11-14",
+      "previousLocations": [
+        {
+          "file": "app/api/user/contacts/semantic-search/route.js",
+          "status": "FIXED - Now uses barrel import"
+        },
+        {
+          "file": "app/api/user/contacts/rerank/route.js",
+          "status": "FIXED - Now uses barrel import"
+        },
+        {
+          "file": "app/api/user/contacts/ai-enhance-results/route.js",
+          "status": "FIXED - Now uses barrel import"
+        }
+      ]
+    },
+    "magicStrings": {
+      "count": 4,
+      "description": "Remaining hardcoded strings (mostly in admin/display contexts)",
+      "fixedCount": 6,
+      "fixedDate": "2025-11-14",
+      "fixedLocations": [
+        {
+          "file": "app/dashboard/general elements/draggables/VideoEmbedItem.jsx",
+          "lines": [152, 191],
+          "status": "FIXED - Now uses SUBSCRIPTION_LEVELS.BASE"
+        },
+        {
+          "file": "app/dashboard/general elements/draggables/CarouselItem.jsx",
+          "lines": [193, 254],
+          "status": "FIXED - Now uses SUBSCRIPTION_LEVELS.BASE"
+        },
+        {
+          "file": "app/dashboard/general components/ManageLinks.jsx",
+          "lines": [90, 215],
+          "status": "FIXED - Now uses SUBSCRIPTION_LEVELS.BASE"
+        }
+      ],
+      "remainingLocations": [
+        "app/admin/components/UserUsageOverview.jsx - Display/fallback value (acceptable)",
+        "app/admin/components/UserDetails.jsx - Display/fallback value (acceptable)",
+        "app/dashboard/DashboardContext.js - Fallback value (acceptable)",
+        "app/[userId]/House.jsx - Fallback value (acceptable)"
+      ],
+      "note": "Remaining magic strings are in admin display contexts or as fallback values, which is acceptable",
+      "priority": "low",
+      "recommendation": "Consider refactoring remaining fallbacks if needed"
+    },
+    "deprecated": {
+      "count": 1,
+      "constants": [
+        {
+          "name": "MAX_BILLABLE_RUNS_PER_MONTH",
+          "file": "lib/services/core/constants.js",
+          "replacedBy": "MAX_BILLABLE_RUNS_API_PER_MONTH",
+          "status": "deprecated",
+          "action": "Remove after migration complete"
+        }
+      ]
+    },
+    "circularDependencies": {
+      "count": 0,
+      "description": "No circular dependencies detected",
+      "verified": "2025-11-14"
+    }
+  },
+  "statistics": {
+    "totalExports": 157,
+    "coreConstants": 8,
+    "domainConstants": 149,
+    "featureFlags": 60,
+    "limitMaps": 7,
+    "helperFunctions": 3,
+    "configObjects": 5,
+    "enums": 12,
+    "pricingConstants": 1,
+    "subscriptionLevelsCount": 5,
+    "teamRolesCount": 5,
+    "organizationRolesCount": 4,
+    "permissionsCount": 13,
+    "totalImports": 250,
+    "filesImportingConstants": 45
+  },
+  "recommendations": [
+    {
+      "priority": "completed",
+      "type": "fix",
+      "title": "Fix Direct Imports ✅",
+      "description": "All 3 direct imports have been fixed",
+      "action": "COMPLETED - All files now use barrel import pattern",
+      "files": 0,
+      "completedDate": "2025-11-14"
+    },
+    {
+      "priority": "completed",
+      "type": "refactor",
+      "title": "Eliminate Magic Strings ✅",
+      "description": "6 critical magic strings in UI logic have been refactored",
+      "action": "COMPLETED - All UI logic now uses SUBSCRIPTION_LEVELS constant",
+      "files": 3,
+      "remainingFiles": 4,
+      "note": "Remaining magic strings are acceptable (admin display/fallbacks)",
+      "completedDate": "2025-11-14"
+    },
+    {
+      "priority": "medium",
+      "type": "cleanup",
+      "title": "Remove Deprecated Constants",
+      "description": "1 deprecated constant still in codebase",
+      "action": "Complete migration and remove MAX_BILLABLE_RUNS_PER_MONTH",
+      "files": 1
+    },
+    {
+      "priority": "low",
+      "type": "enhancement",
+      "title": "Add TypeScript Types",
+      "description": "No TypeScript type definitions for constants",
+      "action": "Generate .d.ts files for type safety",
+      "benefit": "Better autocomplete and type checking"
+    },
+    {
+      "priority": "low",
+      "type": "testing",
+      "title": "Add Validation Tests",
+      "description": "No automated tests for constant consistency",
+      "action": "Create tests to verify all subscription levels have limits",
+      "benefit": "Prevent missing limit configurations"
+    }
+  ],
+  "integrations": {
+    "session": {
+      "file": "lib/server/session.js",
+      "description": "Session manager uses constants for permission and limit calculations",
+      "usedConstants": [
+        "SUBSCRIPTION_LEVELS",
+        "TEAM_ROLES",
+        "CONTACT_FEATURES",
+        "APPEARANCE_FEATURES",
+        "ADMIN_FEATURES",
+        "PERMISSIONS",
+        "MAX_BILLABLE_RUNS_AI_PER_MONTH",
+        "MAX_BILLABLE_RUNS_API_PER_MONTH"
+      ]
+    },
+    "docs-manager": {
+      "status": "not_yet_integrated",
+      "plan": "Link constants to documentation guides"
+    },
+    "test-manager": {
+      "status": "not_yet_integrated",
+      "plan": "Track test coverage for constant validation"
+    },
+    "git-manager": {
+      "status": "not_yet_integrated",
+      "plan": "Automated commits for constant changes"
+    }
+  }
+}

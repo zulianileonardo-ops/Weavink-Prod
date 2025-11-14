@@ -18,7 +18,7 @@ import PreviewModal from "./PreviewModal";
 import { useDashboard } from '@/app/dashboard/DashboardContext.js';
 import { LinksService } from '@/lib/services/serviceLinks/client/LinksService.js';
 import { AppearanceService } from '@/lib/services/serviceAppearance/client/appearanceService.js';
-import { APPEARANCE_FEATURES, getMaxMediaItems, getMaxCarouselItems } from '@/lib/services/constants';
+import { APPEARANCE_FEATURES, SUBSCRIPTION_LEVELS, getMaxMediaItems, getMaxCarouselItems } from '@/lib/services/constants';
 
 export const ManageLinksContent = createContext(null);
 
@@ -87,7 +87,7 @@ export default function ManageLinks() {
 
         if (!canUseCarousel) {
             // Show upgrade prompt for users without permission
-            const requiredTier = subscriptionLevel === 'base' ? 'Pro' : 'Pro';
+            const requiredTier = subscriptionLevel === SUBSCRIPTION_LEVELS.BASE ? 'Pro' : 'Pro';
             toast.error(t('dashboard.links.errors.carousel_permission', { tier: requiredTier }) || `Upgrade to ${requiredTier} to use Content Carousel feature`, {
                 duration: 4000,
                 style: {
@@ -212,7 +212,7 @@ export default function ManageLinks() {
 
         if (!canUseMedia) {
             // Show upgrade prompt for users without permission
-            const requiredTier = subscriptionLevel === 'base' ? 'Pro' : 'Pro';
+            const requiredTier = subscriptionLevel === SUBSCRIPTION_LEVELS.BASE ? 'Pro' : 'Pro';
             toast.error(t('dashboard.links.errors.media_permission', { tier: requiredTier }) || `Upgrade to ${requiredTier} to use Media feature`, {
                 duration: 4000,
                 style: {

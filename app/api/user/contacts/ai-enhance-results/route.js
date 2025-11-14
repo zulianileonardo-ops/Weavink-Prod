@@ -9,7 +9,7 @@ import { createApiSession, SessionManager } from '@/lib/server/session';
 import { AIEnhanceService } from '@/lib/services/serviceContact/server/aiEnhanceService';
 import { CostTrackingService } from '@/lib/services/serviceContact/server/costTrackingService';
 import { SessionTrackingService } from '@/lib/services/serviceContact/server/costTracking/sessionService';
-import { CONTACT_FEATURES } from '@/lib/services/serviceContact/client/constants/contactConstants';
+import { CONTACT_FEATURES } from '@/lib/services/constants';
 import { StepTracker } from '@/lib/services/serviceContact/server/costTracking/stepTracker';
 
 /**

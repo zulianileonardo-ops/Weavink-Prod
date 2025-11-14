@@ -8,7 +8,7 @@ import { NextResponse } from 'next/server';
 import { createApiSession, SessionManager } from '@/lib/server/session';
 import { SemanticSearchService } from '@/lib/services/serviceContact/server/semanticSearchService';
 import { CostTrackingService } from '@/lib/services/serviceContact/server/costTrackingService';
-import { SEMANTIC_SEARCH_CONFIG, CONTACT_FEATURES } from '@/lib/services/serviceContact/client/constants/contactConstants';
+import { SEMANTIC_SEARCH_CONFIG, CONTACT_FEATURES } from '@/lib/services/constants';
 import { StepTracker } from '@/lib/services/serviceContact/server/costTracking/stepTracker';
 
 /**
