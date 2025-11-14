@@ -351,9 +351,9 @@ export default function ContactDownloadTab() {
                             How It Works
                         </h3>
                         <p className="text-sm text-blue-800">
-                            When visitors click the Download Contact button on your profile, they'll see a modal
+                            When visitors click the Download Contact button on your profile, they&apos;ll see a modal
                             where they can choose which of your enabled fields to include in the vCard file.
-                            Fields you disable here won't be available for visitors to download.
+                            Fields you disable here won&apos;t be available for visitors to download.
                         </p>
                     </div>
                 </div>

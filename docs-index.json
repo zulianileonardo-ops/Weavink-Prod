@@ -1,8 +1,8 @@
 {
   "metadata": {
     "project": "Weavink Documentation",
-    "last_updated": "2025-11-12",
-    "total_guides": 55,
+    "last_updated": "2025-11-14",
+    "total_guides": 56,
     "version": "1.0.0"
   },
   "categories": {
@@ -79,7 +79,8 @@
         "technical-quick-start-integration-033",
         "technical-refactoring-guide-034",
         "technical-rules-grouping-fixes-035",
-        "technical-refactoring-cost-tracking-036"
+        "technical-refactoring-cost-tracking-036",
+        "technical-build-fix-import-paths-037"
       ]
     },
     "testing": {
@@ -1591,6 +1592,39 @@
       "status": "active",
       "created": "2025-11-12",
       "updated": "2025-11-12"
+    },
+    {
+      "id": "technical-build-fix-import-paths-037",
+      "title": "Build Fix - Import Path and Export Corrections",
+      "filename": "BUILD_FIX_IMPORT_PATHS.md",
+      "category": "technical",
+      "summary": "Fixed critical build errors by correcting import paths in API routes and adding missing function exports in privacy services, enabling successful compilation.",
+      "tags": [
+        "build-fix",
+        "imports",
+        "exports",
+        "path-alias",
+        "eslint",
+        "nextjs",
+        "gdpr",
+        "rgpd",
+        "privacy-services"
+      ],
+      "related_guides": [
+        "ADMIN_SECURITY_LAYERS_GUIDE.md",
+        "RGPD_PHASE4_SUMMARY.md"
+      ],
+      "functions": [
+        "notifyDataSubjects",
+        "notifyAuthorities",
+        "updateNotificationStatus",
+        "getBreachNotificationHistory",
+        "calculateProgress"
+      ],
+      "components": [],
+      "status": "active",
+      "created": "2025-11-14",
+      "updated": "2025-11-14"
     }
   ]
 }

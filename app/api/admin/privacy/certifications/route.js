@@ -16,7 +16,7 @@ import {
   calculateProgress,
   getCertificationStatistics,
   ISO_27001_CHECKLIST,
-} from '../../../../../../lib/services/servicePrivacy/server/certificationTrackingService.js';
+} from '@/lib/services/servicePrivacy/server/certificationTrackingService';
 
 /**
  * POST /api/admin/privacy/certifications

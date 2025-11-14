@@ -16,7 +16,7 @@ import {
   getBreachNotificationHistory,
   NOTIFICATION_CHANNELS,
   BREACH_TEMPLATES,
-} from '../../../../../../lib/services/servicePrivacy/server/breachNotificationService.js';
+} from '@/lib/services/servicePrivacy/server/breachNotificationService';
 
 /**
  * POST /api/admin/privacy/breach-notifications

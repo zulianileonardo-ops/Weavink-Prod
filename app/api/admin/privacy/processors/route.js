@@ -22,7 +22,7 @@ import {
   PROCESSOR_STATUS,
   DATA_CATEGORIES,
   PROCESSING_PURPOSES,
-} from '../../../../../../lib/services/servicePrivacy/server/processorManagementService.js';
+} from '@/lib/services/servicePrivacy/server/processorManagementService';
 
 /**
  * POST /api/admin/privacy/processors

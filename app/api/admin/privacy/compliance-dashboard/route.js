@@ -17,7 +17,7 @@ import {
   CHECK_TYPES,
   COMPLIANCE_STATUS,
   ACTION_PRIORITY,
-} from '../../../../../../lib/services/servicePrivacy/server/complianceMonitoringService.js';
+} from '@/lib/services/servicePrivacy/server/complianceMonitoringService';
 
 /**
  * POST /api/admin/privacy/compliance-dashboard
