@@ -5,55 +5,76 @@
  * Routes:
  * - GET: Get current consent status
  * - POST: Grant or withdraw consent
- * - GET with ?history=true: Get consent history
+ * - PUT: Update multiple consents at once
+ * - DELETE: Withdraw a specific consent
+ *
+ * Compliance: GDPR Art. 7 (Conditions for consent)
  */
 
 import { NextResponse } from 'next/server';
-import { createApiSession } from '@/lib/server/session';
+import { createApiSession, SessionManager } from '@/lib/server/session';
 import { rateLimit } from '@/lib/rateLimiter';
 import {
-  recordConsent,
-  getUserConsents,
-  getConsentHistory,
-  withdrawConsent,
   CONSENT_TYPES,
   CONSENT_ACTIONS,
-} from '../../../../../lib/services/servicePrivacy/server/consentService.js';
+  PRIVACY_PERMISSIONS,
+  PRIVACY_RATE_LIMITS,
+  PRIVACY_ERROR_MESSAGES,
+} from '@/lib/services/constants';
+import { ConsentService } from '../../../../../lib/services/servicePrivacy/server/consentService.js';
 
 /**
  * GET - Retrieve user's current consent status or history
  */
 export async function GET(request) {
   try {
-    // Create session (includes authentication)
+    // 1. Create session (includes authentication)
     const session = await createApiSession(request);
+    const sessionManager = new SessionManager(session);
     const userId = session.userId;
 
-    // Rate limiting
-    if (!rateLimit(userId, 30, 60000)) {
+    // 2. Permission check
+    if (!session.permissions[PRIVACY_PERMISSIONS.CAN_MANAGE_CONSENTS]) {
+      return NextResponse.json(
+        { error: PRIVACY_ERROR_MESSAGES.PERMISSION_DENIED },
+        { status: 403 }
+      );
+    }
+
+    // 3. Rate limiting
+    const { max, window } = PRIVACY_RATE_LIMITS.CONSENT_READ;
+    if (!rateLimit(userId, max, window)) {
       return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
     }
+
     const { searchParams } = new URL(request.url);
     const history = searchParams.get('history');
     const consentType = searchParams.get('type');
     const limit = parseInt(searchParams.get('limit') || '100');
 
-    // If requesting history
+    // 4. Check history permission if requesting history
     if (history === 'true') {
+      if (!session.permissions[PRIVACY_PERMISSIONS.CAN_VIEW_CONSENT_HISTORY]) {
+        return NextResponse.json(
+          { error: 'You do not have permission to view consent history' },
+          { status: 403 }
+        );
+      }
+
       const options = { limit };
       if (consentType) {
         options.consentType = consentType;
       }
 
-      const result = await getConsentHistory(userId, options);
+      const result = await ConsentService.getConsentHistory(userId, options);
       return NextResponse.json(result);
     }
 
-    // Otherwise, return current consent status
-    const result = await getUserConsents(userId);
+    // 5. Return current consent status
+    const result = await ConsentService.getUserConsents(userId);
     return NextResponse.json(result);
   } catch (error) {
-    console.error('Error in GET /api/user/privacy/consent:', error);
+    console.error('❌ [ConsentAPI] Error in GET:', error);
     return NextResponse.json(
       { error: 'Failed to retrieve consent data', details: error.message },
       { status: 500 }
@@ -72,18 +93,28 @@ export async function GET(request) {
  */
 export async function POST(request) {
   try {
-    // Create session (includes authentication)
+    // 1. Create session (includes authentication)
     const session = await createApiSession(request);
+    const sessionManager = new SessionManager(session);
     const userId = session.userId;
 
-    // Rate limiting
-    if (!rateLimit(userId, 20, 60000)) {
+    // 2. Permission check
+    if (!session.permissions[PRIVACY_PERMISSIONS.CAN_MANAGE_CONSENTS]) {
+      return NextResponse.json(
+        { error: PRIVACY_ERROR_MESSAGES.PERMISSION_DENIED },
+        { status: 403 }
+      );
+    }
+
+    // 3. Rate limiting
+    const { max, window } = PRIVACY_RATE_LIMITS.CONSENT_UPDATES;
+    if (!rateLimit(userId, max, window)) {
       return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
     }
 
     const body = await request.json();
 
-    // Validate request body
+    // 4. Validate request body
     const { consentType, action, version, consentText } = body;
 
     if (!consentType) {
@@ -94,17 +125,23 @@ export async function POST(request) {
       return NextResponse.json({ error: 'action is required' }, { status: 400 });
     }
 
-    // Validate consent type
+    // 5. Validate consent type
     if (!Object.values(CONSENT_TYPES).includes(consentType)) {
-      return NextResponse.json({ error: 'Invalid consent type' }, { status: 400 });
+      return NextResponse.json(
+        { error: PRIVACY_ERROR_MESSAGES.CONSENT_INVALID_TYPE },
+        { status: 400 }
+      );
     }
 
-    // Validate action
+    // 6. Validate action
     if (!Object.values(CONSENT_ACTIONS).includes(action)) {
-      return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
+      return NextResponse.json(
+        { error: PRIVACY_ERROR_MESSAGES.CONSENT_INVALID_ACTION },
+        { status: 400 }
+      );
     }
 
-    // Get metadata from session
+    // 7. Get metadata from session
     const metadata = {
       ipAddress: session.requestMetadata?.ipAddress || null,
       userAgent: session.requestMetadata?.userAgent || null,
@@ -112,11 +149,11 @@ export async function POST(request) {
       consentText: consentText || null,
     };
 
-    // Record consent
-    const result = await recordConsent(userId, consentType, action, metadata);
+    // 8. Record consent
+    const result = await ConsentService.recordConsent(userId, consentType, action, metadata);
 
-    // Log the consent change
-    console.log(`Consent ${action} for user ${userId}: ${consentType}`);
+    // 9. Log the consent change
+    console.log(`✅ [ConsentAPI] Consent ${action} for user ${userId}: ${consentType}`);
 
     return NextResponse.json({
       success: true,
@@ -124,9 +161,9 @@ export async function POST(request) {
       data: result,
     });
   } catch (error) {
-    console.error('Error in POST /api/user/privacy/consent:', error);
+    console.error('❌ [ConsentAPI] Error in POST:', error);
     return NextResponse.json(
-      { error: 'Failed to record consent', details: error.message },
+      { error: PRIVACY_ERROR_MESSAGES.CONSENT_UPDATE_FAILED, details: error.message },
       { status: 500 }
     );
   }
@@ -143,31 +180,41 @@ export async function POST(request) {
  */
 export async function PUT(request) {
   try {
-    // Create session (includes authentication)
+    // 1. Create session (includes authentication)
     const session = await createApiSession(request);
+    const sessionManager = new SessionManager(session);
     const userId = session.userId;
 
-    // Rate limiting
-    if (!rateLimit(userId, 20, 60000)) {
+    // 2. Permission check
+    if (!session.permissions[PRIVACY_PERMISSIONS.CAN_MANAGE_CONSENTS]) {
+      return NextResponse.json(
+        { error: PRIVACY_ERROR_MESSAGES.PERMISSION_DENIED },
+        { status: 403 }
+      );
+    }
+
+    // 3. Rate limiting
+    const { max, window } = PRIVACY_RATE_LIMITS.CONSENT_UPDATES;
+    if (!rateLimit(userId, max, window)) {
       return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
     }
 
     const body = await request.json();
 
-    // Validate request body
+    // 4. Validate request body
     const { consents } = body;
 
     if (!consents || !Array.isArray(consents)) {
       return NextResponse.json({ error: 'consents array is required' }, { status: 400 });
     }
 
-    // Get metadata from session
+    // 5. Get metadata from session
     const metadata = {
       ipAddress: session.requestMetadata?.ipAddress || null,
       userAgent: session.requestMetadata?.userAgent || null,
     };
 
-    // Process each consent
+    // 6. Process each consent
     const results = [];
     const errors = [];
 
@@ -180,7 +227,7 @@ export async function PUT(request) {
           continue;
         }
 
-        const result = await recordConsent(userId, consentType, action, {
+        const result = await ConsentService.recordConsent(userId, consentType, action, {
           ...metadata,
           version: version || '1.0',
           consentText: consentText || null,
@@ -192,6 +239,8 @@ export async function PUT(request) {
       }
     }
 
+    console.log(`✅ [ConsentAPI] Batch consent update for user ${userId}: ${results.length} succeeded, ${errors.length} failed`);
+
     return NextResponse.json({
       success: errors.length === 0,
       processed: results.length,
@@ -200,9 +249,9 @@ export async function PUT(request) {
       errorDetails: errors.length > 0 ? errors : undefined,
     });
   } catch (error) {
-    console.error('Error in PUT /api/user/privacy/consent:', error);
+    console.error('❌ [ConsentAPI] Error in PUT:', error);
     return NextResponse.json(
-      { error: 'Failed to update consents', details: error.message },
+      { error: PRIVACY_ERROR_MESSAGES.CONSENT_UPDATE_FAILED, details: error.message },
       { status: 500 }
     );
   }
@@ -213,12 +262,22 @@ export async function PUT(request) {
  */
 export async function DELETE(request) {
   try {
-    // Create session (includes authentication)
+    // 1. Create session (includes authentication)
     const session = await createApiSession(request);
+    const sessionManager = new SessionManager(session);
     const userId = session.userId;
 
-    // Rate limiting
-    if (!rateLimit(userId, 20, 60000)) {
+    // 2. Permission check
+    if (!session.permissions[PRIVACY_PERMISSIONS.CAN_MANAGE_CONSENTS]) {
+      return NextResponse.json(
+        { error: PRIVACY_ERROR_MESSAGES.PERMISSION_DENIED },
+        { status: 403 }
+      );
+    }
+
+    // 3. Rate limiting
+    const { max, window } = PRIVACY_RATE_LIMITS.CONSENT_UPDATES;
+    if (!rateLimit(userId, max, window)) {
       return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
     }
 
@@ -229,14 +288,16 @@ export async function DELETE(request) {
       return NextResponse.json({ error: 'consentType is required' }, { status: 400 });
     }
 
-    // Get metadata from session
+    // 4. Get metadata from session
     const metadata = {
       ipAddress: session.requestMetadata?.ipAddress || null,
       userAgent: session.requestMetadata?.userAgent || null,
     };
 
-    // Withdraw consent
-    const result = await withdrawConsent(userId, consentType, metadata);
+    // 5. Withdraw consent
+    const result = await ConsentService.withdrawConsent(userId, consentType, metadata);
+
+    console.log(`✅ [ConsentAPI] Consent withdrawn for user ${userId}: ${consentType}`);
 
     return NextResponse.json({
       success: true,
@@ -244,9 +305,9 @@ export async function DELETE(request) {
       data: result,
     });
   } catch (error) {
-    console.error('Error in DELETE /api/user/privacy/consent:', error);
+    console.error('❌ [ConsentAPI] Error in DELETE:', error);
     return NextResponse.json(
-      { error: 'Failed to withdraw consent', details: error.message },
+      { error: PRIVACY_ERROR_MESSAGES.CONSENT_UPDATE_FAILED, details: error.message },
       { status: 500 }
     );
   }

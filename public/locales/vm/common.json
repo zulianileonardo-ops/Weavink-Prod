@@ -569,6 +569,34 @@
       "settings": "Cài đặt",
       "contacts": "Danh bạ"
     },
+    "settings": {
+      "controls": {
+        "jump_to": "Chuyển đến:"
+      },
+      "social_icons": {
+        "title": "Biểu tượng mạng xã hội",
+        "card_title": "Nổi bật",
+        "card_subtitle": "Thêm biểu tượng liên kết đến hồ sơ mạng xã hội, email và nhiều hơn nữa của bạn.",
+        "alt_icon": "Biểu tượng mạng xã hội"
+      },
+      "support_banner": {
+        "title": "Biểu ngữ hỗ trợ",
+        "alt_icon": "Biểu tượng hỗ trợ",
+        "switch_title": "Thể hiện sự ủng hộ của bạn",
+        "switch_description": "Thể hiện sự ủng hộ của bạn đối với các nguyên nhân quan trọng bằng biểu ngữ hồ sơ. Chỉ một biểu ngữ có thể hoạt động tại một thời điểm."
+      },
+      "sensitive_material": {
+        "title": "Nội dung nhạy cảm",
+        "alt_icon": "Biểu tượng nội dung nhạy cảm",
+        "description": "Hiển thị cảnh báo nội dung nhạy cảm trước khi khách truy cập có thể xem hồ sơ của bạn."
+      },
+      "seo": {
+        "title": "SEO",
+        "alt_icon": "Biểu tượng SEO",
+        "card_title": "Siêu dữ liệu tùy chỉnh",
+        "card_description": "Các thay đổi đối với siêu dữ liệu có thể mất một thời gian để xuất hiện trên các nền tảng khác."
+      }
+    },
     "appearance": {
       "headings": {
         "profile": "Hồ sơ",
@@ -2306,8 +2334,116 @@
       }
     },
     "consents": {
-      "title": "Quản Lý Sự Đồng Ý",
-      "description": "Kiểm soát các tính năng nào có thể xử lý dữ liệu của bạn. Bạn có thể rút lại sự đồng ý bất cứ lúc nào. Các thay đổi có hiệu lực ngay lập tức."
+      "title": "Quản Lý Đồng Ý",
+      "description": "Kiểm soát tính năng nào có thể xử lý dữ liệu của bạn. Bạn có thể rút lại đồng ý bất cứ lúc nào. Thay đổi có hiệu lực ngay lập tức.",
+      "status": {
+        "granted": "Đã Cho Phép",
+        "withdrawn": "Đã Rút Lại"
+      },
+      "badge": {
+        "required": "Bắt Buộc"
+      },
+      "category": {
+        "essential": {
+          "name": "Thiết Yếu",
+          "description": "Bắt buộc để ứng dụng hoạt động đúng cách"
+        },
+        "ai_features": {
+          "name": "Tính Năng AI",
+          "description": "Cải tiến được hỗ trợ bởi trí tuệ nhân tạo"
+        },
+        "analytics": {
+          "name": "Phân Tích",
+          "description": "Phân tích sử dụng và theo dõi hiệu suất"
+        },
+        "communication": {
+          "name": "Giao Tiếp",
+          "description": "Giao tiếp qua email và khuyến nghị"
+        },
+        "personalization": {
+          "name": "Cá Nhân Hóa",
+          "description": "Trải nghiệm cá nhân hóa và cài đặt hồ sơ"
+        }
+      },
+      "type": {
+        "terms_of_service": {
+          "name": "Điều Khoản Dịch Vụ",
+          "description": "Chấp nhận các điều khoản và điều kiện của chúng tôi",
+          "gdpr": "Điều 6(1)(b) - Thực hiện hợp đồng"
+        },
+        "privacy_policy": {
+          "name": "Chính Sách Bảo Mật",
+          "description": "Chấp nhận các thực hành bảo mật của chúng tôi",
+          "gdpr": "Điều 6(1)(b) - Thực hiện hợp đồng"
+        },
+        "ai_business_card": {
+          "name": "Cải Tiến Danh Thiếp Bằng AI",
+          "description": "Sử dụng AI (Google Gemini 2.0) để trích xuất thông tin từ hình ảnh danh thiếp với độ chính xác cao",
+          "gdpr": "Điều 6(1)(a) - Đồng ý",
+          "tier": "Premium+"
+        },
+        "ai_semantic_search": {
+          "name": "Tìm Kiếm Ngữ Nghĩa AI",
+          "description": "Bật tìm kiếm được hỗ trợ bởi AI với cải tiến truy vấn, nhúng, xếp hạng lại và phân tích kết quả thông minh",
+          "gdpr": "Điều 6(1)(a) - Đồng ý",
+          "tier": "Business+"
+        },
+        "ai_auto_grouping": {
+          "name": "Nhóm Tự Động Bằng AI",
+          "description": "Tự động nhóm danh bạ bằng thuật toán thông minh, làm phong phú địa điểm và phát hiện sự kiện",
+          "gdpr": "Điều 6(1)(a) - Đồng ý",
+          "tier": "Premium+"
+        },
+        "analytics_basic": {
+          "name": "Phân Tích Cơ Bản",
+          "description": "Thống kê sử dụng cơ bản (lượt xem trang, sử dụng tính năng) - chỉ dữ liệu ẩn danh",
+          "gdpr": "Điều 6(1)(f) - Lợi ích chính đáng"
+        },
+        "analytics_detailed": {
+          "name": "Phân Tích Chi Tiết",
+          "description": "Mẫu sử dụng chi tiết và phân tích hành vi để cải thiện trải nghiệm người dùng",
+          "gdpr": "Điều 6(1)(a) - Đồng ý"
+        },
+        "cookies_analytics": {
+          "name": "Cookies Phân Tích",
+          "description": "Cookies được sử dụng để theo dõi mẫu sử dụng và cải thiện ứng dụng",
+          "gdpr": "Điều 6(1)(a) - Đồng ý"
+        },
+        "marketing_emails": {
+          "name": "Email Tiếp Thị",
+          "description": "Nhận bản tin, cập nhật sản phẩm và ưu đãi khuyến mãi",
+          "gdpr": "Điều 6(1)(a) - Đồng ý"
+        },
+        "contact_recommendations": {
+          "name": "Khuyến Nghị Liên Hệ",
+          "description": "Nhận gợi ý về các kết nối tiềm năng dựa trên mạng của bạn",
+          "gdpr": "Điều 6(1)(a) - Đồng ý"
+        },
+        "cookies_personalization": {
+          "name": "Cookies Cá Nhân Hóa",
+          "description": "Ghi nhớ tùy chọn của bạn và tùy chỉnh trải nghiệm của bạn",
+          "gdpr": "Điều 6(1)(a) - Đồng ý"
+        },
+        "profile_public": {
+          "name": "Hồ Sơ Công Khai",
+          "description": "Làm cho hồ sơ của bạn hiển thị với người dùng khác trên nền tảng",
+          "gdpr": "Điều 6(1)(a) - Đồng ý"
+        }
+      },
+      "technologies_label": "Công Nghệ:",
+      "last_updated": "Cập nhật lần cuối: {{date}}",
+      "info": {
+        "title": "Về Quyền Đồng Ý Của Bạn",
+        "withdraw": "Bạn có thể rút lại đồng ý của mình bất cứ lúc nào bằng cách chuyển đổi các công tắc ở trên.",
+        "lawfulness": "Việc rút lại đồng ý sẽ không ảnh hưởng đến tính hợp pháp của việc xử lý dựa trên đồng ý trước khi rút lại (GDPR Điều 7.3).",
+        "essential": "Các đồng ý thiết yếu là bắt buộc để dịch vụ hoạt động và không thể rút lại mà không xóa tài khoản của bạn.",
+        "tiers": "Một số tính năng yêu cầu các cấp đăng ký cụ thể và có thể không khả dụng nếu đồng ý bị rút lại.",
+        "audit": "Tất cả các thay đổi đồng ý được ghi lại và có thể kiểm toán. Liên hệ với Cán Bộ Bảo Vệ Dữ Liệu của chúng tôi nếu bạn có câu hỏi."
+      },
+      "notification": {
+        "granted": "Đã cho phép đồng ý thành công",
+        "withdrawn": "Đã rút lại đồng ý thành công"
+      }
     },
     "contact_download": {
       "title": "Cài Đặt Tải Liên Hệ",

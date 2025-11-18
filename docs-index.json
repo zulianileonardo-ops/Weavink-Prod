@@ -1,8 +1,8 @@
 {
   "metadata": {
     "project": "Weavink Documentation",
-    "last_updated": "2025-11-14",
-    "total_guides": 56,
+    "last_updated": "2025-11-18",
+    "total_guides": 60,
     "version": "1.0.0"
   },
   "categories": {
@@ -60,7 +60,8 @@
         "features-onboarding-guide-025",
         "features-cv-enhancement-026",
         "features-image-handling-027",
-        "features-tutorial-account-018"
+        "features-tutorial-account-018",
+        "features-media-enhancement-027"
       ]
     },
     "technical": {
@@ -80,7 +81,8 @@
         "technical-refactoring-guide-034",
         "technical-rules-grouping-fixes-035",
         "technical-refactoring-cost-tracking-036",
-        "technical-build-fix-import-paths-037"
+        "technical-build-fix-import-paths-037",
+        "technical-rgpd-architecture-compliance-038"
       ]
     },
     "testing": {
@@ -103,13 +105,28 @@
         "general-updates-040",
         "general-restart-instructions-041"
       ]
+    },
+    "tutorials": {
+      "name": "Tutorials & Guides",
+      "description": "Implementation guides, tutorials, and how-tos",
+      "guides": [
+        "tutorials-conversation-manager-001"
+      ]
+    },
+    "meta": {
+      "name": "Meta Documentation",
+      "description": "Project meta-documentation, reorganizations, and documentation about documentation",
+      "guides": [
+        "rgpd-commit-summary-014",
+        "meta-documentation-reorganization-001"
+      ]
     }
   },
   "guides": [
     {
       "id": "admin-analytics-integration-001",
       "title": "Admin Analytics Integration Guide",
-      "filename": "ADMIN_ANALYTICS_INTEGRATION_GUIDE.md",
+      "filename": "documentation/admin/ADMIN_ANALYTICS_INTEGRATION_GUIDE.md",
       "category": "admin",
       "summary": "Complete guide for integrating new API/AI features into admin analytics dashboard with cost tracking and session management.",
       "tags": [
@@ -142,7 +159,7 @@
     {
       "id": "admin-analytics-api-usage-002",
       "title": "Admin Analytics API Usage Guide",
-      "filename": "ADMIN_ANALYTICS_API_USAGE_GUIDE.md",
+      "filename": "documentation/admin/ADMIN_ANALYTICS_API_USAGE_GUIDE.md",
       "category": "admin",
       "summary": "Comprehensive technical guide showing how admin analytics service integrates AI and API usage tracking with detailed data flow and response structures.",
       "tags": [
@@ -174,7 +191,7 @@
     {
       "id": "admin-view-only-003",
       "title": "Admin View-Only Implementation",
-      "filename": "ADMIN_VIEW_ONLY_IMPLEMENTATION.md",
+      "filename": "documentation/admin/ADMIN_VIEW_ONLY_IMPLEMENTATION.md",
       "category": "admin",
       "summary": "Complete implementation of view-only admin role system allowing designated users read-only admin access with multi-layer security verification.",
       "tags": [
@@ -207,7 +224,7 @@
     {
       "id": "admin-vector-panel-refactor-004",
       "title": "Admin Vector Panel Refactor Summary",
-      "filename": "ADMIN_VECTOR_PANEL_REFACTOR_SUMMARY.md",
+      "filename": "documentation/admin/ADMIN_VECTOR_PANEL_REFACTOR_SUMMARY.md",
       "category": "admin",
       "summary": "Documents the refactoring of AdminVectorContactTestPanel from monolithic component to clean layered service architecture following admin patterns.",
       "tags": [
@@ -241,7 +258,7 @@
     {
       "id": "admin-service-separation-005",
       "title": "Admin Service Separation Guide",
-      "filename": "ADMIN_SERVICE_SEPARATION_GUIDE.md",
+      "filename": "documentation/admin/ADMIN_SERVICE_SEPARATION_GUIDE.md",
       "category": "admin",
       "summary": "Documents separation of admin functionality into distinct services (User Management and Analytics) for better organization and scalability.",
       "tags": [
@@ -274,7 +291,7 @@
     {
       "id": "admin-security-logs-006",
       "title": "Admin Security Logs Implementation",
-      "filename": "ADMIN_SECURITY_LOGS_IMPLEMENTATION.md",
+      "filename": "documentation/admin/ADMIN_SECURITY_LOGS_IMPLEMENTATION.md",
       "category": "admin",
       "summary": "Implementation of TopLevelSecurityLogs component in admin dashboard for platform-wide security event monitoring without organization context.",
       "tags": [
@@ -307,7 +324,7 @@
     {
       "id": "admin-security-layers-007",
       "title": "Admin Security Layers Guide",
-      "filename": "ADMIN_SECURITY_LAYERS_GUIDE.md",
+      "filename": "documentation/admin/ADMIN_SECURITY_LAYERS_GUIDE.md",
       "category": "admin",
       "summary": "Step-by-step implementation guide for 7-layer security verification system for admin operations.",
       "tags": [
@@ -341,7 +358,7 @@
     {
       "id": "admin-refactor-summary-008",
       "title": "Admin Refactor Summary",
-      "filename": "ADMIN_REFACTOR_SUMMARY.md",
+      "filename": "documentation/admin/ADMIN_REFACTOR_SUMMARY.md",
       "category": "admin",
       "summary": "Documents Phase 1 refactoring of admin service from monolithic API routes to clean layered architecture with separated concerns.",
       "tags": [
@@ -375,7 +392,7 @@
     {
       "id": "admin-dashboard-session-fix-009",
       "title": "Admin Dashboard Session Aggregation Fix",
-      "filename": "ADMIN_DASHBOARD_SESSION_AGGREGATION_FIX.md",
+      "filename": "documentation/admin/ADMIN_DASHBOARD_SESSION_AGGREGATION_FIX.md",
       "category": "admin",
       "summary": "Fixes admin dashboard showing zero API/AI usage by implementing dual-write architecture for session-based operations.",
       "tags": [
@@ -406,7 +423,7 @@
     {
       "id": "analytics-testing-guide-010",
       "title": "Analytics Testing Guide",
-      "filename": "ANALYTICS_TESTING_GUIDE.md",
+      "filename": "documentation/admin/ANALYTICS_TESTING_GUIDE.md",
       "category": "analytics",
       "summary": "Comprehensive testing and debugging guide for analytics click tracking system with browser console logs and network activity.",
       "tags": [
@@ -438,7 +455,7 @@
     {
       "id": "analytics-service-summary-011",
       "title": "Analytics Service Summary",
-      "filename": "ANALYTICS_SERVICE_SUMMARY.md",
+      "filename": "documentation/admin/ANALYTICS_SERVICE_SUMMARY.md",
       "category": "analytics",
       "summary": "Documents complete analytics service architecture processing flattened Firestore structure for platform-wide insights and user-specific analytics.",
       "tags": [
@@ -468,7 +485,7 @@
     {
       "id": "analytics-implementation-012",
       "title": "Analytics Implementation Guide",
-      "filename": "ANALYTICS_IMPLEMENTATION_GUIDE.md",
+      "filename": "documentation/admin/ANALYTICS_IMPLEMENTATION_GUIDE.md",
       "category": "analytics",
       "summary": "Complete technical guide covering analytics system architecture with rate limiting, fingerprinting, session management, and data flow.",
       "tags": [
@@ -498,7 +515,7 @@
     {
       "id": "rgpd-conformite-tapit-013",
       "title": "RGPD Conformité Tapit",
-      "filename": "RGPD_Conformite_Tapit.md",
+      "filename": "documentation/rgpd/RGPD_Conformite_Tapit.md",
       "category": "rgpd",
       "summary": "Complete GDPR/RGPD compliance roadmap and implementation plan for Weavink (Tapit SAS).",
       "tags": [
@@ -523,7 +540,7 @@
     {
       "id": "rgpd-commit-summary-014",
       "title": "RGPD Implementation Summary",
-      "filename": "COMMIT_SUMMARY.md",
+      "filename": "documentation/meta/COMMIT_SUMMARY.md",
       "category": "rgpd",
       "summary": "Complete implementation summary of RGPD Phase 1-2 with consent management, data export, account deletion, and cookie consent.",
       "tags": [
@@ -553,7 +570,7 @@
     {
       "id": "features-bot-detection-v2-015",
       "title": "Bot Detection Fix V2",
-      "filename": "BOT_DETECTION_FIX_V2.md",
+      "filename": "documentation/features/BOT_DETECTION_FIX_V2.md",
       "category": "features",
       "summary": "Improved bot detection by including current request in calculations, catching rapid-fire bots with 50ms intervals.",
       "tags": [
@@ -580,7 +597,7 @@
     {
       "id": "features-bot-detection-v1-016",
       "title": "Bot Detection Fix V1",
-      "filename": "BOT_DETECTION_FIX.md",
+      "filename": "documentation/archive/BOT_DETECTION_FIX.md",
       "category": "features",
       "summary": "Implements multi-factor bot detection using 3 criteria (requests per second, average rate, burst windows) to catch sophisticated bots.",
       "tags": [
@@ -606,7 +623,7 @@
     {
       "id": "features-carousel-017",
       "title": "Carousel Implementation",
-      "filename": "CAROUSEL_IMPLEMENTATION.md",
+      "filename": "documentation/features/CAROUSEL_IMPLEMENTATION.md",
       "category": "features",
       "summary": "Documents multi-carousel support system allowing users to create multiple independent carousels with grouped item structure.",
       "tags": [
@@ -632,7 +649,7 @@
     {
       "id": "features-event-grouping-018",
       "title": "Event Grouping Enhancement",
-      "filename": "EVENT_GROUPING_ENHANCEMENT.md",
+      "filename": "documentation/features/EVENT_GROUPING_ENHANCEMENT.md",
       "category": "features",
       "summary": "Enhances contact timeline by grouping related events (exchanges, follow-ups, meetings) for better readability and context.",
       "tags": [
@@ -656,7 +673,7 @@
     {
       "id": "features-enhanced-reviews-019",
       "title": "Enhanced Review Features",
-      "filename": "ENHANCED_REVIEW_FEATURES.md",
+      "filename": "documentation/features/ENHANCED_REVIEW_FEATURES.md",
       "category": "features",
       "summary": "Adds structured review system to contacts with ratings, categories, sentiment analysis, and follow-up suggestions.",
       "tags": [
@@ -679,7 +696,7 @@
     {
       "id": "features-video-embed-020",
       "title": "Video Embed Feature Summary",
-      "filename": "VIDEO_EMBED_FEATURE_SUMMARY.md",
+      "filename": "documentation/features/VIDEO_EMBED_FEATURE_SUMMARY.md",
       "category": "features",
       "summary": "Documents video embed feature allowing users to add YouTube, Vimeo, and custom videos to profiles.",
       "tags": [
@@ -700,7 +717,7 @@
     {
       "id": "features-venue-enrichment-021",
       "title": "Venue Enrichment Feature",
-      "filename": "VENUE_ENRICHMENT_FEATURE.md",
+      "filename": "documentation/features/VENUE_ENRICHMENT_FEATURE.md",
       "category": "features",
       "summary": "Automatically enriches venue/location contacts with details from Google Maps API.",
       "tags": [
@@ -720,7 +737,7 @@
     {
       "id": "features-landing-page-022",
       "title": "Landing Page Redesign",
-      "filename": "LANDING_PAGE_REDESIGN.md",
+      "filename": "documentation/features/LANDING_PAGE_REDESIGN.md",
       "category": "features",
       "summary": "Documents complete redesign of landing page with modern UI, feature highlights, and improved conversion.",
       "tags": [
@@ -739,7 +756,7 @@
     {
       "id": "features-realtime-subscription-023",
       "title": "Real-Time Subscription Updates",
-      "filename": "REAL_TIME_SUBSCRIPTION_UPDATES.md",
+      "filename": "documentation/features/REAL_TIME_SUBSCRIPTION_UPDATES.md",
       "category": "features",
       "summary": "Implements real-time subscription updates using Firestore listeners for instant UI synchronization.",
       "tags": [
@@ -761,7 +778,7 @@
     {
       "id": "technical-cost-tracking-migration-024",
       "title": "Cost Tracking Migration Guide",
-      "filename": "COST_TRACKING_MIGRATION_GUIDE.md",
+      "filename": "documentation/infrastructure/COST_TRACKING_MIGRATION_GUIDE.md",
       "category": "technical",
       "summary": "Complete migration guide for refactored CostTrackingService supporting multiple resource types (AI, API) with backward compatibility.",
       "tags": [
@@ -792,7 +809,7 @@
     {
       "id": "technical-comprehensive-refactoring-025",
       "title": "Comprehensive Refactoring Guide",
-      "filename": "COMPREHENSIVE_REFACTORING_GUIDE.md",
+      "filename": "documentation/infrastructure/COMPREHENSIVE_REFACTORING_GUIDE.md",
       "category": "technical",
       "summary": "Best practices and patterns reference for refactoring Next.js codebase covering components, services, API routes, and state management.",
       "tags": [
@@ -818,7 +835,7 @@
     {
       "id": "technical-budget-display-026",
       "title": "Budget Display Implementation",
-      "filename": "BUDGET_DISPLAY_IMPLEMENTATION.md",
+      "filename": "documentation/infrastructure/BUDGET_DISPLAY_IMPLEMENTATION.md",
       "category": "technical",
       "summary": "Documents budget information display system showing users real-time monthly AI operation usage and cost budget.",
       "tags": [
@@ -846,7 +863,7 @@
     {
       "id": "technical-budget-check-usage-027",
       "title": "Budget Check Usage Guide",
-      "filename": "BUDGET_CHECK_USAGE_GUIDE.md",
+      "filename": "documentation/infrastructure/BUDGET_CHECK_USAGE_GUIDE.md",
       "category": "technical",
       "summary": "Guide for using real-time budget tracking and permission checking system before expensive API operations.",
       "tags": [
@@ -875,7 +892,7 @@
     {
       "id": "technical-budget-affordability-028",
       "title": "Budget Affordability Check Guide",
-      "filename": "BUDGET_AFFORDABILITY_CHECK_GUIDE.md",
+      "filename": "documentation/infrastructure/BUDGET_AFFORDABILITY_CHECK_GUIDE.md",
       "category": "technical",
       "summary": "Documents affordability checking system preventing users from exceeding subscription limits.",
       "tags": [
@@ -900,7 +917,7 @@
     {
       "id": "technical-dynamicfields-fix-029",
       "title": "DynamicFields Fix Summary",
-      "filename": "DYNAMICFIELDS_FIX_SUMMARY.md",
+      "filename": "documentation/infrastructure/DYNAMICFIELDS_FIX_SUMMARY.md",
       "category": "technical",
       "summary": "Fixes dynamic field system for contacts with improved data validation and error handling.",
       "tags": [
@@ -920,7 +937,7 @@
     {
       "id": "technical-session-tracking-fix-030",
       "title": "Session Tracking Fix",
-      "filename": "SESSION_TRACKING_FIX.md",
+      "filename": "documentation/infrastructure/SESSION_TRACKING_FIX.md",
       "category": "technical",
       "summary": "Fixes session tracking issues ensuring proper session lifecycle management.",
       "tags": [
@@ -941,7 +958,7 @@
     {
       "id": "technical-subscription-revalidation-031",
       "title": "Subscription Revalidation Setup",
-      "filename": "SUBSCRIPTION_REVALIDATION_SETUP.md",
+      "filename": "documentation/infrastructure/SUBSCRIPTION_REVALIDATION_SETUP.md",
       "category": "technical",
       "summary": "Documents subscription revalidation system ensuring user tier limits are enforced correctly.",
       "tags": [
@@ -962,7 +979,7 @@
     {
       "id": "technical-semantic-search-032",
       "title": "Semantic Search Architecture Current",
-      "filename": "SEMANTIC_SEARCH_ARCHITECTURE_CURRENT.md",
+      "filename": "documentation/infrastructure/SEMANTIC_SEARCH_ARCHITECTURE_CURRENT.md",
       "category": "technical",
       "summary": "Documents current semantic search architecture using vector embeddings and Pinecone.",
       "tags": [
@@ -984,7 +1001,7 @@
     {
       "id": "technical-quick-start-integration-033",
       "title": "Quick Start Integration",
-      "filename": "QUICK_START_INTEGRATION.md",
+      "filename": "documentation/infrastructure/QUICK_START_INTEGRATION.md",
       "category": "technical",
       "summary": "Quick 30-minute integration guide for new features and components.",
       "tags": [
@@ -1024,7 +1041,7 @@
     {
       "id": "technical-rules-grouping-fixes-035",
       "title": "Rules Grouping Fixes",
-      "filename": "RULES_GROUPING_FIXES.md",
+      "filename": "documentation/infrastructure/RULES_GROUPING_FIXES.md",
       "category": "technical",
       "summary": "Fixes for rules grouping system.",
       "tags": [
@@ -1042,7 +1059,7 @@
     {
       "id": "testing-rate-limit-036",
       "title": "Rate Limit Testing",
-      "filename": "RATE_LIMIT_TESTING.md",
+      "filename": "documentation/testing/RATE_LIMIT_TESTING.md",
       "category": "testing",
       "summary": "Testing guide for rate limiting system with various attack scenarios and verification methods.",
       "tags": [
@@ -1064,7 +1081,7 @@
     {
       "id": "testing-rate-limits-collection-037",
       "title": "Rate Limits Collection Guide",
-      "filename": "RATE_LIMITS_COLLECTION_GUIDE.md",
+      "filename": "documentation/testing/RATE_LIMITS_COLLECTION_GUIDE.md",
       "category": "testing",
       "summary": "Complete guide to RateLimits Firestore collection monitoring security events and rate limit violations.",
       "tags": [
@@ -1108,7 +1125,7 @@
     {
       "id": "general-preview-039",
       "title": "Preview Documentation",
-      "filename": "Preview.md",
+      "filename": "documentation/general/Preview.md",
       "category": "general",
       "summary": "Preview/demo documentation.",
       "tags": [
@@ -1126,7 +1143,7 @@
     {
       "id": "general-updates-040",
       "title": "Project Updates",
-      "filename": "updates.md",
+      "filename": "documentation/general/updates.md",
       "category": "general",
       "summary": "Project changelog and update history.",
       "tags": [
@@ -1144,7 +1161,7 @@
     {
       "id": "general-restart-instructions-041",
       "title": "Restart Instructions",
-      "filename": "RESTART_INSTRUCTIONS.md",
+      "filename": "documentation/general/RESTART_INSTRUCTIONS.md",
       "category": "general",
       "summary": "Server restart procedures and troubleshooting steps.",
       "tags": [
@@ -1163,7 +1180,7 @@
     {
       "id": "rgpd-implementation-summary-042",
       "title": "RGPD Implementation Summary",
-      "filename": "RGPD_IMPLEMENTATION_SUMMARY.md",
+      "filename": "documentation/rgpd/RGPD_IMPLEMENTATION_SUMMARY.md",
       "category": "rgpd",
       "summary": "Complete summary of RGPD Phase 1-4 implementation with consent management, data portability, breach notifications, and compliance features.",
       "tags": [
@@ -1196,7 +1213,7 @@
     {
       "id": "rgpd-master-progress-043",
       "title": "RGPD Master Progress Document",
-      "filename": "RGPD_MASTER_PROGRESS.md",
+      "filename": "documentation/rgpd/RGPD_MASTER_PROGRESS.md",
       "category": "rgpd",
       "summary": "Master progress tracking document for RGPD implementation phases, features, testing, and compliance scores.",
       "tags": [
@@ -1222,7 +1239,7 @@
     {
       "id": "rgpd-phase4-summary-044",
       "title": "RGPD Phase 4 Summary",
-      "filename": "RGPD_PHASE4_SUMMARY.md",
+      "filename": "documentation/rgpd/RGPD_PHASE4_SUMMARY.md",
       "category": "rgpd",
       "summary": "Phase 4 implementation summary covering enhanced data portability, automated breach notifications, and compliance monitoring.",
       "tags": [
@@ -1259,7 +1276,7 @@
     {
       "id": "rgpd-consent-guide-045",
       "title": "Consent Implementation Guide",
-      "filename": "CONSENT_IMPLEMENTATION_GUIDE.md",
+      "filename": "documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md",
       "category": "rgpd",
       "summary": "Comprehensive guide for implementing GDPR-compliant consent checks with greyed-out buttons and consent popovers in React/Next.js applications. Includes automated test coverage (12/12 passing tests).",
       "tags": [
@@ -1299,7 +1316,7 @@
     {
       "id": "rgpd-anonymous-analytics-046",
       "title": "Anonymous Analytics Plan",
-      "filename": "ANONYMOUS_ANALYTICS_PLAN.md",
+      "filename": "documentation/admin/ANONYMOUS_ANALYTICS_PLAN.md",
       "category": "rgpd",
       "summary": "Implementation plan for anonymous aggregated analytics tracking for users who withdraw consent, using legitimate interest legal basis.",
       "tags": [
@@ -1325,7 +1342,7 @@
     {
       "id": "testing-rgpd-guide-038",
       "title": "RGPD Testing Guide",
-      "filename": "RGPD_TESTING_GUIDE.md",
+      "filename": "documentation/rgpd/RGPD_TESTING_GUIDE.md",
       "category": "testing",
       "summary": "Comprehensive testing documentation for RGPD Phase 1-4 implementation with 116 tests covering consent, privacy settings, and compliance features.",
       "tags": [
@@ -1351,7 +1368,7 @@
     {
       "id": "testing-rgpd-quickstart-039",
       "title": "RGPD Testing Quick Start",
-      "filename": "RGPD_TESTING_QUICKSTART.md",
+      "filename": "documentation/rgpd/RGPD_TESTING_QUICKSTART.md",
       "category": "testing",
       "summary": "Quick 30-second guide to running RGPD tests via browser console with one-liner commands for all test suites.",
       "tags": [
@@ -1375,7 +1392,7 @@
     {
       "id": "testing-rgpd-results-040",
       "title": "RGPD Test Results",
-      "filename": "RGPD_TEST_RESULTS.md",
+      "filename": "documentation/rgpd/RGPD_TEST_RESULTS.md",
       "category": "testing",
       "summary": "Complete test results showing 116/116 passing tests across all RGPD phases with detailed coverage breakdown.",
       "tags": [
@@ -1400,7 +1417,7 @@
     {
       "id": "features-contact-download-024",
       "title": "Contact Download Settings",
-      "filename": "CONTACT_DOWNLOAD_SETTINGS.md",
+      "filename": "documentation/features/CONTACT_DOWNLOAD_SETTINGS.md",
       "category": "features",
       "summary": "Feature implementation allowing profile owners to control who can download their contact information with granular field-level permissions.",
       "tags": [
@@ -1425,7 +1442,7 @@
     {
       "id": "features-onboarding-guide-025",
       "title": "Onboarding System Guide",
-      "filename": "ONBOARDING_SYSTEM_GUIDE.md",
+      "filename": "documentation/features/ONBOARDING_SYSTEM_GUIDE.md",
       "category": "features",
       "summary": "Technical guide for mandatory multi-step onboarding wizard with language selection and iPhone-style rotating language headers.",
       "tags": [
@@ -1450,7 +1467,7 @@
     {
       "id": "features-cv-enhancement-026",
       "title": "CV Features Enhancement Guide",
-      "filename": "CV_FEATURES_ENHANCEMENT.md",
+      "filename": "documentation/features/CV_FEATURES_ENHANCEMENT.md",
       "category": "features",
       "summary": "Comprehensive implementation of CV/resume features including service-level caching, individual link activation with toggle in appearance page, bidirectional navigation with visual highlighting, document validation with auto-activation, and real-time synchronization. Includes 35 passing tests covering all functionality.",
       "tags": [
@@ -1498,9 +1515,53 @@
       "updated": "2025-11-11"
     },
     {
+      "id": "features-media-enhancement-027",
+      "title": "Media Features Enhancement Guide",
+      "filename": "documentation/features/MEDIA_FEATURES_ENHANCEMENT.md",
+      "category": "features",
+      "summary": "Comprehensive fixes for media upload features including image cropping bug (black images), server validation for modern media types, state management race conditions, and bidirectional deletion between appearance and links.",
+      "tags": [
+        "media",
+        "carousel",
+        "upload",
+        "image-cropping",
+        "validation",
+        "state-management",
+        "firestore",
+        "appearance",
+        "links",
+        "canvas-api",
+        "cors"
+      ],
+      "related_guides": [
+        "features-cv-enhancement-026"
+      ],
+      "functions": [
+        "AppearanceService.uploadMediaImage",
+        "AppearanceService.uploadMediaVideo",
+        "AppearanceService.sanitizeMediaItem",
+        "LinksService.getLinks",
+        "LinksService.saveLinks",
+        "LinksService.updateLink",
+        "createImage",
+        "getCroppedImg",
+        "getAspectRatio"
+      ],
+      "components": [
+        "MediaCard",
+        "MediaDisplay",
+        "MediaManager",
+        "CarouselContainerCard",
+        "ImageCropModal"
+      ],
+      "status": "active",
+      "created": "2025-11-12",
+      "updated": "2025-11-12"
+    },
+    {
       "id": "technical-refactoring-cost-tracking-036",
       "title": "Cost Tracking Service Refactoring",
-      "filename": "REFACTORING_GUIDE.md",
+      "filename": "documentation/infrastructure/REFACTORING_GUIDE.md",
       "category": "technical",
       "summary": "Major refactoring of cost tracking system supporting generalized API cost tracking, session-based tracking, and centralized cost constants.",
       "tags": [
@@ -1529,7 +1590,7 @@
     {
       "id": "features-image-handling-027",
       "title": "Image Handling Improvements",
-      "filename": "IMAGE_HANDLING_IMPROVEMENTS.md",
+      "filename": "documentation/infrastructure/IMAGE_HANDLING_IMPROVEMENTS.md",
       "category": "features",
       "summary": "Fixes three critical image handling issues: IndexSizeError in cropping, white line bug with 'Free' aspect ratio, and incorrect aspect ratio display in carousel items.",
       "tags": [
@@ -1562,7 +1623,7 @@
     {
       "id": "features-tutorial-account-018",
       "title": "Tutorial and Account Page Structure",
-      "filename": "TUTORIAL_ACCOUNT_PAGE_STRUCTURE.md",
+      "filename": "documentation/tutorials/TUTORIAL_ACCOUNT_PAGE_STRUCTURE.md",
       "category": "features",
       "summary": "Documents restructured tutorial progression and account page with complete independence between Privacy Overview and Tutorial Progression sections. Tutorial now renders at page level, always visible regardless of active Privacy tab.",
       "tags": [
@@ -1596,7 +1657,7 @@
     {
       "id": "technical-build-fix-import-paths-037",
       "title": "Build Fix - Import Path and Export Corrections",
-      "filename": "BUILD_FIX_IMPORT_PATHS.md",
+      "filename": "documentation/tutorials/BUILD_FIX_IMPORT_PATHS.md",
       "category": "technical",
       "summary": "Fixed critical build errors by correcting import paths in API routes and adding missing function exports in privacy services, enabling successful compilation.",
       "tags": [
@@ -1625,6 +1686,105 @@
       "status": "active",
       "created": "2025-11-14",
       "updated": "2025-11-14"
+    },
+    {
+      "id": "technical-rgpd-architecture-compliance-038",
+      "title": "RGPD Architecture Compliance Report",
+      "filename": "documentation/rgpd/RGPD_ARCHITECTURE_COMPLIANCE.md",
+      "category": "technical",
+      "summary": "Comprehensive refactoring report documenting architectural alignment of RGPD implementation with Weavink 5-layer pattern. Achieved 95% compliance (from 34%), eliminated 12 raw fetch() calls, implemented permission-based security, and centralized constants management. Documents 15 files modified across client services, API routes, server services, and context layers.",
+      "tags": [
+        "rgpd",
+        "gdpr",
+        "architecture",
+        "refactoring",
+        "compliance",
+        "5-layer-pattern",
+        "security",
+        "constants",
+        "session-manager",
+        "contact-api-client",
+        "permissions",
+        "code-quality"
+      ],
+      "related_guides": [
+        "rgpd-implementation-summary-042",
+        "rgpd-master-progress-043",
+        "rgpd-consent-guide-045",
+        "technical-comprehensive-refactoring-025",
+        "admin-security-layers-007"
+      ],
+      "functions": [
+        "getUserConsents",
+        "grantConsent",
+        "withdrawConsent",
+        "requestExport",
+        "requestDeletion",
+        "cancelDeletion",
+        "updatePrivacySetting",
+        "updateContactDownloadSettings",
+        "updateLanguagePreference"
+      ],
+      "components": [
+        "ConsentService",
+        "DataExportService",
+        "AccountDeletionService",
+        "AccountContext",
+        "ContactApiClient",
+        "SessionManager"
+      ],
+      "status": "active",
+      "created": "2025-11-18",
+      "updated": "2025-11-18"
+    },
+    {
+      "id": "tutorials-conversation-manager-001",
+      "title": "Conversation Manager Skill - Implementation Guide",
+      "filename": "documentation/tutorials/CONVERSATION_MANAGER_SKILL_GUIDE.md",
+      "category": "tutorials",
+      "summary": "Design and implementation plan for a conversation-manager-skill that automatically saves conversation history from Claude Code sessions, linking them to git commits and enabling smart conversation continuation detection.",
+      "tags": [
+        "skill",
+        "conversation",
+        "git-integration",
+        "automation",
+        "documentation",
+        "claude-code",
+        "implementation-guide",
+        "planned"
+      ],
+      "related_guides": [
+        "git-manager-skill",
+        "docs-manager-skill"
+      ],
+      "functions": [],
+      "components": [],
+      "status": "draft",
+      "created": "2025-11-12",
+      "updated": "2025-11-12"
+    },
+    {
+      "id": "meta-documentation-reorganization-001",
+      "title": "Documentation Reorganization 2025-11-18",
+      "filename": "documentation/meta/DOCUMENTATION_REORGANIZATION_2025.md",
+      "category": "meta",
+      "summary": "Complete reorganization of project documentation from root directory into structured documentation/ folder with 9 subfolders, updating all skills and tracking systems.",
+      "tags": [
+        "documentation",
+        "reorganization",
+        "structure",
+        "skills",
+        "maintenance",
+        "meta"
+      ],
+      "related_guides": [
+        "rgpd-commit-summary-014"
+      ],
+      "functions": [],
+      "components": [],
+      "status": "active",
+      "created": "2025-11-18",
+      "updated": "2025-11-18"
     }
   ]
 }

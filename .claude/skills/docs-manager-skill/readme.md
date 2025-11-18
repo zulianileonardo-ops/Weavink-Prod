@@ -269,7 +269,7 @@ User: "I refactored the admin analytics service"
 
 Claude Code:
 1. Searches for admin analytics guides
-2. Finds ADMIN_ANALYTICS_INTEGRATION_GUIDE.md
+2. Finds documentation/admin/ADMIN_ANALYTICS_INTEGRATION_GUIDE.md
 3. Offers to update the guide
 4. Updates content, metadata, and index
 ```
@@ -281,7 +281,7 @@ User: "Update the login authentication"
 
 Claude Code:
 1. Auto-searches for "login" and "authentication"
-2. Finds ADMIN_SECURITY_LAYERS_GUIDE.md
+2. Finds documentation/admin/ADMIN_SECURITY_LAYERS_GUIDE.md
 3. Shows summary and asks to read it first
 4. Provides context before you proceed
 ```

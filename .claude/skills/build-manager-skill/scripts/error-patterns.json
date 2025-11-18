@@ -1,0 +1,560 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "lastUpdated": "2025-01-18",
+    "totalPatterns": 38,
+    "description": "Comprehensive database of Next.js build errors and automatic fixes"
+  },
+  "patterns": [
+    {
+      "id": "module-not-found",
+      "category": "import",
+      "severity": "error",
+      "pattern": "Module not found: Can't resolve ['\"]([^'\"]+)['\"]",
+      "description": "Cannot find the specified module or file",
+      "autoFixable": true,
+      "fixStrategy": "check_file_exists_with_common_extensions",
+      "commonCauses": [
+        "Incorrect import path",
+        "Missing file extension",
+        "Case sensitivity mismatch",
+        "Missing dependency in package.json"
+      ],
+      "fixes": [
+        "Check if file exists with .js, .jsx, .ts, .tsx extensions",
+        "Fix case sensitivity in import path",
+        "Check if it's a missing npm package and suggest npm install",
+        "Look for similar filenames in the directory"
+      ]
+    },
+    {
+      "id": "unused-variable",
+      "category": "eslint",
+      "severity": "warning",
+      "pattern": "'([^']+)' is (defined but never used|assigned a value but never used)",
+      "description": "Variable declared but not used in code",
+      "autoFixable": true,
+      "fixStrategy": "prefix_with_underscore_or_remove",
+      "fixes": [
+        "If it's a function parameter, prefix with underscore: _varName",
+        "If it's a destructured property, use rest operator: const { used, ...rest }",
+        "If it's a standalone variable, remove the declaration"
+      ]
+    },
+    {
+      "id": "typescript-any-type",
+      "category": "typescript",
+      "severity": "warning",
+      "pattern": "Unsafe (assignment|call|member access|return) of an any value",
+      "description": "TypeScript any type usage detected",
+      "autoFixable": true,
+      "fixStrategy": "add_explicit_types",
+      "fixes": [
+        "Add explicit type annotation",
+        "Use 'unknown' instead of 'any'",
+        "Add type assertion if type is known"
+      ]
+    },
+    {
+      "id": "typescript-implicit-any",
+      "category": "typescript",
+      "severity": "error",
+      "pattern": "Parameter '([^']+)' implicitly has an 'any' type",
+      "description": "Function parameter missing type annotation",
+      "autoFixable": true,
+      "fixStrategy": "add_basic_type_annotation",
+      "fixes": [
+        "Add ': any' type annotation (quick fix)",
+        "Infer type from usage context",
+        "Add proper TypeScript interface"
+      ]
+    },
+    {
+      "id": "react-hooks-deps",
+      "category": "react",
+      "severity": "warning",
+      "pattern": "React Hook (useEffect|useCallback|useMemo) has a missing dependency: '([^']+)'",
+      "description": "React Hook missing dependency in dependency array",
+      "autoFixable": true,
+      "fixStrategy": "add_to_dependency_array",
+      "fixes": [
+        "Add missing dependency to dependency array",
+        "If intentional, add eslint-disable comment with explanation"
+      ]
+    },
+    {
+      "id": "react-hooks-exhaustive-deps",
+      "category": "react",
+      "severity": "warning",
+      "pattern": "React Hook (useEffect|useCallback|useMemo) has missing dependencies: (.+?)\\.",
+      "description": "React Hook missing multiple dependencies",
+      "autoFixable": true,
+      "fixStrategy": "add_all_to_dependency_array",
+      "fixes": [
+        "Add all missing dependencies to dependency array",
+        "Consider using useCallback for function dependencies"
+      ]
+    },
+    {
+      "id": "hydration-mismatch",
+      "category": "react",
+      "severity": "error",
+      "pattern": "(Hydration failed|Text content does not match|There was an error while hydrating)",
+      "description": "Server-rendered HTML doesn't match client-rendered content",
+      "autoFixable": false,
+      "fixStrategy": "manual_investigation_required",
+      "fixes": [
+        "Check for browser-only APIs (window, document) in component",
+        "Use useEffect for client-side only code",
+        "Add suppressHydrationWarning to elements with dynamic content",
+        "Ensure consistent data between server and client"
+      ]
+    },
+    {
+      "id": "image-unoptimized",
+      "category": "nextjs",
+      "severity": "warning",
+      "pattern": "Using `<img>` could result in slower LCP.*Consider using `<Image />`",
+      "description": "Regular img tag used instead of Next.js Image component",
+      "autoFixable": true,
+      "fixStrategy": "replace_img_with_next_image",
+      "fixes": [
+        "Import { Image } from 'next/image'",
+        "Replace <img> with <Image>",
+        "Add width and height props",
+        "Configure image domains in next.config.js if needed"
+      ]
+    },
+    {
+      "id": "css-module-undefined",
+      "category": "css",
+      "severity": "error",
+      "pattern": "Cannot read propert(y|ies) of undefined \\(reading '([^']+)'\\)",
+      "description": "CSS module class doesn't exist",
+      "autoFixable": true,
+      "fixStrategy": "check_css_class_exists",
+      "fixes": [
+        "Check if CSS class is defined in the module",
+        "Fix typo in class name",
+        "Add missing class to CSS file"
+      ]
+    },
+    {
+      "id": "missing-key-prop",
+      "category": "react",
+      "severity": "warning",
+      "pattern": "Each child in a list should have a unique \"key\" prop",
+      "description": "Missing key prop in list rendering",
+      "autoFixable": true,
+      "fixStrategy": "add_key_prop",
+      "fixes": [
+        "Add key prop using unique identifier (id)",
+        "Use index as last resort with comment explaining why",
+        "Generate stable keys for static lists"
+      ]
+    },
+    {
+      "id": "next-link-passHref",
+      "category": "nextjs",
+      "severity": "warning",
+      "pattern": "passHref was not specified.*with a custom Link component",
+      "description": "Next.js Link missing passHref prop",
+      "autoFixable": true,
+      "fixStrategy": "add_passHref_prop",
+      "fixes": [
+        "Add passHref prop to Link component when wrapping custom anchor"
+      ]
+    },
+    {
+      "id": "duplicate-imports",
+      "category": "import",
+      "severity": "warning",
+      "pattern": "'([^']+)' is defined multiple times",
+      "description": "Same module imported multiple times",
+      "autoFixable": true,
+      "fixStrategy": "merge_imports",
+      "fixes": [
+        "Merge multiple import statements from same source",
+        "Remove duplicate imports"
+      ]
+    },
+    {
+      "id": "circular-dependency",
+      "category": "import",
+      "severity": "warning",
+      "pattern": "Circular dependency detected",
+      "description": "Files importing each other creating a loop",
+      "autoFixable": false,
+      "fixStrategy": "manual_refactoring_required",
+      "fixes": [
+        "Extract shared code to separate module",
+        "Use dependency injection",
+        "Restructure imports to break the cycle"
+      ]
+    },
+    {
+      "id": "deprecated-api",
+      "category": "nextjs",
+      "severity": "warning",
+      "pattern": "The (.+?) is deprecated",
+      "description": "Using deprecated Next.js API",
+      "autoFixable": true,
+      "fixStrategy": "replace_with_new_api",
+      "fixes": [
+        "Replace with recommended alternative from warning message",
+        "Update to new API syntax"
+      ]
+    },
+    {
+      "id": "getInitialProps-warning",
+      "category": "nextjs",
+      "severity": "warning",
+      "pattern": "getInitialProps.*is deprecated",
+      "description": "getInitialProps is deprecated in favor of getServerSideProps",
+      "autoFixable": true,
+      "fixStrategy": "migrate_to_getServerSideProps",
+      "fixes": [
+        "Rename to getServerSideProps",
+        "Update return format to { props: {} }",
+        "Or use getStaticProps for static generation"
+      ]
+    },
+    {
+      "id": "missing-displayName",
+      "category": "react",
+      "severity": "warning",
+      "pattern": "Component definition is missing display name",
+      "description": "React component missing displayName for debugging",
+      "autoFixable": true,
+      "fixStrategy": "add_displayName",
+      "fixes": [
+        "Add displayName property to component",
+        "Use named function instead of arrow function"
+      ]
+    },
+    {
+      "id": "console-statement",
+      "category": "eslint",
+      "severity": "warning",
+      "pattern": "Unexpected console statement",
+      "description": "console.log found in production code",
+      "autoFixable": true,
+      "fixStrategy": "remove_or_comment",
+      "fixes": [
+        "Remove console statement",
+        "Replace with proper logging library",
+        "Add eslint-disable comment if intentional"
+      ]
+    },
+    {
+      "id": "no-anonymous-default-export",
+      "category": "eslint",
+      "severity": "warning",
+      "pattern": "Assign .* to a variable before exporting as module default",
+      "description": "Anonymous default export detected",
+      "autoFixable": true,
+      "fixStrategy": "name_export",
+      "fixes": [
+        "Assign to named const before default export",
+        "Use named function declaration"
+      ]
+    },
+    {
+      "id": "jsx-no-target-blank",
+      "category": "react",
+      "severity": "warning",
+      "pattern": "Using target=\"_blank\" without rel=\"(noopener|noreferrer)\"",
+      "description": "Security issue with target=_blank links",
+      "autoFixable": true,
+      "fixStrategy": "add_rel_attribute",
+      "fixes": [
+        "Add rel=\"noopener noreferrer\" to anchor tag"
+      ]
+    },
+    {
+      "id": "import-no-unresolved",
+      "category": "import",
+      "severity": "error",
+      "pattern": "Unable to resolve path to module '([^']+)'",
+      "description": "Import path cannot be resolved",
+      "autoFixable": true,
+      "fixStrategy": "fix_import_path",
+      "fixes": [
+        "Check file extension",
+        "Verify relative path is correct",
+        "Check tsconfig paths alias",
+        "Verify package is installed"
+      ]
+    },
+    {
+      "id": "no-img-element",
+      "category": "nextjs",
+      "severity": "warning",
+      "pattern": "Do not use `<img>` element. Use `<Image />` from `next/image`",
+      "description": "Native img element instead of Next.js Image",
+      "autoFixable": true,
+      "fixStrategy": "replace_with_next_image",
+      "fixes": [
+        "Import Image from next/image",
+        "Replace img with Image component",
+        "Add required width and height props"
+      ]
+    },
+    {
+      "id": "no-html-link-for-pages",
+      "category": "nextjs",
+      "severity": "warning",
+      "pattern": "Do not use an `<a>` element to navigate.*Use `<Link />`",
+      "description": "Regular anchor tag for internal navigation",
+      "autoFixable": true,
+      "fixStrategy": "replace_with_next_link",
+      "fixes": [
+        "Import Link from next/link",
+        "Wrap anchor with Link component",
+        "Or replace anchor with Link"
+      ]
+    },
+    {
+      "id": "document-import-outside-document",
+      "category": "nextjs",
+      "severity": "error",
+      "pattern": "`Document` should only be imported in `pages/_document`",
+      "description": "Document component imported in wrong location",
+      "autoFixable": true,
+      "fixStrategy": "remove_document_import",
+      "fixes": [
+        "Remove Document import",
+        "Move custom document code to pages/_document.js"
+      ]
+    },
+    {
+      "id": "no-sync-scripts",
+      "category": "nextjs",
+      "severity": "warning",
+      "pattern": "Synchronous scripts should not be used",
+      "description": "Using synchronous script tag",
+      "autoFixable": true,
+      "fixStrategy": "use_next_script",
+      "fixes": [
+        "Use Script component from next/script",
+        "Add strategy prop (afterInteractive, lazyOnload, etc.)"
+      ]
+    },
+    {
+      "id": "no-css-import",
+      "category": "nextjs",
+      "severity": "error",
+      "pattern": "Global CSS cannot be imported from files other than.*_app",
+      "description": "Global CSS imported outside _app.js",
+      "autoFixable": true,
+      "fixStrategy": "move_to_app_or_use_module",
+      "fixes": [
+        "Move global CSS import to pages/_app.js",
+        "Or convert to CSS module (.module.css)"
+      ]
+    },
+    {
+      "id": "no-page-custom-font",
+      "category": "nextjs",
+      "severity": "warning",
+      "pattern": "Custom fonts should be added at the document level",
+      "description": "Font loaded in page instead of document",
+      "autoFixable": true,
+      "fixStrategy": "move_to_document",
+      "fixes": [
+        "Move font link to pages/_document.js",
+        "Or use next/font for optimized font loading"
+      ]
+    },
+    {
+      "id": "no-unwanted-polyfillio",
+      "category": "nextjs",
+      "severity": "warning",
+      "pattern": "No known polyfill has been detected",
+      "description": "Unnecessary polyfill.io usage",
+      "autoFixable": true,
+      "fixStrategy": "remove_polyfill",
+      "fixes": [
+        "Remove polyfill.io script",
+        "Use modern JavaScript features",
+        "Add specific polyfills only if needed"
+      ]
+    },
+    {
+      "id": "no-head-import-in-document",
+      "category": "nextjs",
+      "severity": "error",
+      "pattern": "Do not use `next/head` in a custom document",
+      "description": "next/head imported in _document",
+      "autoFixable": true,
+      "fixStrategy": "use_head_from_document",
+      "fixes": [
+        "Import Head from next/document instead",
+        "Or move head tags to appropriate page"
+      ]
+    },
+    {
+      "id": "fast-refresh-warning",
+      "category": "nextjs",
+      "severity": "warning",
+      "pattern": "Fast Refresh.*could not detect any exports",
+      "description": "File has no React component export",
+      "autoFixable": false,
+      "fixStrategy": "ensure_component_export",
+      "fixes": [
+        "Ensure file exports at least one React component",
+        "Move non-component code to separate utility file"
+      ]
+    },
+    {
+      "id": "webpack-module-parse-failed",
+      "category": "webpack",
+      "severity": "error",
+      "pattern": "Module parse failed: Unexpected token",
+      "description": "Webpack cannot parse file syntax",
+      "autoFixable": false,
+      "fixStrategy": "check_syntax_and_config",
+      "fixes": [
+        "Check for syntax errors in file",
+        "Verify babel/typescript configuration",
+        "Check file extension is correct",
+        "Ensure webpack loader is configured for file type"
+      ]
+    },
+    {
+      "id": "build-optimization-disabled",
+      "category": "nextjs",
+      "severity": "info",
+      "pattern": "Automatically statically optimize pages by default",
+      "description": "Build optimization information",
+      "autoFixable": false,
+      "fixStrategy": "informational_only",
+      "fixes": []
+    },
+    {
+      "id": "memory-leak-warning",
+      "category": "nextjs",
+      "severity": "warning",
+      "pattern": "possible EventEmitter memory leak detected",
+      "description": "Potential memory leak in event listeners",
+      "autoFixable": false,
+      "fixStrategy": "investigate_event_listeners",
+      "fixes": [
+        "Check for missing cleanup in useEffect",
+        "Ensure event listeners are removed on unmount",
+        "Investigate if listener limit needs to be increased"
+      ]
+    },
+    {
+      "id": "export-named-default",
+      "category": "import",
+      "severity": "error",
+      "pattern": "export '([^']+)' \\(imported as '([^']+)'\\) was not found",
+      "description": "Named import doesn't exist in module",
+      "autoFixable": true,
+      "fixStrategy": "fix_import_name",
+      "fixes": [
+        "Check correct export name in source file",
+        "Use default import if it's a default export",
+        "Check for typos in import name"
+      ]
+    },
+    {
+      "id": "eslint-disable-comment",
+      "category": "eslint",
+      "severity": "warning",
+      "pattern": "File ignored because of a matching ignore pattern",
+      "description": "File ignored by ESLint configuration",
+      "autoFixable": false,
+      "fixStrategy": "informational_only",
+      "fixes": []
+    },
+    {
+      "id": "build-cache-warning",
+      "category": "nextjs",
+      "severity": "warning",
+      "pattern": "Creating an optimized production build",
+      "description": "Build process information",
+      "autoFixable": false,
+      "fixStrategy": "informational_only",
+      "fixes": []
+    },
+    {
+      "id": "static-generation-timeout",
+      "category": "nextjs",
+      "severity": "error",
+      "pattern": "Static page generation.*timed out",
+      "description": "Static page generation took too long",
+      "autoFixable": false,
+      "fixStrategy": "optimize_or_increase_timeout",
+      "fixes": [
+        "Optimize data fetching in getStaticProps",
+        "Reduce amount of data being fetched",
+        "Use ISR (Incremental Static Regeneration)",
+        "Increase staticPageGenerationTimeout in next.config.js"
+      ]
+    },
+    {
+      "id": "prerender-error",
+      "category": "nextjs",
+      "severity": "error",
+      "pattern": "Error occurred prerendering page",
+      "description": "Error during static page generation",
+      "autoFixable": false,
+      "fixStrategy": "fix_ssr_compatibility",
+      "fixes": [
+        "Check for browser-only code in component",
+        "Ensure getStaticProps returns valid data",
+        "Add error handling in data fetching",
+        "Use dynamic import for client-only components"
+      ]
+    },
+    {
+      "id": "experimental-feature-warning",
+      "category": "nextjs",
+      "severity": "warning",
+      "pattern": "You have enabled experimental feature",
+      "description": "Using experimental Next.js feature",
+      "autoFixable": false,
+      "fixStrategy": "informational_only",
+      "fixes": []
+    }
+  ],
+  "categories": {
+    "import": {
+      "description": "Module import and resolution errors",
+      "severity": "error",
+      "autoFixRate": "85%"
+    },
+    "eslint": {
+      "description": "ESLint code quality warnings",
+      "severity": "warning",
+      "autoFixRate": "90%"
+    },
+    "typescript": {
+      "description": "TypeScript type checking errors",
+      "severity": "error",
+      "autoFixRate": "70%"
+    },
+    "react": {
+      "description": "React-specific warnings and errors",
+      "severity": "warning",
+      "autoFixRate": "75%"
+    },
+    "nextjs": {
+      "description": "Next.js framework-specific issues",
+      "severity": "warning",
+      "autoFixRate": "80%"
+    },
+    "css": {
+      "description": "CSS and styling related errors",
+      "severity": "error",
+      "autoFixRate": "60%"
+    },
+    "webpack": {
+      "description": "Webpack build and bundling errors",
+      "severity": "error",
+      "autoFixRate": "40%"
+    }
+  }
+}

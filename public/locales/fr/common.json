@@ -650,6 +650,34 @@
       "settings": "Paramètres",
       "contacts": "Contacts"
     },
+    "settings": {
+      "controls": {
+        "jump_to": "Aller à :"
+      },
+      "social_icons": {
+        "title": "Icônes sociales",
+        "card_title": "Soyez iconique",
+        "card_subtitle": "Ajoutez des icônes liées à vos profils sociaux, email et plus.",
+        "alt_icon": "Icône de réseaux sociaux"
+      },
+      "support_banner": {
+        "title": "Bannière de soutien",
+        "alt_icon": "Icône de soutien",
+        "switch_title": "Montrez votre soutien",
+        "switch_description": "Montrez votre soutien pour des causes importantes avec une bannière de profil. Une seule bannière peut être active à la fois."
+      },
+      "sensitive_material": {
+        "title": "Contenu sensible",
+        "alt_icon": "Icône de contenu sensible",
+        "description": "Affichez un avertissement de contenu sensible avant que les visiteurs puissent voir votre profil."
+      },
+      "seo": {
+        "title": "SEO",
+        "alt_icon": "Icône SEO",
+        "card_title": "Métadonnées personnalisées",
+        "card_description": "Les modifications des métadonnées peuvent prendre un certain temps pour apparaître sur d'autres plateformes."
+      }
+    },
     "appearance": {
       "headings": {
         "profile": "Profil",
@@ -2551,7 +2579,115 @@
     },
     "consents": {
       "title": "Gérer les Consentements",
-      "description": "Contrôlez quelles fonctionnalités peuvent traiter vos données. Vous pouvez retirer votre consentement à tout moment. Les modifications prennent effet immédiatement."
+      "description": "Contrôlez quelles fonctionnalités peuvent traiter vos données. Vous pouvez retirer votre consentement à tout moment. Les modifications prennent effet immédiatement.",
+      "status": {
+        "granted": "Accordé",
+        "withdrawn": "Retiré"
+      },
+      "badge": {
+        "required": "Requis"
+      },
+      "category": {
+        "essential": {
+          "name": "Essentiel",
+          "description": "Requis pour que l'application fonctionne correctement"
+        },
+        "ai_features": {
+          "name": "Fonctionnalités IA",
+          "description": "Améliorations alimentées par l'intelligence artificielle"
+        },
+        "analytics": {
+          "name": "Analytique",
+          "description": "Analytique d'utilisation et suivi des performances"
+        },
+        "communication": {
+          "name": "Communication",
+          "description": "Communications par e-mail et recommandations"
+        },
+        "personalization": {
+          "name": "Personnalisation",
+          "description": "Expérience personnalisée et paramètres de profil"
+        }
+      },
+      "type": {
+        "terms_of_service": {
+          "name": "Conditions d'Utilisation",
+          "description": "Acceptation de nos termes et conditions",
+          "gdpr": "Art. 6(1)(b) - Exécution du contrat"
+        },
+        "privacy_policy": {
+          "name": "Politique de Confidentialité",
+          "description": "Acceptation de nos pratiques de confidentialité",
+          "gdpr": "Art. 6(1)(b) - Exécution du contrat"
+        },
+        "ai_business_card": {
+          "name": "Amélioration des Cartes de Visite par IA",
+          "description": "Utilisez l'IA (Google Gemini 2.0) pour extraire des informations des images de cartes de visite avec une grande précision",
+          "gdpr": "Art. 6(1)(a) - Consentement",
+          "tier": "Premium+"
+        },
+        "ai_semantic_search": {
+          "name": "Recherche Sémantique IA",
+          "description": "Activez la recherche alimentée par l'IA avec amélioration des requêtes, embeddings, reclassement et analyse intelligente des résultats",
+          "gdpr": "Art. 6(1)(a) - Consentement",
+          "tier": "Business+"
+        },
+        "ai_auto_grouping": {
+          "name": "Groupement Automatique IA",
+          "description": "Groupez automatiquement les contacts à l'aide d'algorithmes intelligents, d'enrichissement de lieux et de détection d'événements",
+          "gdpr": "Art. 6(1)(a) - Consentement",
+          "tier": "Premium+"
+        },
+        "analytics_basic": {
+          "name": "Analyses de Base",
+          "description": "Statistiques d'utilisation de base (pages vues, utilisation des fonctionnalités) - données anonymisées uniquement",
+          "gdpr": "Art. 6(1)(f) - Intérêt légitime"
+        },
+        "analytics_detailed": {
+          "name": "Analyses Détaillées",
+          "description": "Modèles d'utilisation détaillés et analyse comportementale pour améliorer l'expérience utilisateur",
+          "gdpr": "Art. 6(1)(a) - Consentement"
+        },
+        "cookies_analytics": {
+          "name": "Cookies d'Analyse",
+          "description": "Cookies utilisés pour suivre les modèles d'utilisation et améliorer l'application",
+          "gdpr": "Art. 6(1)(a) - Consentement"
+        },
+        "marketing_emails": {
+          "name": "E-mails Marketing",
+          "description": "Recevez des newsletters, mises à jour de produits et offres promotionnelles",
+          "gdpr": "Art. 6(1)(a) - Consentement"
+        },
+        "contact_recommendations": {
+          "name": "Recommandations de Contacts",
+          "description": "Recevez des suggestions de connexions potentielles basées sur votre réseau",
+          "gdpr": "Art. 6(1)(a) - Consentement"
+        },
+        "cookies_personalization": {
+          "name": "Cookies de Personnalisation",
+          "description": "Mémorisez vos préférences et personnalisez votre expérience",
+          "gdpr": "Art. 6(1)(a) - Consentement"
+        },
+        "profile_public": {
+          "name": "Profil Public",
+          "description": "Rendez votre profil visible aux autres utilisateurs de la plateforme",
+          "gdpr": "Art. 6(1)(a) - Consentement"
+        }
+      },
+      "technologies_label": "Technologies :",
+      "last_updated": "Dernière mise à jour : {{date}}",
+      "info": {
+        "title": "À Propos de Vos Droits de Consentement",
+        "withdraw": "Vous pouvez retirer votre consentement à tout moment en basculant les interrupteurs ci-dessus.",
+        "lawfulness": "Le retrait du consentement n'affectera pas la licéité du traitement fondé sur le consentement avant le retrait (RGPD Art. 7.3).",
+        "essential": "Les consentements essentiels sont nécessaires au fonctionnement du service et ne peuvent être retirés sans supprimer votre compte.",
+        "tiers": "Certaines fonctionnalités nécessitent des niveaux d'abonnement spécifiques et peuvent être indisponibles si le consentement est retiré.",
+        "audit": "Tous les changements de consentement sont enregistrés et peuvent être audités. Contactez notre Délégué à la Protection des Données si vous avez des questions."
+      },
+      "notification": {
+        "granted": "Consentement accordé avec succès",
+        "withdrawn": "Consentement retiré avec succès"
+      }
     },
     "contact_download": {
       "title": "Paramètres de Téléchargement de Contact",

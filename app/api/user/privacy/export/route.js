@@ -3,11 +3,17 @@
  * GDPR Art. 20 - Right to Data Portability
  *
  * Allows users to download all their personal data in machine-readable formats
+ * Supports multiple formats (JSON, CSV, vCard, XML, PDF)
  */
 
 import { NextResponse } from 'next/server';
-import { createApiSession } from '@/lib/server/session';
+import { createApiSession, SessionManager } from '@/lib/server/session';
 import { rateLimit } from '@/lib/rateLimiter';
+import {
+  PRIVACY_PERMISSIONS,
+  PRIVACY_RATE_LIMITS,
+  PRIVACY_ERROR_MESSAGES,
+} from '@/lib/services/constants';
 import {
   exportAllUserData,
   createExportRequest,
@@ -21,12 +27,25 @@ import {
  */
 export async function GET(request) {
   try {
-    // Create session (includes authentication)
+    // 1. Create session (includes authentication)
     const session = await createApiSession(request);
+    const sessionManager = new SessionManager(session);
     const userId = session.userId;
 
-    // Rate limiting
-    if (!rateLimit(userId, 10, 60000)) {
+    // 2. Permission check
+    if (!session.permissions[PRIVACY_PERMISSIONS.CAN_EXPORT_DATA]) {
+      return NextResponse.json(
+        {
+          error: PRIVACY_ERROR_MESSAGES.PERMISSION_DENIED,
+          upgrade: 'Data export requires a subscription upgrade',
+        },
+        { status: 403 }
+      );
+    }
+
+    // 3. Rate limiting
+    const { max, window } = PRIVACY_RATE_LIMITS.EXPORT_STATUS_CHECK;
+    if (!rateLimit(userId, max, window)) {
       return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
     }
 
@@ -34,7 +53,7 @@ export async function GET(request) {
     const requestId = searchParams.get('requestId');
     const history = searchParams.get('history');
 
-    // If requesting history of exports
+    // 4. If requesting history of exports
     if (history === 'true') {
       const requests = await getUserExportRequests(userId);
       return NextResponse.json({
@@ -44,7 +63,7 @@ export async function GET(request) {
       });
     }
 
-    // If requesting specific export request status
+    // 5. If requesting specific export request status
     if (requestId) {
       const exportRequest = await getExportRequest(requestId);
 
@@ -59,7 +78,7 @@ export async function GET(request) {
       });
     }
 
-    // Otherwise, return instructions
+    // 6. Otherwise, return instructions
     return NextResponse.json({
       message: 'To request a data export, send a POST request',
       endpoint: '/api/user/privacy/export',
@@ -70,9 +89,9 @@ export async function GET(request) {
       },
     });
   } catch (error) {
-    console.error('Error in GET /api/user/privacy/export:', error);
+    console.error('❌ [DataExportAPI] Error in GET:', error);
     return NextResponse.json(
-      { error: 'Failed to process request', details: error.message },
+      { error: PRIVACY_ERROR_MESSAGES.EXPORT_FAILED, details: error.message },
       { status: 500 }
     );
   }
@@ -84,22 +103,36 @@ export async function GET(request) {
  *   format: 'json' | 'zip' (optional, default: 'json'),
  *   includeContacts: boolean (optional, default: true),
  *   includeAnalytics: boolean (optional, default: true),
- *   includeConsents: boolean (optional, default: true)
+ *   includeConsents: boolean (optional, default: true),
+ *   includeSettings: boolean (optional, default: true),
+ *   includeGroups: boolean (optional, default: true)
  * }
  */
 export async function POST(request) {
   try {
-    // Create session (includes authentication)
+    // 1. Create session (includes authentication)
     const session = await createApiSession(request);
+    const sessionManager = new SessionManager(session);
     const userId = session.userId;
 
-    // Rate limiting - stricter for export (resource-intensive operation)
-    if (!rateLimit(userId, 3, 3600000)) {
-      // Max 3 exports per hour
+    // 2. Permission check
+    if (!session.permissions[PRIVACY_PERMISSIONS.CAN_EXPORT_DATA]) {
       return NextResponse.json(
         {
-          error: 'Export rate limit exceeded',
-          message: 'You can request a maximum of 3 data exports per hour. Please try again later.',
+          error: PRIVACY_ERROR_MESSAGES.PERMISSION_DENIED,
+          upgrade: 'Data export requires a subscription upgrade',
+        },
+        { status: 403 }
+      );
+    }
+
+    // 3. Rate limiting - stricter for export (resource-intensive operation)
+    const { max, window } = PRIVACY_RATE_LIMITS.DATA_EXPORTS;
+    if (!rateLimit(userId, max, window)) {
+      return NextResponse.json(
+        {
+          error: PRIVACY_ERROR_MESSAGES.EXPORT_RATE_LIMIT,
+          message: `You can request a maximum of ${max} data exports per hour. Please try again later.`,
         },
         { status: 429 }
       );
@@ -107,6 +140,7 @@ export async function POST(request) {
 
     const body = await request.json().catch(() => ({}));
 
+    // 4. Parse export options
     const options = {
       includeContacts: body.includeContacts !== false,
       includeAnalytics: body.includeAnalytics !== false,
@@ -115,15 +149,15 @@ export async function POST(request) {
       includeGroups: body.includeGroups !== false,
     };
 
-    console.log(`[DataExport] Starting export for user ${userId}`, options);
+    console.log(`✅ [DataExportAPI] Starting export for user ${userId}`, options);
 
-    // Create export request record
+    // 5. Create export request record
     const exportRequest = await createExportRequest(userId, {
       ipAddress: session.requestMetadata?.ipAddress,
       userAgent: session.requestMetadata?.userAgent,
     });
 
-    // Perform the export (for smaller datasets, do it synchronously)
+    // 6. Perform the export (for smaller datasets, do it synchronously)
     // For production with larger datasets, this should be offloaded to a background job
     try {
       const exportResult = await exportAllUserData(userId, options);
@@ -133,6 +167,8 @@ export async function POST(request) {
         exportData: exportResult.exportPackage,
         summary: exportResult.summary,
       });
+
+      console.log(`✅ [DataExportAPI] Export completed for user ${userId}:`, exportResult.summary);
 
       // Return the export data immediately
       // In production, you might want to:
@@ -165,13 +201,15 @@ export async function POST(request) {
         error: exportError.message,
       });
 
+      console.error(`❌ [DataExportAPI] Export failed for user ${userId}:`, exportError);
+
       throw exportError;
     }
   } catch (error) {
-    console.error('Error in POST /api/user/privacy/export:', error);
+    console.error('❌ [DataExportAPI] Error in POST:', error);
     return NextResponse.json(
       {
-        error: 'Failed to export data',
+        error: PRIVACY_ERROR_MESSAGES.EXPORT_FAILED,
         details: error.message,
         troubleshooting: {
           largeDataset: 'If you have a large number of contacts, the export may take longer',
@@ -189,9 +227,18 @@ export async function POST(request) {
  */
 export async function DELETE(request) {
   try {
-    // Create session (includes authentication)
+    // 1. Create session (includes authentication)
     const session = await createApiSession(request);
+    const sessionManager = new SessionManager(session);
     const userId = session.userId;
+
+    // 2. Permission check
+    if (!session.permissions[PRIVACY_PERMISSIONS.CAN_EXPORT_DATA]) {
+      return NextResponse.json(
+        { error: PRIVACY_ERROR_MESSAGES.PERMISSION_DENIED },
+        { status: 403 }
+      );
+    }
 
     const { searchParams } = new URL(request.url);
     const requestId = searchParams.get('requestId');
@@ -200,7 +247,7 @@ export async function DELETE(request) {
       return NextResponse.json({ error: 'requestId is required' }, { status: 400 });
     }
 
-    // Get export request
+    // 3. Get export request
     const exportRequest = await getExportRequest(requestId);
 
     // Verify ownership
@@ -208,7 +255,7 @@ export async function DELETE(request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
-    // Can only cancel pending requests
+    // 4. Can only cancel pending requests
     if (exportRequest.status !== 'pending') {
       return NextResponse.json(
         {
@@ -219,15 +266,17 @@ export async function DELETE(request) {
       );
     }
 
-    // Update status to cancelled
+    // 5. Update status to cancelled
     await updateExportRequest(requestId, 'cancelled');
+
+    console.log(`✅ [DataExportAPI] Export cancelled for user ${userId}: ${requestId}`);
 
     return NextResponse.json({
       success: true,
       message: 'Export request cancelled successfully',
     });
   } catch (error) {
-    console.error('Error in DELETE /api/user/privacy/export:', error);
+    console.error('❌ [DataExportAPI] Error in DELETE:', error);
     return NextResponse.json(
       { error: 'Failed to cancel export', details: error.message },
       { status: 500 }

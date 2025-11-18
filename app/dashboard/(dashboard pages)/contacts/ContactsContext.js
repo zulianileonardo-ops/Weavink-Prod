@@ -4,7 +4,7 @@
 import React, { createContext, useContext, useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { toast } from 'react-hot-toast';
 import { useDashboard } from '@/app/dashboard/DashboardContext';
-import { ContactsService } from '@/lib/services/serviceContact/client/services/ContactService.js';
+import { ContactsService } from '@/lib/services/serviceContact/client/services/ContactService';
 import { SemanticSearchService } from '@/lib/services/serviceContact/client/services/SemanticSearchService';
 import { CONTACT_FEATURES } from '@/lib/services/constants';
 import { getFirestore, doc, onSnapshot } from 'firebase/firestore';

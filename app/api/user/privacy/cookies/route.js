@@ -6,7 +6,7 @@
 import { NextResponse } from 'next/server';
 import { createApiSession } from '@/lib/server/session';
 import { rateLimit } from '@/lib/rateLimiter';
-import { recordConsent, CONSENT_TYPES } from '../../../../../lib/services/servicePrivacy/server/consentService.js';
+import { ConsentService, CONSENT_TYPES } from '../../../../../lib/services/servicePrivacy/server/consentService.js';
 
 /**
  * POST - Save cookie consent preferences
@@ -45,7 +45,7 @@ export async function POST(request) {
 
     // Record consent for analytics cookies
     if (categories.analytics !== undefined) {
-      const result = await recordConsent(
+      const result = await ConsentService.recordConsent(
         userId,
         CONSENT_TYPES.COOKIES_ANALYTICS,
         categories.analytics ? 'granted' : 'withdrawn',
@@ -61,7 +61,7 @@ export async function POST(request) {
 
     // Record consent for personalization cookies
     if (categories.personalization !== undefined) {
-      const result = await recordConsent(
+      const result = await ConsentService.recordConsent(
         userId,
         CONSENT_TYPES.COOKIES_PERSONALIZATION,
         categories.personalization ? 'granted' : 'withdrawn',

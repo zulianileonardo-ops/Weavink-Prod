@@ -24,7 +24,7 @@ Creating brand new documentation (not updating existing) doesn't require confirm
 ```
 You: "I refactored the analytics service"
 
-Skill: ℹ️ Found existing documentation: ANALYTICS_SERVICE_SUMMARY.md
+Skill: ℹ️ Found existing documentation: documentation/admin/ANALYTICS_SERVICE_SUMMARY.md
        
        Your changes to analytics service may require updates.
        
@@ -41,7 +41,7 @@ Skill: ℹ️ Found existing documentation: ANALYTICS_SERVICE_SUMMARY.md
 
 You: 2
 
-Skill: 📝 Ready to update ANALYTICS_SERVICE_SUMMARY.md
+Skill: 📝 Ready to update documentation/admin/ANALYTICS_SERVICE_SUMMARY.md
        
        Proposed changes:
        - Update architecture section
@@ -52,7 +52,7 @@ Skill: 📝 Ready to update ANALYTICS_SERVICE_SUMMARY.md
 
 You: Y
 
-Skill: ✅ Updated ANALYTICS_SERVICE_SUMMARY.md
+Skill: ✅ Updated documentation/admin/ANALYTICS_SERVICE_SUMMARY.md
        
        Changes made:
        - Updated architecture section
@@ -66,7 +66,7 @@ Skill: ✅ Updated ANALYTICS_SERVICE_SUMMARY.md
 ```
 You: "Update the RGPD guide with the new consent flow"
 
-Skill: 📝 Ready to update RGPD_Conformite_Tapit.md
+Skill: 📝 Ready to update documentation/rgpd/RGPD_Conformite_Tapit.md
        
        Current guide covers:
        - GDPR compliance overview
@@ -83,7 +83,7 @@ Skill: 📝 Ready to update RGPD_Conformite_Tapit.md
 You: Y
 
 Skill: *updates the guide*
-       ✅ Updated RGPD_Conformite_Tapit.md
+       ✅ Updated documentation/rgpd/RGPD_Conformite_Tapit.md
 ```
 
 ### Example 3: Review First Option
@@ -91,7 +91,7 @@ Skill: *updates the guide*
 ```
 You: "I updated the login function"
 
-Skill: ℹ️ Found: ADMIN_SECURITY_LAYERS_GUIDE.md
+Skill: ℹ️ Found: documentation/admin/ADMIN_SECURITY_LAYERS_GUIDE.md
        
        What would you like to do?
        1. Review the guide first
@@ -104,7 +104,7 @@ You: 1
 
 Skill: *reads and shows current guide content*
        
-       📄 ADMIN_SECURITY_LAYERS_GUIDE.md
+       📄 documentation/admin/ADMIN_SECURITY_LAYERS_GUIDE.md
        [shows content...]
        
        Now, should I update this guide? [Y/n]

@@ -43,8 +43,8 @@
       "lastRun": "2025-11-11T00:00:00Z",
       "status": "passing",
       "relatedDocs": [
-        "CONSENT_IMPLEMENTATION_GUIDE.md",
-        "RGPD_TESTING_GUIDE.md"
+        "documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md",
+        "documentation/rgpd/RGPD_TESTING_GUIDE.md"
       ],
       "testedFunctions": [
         "recordConsent",

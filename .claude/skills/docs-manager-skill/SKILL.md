@@ -20,9 +20,10 @@ Professional documentation system for Weavink technical guides with intelligent 
 ## Documentation Structure
 
 ### File Locations
-- **Guides Directory**: `~/temp2/temp2/` (or user-specified)
-- **Index File**: `~/temp2/temp2/docs-index.json`
-- **Master Guide**: `~/temp2/temp2/INDEX.md`
+- **Guides Directory**: `/home/leo/Syncthing/Code-Weavink/documentation/`
+  - Subdirectories: `rgpd/`, `admin/`, `features/`, `infrastructure/`, `testing/`, `tutorials/`, `general/`, `meta/`, `archive/`
+- **Index File**: `/home/leo/Syncthing/Code-Weavink/docs-index.json`
+- **Master Guide**: `/home/leo/Syncthing/Code-Weavink/INDEX.md`
 
 ### Guide Format
 Every guide must have YAML frontmatter:
@@ -68,12 +69,12 @@ Before updating, modifying, or changing ANY existing documentation:
 **Process**:
 1. **Gather Information**
    - Ask what needs documenting (function, feature, component, system)
-   - Ask for save location (default: `~/temp2/temp2/`)
-   - Identify category (admin, analytics, rgpd, features, technical, testing, general)
+   - Ask for save location and category (default: `/home/leo/Syncthing/Code-Weavink/documentation/`)
+   - Identify category subfolder (rgpd, admin, features, infrastructure, testing, tutorials, general, meta, archive)
 
 2. **Read docs-index.json**
    ```bash
-   cat ~/temp2/temp2/docs-index.json
+   cat /home/leo/Syncthing/Code-Weavink/docs-index.json
    ```
    - Determine next available ID number in category
    - Identify related guides by keywords/functions
@@ -131,7 +132,7 @@ Before updating, modifying, or changing ANY existing documentation:
 **Process**:
 1. **Read docs-index.json**
    ```bash
-   cat ~/temp2/temp2/docs-index.json
+   cat /home/leo/Syncthing/Code-Weavink/docs-index.json
    ```
 
 2. **Search Strategy**
@@ -172,7 +173,7 @@ Before updating, modifying, or changing ANY existing documentation:
 
 2. **Read Content**
    ```bash
-   cat ~/temp2/temp2/FILENAME.md
+   cat /home/leo/Syncthing/Code-Weavink/FILENAME.md
    ```
 
 3. **Present to User**
@@ -385,7 +386,7 @@ Before updating, modifying, or changing ANY existing documentation:
 
 3. **Write to File**
    ```bash
-   cat > ~/temp2/temp2/INDEX.md << 'EOF'
+   cat > /home/leo/Syncthing/Code-Weavink/INDEX.md << 'EOF'
    [generated content]
    EOF
    ```
@@ -395,23 +396,23 @@ Before updating, modifying, or changing ANY existing documentation:
 ### Search by Keyword
 ```bash
 # Read index and search
-cat ~/temp2/temp2/docs-index.json | jq '.guides[] | select(.title | contains("keyword") or (.tags | contains(["keyword"])) or (.functions | contains(["keyword"])))'
+cat /home/leo/Syncthing/Code-Weavink/docs-index.json | jq '.guides[] | select(.title | contains("keyword") or (.tags | contains(["keyword"])) or (.functions | contains(["keyword"])))'
 ```
 
 ### Get Guide by ID
 ```bash
-cat ~/temp2/temp2/docs-index.json | jq '.guides[] | select(.id == "guide-id-001")'
+cat /home/leo/Syncthing/Code-Weavink/docs-index.json | jq '.guides[] | select(.id == "guide-id-001")'
 ```
 
 ### List Category Guides
 ```bash
-cat ~/temp2/temp2/docs-index.json | jq '.categories.admin.guides'
+cat /home/leo/Syncthing/Code-Weavink/docs-index.json | jq '.categories.admin.guides'
 ```
 
 ### Get Next ID Number
 ```bash
 # Get max ID number in category, add 1
-cat ~/temp2/temp2/docs-index.json | jq '[.guides[] | select(.category == "admin") | .id | split("-")[2] | tonumber] | max + 1'
+cat /home/leo/Syncthing/Code-Weavink/docs-index.json | jq '[.guides[] | select(.category == "admin") | .id | split("-")[2] | tonumber] | max + 1'
 ```
 
 ## Status Indicators
@@ -488,7 +489,7 @@ User: "I need to update the login function"
 1. Auto-search docs-index.json for "login"
 2. Find: admin-security-layers-007 mentions "login authentication"
 3. Present:
-   📚 Found: ADMIN_SECURITY_LAYERS_GUIDE.md
+   📚 Found: documentation/admin/ADMIN_SECURITY_LAYERS_GUIDE.md
    - Documents 7-layer security including login
    - Functions: withAuth, checkAdminPermission
    
@@ -505,7 +506,7 @@ User: "I refactored the analytics service"
 1. Search for "analytics" in docs-index.json
 2. Find: analytics-service-summary-011
 3. Present options:
-   "ℹ️ Found: ANALYTICS_SERVICE_SUMMARY.md
+   "ℹ️ Found: documentation/admin/ANALYTICS_SERVICE_SUMMARY.md
    
    Current guide covers:
    - Analytics service architecture
@@ -521,7 +522,7 @@ User: "I refactored the analytics service"
    Your choice: [1/2/3]"
 
 4. If user chooses "2":
-   "📝 Ready to update ANALYTICS_SERVICE_SUMMARY.md
+   "📝 Ready to update documentation/admin/ANALYTICS_SERVICE_SUMMARY.md
    
    Proposed changes:
    - Update architecture section
@@ -537,7 +538,7 @@ User: "I refactored the analytics service"
    - Index entry: summary, functions
    - Regenerate INDEX.md
 7. Confirm: 
-   "✅ Updated ANALYTICS_SERVICE_SUMMARY.md
+   "✅ Updated documentation/admin/ANALYTICS_SERVICE_SUMMARY.md
    
    Changes made:
    - Updated architecture section
@@ -581,7 +582,7 @@ User: "What documentation do we have about admin security?"
 
 ### Index File Missing
 ```bash
-if [ ! -f ~/temp2/temp2/docs-index.json ]; then
+if [ ! -f /home/leo/Syncthing/Code-Weavink/docs-index.json ]; then
   echo "⚠️ docs-index.json not found. Should I create it?"
   # If yes, initialize with empty structure
 fi
@@ -590,14 +591,14 @@ fi
 ### Invalid JSON
 ```bash
 # Test JSON validity
-jq empty ~/temp2/temp2/docs-index.json 2>&1
+jq empty /home/leo/Syncthing/Code-Weavink/docs-index.json 2>&1
 # If error, report to user and offer to fix
 ```
 
 ### Duplicate ID
 ```bash
 # Check before adding
-existing=$(cat ~/temp2/temp2/docs-index.json | jq '.guides[] | select(.id == "new-id")')
+existing=$(cat /home/leo/Syncthing/Code-Weavink/docs-index.json | jq '.guides[] | select(.id == "new-id")')
 if [ -n "$existing" ]; then
   echo "⚠️ ID already exists. Generating new ID..."
 fi

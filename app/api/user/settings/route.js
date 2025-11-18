@@ -4,7 +4,7 @@
 // app/api/user/settings/route.js
 import { NextResponse } from 'next/server';
 import { createApiSession } from '@/lib/server/session';
-import { SettingsService } from '@/lib/services/serviceSetting/server/settingsService.js';
+import { SettingsService } from '@/lib/services/serviceSetting/server/settingsService';
 import { rateLimit } from '@/lib/rateLimiter';
 import { revalidateUserPage } from '@/lib/server/revalidation';
 

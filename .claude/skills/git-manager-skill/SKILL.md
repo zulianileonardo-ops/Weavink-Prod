@@ -84,7 +84,7 @@ Before ANY git operation:
    
    Modified files:
    - test-index.json (12 lines changed)
-   - CONSENT_IMPLEMENTATION_GUIDE.md (5 lines changed)
+   - documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md (5 lines changed)
    - lib/services/servicePrivacy/consentService.js (8 lines changed)
    
    New files:
@@ -104,7 +104,7 @@ Before ANY git operation:
    - Added test coverage to documentation
    - Generated test report
    
-   Files: test-index.json, CONSENT_IMPLEMENTATION_GUIDE.md, test report
+   Files: test-index.json, documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md, test report
    ```
 
 4. **ASK FOR CONFIRMATION** ⚠️ MANDATORY
@@ -113,7 +113,7 @@ Before ANY git operation:
    
    Files to commit:
    - test-index.json
-   - CONSENT_IMPLEMENTATION_GUIDE.md
+   - documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md
    - lib/services/servicePrivacy/consentService.js
    - test-reports/rgpd-consent-2025-11-11.md
    
@@ -132,7 +132,7 @@ Before ANY git operation:
 5. **Execute Commit** (only after approval)
    ```bash
    git add test-index.json
-   git add CONSENT_IMPLEMENTATION_GUIDE.md
+   git add documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md
    git add lib/services/servicePrivacy/consentService.js
    git add test-reports/rgpd-consent-2025-11-11.md
    git commit -m "✅ Tests: RGPD Consent Categories (12/12 passing)"
@@ -230,7 +230,7 @@ Before ANY git operation:
    
    Modified files (3):
    - test-index.json
-   - CONSENT_IMPLEMENTATION_GUIDE.md
+   - documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md
    - lib/services/servicePrivacy/consentService.js
    
    Untracked files (1):
@@ -258,7 +258,7 @@ Before ANY git operation:
 1. **Generate Diff**
    ```bash
    # For specific file
-   git diff CONSENT_IMPLEMENTATION_GUIDE.md
+   git diff documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md
    
    # For all files
    git diff
@@ -266,7 +266,7 @@ Before ANY git operation:
 
 2. **Show User-Friendly Diff**
    ```
-   📄 Changes in CONSENT_IMPLEMENTATION_GUIDE.md
+   📄 Changes in documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md
    
    @@ Line 45 @@
    -## Functions
@@ -400,7 +400,7 @@ Before ANY git operation:
    ⚠️  Merge conflicts detected
    
    Conflicting files:
-   - CONSENT_IMPLEMENTATION_GUIDE.md (lines 45-52)
+   - documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md (lines 45-52)
    
    Actions:
    1. Show conflicts
@@ -460,7 +460,7 @@ Before ANY git operation:
   action: "commit_documentation",
   message: "📝 Updated consent documentation with test coverage",
   files: [
-    "CONSENT_IMPLEMENTATION_GUIDE.md",
+    "documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md",
     "docs-index.json",
     "INDEX.md"
   ]
@@ -489,7 +489,7 @@ test-manager:
 
 docs-manager:
 5. Finds related docs
-6. ⚠️ ASKS: "Update CONSENT_IMPLEMENTATION_GUIDE.md? [Y/n]"
+6. ⚠️ ASKS: "Update documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md? [Y/n]"
    User: "Y"
 7. Updates documentation
 8. Updates docs-index.json
@@ -500,7 +500,7 @@ git-manager:
     Files:
     - test-index.json
     - test-reports/rgpd-consent.md
-    - CONSENT_IMPLEMENTATION_GUIDE.md
+    - documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md
     - docs-index.json
     
     Message: '✅ Tests: RGPD Consent (12/12) + Updated docs'
@@ -614,7 +614,7 @@ git branch -D           # Force delete branch
 ```
 ⚠️  Merge conflict detected
 
-File: CONSENT_IMPLEMENTATION_GUIDE.md
+File: documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md
 Lines: 45-52
 
 <<<<<<< HEAD

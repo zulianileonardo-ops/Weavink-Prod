@@ -21,7 +21,7 @@ import {
     subscribeToLocalChanges as subscribeToAppearanceChanges,
     getLatestLocalEvent as getLatestAppearanceEvent,
     clearLatestLocalEvent as clearLatestAppearanceEvent
-} from '@/lib/services/serviceAppearance/client/appearanceService.js';
+} from '@/lib/services/serviceAppearance/client/appearanceService';
 import { APPEARANCE_FEATURES } from '@/lib/services/constants';
 
 // Global cache object - persists across component mounts

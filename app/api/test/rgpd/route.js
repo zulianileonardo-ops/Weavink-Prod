@@ -131,7 +131,7 @@ export async function POST(request) {
     if (suite === 'cookie') {
       results.results.cookie = {
         success: false,
-        message: 'Cookie consent tests must be run in browser console. See RGPD_TESTING_GUIDE.md',
+        message: 'Cookie consent tests must be run in browser console. See documentation/rgpd/RGPD_TESTING_GUIDE.md',
       };
     }
 
@@ -190,7 +190,7 @@ export async function GET() {
   return NextResponse.json({
     message: 'RGPD Compliance Test API',
     version: '1.0.0',
-    documentation: 'See RGPD_TESTING_GUIDE.md for detailed instructions',
+    documentation: 'See documentation/rgpd/RGPD_TESTING_GUIDE.md for detailed instructions',
     availableTests: {
       all: 'Run all RGPD compliance tests (116 tests across all phases)',
       consent: 'Test consent management system (8 tests)',

@@ -15,8 +15,8 @@ import {
   scheduleExport,
   getExportHistory,
   IMPORT_SOURCES,
-  EXPORT_FORMATS,
 } from '../../../../../lib/services/servicePrivacy/server/dataPortabilityService.js';
+import { PRIVACY_EXPORT_FORMATS } from '../../../../../lib/services/servicePrivacy/constants/privacyConstants.js';
 
 /**
  * POST /api/user/privacy/import
@@ -149,7 +149,7 @@ export async function GET(request) {
     return NextResponse.json({
       success: true,
       importSources: Object.values(IMPORT_SOURCES),
-      exportFormats: Object.values(EXPORT_FORMATS),
+      exportFormats: Object.values(PRIVACY_EXPORT_FORMATS),
       supportedActions: [
         'import_contacts',
         'export_xml',

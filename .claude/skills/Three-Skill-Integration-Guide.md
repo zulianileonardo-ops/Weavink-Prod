@@ -89,19 +89,19 @@ test-manager:
    📋 Functions tested: recordConsent, getUserConsents, hasConsent...
 3. Updates test-index.json
 4. Identifies related docs:
-   - CONSENT_IMPLEMENTATION_GUIDE.md
-   - RGPD_TESTING_GUIDE.md
+   - documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md
+   - documentation/rgpd/RGPD_TESTING_GUIDE.md
 5. Signals docs-manager:
-   "Tests passed! Update CONSENT_IMPLEMENTATION_GUIDE.md with coverage"
+   "Tests passed! Update documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md with coverage"
 
 ┌─────────────────────────────────────────────┐
 │ STEP 2: docs-manager                        │
 └─────────────────────────────────────────────┘
 
 docs-manager:
-6. Reads CONSENT_IMPLEMENTATION_GUIDE.md
+6. Reads documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md
 7. ⚠️ ASKS YOU:
-   "📝 Ready to update CONSENT_IMPLEMENTATION_GUIDE.md
+   "📝 Ready to update documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md
    
    Proposed changes:
    - Add test coverage section
@@ -132,7 +132,7 @@ git-manager:
     
     Files to commit:
     - test-index.json (test results)
-    - CONSENT_IMPLEMENTATION_GUIDE.md (updated docs)
+    - documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md (updated docs)
     - docs-index.json (updated index)
     - INDEX.md (updated master index)
     
@@ -272,8 +272,8 @@ Status: Manual control - stopped at test stage
     percentage: 95
   },
   relatedDocs: [
-    "CONSENT_IMPLEMENTATION_GUIDE.md",
-    "RGPD_TESTING_GUIDE.md"
+    "documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md",
+    "documentation/rgpd/RGPD_TESTING_GUIDE.md"
   ],
   request: "Update documentation with test coverage information"
 }
@@ -284,7 +284,7 @@ Status: Manual control - stopped at test stage
 {
   success: true,
   filesUpdated: [
-    "CONSENT_IMPLEMENTATION_GUIDE.md",
+    "documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md",
     "docs-index.json",
     "INDEX.md"
   ],
@@ -302,7 +302,7 @@ Status: Manual control - stopped at test stage
   source: "docs-manager",
   action: "commit_documentation",
   files: [
-    "CONSENT_IMPLEMENTATION_GUIDE.md",
+    "documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md",
     "docs-index.json",
     "INDEX.md",
     "test-index.json"  // Also from test-manager
@@ -345,7 +345,7 @@ docs-manager.updateDocumentation({
   testResults: {...},
   relatedDocs: [...]
 })
-  → updates: CONSENT_IMPLEMENTATION_GUIDE.md
+  → updates: documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md
   → updates: docs-index.json, INDEX.md
   → signals: git-manager
 
@@ -368,7 +368,7 @@ The workflow has **3 mandatory confirmation points**:
 ### Confirmation 1: Update Documentation?
 ```
 docs-manager asks:
-"📝 Ready to update CONSENT_IMPLEMENTATION_GUIDE.md
+"📝 Ready to update documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md
 
 Proposed changes:
 - Add test coverage (8/8 passing)
@@ -386,7 +386,7 @@ git-manager asks:
 
 Files:
 - test-index.json
-- CONSENT_IMPLEMENTATION_GUIDE.md
+- documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md
 - docs-index.json
 
 Message: '✅ Tests: RGPD Consent (8/8) + Updated docs'
@@ -531,7 +531,7 @@ ls ~/.claude/skills/
 "Show me which docs are related to these tests"
 → test-manager shows relatedDocs array
 
-"Update CONSENT_IMPLEMENTATION_GUIDE.md manually"
+"Update documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md manually"
 → docs-manager updates specific file
 ```
 
@@ -630,7 +630,7 @@ Result:
 
 ### Update Docs Only
 ```
-"Update CONSENT_IMPLEMENTATION_GUIDE.md with latest test coverage"
+"Update documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md with latest test coverage"
 
 Result:
 → Docs update

@@ -2,7 +2,7 @@
 
 import { NextResponse } from 'next/server';
 import { createApiSession } from '@/lib/server/session';
-import { ContactCRUDService } from '@/lib/services/serviceContact/server/ContactCRUDService.js'; // ❌ WRONG PATH
+import { ContactCRUDService } from '@/lib/services/serviceContact/server/ContactCRUDService';
 import { GroupCRUDService } from '@/lib/services/serviceContact/server/GroupCRUDService';
 import { CONTACT_FEATURES } from '@/lib/services/constants';
 

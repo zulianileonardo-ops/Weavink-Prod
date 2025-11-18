@@ -4,7 +4,7 @@
 // app/api/user/appearance/upload/route.js - REFACTORED to use AppearanceService
 import { NextResponse } from 'next/server';
 import { createApiSession } from '@/lib/server/session';
-import { AppearanceService } from '@/lib/services/serviceAppearance/server/appearanceService.js';
+import { AppearanceService } from '@/lib/services/serviceAppearance/server/appearanceService';
 import { APPEARANCE_FEATURES } from '@/lib/services/constants'; // <-- Import constants
 /**
  * Handle file uploads for profile images, background images, videos, and CV documents

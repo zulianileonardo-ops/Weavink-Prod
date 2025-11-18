@@ -5,7 +5,7 @@ import React, { createContext, useContext, useState, useCallback, useEffect, use
 import { toast } from 'react-hot-toast';
 import { useDashboard } from '@/app/dashboard/DashboardContext';
 import { useDebounce } from '@/LocalHooks/useDebounce';
-import { getSettingsData, updateSettingsData } from '@/lib/services/serviceSetting/client/settingsService.js';
+import { getSettingsData, updateSettingsData } from '@/lib/services/serviceSetting/client/settingsService';
 
 // Create context with undefined (will check in hook)
 const SettingsContext = createContext(undefined);

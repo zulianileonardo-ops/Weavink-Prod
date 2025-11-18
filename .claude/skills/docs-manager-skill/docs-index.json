@@ -94,12 +94,31 @@
     {
       "id": "admin-analytics-integration-001",
       "title": "Admin Analytics Integration Guide",
-      "filename": "ADMIN_ANALYTICS_INTEGRATION_GUIDE.md",
+      "filename": "documentation/admin/ADMIN_ANALYTICS_INTEGRATION_GUIDE.md",
       "category": "admin",
       "summary": "Complete guide for integrating new API/AI features into admin analytics dashboard with cost tracking and session management.",
-      "tags": ["admin", "analytics", "cost-tracking", "sessions", "free-tier", "google-maps", "api-integration", "dashboard"],
-      "related_guides": ["admin-analytics-api-usage-002", "admin-dashboard-session-fix-009", "technical-cost-tracking-migration-024"],
-      "functions": ["recordUsage", "finalizeSession", "calculateFreeTierData", "_getPlatformApiUsage", "getPlatformAnalytics"],
+      "tags": [
+        "admin",
+        "analytics",
+        "cost-tracking",
+        "sessions",
+        "free-tier",
+        "google-maps",
+        "api-integration",
+        "dashboard"
+      ],
+      "related_guides": [
+        "admin-analytics-api-usage-002",
+        "admin-dashboard-session-fix-009",
+        "technical-cost-tracking-migration-024"
+      ],
+      "functions": [
+        "recordUsage",
+        "finalizeSession",
+        "calculateFreeTierData",
+        "_getPlatformApiUsage",
+        "getPlatformAnalytics"
+      ],
       "components": [],
       "status": "active",
       "created": "2025-01-01",
@@ -108,13 +127,31 @@
     {
       "id": "admin-analytics-api-usage-002",
       "title": "Admin Analytics API Usage Guide",
-      "filename": "ADMIN_ANALYTICS_API_USAGE_GUIDE.md",
+      "filename": "documentation/admin/ADMIN_ANALYTICS_API_USAGE_GUIDE.md",
       "category": "admin",
       "summary": "Comprehensive technical guide showing how admin analytics service integrates AI and API usage tracking with detailed data flow and response structures.",
-      "tags": ["admin", "analytics", "api-usage", "ai-tracking", "firestore", "data-flow", "cost-monitoring", "dashboard-integration"],
-      "related_guides": ["admin-analytics-integration-001", "analytics-service-summary-011"],
-      "functions": ["_getPlatformApiUsage", "_aggregateUsageData", "fetchPlatformAnalytics"],
-      "components": ["ApiUsageStats"],
+      "tags": [
+        "admin",
+        "analytics",
+        "api-usage",
+        "ai-tracking",
+        "firestore",
+        "data-flow",
+        "cost-monitoring",
+        "dashboard-integration"
+      ],
+      "related_guides": [
+        "admin-analytics-integration-001",
+        "analytics-service-summary-011"
+      ],
+      "functions": [
+        "_getPlatformApiUsage",
+        "_aggregateUsageData",
+        "fetchPlatformAnalytics"
+      ],
+      "components": [
+        "ApiUsageStats"
+      ],
       "status": "active",
       "created": "2025-01-01",
       "updated": "2025-11-11"
@@ -122,12 +159,31 @@
     {
       "id": "admin-view-only-003",
       "title": "Admin View-Only Implementation",
-      "filename": "ADMIN_VIEW_ONLY_IMPLEMENTATION.md",
+      "filename": "documentation/admin/ADMIN_VIEW_ONLY_IMPLEMENTATION.md",
       "category": "admin",
       "summary": "Complete implementation of view-only admin role system allowing designated users read-only admin access with multi-layer security verification.",
-      "tags": ["admin", "security", "permissions", "rbac", "view-only", "authorization", "multi-layer-security", "env-variables"],
-      "related_guides": ["admin-security-layers-007", "admin-service-separation-005"],
-      "functions": ["getAdminRole", "getAdminPermissions", "canPerformActions", "isServerAdmin", "getPermissionsForRole", "checkAdminAccess"],
+      "tags": [
+        "admin",
+        "security",
+        "permissions",
+        "rbac",
+        "view-only",
+        "authorization",
+        "multi-layer-security",
+        "env-variables"
+      ],
+      "related_guides": [
+        "admin-security-layers-007",
+        "admin-service-separation-005"
+      ],
+      "functions": [
+        "getAdminRole",
+        "getAdminPermissions",
+        "canPerformActions",
+        "isServerAdmin",
+        "getPermissionsForRole",
+        "checkAdminAccess"
+      ],
       "components": [],
       "status": "active",
       "created": "2025-01-01",
@@ -136,13 +192,33 @@
     {
       "id": "admin-vector-panel-refactor-004",
       "title": "Admin Vector Panel Refactor Summary",
-      "filename": "ADMIN_VECTOR_PANEL_REFACTOR_SUMMARY.md",
+      "filename": "documentation/admin/ADMIN_VECTOR_PANEL_REFACTOR_SUMMARY.md",
       "category": "admin",
       "summary": "Documents the refactoring of AdminVectorContactTestPanel from monolithic component to clean layered service architecture following admin patterns.",
-      "tags": ["admin", "vector-search", "refactoring", "service-layer", "api-routes", "component-architecture", "pinecone", "semantic-search"],
-      "related_guides": ["admin-service-separation-005", "admin-security-layers-007", "technical-comprehensive-refactoring-025"],
-      "functions": ["fetchVectorInfo", "generateVectorContacts", "cleanupVectorTestData"],
-      "components": ["AdminServiceVector", "AdminVectorContactTestPanel"],
+      "tags": [
+        "admin",
+        "vector-search",
+        "refactoring",
+        "service-layer",
+        "api-routes",
+        "component-architecture",
+        "pinecone",
+        "semantic-search"
+      ],
+      "related_guides": [
+        "admin-service-separation-005",
+        "admin-security-layers-007",
+        "technical-comprehensive-refactoring-025"
+      ],
+      "functions": [
+        "fetchVectorInfo",
+        "generateVectorContacts",
+        "cleanupVectorTestData"
+      ],
+      "components": [
+        "AdminServiceVector",
+        "AdminVectorContactTestPanel"
+      ],
       "status": "active",
       "created": "2025-01-01",
       "updated": "2025-11-11"
@@ -150,13 +226,32 @@
     {
       "id": "admin-service-separation-005",
       "title": "Admin Service Separation Guide",
-      "filename": "ADMIN_SERVICE_SEPARATION_GUIDE.md",
+      "filename": "documentation/admin/ADMIN_SERVICE_SEPARATION_GUIDE.md",
       "category": "admin",
       "summary": "Documents separation of admin functionality into distinct services (User Management and Analytics) for better organization and scalability.",
-      "tags": ["admin", "architecture", "service-separation", "scalability", "analytics", "user-management", "client-server-separation"],
-      "related_guides": ["admin-refactor-summary-008", "admin-security-layers-007"],
-      "functions": ["getAllUsers", "getUserDetail", "getPlatformAnalytics", "fetchUserAnalytics"],
-      "components": ["AdminService", "AdminServiceAnalytics"],
+      "tags": [
+        "admin",
+        "architecture",
+        "service-separation",
+        "scalability",
+        "analytics",
+        "user-management",
+        "client-server-separation"
+      ],
+      "related_guides": [
+        "admin-refactor-summary-008",
+        "admin-security-layers-007"
+      ],
+      "functions": [
+        "getAllUsers",
+        "getUserDetail",
+        "getPlatformAnalytics",
+        "fetchUserAnalytics"
+      ],
+      "components": [
+        "AdminService",
+        "AdminServiceAnalytics"
+      ],
       "status": "active",
       "created": "2025-01-01",
       "updated": "2025-11-11"
@@ -164,13 +259,32 @@
     {
       "id": "admin-security-logs-006",
       "title": "Admin Security Logs Implementation",
-      "filename": "ADMIN_SECURITY_LOGS_IMPLEMENTATION.md",
+      "filename": "documentation/admin/ADMIN_SECURITY_LOGS_IMPLEMENTATION.md",
       "category": "admin",
       "summary": "Implementation of TopLevelSecurityLogs component in admin dashboard for platform-wide security event monitoring without organization context.",
-      "tags": ["admin", "security", "logging", "monitoring", "audit-trail", "firestore", "security-events", "compliance"],
-      "related_guides": ["admin-security-layers-007", "admin-service-separation-005"],
-      "functions": ["logSecurityEvent", "fetchTopLevelSecurityLogs", "getSecurityStats"],
-      "components": ["TopLevelSecurityLogs", "AdminServiceSecurity"],
+      "tags": [
+        "admin",
+        "security",
+        "logging",
+        "monitoring",
+        "audit-trail",
+        "firestore",
+        "security-events",
+        "compliance"
+      ],
+      "related_guides": [
+        "admin-security-layers-007",
+        "admin-service-separation-005"
+      ],
+      "functions": [
+        "logSecurityEvent",
+        "fetchTopLevelSecurityLogs",
+        "getSecurityStats"
+      ],
+      "components": [
+        "TopLevelSecurityLogs",
+        "AdminServiceSecurity"
+      ],
       "status": "active",
       "created": "2025-01-01",
       "updated": "2025-11-11"
@@ -178,13 +292,33 @@
     {
       "id": "admin-security-layers-007",
       "title": "Admin Security Layers Guide",
-      "filename": "ADMIN_SECURITY_LAYERS_GUIDE.md",
+      "filename": "documentation/admin/ADMIN_SECURITY_LAYERS_GUIDE.md",
       "category": "admin",
       "summary": "Step-by-step implementation guide for 7-layer security verification system for admin operations.",
-      "tags": ["admin", "security", "multi-layer-security", "authentication", "authorization", "rate-limiting", "middleware", "jwt"],
-      "related_guides": ["admin-view-only-003", "admin-service-separation-005"],
-      "functions": ["withAuth", "withValidation", "checkAdminPermission"],
-      "components": ["AdminProtection", "useAdminAccess", "AdminRateLimiter"],
+      "tags": [
+        "admin",
+        "security",
+        "multi-layer-security",
+        "authentication",
+        "authorization",
+        "rate-limiting",
+        "middleware",
+        "jwt"
+      ],
+      "related_guides": [
+        "admin-view-only-003",
+        "admin-service-separation-005"
+      ],
+      "functions": [
+        "withAuth",
+        "withValidation",
+        "checkAdminPermission"
+      ],
+      "components": [
+        "AdminProtection",
+        "useAdminAccess",
+        "AdminRateLimiter"
+      ],
       "status": "active",
       "created": "2025-01-01",
       "updated": "2025-11-11"
@@ -192,13 +326,33 @@
     {
       "id": "admin-refactor-summary-008",
       "title": "Admin Refactor Summary",
-      "filename": "ADMIN_REFACTOR_SUMMARY.md",
+      "filename": "documentation/admin/ADMIN_REFACTOR_SUMMARY.md",
       "category": "admin",
       "summary": "Documents Phase 1 refactoring of admin service from monolithic API routes to clean layered architecture with separated concerns.",
-      "tags": ["admin", "refactoring", "architecture", "service-layer", "api-routes", "security", "testability", "scalability"],
-      "related_guides": ["admin-service-separation-005", "admin-security-layers-007", "technical-comprehensive-refactoring-025"],
-      "functions": ["getAllUsers", "getUserDetail", "fetchUsers", "fetchUserDetail"],
-      "components": ["AdminService"],
+      "tags": [
+        "admin",
+        "refactoring",
+        "architecture",
+        "service-layer",
+        "api-routes",
+        "security",
+        "testability",
+        "scalability"
+      ],
+      "related_guides": [
+        "admin-service-separation-005",
+        "admin-security-layers-007",
+        "technical-comprehensive-refactoring-025"
+      ],
+      "functions": [
+        "getAllUsers",
+        "getUserDetail",
+        "fetchUsers",
+        "fetchUserDetail"
+      ],
+      "components": [
+        "AdminService"
+      ],
       "status": "active",
       "created": "2025-01-01",
       "updated": "2025-11-11"
@@ -206,12 +360,29 @@
     {
       "id": "admin-dashboard-session-fix-009",
       "title": "Admin Dashboard Session Aggregation Fix",
-      "filename": "ADMIN_DASHBOARD_SESSION_AGGREGATION_FIX.md",
+      "filename": "documentation/admin/ADMIN_DASHBOARD_SESSION_AGGREGATION_FIX.md",
       "category": "admin",
       "summary": "Fixes admin dashboard showing zero API/AI usage by implementing dual-write architecture for session-based operations.",
-      "tags": ["admin", "analytics", "bug-fix", "sessions", "dual-write", "aggregation", "firestore", "dashboard", "cost-tracking"],
-      "related_guides": ["admin-analytics-integration-001", "technical-cost-tracking-migration-024"],
-      "functions": ["recordUsage", "finalizeSession", "getPlatformAnalytics"],
+      "tags": [
+        "admin",
+        "analytics",
+        "bug-fix",
+        "sessions",
+        "dual-write",
+        "aggregation",
+        "firestore",
+        "dashboard",
+        "cost-tracking"
+      ],
+      "related_guides": [
+        "admin-analytics-integration-001",
+        "technical-cost-tracking-migration-024"
+      ],
+      "functions": [
+        "recordUsage",
+        "finalizeSession",
+        "getPlatformAnalytics"
+      ],
       "components": [],
       "status": "active",
       "created": "2025-01-01",
@@ -220,13 +391,31 @@
     {
       "id": "analytics-testing-guide-010",
       "title": "Analytics Testing Guide",
-      "filename": "ANALYTICS_TESTING_GUIDE.md",
+      "filename": "documentation/admin/ANALYTICS_TESTING_GUIDE.md",
       "category": "analytics",
       "summary": "Comprehensive testing and debugging guide for analytics click tracking system with browser console logs and network activity.",
-      "tags": ["analytics", "testing", "debugging", "click-tracking", "sendBeacon", "browser-console", "troubleshooting"],
-      "related_guides": ["analytics-implementation-012", "analytics-service-summary-011"],
-      "functions": ["trackClick", "handleLinkClick", "sendBeacon"],
-      "components": ["TrackAnalyticsService", "Button"],
+      "tags": [
+        "analytics",
+        "testing",
+        "debugging",
+        "click-tracking",
+        "sendBeacon",
+        "browser-console",
+        "troubleshooting"
+      ],
+      "related_guides": [
+        "analytics-implementation-012",
+        "analytics-service-summary-011"
+      ],
+      "functions": [
+        "trackClick",
+        "handleLinkClick",
+        "sendBeacon"
+      ],
+      "components": [
+        "TrackAnalyticsService",
+        "Button"
+      ],
       "status": "active",
       "created": "2025-01-01",
       "updated": "2025-11-11"
@@ -234,13 +423,29 @@
     {
       "id": "analytics-service-summary-011",
       "title": "Analytics Service Summary",
-      "filename": "ANALYTICS_SERVICE_SUMMARY.md",
+      "filename": "documentation/admin/ANALYTICS_SERVICE_SUMMARY.md",
       "category": "analytics",
       "summary": "Documents complete analytics service architecture processing flattened Firestore structure for platform-wide insights and user-specific analytics.",
-      "tags": ["analytics", "firestore", "flattened-structure", "aggregation", "platform-analytics", "user-analytics", "service-layer"],
-      "related_guides": ["analytics-implementation-012", "admin-analytics-api-usage-002"],
-      "functions": ["getPlatformAnalytics", "getUserAnalytics"],
-      "components": ["AnalyticsService"],
+      "tags": [
+        "analytics",
+        "firestore",
+        "flattened-structure",
+        "aggregation",
+        "platform-analytics",
+        "user-analytics",
+        "service-layer"
+      ],
+      "related_guides": [
+        "analytics-implementation-012",
+        "admin-analytics-api-usage-002"
+      ],
+      "functions": [
+        "getPlatformAnalytics",
+        "getUserAnalytics"
+      ],
+      "components": [
+        "AnalyticsService"
+      ],
       "status": "active",
       "created": "2025-01-01",
       "updated": "2025-11-11"
@@ -248,13 +453,29 @@
     {
       "id": "analytics-implementation-012",
       "title": "Analytics Implementation Guide",
-      "filename": "ANALYTICS_IMPLEMENTATION_GUIDE.md",
+      "filename": "documentation/admin/ANALYTICS_IMPLEMENTATION_GUIDE.md",
       "category": "analytics",
       "summary": "Complete technical guide covering analytics system architecture with rate limiting, fingerprinting, session management, and data flow.",
-      "tags": ["analytics", "rate-limiting", "fingerprinting", "session-management", "sendBeacon", "bot-detection", "firestore", "api-design"],
-      "related_guides": ["testing-rate-limits-collection-037", "features-bot-detection-v2-015", "analytics-testing-guide-010"],
+      "tags": [
+        "analytics",
+        "rate-limiting",
+        "fingerprinting",
+        "session-management",
+        "sendBeacon",
+        "bot-detection",
+        "firestore",
+        "api-design"
+      ],
+      "related_guides": [
+        "testing-rate-limits-collection-037",
+        "features-bot-detection-v2-015",
+        "analytics-testing-guide-010"
+      ],
       "functions": [],
-      "components": ["TrackAnalyticsService", "SessionManager"],
+      "components": [
+        "TrackAnalyticsService",
+        "SessionManager"
+      ],
       "status": "active",
       "created": "2025-01-01",
       "updated": "2025-11-11"
@@ -262,11 +483,22 @@
     {
       "id": "rgpd-conformite-tapit-013",
       "title": "RGPD Conformité Tapit",
-      "filename": "RGPD_Conformite_Tapit.md",
+      "filename": "documentation/rgpd/RGPD_Conformite_Tapit.md",
       "category": "rgpd",
       "summary": "Complete GDPR/RGPD compliance roadmap and implementation plan for Weavink (Tapit SAS).",
-      "tags": ["gdpr", "rgpd", "compliance", "privacy", "legal", "data-protection", "consent-management", "cookies"],
-      "related_guides": ["rgpd-commit-summary-014"],
+      "tags": [
+        "gdpr",
+        "rgpd",
+        "compliance",
+        "privacy",
+        "legal",
+        "data-protection",
+        "consent-management",
+        "cookies"
+      ],
+      "related_guides": [
+        "rgpd-commit-summary-014"
+      ],
       "functions": [],
       "components": [],
       "status": "active",
@@ -276,13 +508,29 @@
     {
       "id": "rgpd-commit-summary-014",
       "title": "RGPD Implementation Summary",
-      "filename": "COMMIT_SUMMARY.md",
+      "filename": "documentation/meta/COMMIT_SUMMARY.md",
       "category": "rgpd",
       "summary": "Complete implementation summary of RGPD Phase 1-2 with consent management, data export, account deletion, and cookie consent.",
-      "tags": ["gdpr", "rgpd", "compliance", "commit-summary", "implementation", "privacy-center", "cookies", "data-export"],
-      "related_guides": ["rgpd-conformite-tapit-013"],
+      "tags": [
+        "gdpr",
+        "rgpd",
+        "compliance",
+        "commit-summary",
+        "implementation",
+        "privacy-center",
+        "cookies",
+        "data-export"
+      ],
+      "related_guides": [
+        "rgpd-conformite-tapit-013"
+      ],
       "functions": [],
-      "components": ["ConsentService", "DataExportService", "AccountDeletionService", "CookieBanner"],
+      "components": [
+        "ConsentService",
+        "DataExportService",
+        "AccountDeletionService",
+        "CookieBanner"
+      ],
       "status": "active",
       "created": "2025-01-01",
       "updated": "2025-11-11"
@@ -290,12 +538,25 @@
     {
       "id": "features-bot-detection-v2-015",
       "title": "Bot Detection Fix V2",
-      "filename": "BOT_DETECTION_FIX_V2.md",
+      "filename": "documentation/features/BOT_DETECTION_FIX_V2.md",
       "category": "features",
       "summary": "Improved bot detection by including current request in calculations, catching rapid-fire bots with 50ms intervals.",
-      "tags": ["bot-detection", "rate-limiting", "security", "bug-fix", "multi-factor-detection", "analytics"],
-      "related_guides": ["features-bot-detection-v1-016", "testing-rate-limits-collection-037", "analytics-implementation-012"],
-      "functions": ["applyAnalyticsRateLimit"],
+      "tags": [
+        "bot-detection",
+        "rate-limiting",
+        "security",
+        "bug-fix",
+        "multi-factor-detection",
+        "analytics"
+      ],
+      "related_guides": [
+        "features-bot-detection-v1-016",
+        "testing-rate-limits-collection-037",
+        "analytics-implementation-012"
+      ],
+      "functions": [
+        "applyAnalyticsRateLimit"
+      ],
       "components": [],
       "status": "active",
       "created": "2025-01-01",
@@ -304,12 +565,24 @@
     {
       "id": "features-bot-detection-v1-016",
       "title": "Bot Detection Fix V1",
-      "filename": "BOT_DETECTION_FIX.md",
+      "filename": "documentation/archive/BOT_DETECTION_FIX.md",
       "category": "features",
       "summary": "Implements multi-factor bot detection using 3 criteria (requests per second, average rate, burst windows) to catch sophisticated bots.",
-      "tags": ["bot-detection", "rate-limiting", "security", "multi-factor-analysis", "analytics", "firestore-logging"],
-      "related_guides": ["features-bot-detection-v2-015", "testing-rate-limits-collection-037"],
-      "functions": ["logRateLimitEvent"],
+      "tags": [
+        "bot-detection",
+        "rate-limiting",
+        "security",
+        "multi-factor-analysis",
+        "analytics",
+        "firestore-logging"
+      ],
+      "related_guides": [
+        "features-bot-detection-v2-015",
+        "testing-rate-limits-collection-037"
+      ],
+      "functions": [
+        "logRateLimitEvent"
+      ],
       "components": [],
       "status": "superseded",
       "created": "2025-01-01",
@@ -318,13 +591,25 @@
     {
       "id": "features-carousel-017",
       "title": "Carousel Implementation",
-      "filename": "CAROUSEL_IMPLEMENTATION.md",
+      "filename": "documentation/features/CAROUSEL_IMPLEMENTATION.md",
       "category": "features",
       "summary": "Documents multi-carousel support system allowing users to create multiple independent carousels with grouped item structure.",
-      "tags": ["carousel", "features", "data-structure", "component-architecture", "multi-carousel", "firestore", "ui-components"],
+      "tags": [
+        "carousel",
+        "features",
+        "data-structure",
+        "component-architecture",
+        "multi-carousel",
+        "firestore",
+        "ui-components"
+      ],
       "related_guides": [],
       "functions": [],
-      "components": ["CarouselManager", "CarouselContainerCard", "CarouselItem"],
+      "components": [
+        "CarouselManager",
+        "CarouselContainerCard",
+        "CarouselItem"
+      ],
       "status": "active",
       "created": "2025-01-01",
       "updated": "2025-11-11"
@@ -332,13 +617,23 @@
     {
       "id": "features-event-grouping-018",
       "title": "Event Grouping Enhancement",
-      "filename": "EVENT_GROUPING_ENHANCEMENT.md",
+      "filename": "documentation/features/EVENT_GROUPING_ENHANCEMENT.md",
       "category": "features",
       "summary": "Enhances contact timeline by grouping related events (exchanges, follow-ups, meetings) for better readability and context.",
-      "tags": ["contacts", "timeline", "event-grouping", "ui-enhancement", "ux-improvement"],
-      "related_guides": ["features-enhanced-reviews-019"],
+      "tags": [
+        "contacts",
+        "timeline",
+        "event-grouping",
+        "ui-enhancement",
+        "ux-improvement"
+      ],
+      "related_guides": [
+        "features-enhanced-reviews-019"
+      ],
       "functions": [],
-      "components": ["Timeline"],
+      "components": [
+        "Timeline"
+      ],
       "status": "active",
       "created": "2025-01-01",
       "updated": "2025-11-11"
@@ -346,11 +641,20 @@
     {
       "id": "features-enhanced-reviews-019",
       "title": "Enhanced Review Features",
-      "filename": "ENHANCED_REVIEW_FEATURES.md",
+      "filename": "documentation/features/ENHANCED_REVIEW_FEATURES.md",
       "category": "features",
       "summary": "Adds structured review system to contacts with ratings, categories, sentiment analysis, and follow-up suggestions.",
-      "tags": ["contacts", "reviews", "ratings", "sentiment-analysis", "follow-ups", "ui-components"],
-      "related_guides": ["features-event-grouping-018"],
+      "tags": [
+        "contacts",
+        "reviews",
+        "ratings",
+        "sentiment-analysis",
+        "follow-ups",
+        "ui-components"
+      ],
+      "related_guides": [
+        "features-event-grouping-018"
+      ],
       "functions": [],
       "components": [],
       "status": "active",
@@ -360,10 +664,17 @@
     {
       "id": "features-video-embed-020",
       "title": "Video Embed Feature Summary",
-      "filename": "VIDEO_EMBED_FEATURE_SUMMARY.md",
+      "filename": "documentation/features/VIDEO_EMBED_FEATURE_SUMMARY.md",
       "category": "features",
       "summary": "Documents video embed feature allowing users to add YouTube, Vimeo, and custom videos to profiles.",
-      "tags": ["video", "embeds", "youtube", "vimeo", "features", "responsive-design"],
+      "tags": [
+        "video",
+        "embeds",
+        "youtube",
+        "vimeo",
+        "features",
+        "responsive-design"
+      ],
       "related_guides": [],
       "functions": [],
       "components": [],
@@ -374,10 +685,16 @@
     {
       "id": "features-venue-enrichment-021",
       "title": "Venue Enrichment Feature",
-      "filename": "VENUE_ENRICHMENT_FEATURE.md",
+      "filename": "documentation/features/VENUE_ENRICHMENT_FEATURE.md",
       "category": "features",
       "summary": "Automatically enriches venue/location contacts with details from Google Maps API.",
-      "tags": ["contacts", "google-maps", "api-integration", "venue-enrichment", "automation"],
+      "tags": [
+        "contacts",
+        "google-maps",
+        "api-integration",
+        "venue-enrichment",
+        "automation"
+      ],
       "related_guides": [],
       "functions": [],
       "components": [],
@@ -388,10 +705,15 @@
     {
       "id": "features-landing-page-022",
       "title": "Landing Page Redesign",
-      "filename": "LANDING_PAGE_REDESIGN.md",
+      "filename": "documentation/features/LANDING_PAGE_REDESIGN.md",
       "category": "features",
       "summary": "Documents complete redesign of landing page with modern UI, feature highlights, and improved conversion.",
-      "tags": ["landing-page", "ui-design", "marketing", "conversion-optimization"],
+      "tags": [
+        "landing-page",
+        "ui-design",
+        "marketing",
+        "conversion-optimization"
+      ],
       "related_guides": [],
       "functions": [],
       "components": [],
@@ -402,11 +724,19 @@
     {
       "id": "features-realtime-subscription-023",
       "title": "Real-Time Subscription Updates",
-      "filename": "REAL_TIME_SUBSCRIPTION_UPDATES.md",
+      "filename": "documentation/features/REAL_TIME_SUBSCRIPTION_UPDATES.md",
       "category": "features",
       "summary": "Implements real-time subscription updates using Firestore listeners for instant UI synchronization.",
-      "tags": ["subscription", "real-time", "firestore", "listeners", "state-management"],
-      "related_guides": ["technical-subscription-revalidation-031"],
+      "tags": [
+        "subscription",
+        "real-time",
+        "firestore",
+        "listeners",
+        "state-management"
+      ],
+      "related_guides": [
+        "technical-subscription-revalidation-031"
+      ],
       "functions": [],
       "components": [],
       "status": "active",
@@ -416,12 +746,29 @@
     {
       "id": "technical-cost-tracking-migration-024",
       "title": "Cost Tracking Migration Guide",
-      "filename": "COST_TRACKING_MIGRATION_GUIDE.md",
+      "filename": "documentation/infrastructure/COST_TRACKING_MIGRATION_GUIDE.md",
       "category": "technical",
       "summary": "Complete migration guide for refactored CostTrackingService supporting multiple resource types (AI, API) with backward compatibility.",
-      "tags": ["cost-tracking", "migration", "ai-usage", "api-usage", "firestore", "backward-compatibility", "subscription-limits"],
-      "related_guides": ["technical-budget-check-usage-027", "technical-budget-display-026", "admin-analytics-integration-001"],
-      "functions": ["recordUsage", "canAffordOperation", "getUserMonthlyUsage", "getDetailedUsage"],
+      "tags": [
+        "cost-tracking",
+        "migration",
+        "ai-usage",
+        "api-usage",
+        "firestore",
+        "backward-compatibility",
+        "subscription-limits"
+      ],
+      "related_guides": [
+        "technical-budget-check-usage-027",
+        "technical-budget-display-026",
+        "admin-analytics-integration-001"
+      ],
+      "functions": [
+        "recordUsage",
+        "canAffordOperation",
+        "getUserMonthlyUsage",
+        "getDetailedUsage"
+      ],
       "components": [],
       "status": "active",
       "created": "2025-01-01",
@@ -430,11 +777,23 @@
     {
       "id": "technical-comprehensive-refactoring-025",
       "title": "Comprehensive Refactoring Guide",
-      "filename": "COMPREHENSIVE_REFACTORING_GUIDE.md",
+      "filename": "documentation/infrastructure/COMPREHENSIVE_REFACTORING_GUIDE.md",
       "category": "technical",
       "summary": "Best practices and patterns reference for refactoring Next.js codebase covering components, services, API routes, and state management.",
-      "tags": ["refactoring", "best-practices", "architecture", "nextjs", "design-patterns", "testing", "code-quality"],
-      "related_guides": ["admin-refactor-summary-008", "admin-service-separation-005", "admin-vector-panel-refactor-004"],
+      "tags": [
+        "refactoring",
+        "best-practices",
+        "architecture",
+        "nextjs",
+        "design-patterns",
+        "testing",
+        "code-quality"
+      ],
+      "related_guides": [
+        "admin-refactor-summary-008",
+        "admin-service-separation-005",
+        "admin-vector-panel-refactor-004"
+      ],
       "functions": [],
       "components": [],
       "status": "active",
@@ -444,13 +803,27 @@
     {
       "id": "technical-budget-display-026",
       "title": "Budget Display Implementation",
-      "filename": "BUDGET_DISPLAY_IMPLEMENTATION.md",
+      "filename": "documentation/infrastructure/BUDGET_DISPLAY_IMPLEMENTATION.md",
       "category": "technical",
       "summary": "Documents budget information display system showing users real-time monthly AI operation usage and cost budget.",
-      "tags": ["budget", "dashboard", "ui-components", "cost-tracking", "subscription", "real-time-display"],
-      "related_guides": ["technical-budget-check-usage-027", "technical-cost-tracking-migration-024"],
-      "functions": ["fetchBudgetInfo"],
-      "components": ["BudgetInfoCard"],
+      "tags": [
+        "budget",
+        "dashboard",
+        "ui-components",
+        "cost-tracking",
+        "subscription",
+        "real-time-display"
+      ],
+      "related_guides": [
+        "technical-budget-check-usage-027",
+        "technical-cost-tracking-migration-024"
+      ],
+      "functions": [
+        "fetchBudgetInfo"
+      ],
+      "components": [
+        "BudgetInfoCard"
+      ],
       "status": "active",
       "created": "2025-01-01",
       "updated": "2025-11-11"
@@ -458,13 +831,28 @@
     {
       "id": "technical-budget-check-usage-027",
       "title": "Budget Check Usage Guide",
-      "filename": "BUDGET_CHECK_USAGE_GUIDE.md",
+      "filename": "documentation/infrastructure/BUDGET_CHECK_USAGE_GUIDE.md",
       "category": "technical",
       "summary": "Guide for using real-time budget tracking and permission checking system before expensive API operations.",
-      "tags": ["budget", "cost-tracking", "permissions", "session-management", "api-design", "pre-flight-checks"],
-      "related_guides": ["technical-budget-display-026", "technical-cost-tracking-migration-024"],
-      "functions": ["canAffordOperation", "getRemainingBudget"],
-      "components": ["SessionManager"],
+      "tags": [
+        "budget",
+        "cost-tracking",
+        "permissions",
+        "session-management",
+        "api-design",
+        "pre-flight-checks"
+      ],
+      "related_guides": [
+        "technical-budget-display-026",
+        "technical-cost-tracking-migration-024"
+      ],
+      "functions": [
+        "canAffordOperation",
+        "getRemainingBudget"
+      ],
+      "components": [
+        "SessionManager"
+      ],
       "status": "active",
       "created": "2025-01-01",
       "updated": "2025-11-11"
@@ -472,12 +860,23 @@
     {
       "id": "technical-budget-affordability-028",
       "title": "Budget Affordability Check Guide",
-      "filename": "BUDGET_AFFORDABILITY_CHECK_GUIDE.md",
+      "filename": "documentation/infrastructure/BUDGET_AFFORDABILITY_CHECK_GUIDE.md",
       "category": "technical",
       "summary": "Documents affordability checking system preventing users from exceeding subscription limits.",
-      "tags": ["budget", "permissions", "subscription", "cost-control", "validation"],
-      "related_guides": ["technical-budget-check-usage-027", "technical-cost-tracking-migration-024"],
-      "functions": ["canAffordOperation"],
+      "tags": [
+        "budget",
+        "permissions",
+        "subscription",
+        "cost-control",
+        "validation"
+      ],
+      "related_guides": [
+        "technical-budget-check-usage-027",
+        "technical-cost-tracking-migration-024"
+      ],
+      "functions": [
+        "canAffordOperation"
+      ],
       "components": [],
       "status": "active",
       "created": "2025-01-01",
@@ -486,10 +885,16 @@
     {
       "id": "technical-dynamicfields-fix-029",
       "title": "DynamicFields Fix Summary",
-      "filename": "DYNAMICFIELDS_FIX_SUMMARY.md",
+      "filename": "documentation/infrastructure/DYNAMICFIELDS_FIX_SUMMARY.md",
       "category": "technical",
       "summary": "Fixes dynamic field system for contacts with improved data validation and error handling.",
-      "tags": ["contacts", "dynamic-fields", "bug-fix", "validation", "data-integrity"],
+      "tags": [
+        "contacts",
+        "dynamic-fields",
+        "bug-fix",
+        "validation",
+        "data-integrity"
+      ],
       "related_guides": [],
       "functions": [],
       "components": [],
@@ -500,11 +905,18 @@
     {
       "id": "technical-session-tracking-fix-030",
       "title": "Session Tracking Fix",
-      "filename": "SESSION_TRACKING_FIX.md",
+      "filename": "documentation/infrastructure/SESSION_TRACKING_FIX.md",
       "category": "technical",
       "summary": "Fixes session tracking issues ensuring proper session lifecycle management.",
-      "tags": ["sessions", "bug-fix", "tracking", "lifecycle-management"],
-      "related_guides": ["admin-dashboard-session-fix-009"],
+      "tags": [
+        "sessions",
+        "bug-fix",
+        "tracking",
+        "lifecycle-management"
+      ],
+      "related_guides": [
+        "admin-dashboard-session-fix-009"
+      ],
       "functions": [],
       "components": [],
       "status": "active",
@@ -514,11 +926,18 @@
     {
       "id": "technical-subscription-revalidation-031",
       "title": "Subscription Revalidation Setup",
-      "filename": "SUBSCRIPTION_REVALIDATION_SETUP.md",
+      "filename": "documentation/infrastructure/SUBSCRIPTION_REVALIDATION_SETUP.md",
       "category": "technical",
       "summary": "Documents subscription revalidation system ensuring user tier limits are enforced correctly.",
-      "tags": ["subscription", "validation", "security", "tier-enforcement"],
-      "related_guides": ["features-realtime-subscription-023"],
+      "tags": [
+        "subscription",
+        "validation",
+        "security",
+        "tier-enforcement"
+      ],
+      "related_guides": [
+        "features-realtime-subscription-023"
+      ],
       "functions": [],
       "components": [],
       "status": "active",
@@ -528,11 +947,19 @@
     {
       "id": "technical-semantic-search-032",
       "title": "Semantic Search Architecture Current",
-      "filename": "SEMANTIC_SEARCH_ARCHITECTURE_CURRENT.md",
+      "filename": "documentation/infrastructure/SEMANTIC_SEARCH_ARCHITECTURE_CURRENT.md",
       "category": "technical",
       "summary": "Documents current semantic search architecture using vector embeddings and Pinecone.",
-      "tags": ["semantic-search", "vector-database", "pinecone", "embeddings", "ai-features"],
-      "related_guides": ["admin-vector-panel-refactor-004"],
+      "tags": [
+        "semantic-search",
+        "vector-database",
+        "pinecone",
+        "embeddings",
+        "ai-features"
+      ],
+      "related_guides": [
+        "admin-vector-panel-refactor-004"
+      ],
       "functions": [],
       "components": [],
       "status": "active",
@@ -542,10 +969,15 @@
     {
       "id": "technical-quick-start-integration-033",
       "title": "Quick Start Integration",
-      "filename": "QUICK_START_INTEGRATION.md",
+      "filename": "documentation/infrastructure/QUICK_START_INTEGRATION.md",
       "category": "technical",
       "summary": "Quick 30-minute integration guide for new features and components.",
-      "tags": ["integration", "quick-start", "onboarding", "documentation"],
+      "tags": [
+        "integration",
+        "quick-start",
+        "onboarding",
+        "documentation"
+      ],
       "related_guides": [],
       "functions": [],
       "components": [],
@@ -559,8 +991,15 @@
       "filename": "costTracking/REFACTORING_GUIDE.md",
       "category": "technical",
       "summary": "Specific refactoring guide for cost tracking service.",
-      "tags": ["refactoring", "cost-tracking", "service-layer"],
-      "related_guides": ["technical-cost-tracking-migration-024", "technical-comprehensive-refactoring-025"],
+      "tags": [
+        "refactoring",
+        "cost-tracking",
+        "service-layer"
+      ],
+      "related_guides": [
+        "technical-cost-tracking-migration-024",
+        "technical-comprehensive-refactoring-025"
+      ],
       "functions": [],
       "components": [],
       "status": "active",
@@ -570,10 +1009,14 @@
     {
       "id": "technical-rules-grouping-fixes-035",
       "title": "Rules Grouping Fixes",
-      "filename": "RULES_GROUPING_FIXES.md",
+      "filename": "documentation/infrastructure/RULES_GROUPING_FIXES.md",
       "category": "technical",
       "summary": "Fixes for rules grouping system.",
-      "tags": ["rules-engine", "bug-fix", "grouping"],
+      "tags": [
+        "rules-engine",
+        "bug-fix",
+        "grouping"
+      ],
       "related_guides": [],
       "functions": [],
       "components": [],
@@ -584,11 +1027,19 @@
     {
       "id": "testing-rate-limit-036",
       "title": "Rate Limit Testing",
-      "filename": "RATE_LIMIT_TESTING.md",
+      "filename": "documentation/testing/RATE_LIMIT_TESTING.md",
       "category": "testing",
       "summary": "Testing guide for rate limiting system with various attack scenarios and verification methods.",
-      "tags": ["testing", "rate-limiting", "security-testing", "bot-simulation"],
-      "related_guides": ["features-bot-detection-v2-015", "testing-rate-limits-collection-037"],
+      "tags": [
+        "testing",
+        "rate-limiting",
+        "security-testing",
+        "bot-simulation"
+      ],
+      "related_guides": [
+        "features-bot-detection-v2-015",
+        "testing-rate-limits-collection-037"
+      ],
       "functions": [],
       "components": [],
       "status": "active",
@@ -598,11 +1049,21 @@
     {
       "id": "testing-rate-limits-collection-037",
       "title": "Rate Limits Collection Guide",
-      "filename": "RATE_LIMITS_COLLECTION_GUIDE.md",
+      "filename": "documentation/testing/RATE_LIMITS_COLLECTION_GUIDE.md",
       "category": "testing",
       "summary": "Complete guide to RateLimits Firestore collection monitoring security events and rate limit violations.",
-      "tags": ["rate-limiting", "security", "monitoring", "firestore", "logging", "security-events"],
-      "related_guides": ["features-bot-detection-v2-015", "analytics-implementation-012"],
+      "tags": [
+        "rate-limiting",
+        "security",
+        "monitoring",
+        "firestore",
+        "logging",
+        "security-events"
+      ],
+      "related_guides": [
+        "features-bot-detection-v2-015",
+        "analytics-implementation-012"
+      ],
       "functions": [],
       "components": [],
       "status": "active",
@@ -612,10 +1073,16 @@
     {
       "id": "general-readme-038",
       "title": "Project README",
-      "filename": "README.md",
+      "filename": "documentation/general/README.md",
       "category": "general",
       "summary": "Main project README with setup instructions and overview.",
-      "tags": ["readme", "setup", "getting-started", "overview", "installation"],
+      "tags": [
+        "readme",
+        "setup",
+        "getting-started",
+        "overview",
+        "installation"
+      ],
       "related_guides": [],
       "functions": [],
       "components": [],
@@ -626,10 +1093,14 @@
     {
       "id": "general-preview-039",
       "title": "Preview Documentation",
-      "filename": "Preview.md",
+      "filename": "documentation/general/Preview.md",
       "category": "general",
       "summary": "Preview/demo documentation.",
-      "tags": ["preview", "demo", "features"],
+      "tags": [
+        "preview",
+        "demo",
+        "features"
+      ],
       "related_guides": [],
       "functions": [],
       "components": [],
@@ -640,10 +1111,14 @@
     {
       "id": "general-updates-040",
       "title": "Project Updates",
-      "filename": "updates.md",
+      "filename": "documentation/general/updates.md",
       "category": "general",
       "summary": "Project changelog and update history.",
-      "tags": ["changelog", "updates", "version-history"],
+      "tags": [
+        "changelog",
+        "updates",
+        "version-history"
+      ],
       "related_guides": [],
       "functions": [],
       "components": [],
@@ -654,10 +1129,15 @@
     {
       "id": "general-restart-instructions-041",
       "title": "Restart Instructions",
-      "filename": "RESTART_INSTRUCTIONS.md",
+      "filename": "documentation/general/RESTART_INSTRUCTIONS.md",
       "category": "general",
       "summary": "Server restart procedures and troubleshooting steps.",
-      "tags": ["operations", "restart", "troubleshooting", "server-management"],
+      "tags": [
+        "operations",
+        "restart",
+        "troubleshooting",
+        "server-management"
+      ],
       "related_guides": [],
       "functions": [],
       "components": [],

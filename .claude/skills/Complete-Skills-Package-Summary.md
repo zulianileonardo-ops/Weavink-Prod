@@ -152,12 +152,12 @@ cp ~/.claude/skills/test-manager/test-index-template.json ~/temp2/temp2/test-ind
 {
   testResults: {passed: 8, failed: 0, ...},
   testedFunctions: ["recordConsent", "getUserConsents", ...],
-  relatedDocs: ["CONSENT_IMPLEMENTATION_GUIDE.md", ...]
+  relatedDocs: ["documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md", ...]
 }
 
 // docs-manager → git-manager
 {
-  filesUpdated: ["CONSENT_IMPLEMENTATION_GUIDE.md", ...],
+  filesUpdated: ["documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md", ...],
   message: "Updated docs with test coverage",
   testsLinked: true
 }
@@ -194,7 +194,7 @@ Result:
 "Run RGPD consent tests"
 
 # Just document
-"Update CONSENT_IMPLEMENTATION_GUIDE.md"
+"Update documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md"
 
 # Just commit
 "Commit my changes"

@@ -3,11 +3,18 @@
  * GDPR Art. 17 - Right to Erasure ("Right to be Forgotten")
  *
  * Allows users to delete their account and all associated data
+ * Implements 30-day grace period for account recovery
  */
 
 import { NextResponse } from 'next/server';
-import { createApiSession } from '@/lib/server/session';
+import { createApiSession, SessionManager } from '@/lib/server/session';
 import { rateLimit } from '@/lib/rateLimiter';
+import {
+  PRIVACY_PERMISSIONS,
+  PRIVACY_RATE_LIMITS,
+  PRIVACY_ERROR_MESSAGES,
+  DELETION_CONFIRMATION_TEXT,
+} from '@/lib/services/constants';
 import {
   requestAccountDeletion,
   cancelAccountDeletion,
@@ -20,11 +27,23 @@ import {
  */
 export async function GET(request) {
   try {
-    // Create session (includes authentication)
+    // 1. Create session (includes authentication)
     const session = await createApiSession(request);
+    const sessionManager = new SessionManager(session);
     const userId = session.userId;
 
-    // Check for pending deletion request
+    // 2. Permission check
+    if (!session.permissions[PRIVACY_PERMISSIONS.CAN_DELETE_ACCOUNT]) {
+      return NextResponse.json(
+        {
+          error: PRIVACY_ERROR_MESSAGES.PERMISSION_DENIED,
+          message: 'You do not have permission to delete accounts',
+        },
+        { status: 403 }
+      );
+    }
+
+    // 3. Check for pending deletion request
     const deletionRequest = await getUserDeletionRequest(userId);
 
     if (!deletionRequest) {
@@ -44,9 +63,9 @@ export async function GET(request) {
       ),
     });
   } catch (error) {
-    console.error('Error in GET /api/user/privacy/delete-account:', error);
+    console.error('❌ [AccountDeletionAPI] Error in GET:', error);
     return NextResponse.json(
-      { error: 'Failed to check deletion status', details: error.message },
+      { error: PRIVACY_ERROR_MESSAGES.DELETION_FAILED, details: error.message },
       { status: 500 }
     );
   }
@@ -62,16 +81,28 @@ export async function GET(request) {
  */
 export async function POST(request) {
   try {
-    // Create session (includes authentication)
+    // 1. Create session (includes authentication)
     const session = await createApiSession(request);
+    const sessionManager = new SessionManager(session);
     const userId = session.userId;
 
-    // Rate limiting - very strict for deletion requests
-    if (!rateLimit(userId, 2, 3600000)) {
-      // Max 2 requests per hour
+    // 2. Permission check
+    if (!session.permissions[PRIVACY_PERMISSIONS.CAN_DELETE_ACCOUNT]) {
       return NextResponse.json(
         {
-          error: 'Too many deletion requests',
+          error: PRIVACY_ERROR_MESSAGES.PERMISSION_DENIED,
+          message: 'You do not have permission to delete accounts',
+        },
+        { status: 403 }
+      );
+    }
+
+    // 3. Rate limiting - very strict for deletion requests
+    const { max, window } = PRIVACY_RATE_LIMITS.ACCOUNT_DELETIONS;
+    if (!rateLimit(userId, max, window)) {
+      return NextResponse.json(
+        {
+          error: PRIVACY_ERROR_MESSAGES.DELETION_RATE_LIMIT,
           message: 'For security reasons, please wait before trying again.',
         },
         { status: 429 }
@@ -80,26 +111,26 @@ export async function POST(request) {
 
     const body = await request.json();
 
-    // Validate confirmation text
+    // 4. Validate confirmation text
     const { confirmation, reason, immediate = false } = body;
 
-    if (confirmation !== 'DELETE MY ACCOUNT') {
+    if (confirmation !== DELETION_CONFIRMATION_TEXT) {
       return NextResponse.json(
         {
-          error: 'Invalid confirmation',
-          message: 'You must type "DELETE MY ACCOUNT" to confirm account deletion',
-          required: 'DELETE MY ACCOUNT',
+          error: PRIVACY_ERROR_MESSAGES.DELETION_INVALID_CONFIRMATION,
+          message: `You must type "${DELETION_CONFIRMATION_TEXT}" to confirm account deletion`,
+          required: DELETION_CONFIRMATION_TEXT,
         },
         { status: 400 }
       );
     }
 
-    // Check if user already has a pending deletion request
+    // 5. Check if user already has a pending deletion request
     const existingRequest = await getUserDeletionRequest(userId);
     if (existingRequest) {
       return NextResponse.json(
         {
-          error: 'Deletion already pending',
+          error: PRIVACY_ERROR_MESSAGES.DELETION_ALREADY_PENDING,
           message: 'You already have a pending account deletion request',
           deletionRequest: existingRequest,
           daysRemaining: Math.ceil(
@@ -110,9 +141,9 @@ export async function POST(request) {
       );
     }
 
-    console.log(`[AccountDeletion] User ${userId} requested account deletion`);
+    console.log(`⚠️ [AccountDeletionAPI] User ${userId} requested account deletion`);
 
-    // Request account deletion
+    // 6. Request account deletion
     const result = await requestAccountDeletion(
       userId,
       {
@@ -125,6 +156,12 @@ export async function POST(request) {
         keepBillingData: true, // Always keep billing data (legal requirement)
       }
     );
+
+    console.log(`✅ [AccountDeletionAPI] Deletion request created for user ${userId}:`, {
+      requestId: result.deletionRequest.id,
+      scheduledDate: result.deletionRequest.scheduledDeletionDate,
+      immediate,
+    });
 
     return NextResponse.json({
       success: true,
@@ -148,19 +185,20 @@ export async function POST(request) {
           'Anonymized analytics (aggregated)',
           'Audit logs (12 months)',
         ],
-        affectedUsers: result.affectedUsers > 0
-          ? `${result.affectedUsers} users who have you as a contact will be notified`
-          : 'No other users affected',
+        affectedUsers:
+          result.affectedUsers > 0
+            ? `${result.affectedUsers} users who have you as a contact will be notified`
+            : 'No other users affected',
         cancellation: immediate
           ? null
           : 'You can cancel this deletion by clicking "Cancel Deletion" in your Privacy Center',
       },
     });
   } catch (error) {
-    console.error('Error in POST /api/user/privacy/delete-account:', error);
+    console.error('❌ [AccountDeletionAPI] Error in POST:', error);
     return NextResponse.json(
       {
-        error: 'Failed to delete account',
+        error: PRIVACY_ERROR_MESSAGES.DELETION_FAILED,
         details: error.message,
         support: 'If you need assistance, please contact support@weavink.io',
       },
@@ -174,14 +212,26 @@ export async function POST(request) {
  */
 export async function DELETE(request) {
   try {
-    // Create session (includes authentication)
+    // 1. Create session (includes authentication)
     const session = await createApiSession(request);
+    const sessionManager = new SessionManager(session);
     const userId = session.userId;
+
+    // 2. Permission check
+    if (!session.permissions[PRIVACY_PERMISSIONS.CAN_DELETE_ACCOUNT]) {
+      return NextResponse.json(
+        {
+          error: PRIVACY_ERROR_MESSAGES.PERMISSION_DENIED,
+          message: 'You do not have permission to manage account deletion',
+        },
+        { status: 403 }
+      );
+    }
 
     const { searchParams } = new URL(request.url);
     const requestId = searchParams.get('requestId');
 
-    // Get user's pending deletion request
+    // 3. Get user's pending deletion request
     const deletionRequest = requestId
       ? await getDeletionRequest(requestId)
       : await getUserDeletionRequest(userId);
@@ -196,7 +246,7 @@ export async function DELETE(request) {
       );
     }
 
-    // Verify ownership
+    // 4. Verify ownership
     if (deletionRequest.userId !== userId) {
       return NextResponse.json(
         {
@@ -207,8 +257,10 @@ export async function DELETE(request) {
       );
     }
 
-    // Cancel the deletion
+    // 5. Cancel the deletion
     const result = await cancelAccountDeletion(userId, deletionRequest.id);
+
+    console.log(`✅ [AccountDeletionAPI] Deletion cancelled for user ${userId}`);
 
     return NextResponse.json({
       success: true,
@@ -225,7 +277,7 @@ export async function DELETE(request) {
       },
     });
   } catch (error) {
-    console.error('Error in DELETE /api/user/privacy/delete-account:', error);
+    console.error('❌ [AccountDeletionAPI] Error in DELETE:', error);
     return NextResponse.json(
       {
         error: 'Failed to cancel deletion',
@@ -241,9 +293,21 @@ export async function DELETE(request) {
  */
 export async function PATCH(request) {
   try {
-    // Create session (includes authentication)
+    // 1. Create session (includes authentication)
     const session = await createApiSession(request);
+    const sessionManager = new SessionManager(session);
     const userId = session.userId;
+
+    // 2. Permission check
+    if (!session.permissions[PRIVACY_PERMISSIONS.CAN_DELETE_ACCOUNT]) {
+      return NextResponse.json(
+        {
+          error: PRIVACY_ERROR_MESSAGES.PERMISSION_DENIED,
+          message: 'You do not have permission to modify deletion requests',
+        },
+        { status: 403 }
+      );
+    }
 
     const body = await request.json();
     const { action } = body;
@@ -280,7 +344,7 @@ export async function PATCH(request) {
       { status: 400 }
     );
   } catch (error) {
-    console.error('Error in PATCH /api/user/privacy/delete-account:', error);
+    console.error('❌ [AccountDeletionAPI] Error in PATCH:', error);
     return NextResponse.json(
       {
         error: 'Failed to modify deletion request',

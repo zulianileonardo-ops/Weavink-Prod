@@ -15,7 +15,7 @@ import {
     ANALYTICS_ERRORS
 } from '@/lib/services/serviceUser/constants/analyticsConstants';
 import {
-    getUserConsents,
+    ConsentService,
     CONSENT_TYPES
 } from '@/lib/services/servicePrivacy/server/consentService';
 
@@ -83,7 +83,7 @@ export async function POST(request) {
         console.log('📊 Analytics API: Verifying user consent');
 
         try {
-            const consentResult = await getUserConsents(userId);
+            const consentResult = await ConsentService.getUserConsents(userId);
             const consents = consentResult.consents;
 
             // Check for basic analytics consent (minimum requirement)

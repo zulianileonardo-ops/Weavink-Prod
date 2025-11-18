@@ -21,8 +21,8 @@ Professional test management system for Weavink test suites with automatic docum
 
 ### File Locations
 - **Test Files**: `tests/` or user-specified directory
-- **Test Index**: `~/temp2/temp2/test-index.json`
-- **Test Reports**: `~/temp2/temp2/test-reports/`
+- **Test Index**: `/home/leo/Syncthing/Code-Weavink/test-index.json`
+- **Test Reports**: `/home/leo/Syncthing/Code-Weavink/test-reports/`
 
 ### Current Test Suites (Weavink)
 
@@ -103,8 +103,8 @@ Professional test management system for Weavink test suites with automatic docum
      "lastRun": "2025-11-11T14:30:00Z",
      "status": "passing",
      "relatedDocs": [
-       "CONSENT_IMPLEMENTATION_GUIDE.md",
-       "RGPD_TESTING_GUIDE.md"
+       "documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md",
+       "documentation/rgpd/RGPD_TESTING_GUIDE.md"
      ],
      "relatedFunctions": [
        "recordConsent",
@@ -143,7 +143,7 @@ Professional test management system for Weavink test suites with automatic docum
    {
      action: "link_tests_to_docs",
      testId: "rgpd-consent-category-001",
-     relatedDocs: ["CONSENT_IMPLEMENTATION_GUIDE.md"],
+     relatedDocs: ["documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md"],
      testResults: {
        passed: 12,
        failed: 0,
@@ -164,8 +164,8 @@ Professional test management system for Weavink test suites with automatic docum
    - Duration: 2.5s
    
    Related Documentation:
-   - CONSENT_IMPLEMENTATION_GUIDE.md
-   - RGPD_TESTING_GUIDE.md
+   - documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md
+   - documentation/rgpd/RGPD_TESTING_GUIDE.md
    
    Next steps:
    1. Review test report
@@ -228,8 +228,8 @@ Professional test management system for Weavink test suites with automatic docum
    created: YYYY-MM-DD
    updated: YYYY-MM-DD
    related:
-     - CONSENT_IMPLEMENTATION_GUIDE.md
-     - RGPD_TESTING_GUIDE.md
+     - documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md
+     - documentation/rgpd/RGPD_TESTING_GUIDE.md
    testFile: runConsentCategoryTests.mjs
    testResults:
      passed: 12
@@ -302,8 +302,8 @@ Professional test management system for Weavink test suites with automatic docum
        "batchGrantConsents"
      ],
      relatedDocs: [
-       "CONSENT_IMPLEMENTATION_GUIDE.md",
-       "RGPD_TESTING_GUIDE.md"
+       "documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md",
+       "documentation/rgpd/RGPD_TESTING_GUIDE.md"
      ]
    }
    ```
@@ -311,7 +311,7 @@ Professional test management system for Weavink test suites with automatic docum
 2. **Call docs-manager**
    ```
    Pass test data to docs-manager with instruction:
-   "Update CONSENT_IMPLEMENTATION_GUIDE.md to include test coverage:
+   "Update documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md to include test coverage:
    - recordConsent: Tested ✅ (12 tests)
    - getUserConsents: Tested ✅ (8 tests)
    Test suite: runConsentCategoryTests.mjs (100% passing)"
@@ -347,8 +347,8 @@ Professional test management system for Weavink test suites with automatic docum
       "lastRun": "2025-11-11T14:30:00Z",
       "status": "passing",
       "relatedDocs": [
-        "CONSENT_IMPLEMENTATION_GUIDE.md",
-        "RGPD_TESTING_GUIDE.md"
+        "documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md",
+        "documentation/rgpd/RGPD_TESTING_GUIDE.md"
       ],
       "testedFunctions": [
         "recordConsent",
@@ -443,7 +443,7 @@ After successful test run:
     failed: 0,
     coverage: "95%"
   },
-  relatedDocs: ["CONSENT_IMPLEMENTATION_GUIDE.md"],
+  relatedDocs: ["documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md"],
   testedFunctions: ["recordConsent", "getUserConsents"],
   request: "Update documentation with test coverage information"
 }
@@ -461,7 +461,7 @@ After tests pass and docs updated:
   files: [
     "test-index.json",
     "test-reports/rgpd-consent-categories.md",
-    "CONSENT_IMPLEMENTATION_GUIDE.md"  // Updated by docs-manager
+    "documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md"  // Updated by docs-manager
   ],
   request: "Commit test results and updated documentation"
 }
@@ -479,10 +479,10 @@ test-manager:
 2. ✅ Parses results: 12/12 passed
 3. ✅ Updates test-index.json
 4. ✅ Passes to docs-manager:
-   "Update CONSENT_IMPLEMENTATION_GUIDE.md with test coverage"
+   "Update documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md with test coverage"
 
 docs-manager:
-5. ✅ Finds CONSENT_IMPLEMENTATION_GUIDE.md
+5. ✅ Finds documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md
 6. ⚠️ ASKS: "Add test coverage (12/12 passing) to guide? [Y/n]"
    
 User: "Y"
@@ -496,7 +496,7 @@ docs-manager:
 git-manager:
 10. ⚠️ ASKS: "Commit changes with message:
     '✅ Tests: RGPD Consent (12/12) + Updated docs'
-    Files: test-index.json, CONSENT_IMPLEMENTATION_GUIDE.md
+    Files: test-index.json, documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md
     Proceed? [Y/n]"
     
 User: "Y"

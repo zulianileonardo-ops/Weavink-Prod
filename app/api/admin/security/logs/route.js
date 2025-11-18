@@ -11,8 +11,11 @@
  * References:
  * - app/api/admin/users/route.js
  * - app/api/admin/analytics/route.js
- * - ADMIN_ANALYTICS_API_USAGE_GUIDE.md
+ * - documentation/admin/ADMIN_ANALYTICS_API_USAGE_GUIDE.md
  */
+
+// Force dynamic rendering (uses request.headers)
+export const dynamic = 'force-dynamic';
 
 import { NextResponse } from 'next/server';
 import { adminAuth } from '@/lib/firebaseAdmin';

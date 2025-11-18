@@ -538,6 +538,34 @@
       "settings": "设置",
       "contacts": "联系人"
     },
+    "settings": {
+      "controls": {
+        "jump_to": "跳转到："
+      },
+      "social_icons": {
+        "title": "社交图标",
+        "card_title": "展示个性",
+        "card_subtitle": "添加链接到您的社交资料、电子邮件等的图标。",
+        "alt_icon": "社交图标"
+      },
+      "support_banner": {
+        "title": "支持横幅",
+        "alt_icon": "支持图标",
+        "switch_title": "展示您的支持",
+        "switch_description": "通过个人资料横幅展示您对重要事业的支持。一次只能激活一个横幅。"
+      },
+      "sensitive_material": {
+        "title": "敏感内容",
+        "alt_icon": "敏感内容图标",
+        "description": "在访问者查看您的个人资料之前显示敏感内容警告。"
+      },
+      "seo": {
+        "title": "SEO",
+        "alt_icon": "SEO图标",
+        "card_title": "自定义元数据",
+        "card_description": "元数据的更改可能需要一些时间才能在其他平台上显示。"
+      }
+    },
     "appearance": {
       "headings": {
         "profile": "个人资料",
@@ -1854,7 +1882,115 @@
     },
     "consents": {
       "title": "管理同意",
-      "description": "控制哪些功能可以处理您的数据。您可以随时撤回同意。更改立即生效。"
+      "description": "控制哪些功能可以处理您的数据。您可以随时撤回同意。更改立即生效。",
+      "status": {
+        "granted": "已授予",
+        "withdrawn": "已撤回"
+      },
+      "badge": {
+        "required": "必需"
+      },
+      "category": {
+        "essential": {
+          "name": "基本",
+          "description": "应用程序正常运行所需"
+        },
+        "ai_features": {
+          "name": "AI 功能",
+          "description": "人工智能驱动的增强功能"
+        },
+        "analytics": {
+          "name": "分析",
+          "description": "使用分析和性能跟踪"
+        },
+        "communication": {
+          "name": "通信",
+          "description": "电子邮件通信和推荐"
+        },
+        "personalization": {
+          "name": "个性化",
+          "description": "个性化体验和个人资料设置"
+        }
+      },
+      "type": {
+        "terms_of_service": {
+          "name": "服务条款",
+          "description": "接受我们的条款和条件",
+          "gdpr": "第 6(1)(b) 条 - 合同履行"
+        },
+        "privacy_policy": {
+          "name": "隐私政策",
+          "description": "接受我们的隐私做法",
+          "gdpr": "第 6(1)(b) 条 - 合同履行"
+        },
+        "ai_business_card": {
+          "name": "AI 名片增强",
+          "description": "使用 AI（Google Gemini 2.0）以高精度从名片图像中提取信息",
+          "gdpr": "第 6(1)(a) 条 - 同意",
+          "tier": "Premium+"
+        },
+        "ai_semantic_search": {
+          "name": "AI 语义搜索",
+          "description": "启用 AI 驱动的搜索，包括查询增强、嵌入、重新排序和智能结果分析",
+          "gdpr": "第 6(1)(a) 条 - 同意",
+          "tier": "Business+"
+        },
+        "ai_auto_grouping": {
+          "name": "AI 自动分组",
+          "description": "使用智能算法、地点丰富和事件检测自动对联系人进行分组",
+          "gdpr": "第 6(1)(a) 条 - 同意",
+          "tier": "Premium+"
+        },
+        "analytics_basic": {
+          "name": "基本分析",
+          "description": "基本使用统计（页面浏览量、功能使用）- 仅匿名数据",
+          "gdpr": "第 6(1)(f) 条 - 合法利益"
+        },
+        "analytics_detailed": {
+          "name": "详细分析",
+          "description": "详细使用模式和行为分析，用于改善用户体验",
+          "gdpr": "第 6(1)(a) 条 - 同意"
+        },
+        "cookies_analytics": {
+          "name": "分析 Cookies",
+          "description": "用于跟踪使用模式和改进应用程序的 Cookies",
+          "gdpr": "第 6(1)(a) 条 - 同意"
+        },
+        "marketing_emails": {
+          "name": "营销邮件",
+          "description": "接收新闻通讯、产品更新和促销优惠",
+          "gdpr": "第 6(1)(a) 条 - 同意"
+        },
+        "contact_recommendations": {
+          "name": "联系人推荐",
+          "description": "根据您的网络接收潜在连接建议",
+          "gdpr": "第 6(1)(a) 条 - 同意"
+        },
+        "cookies_personalization": {
+          "name": "个性化 Cookies",
+          "description": "记住您的偏好并自定义您的体验",
+          "gdpr": "第 6(1)(a) 条 - 同意"
+        },
+        "profile_public": {
+          "name": "公开资料",
+          "description": "使您的个人资料对平台上的其他用户可见",
+          "gdpr": "第 6(1)(a) 条 - 同意"
+        }
+      },
+      "technologies_label": "技术：",
+      "last_updated": "最后更新：{{date}}",
+      "info": {
+        "title": "关于您的同意权利",
+        "withdraw": "您可以随时通过切换上面的开关来撤回同意。",
+        "lawfulness": "撤回同意不会影响撤回前基于同意的处理的合法性（GDPR 第 7.3 条）。",
+        "essential": "基本同意是服务运行所必需的，未删除账户前无法撤回。",
+        "tiers": "某些功能需要特定订阅级别，如果撤回同意可能不可用。",
+        "audit": "所有同意更改都会被记录并可以审核。如有问题，请联系我们的数据保护官。"
+      },
+      "notification": {
+        "granted": "同意授予成功",
+        "withdrawn": "同意撤回成功"
+      }
     },
     "contact_download": {
       "title": "联系人下载设置",

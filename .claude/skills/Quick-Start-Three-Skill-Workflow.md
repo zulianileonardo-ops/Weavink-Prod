@@ -60,7 +60,7 @@ You: "Run the RGPD consent tests and commit if they pass"
 
 Claude Code will:
 1. ✅ Run tests → 8/8 passing
-2. ⚠️ Ask: "Update CONSENT_IMPLEMENTATION_GUIDE.md? [Y/n]"
+2. ⚠️ Ask: "Update documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md? [Y/n]"
 3. ✅ Update docs → 3 files updated
 4. ⚠️ Ask: "Commit changes? [Y/n]"
 5. ✅ Create commit
@@ -78,7 +78,7 @@ You: "Run the RGPD consent tests"
 → Tests run, results saved
 
 # Step 2: Update docs
-You: "Update CONSENT_IMPLEMENTATION_GUIDE.md with test coverage"
+You: "Update documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md with test coverage"
 → Docs updated
 
 # Step 3: Commit
@@ -162,8 +162,8 @@ Executing: node -r dotenv/config runConsentTests.mjs
 - withdrawConsent
 
 📄 Related Documentation:
-- CONSENT_IMPLEMENTATION_GUIDE.md
-- RGPD_TESTING_GUIDE.md
+- documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md
+- documentation/rgpd/RGPD_TESTING_GUIDE.md
 
 ✅ Test index updated
 ```
@@ -171,7 +171,7 @@ Executing: node -r dotenv/config runConsentTests.mjs
 ### When Docs Update
 
 ```
-📝 Updating CONSENT_IMPLEMENTATION_GUIDE.md
+📝 Updating documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md
 
 Proposed changes:
 - Add test coverage section
@@ -191,7 +191,7 @@ Proceed? [Y/n/preview]
 
 Files to commit:
 - test-index.json (test results)
-- CONSENT_IMPLEMENTATION_GUIDE.md (updated docs)
+- documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md (updated docs)
 - docs-index.json (updated index)
 
 Suggested commit message:
@@ -343,7 +343,7 @@ node -r dotenv/config runConsentTests.mjs
 
 ```
 # Check docs exist
-ls CONSENT_IMPLEMENTATION_GUIDE.md
+ls documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md
 
 # Check docs-index.json exists
 cat docs-index.json

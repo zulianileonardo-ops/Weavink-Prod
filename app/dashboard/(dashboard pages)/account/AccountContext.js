@@ -14,11 +14,12 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useDashboard } from '@/app/dashboard/DashboardContext';
 import { ConsentService } from '@/lib/services/servicePrivacy/client/services/ConsentService';
 import { DataExportService } from '@/lib/services/servicePrivacy/client/services/DataExportService';
 import { AccountDeletionService } from '@/lib/services/servicePrivacy/client/services/AccountDeletionService';
 import { SettingsService } from '@/lib/services/serviceSetting/client/settingsService';
+import { PRIVACY_PERMISSIONS } from '@/lib/services/constants';
 
 const AccountContext = createContext();
 
@@ -31,7 +32,12 @@ export function useAccount() {
 }
 
 export function AccountProvider({ children }) {
-  const { currentUser } = useAuth();
+  const { session } = useDashboard();
+
+  // Permission flags derived from session
+  const canManageConsents = session?.permissions?.[PRIVACY_PERMISSIONS.CAN_MANAGE_CONSENTS] ?? true;
+  const canExportData = session?.permissions?.[PRIVACY_PERMISSIONS.CAN_EXPORT_DATA] ?? true;
+  const canDeleteAccount = session?.permissions?.[PRIVACY_PERMISSIONS.CAN_DELETE_ACCOUNT] ?? true;
 
   // Core privacy data (cached)
   const [privacySettings, setPrivacySettings] = useState(null);
@@ -83,8 +89,8 @@ export function AccountProvider({ children }) {
    * Main data fetching function with caching
    */
   const fetchPrivacyData = useCallback(async (forceRefresh = false) => {
-    // Guard: Don't run if there's no user
-    if (!currentUser) {
+    // Guard: Don't run if there's no session
+    if (!session) {
       setPrivacySettings(null);
       setConsents(null);
       setPendingDeletion(null);
@@ -138,13 +144,13 @@ export function AccountProvider({ children }) {
     } finally {
       setIsLoading(false);
     }
-  }, [currentUser, isCacheValid, updateCache, showNotification]);
+  }, [session, isCacheValid, updateCache, showNotification]);
 
   /**
    * Fetch settings only (for Privacy Settings tab)
    */
   const fetchSettings = useCallback(async (forceRefresh = false) => {
-    if (!currentUser) return;
+    if (!session) return;
 
     try {
       const settingsData = await SettingsService.getSettingsData();
@@ -161,13 +167,13 @@ export function AccountProvider({ children }) {
       console.error('❌ [AccountContext] Error loading settings:', error);
       showNotification('Failed to load settings', 'error');
     }
-  }, [currentUser, updateCache, showNotification]);
+  }, [session, updateCache, showNotification]);
 
   /**
    * Update privacy setting (isPublic, allowMessages, notifications)
    */
   const updatePrivacySetting = useCallback(async (settingKey, value) => {
-    if (!currentUser) return;
+    if (!session) return;
 
     try {
       console.log(`🔄 [AccountContext] Updating ${settingKey} to ${value}`);
@@ -208,13 +214,13 @@ export function AccountProvider({ children }) {
       // Refresh to revert
       await fetchSettings(true);
     }
-  }, [currentUser, invalidateCache, showNotification, fetchSettings]);
+  }, [session, invalidateCache, showNotification, fetchSettings]);
 
   /**
    * Update contact download settings
    */
   const updateContactDownloadSettings = useCallback(async (enabled, fields) => {
-    if (!currentUser) return;
+    if (!session) return;
 
     try {
       console.log('🔄 [AccountContext] Updating contact download settings');
@@ -249,13 +255,13 @@ export function AccountProvider({ children }) {
       await fetchSettings(true);
       throw error;
     }
-  }, [currentUser, invalidateCache, showNotification, fetchSettings]);
+  }, [session, invalidateCache, showNotification, fetchSettings]);
 
   /**
    * Update language preference
    */
   const updateLanguagePreference = useCallback(async (languageCode) => {
-    if (!currentUser) return;
+    if (!session) return;
 
     try {
       console.log(`🔄 [AccountContext] Updating language preference to ${languageCode}`);
@@ -286,13 +292,13 @@ export function AccountProvider({ children }) {
       await fetchSettings(true);
       throw error;
     }
-  }, [currentUser, invalidateCache, showNotification, fetchSettings]);
+  }, [session, invalidateCache, showNotification, fetchSettings]);
 
   /**
    * Grant consent
    */
   const grantConsent = useCallback(async (consentType, metadata) => {
-    if (!currentUser) return;
+    if (!session) return;
 
     try {
       console.log(`🔄 [AccountContext] Granting consent: ${consentType}`);
@@ -309,13 +315,13 @@ export function AccountProvider({ children }) {
       showNotification(error.message, 'error');
       throw error;
     }
-  }, [currentUser, invalidateCache, fetchPrivacyData, showNotification]);
+  }, [session, invalidateCache, fetchPrivacyData, showNotification]);
 
   /**
    * Withdraw consent
    */
   const withdrawConsent = useCallback(async (consentType, metadata) => {
-    if (!currentUser) return;
+    if (!session) return;
 
     try {
       console.log(`🔄 [AccountContext] Withdrawing consent: ${consentType}`);
@@ -332,13 +338,13 @@ export function AccountProvider({ children }) {
       showNotification(error.message, 'error');
       throw error;
     }
-  }, [currentUser, invalidateCache, fetchPrivacyData, showNotification]);
+  }, [session, invalidateCache, fetchPrivacyData, showNotification]);
 
   /**
    * Request account deletion
    */
   const requestDeletion = useCallback(async (confirmation, reason, immediate) => {
-    if (!currentUser) return;
+    if (!session) return;
 
     try {
       console.log('🔄 [AccountContext] Requesting account deletion');
@@ -355,13 +361,13 @@ export function AccountProvider({ children }) {
       showNotification(error.message, 'error');
       throw error;
     }
-  }, [currentUser, invalidateCache, fetchPrivacyData, showNotification]);
+  }, [session, invalidateCache, fetchPrivacyData, showNotification]);
 
   /**
    * Cancel account deletion
    */
   const cancelDeletion = useCallback(async () => {
-    if (!currentUser) return;
+    if (!session) return;
 
     try {
       console.log('🔄 [AccountContext] Cancelling account deletion');
@@ -378,13 +384,13 @@ export function AccountProvider({ children }) {
       showNotification(error.message, 'error');
       throw error;
     }
-  }, [currentUser, invalidateCache, fetchPrivacyData, showNotification]);
+  }, [session, invalidateCache, fetchPrivacyData, showNotification]);
 
   /**
    * Request data export
    */
   const requestExport = useCallback(async (options) => {
-    if (!currentUser) return null;
+    if (!session) return null;
 
     try {
       console.log('🔄 [AccountContext] Requesting data export');
@@ -399,7 +405,7 @@ export function AccountProvider({ children }) {
       showNotification(error.message, 'error');
       throw error;
     }
-  }, [currentUser, showNotification]);
+  }, [session, showNotification]);
 
   /**
    * Refresh all data (force)
@@ -422,7 +428,7 @@ export function AccountProvider({ children }) {
       setHasLoadError(false);
       invalidateCache();
     }
-  }, [currentUser, fetchPrivacyData, invalidateCache]);
+  }, [session, fetchPrivacyData, invalidateCache]);
 
   const contextValue = {
     // Core privacy data
@@ -455,7 +461,12 @@ export function AccountProvider({ children }) {
 
     // Helpers
     showNotification,
-    currentUser
+
+    // Session & Permissions
+    session,
+    canManageConsents,
+    canExportData,
+    canDeleteAccount,
   };
 
   return (

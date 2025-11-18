@@ -4,7 +4,7 @@
 // app/api/user/appearance/theme/route.js - REFACTORED to use AppearanceService
 import { NextResponse } from 'next/server';
 import { createApiSession } from '@/lib/server/session';
-import { AppearanceService } from '@/lib/services/serviceAppearance/server/appearanceService.js';
+import { AppearanceService } from '@/lib/services/serviceAppearance/server/appearanceService';
 //import { revalidateUserPage } from '@/lib/server/revalidation';
 import { revalidatePath } from 'next/cache'; // 👈 1. Import revalidatePath
 
