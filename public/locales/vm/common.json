@@ -2136,6 +2136,11 @@
         "export": "Xuất Tất Cả Dữ Liệu",
         "exporting": "Đang Chuẩn Bị Xuất..."
       },
+      "rateLimit": {
+        "title": "Đã Đạt Giới Hạn Tốc Độ",
+        "message": "Bạn đã đạt tối đa 3 lần xuất dữ liệu mỗi giờ. Giới hạn này giúp bảo vệ máy chủ của chúng tôi và dữ liệu của bạn.",
+        "countdown": "Khả dụng sau:"
+      },
       "success": {
         "title": "Xuất Hoàn Tất!",
         "message": "Dữ liệu của bạn đã được xuất thành công. Tải xuống các tệp bên dưới:",

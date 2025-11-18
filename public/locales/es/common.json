@@ -2154,6 +2154,11 @@
         "export": "Exportar Todos los Datos",
         "exporting": "Preparando Exportación..."
       },
+      "rateLimit": {
+        "title": "Límite de Frecuencia Alcanzado",
+        "message": "Has alcanzado el máximo de 3 exportaciones de datos por hora. Este límite ayuda a proteger nuestros servidores y tus datos.",
+        "countdown": "Disponible en:"
+      },
       "success": {
         "title": "¡Exportación Completada!",
         "message": "Tus datos se han exportado correctamente. Descarga los archivos a continuación:",

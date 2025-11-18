@@ -896,6 +896,11 @@
         "export": "Export All Data",
         "exporting": "Preparing Export..."
       },
+      "rateLimit": {
+        "title": "Rate Limit Reached",
+        "message": "You've reached the maximum of 3 data exports per hour. This limit helps protect our servers and your data.",
+        "countdown": "Available in:"
+      },
       "success": {
         "title": "Export Completed!",
         "message": "Your data has been exported successfully. Download the files below:",

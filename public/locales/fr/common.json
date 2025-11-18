@@ -2380,6 +2380,11 @@
         "export": "Exporter Toutes les Données",
         "exporting": "Préparation de l'Exportation..."
       },
+      "rateLimit": {
+        "title": "Limite de Débit Atteinte",
+        "message": "Vous avez atteint le maximum de 3 exportations de données par heure. Cette limite aide à protéger nos serveurs et vos données.",
+        "countdown": "Disponible dans :"
+      },
       "success": {
         "title": "Exportation Terminée !",
         "message": "Vos données ont été exportées avec succès. Téléchargez les fichiers ci-dessous :",
