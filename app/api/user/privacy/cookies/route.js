@@ -24,7 +24,17 @@ export async function POST(request) {
     const userId = session.userId;
 
     // Rate limiting
-    if (!rateLimit(userId, 10, 60000)) {
+    const rateLimitResult = rateLimit(userId, {
+      maxRequests: 10,
+      windowMs: 60000,
+      metadata: {
+        eventType: 'cookie_consent_update',
+        userId: userId,
+        ip: request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || request.headers.get('x-real-ip') || null,
+        userAgent: request.headers.get('user-agent') || null,
+      }
+    });
+    if (!rateLimitResult.allowed) {
       return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
     }
 

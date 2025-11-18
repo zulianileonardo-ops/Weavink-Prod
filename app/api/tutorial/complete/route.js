@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createApiSession } from '@/lib/server/session';
 import { SettingsService } from '@/lib/services/serviceSetting/server/settingsService';
+import { rateLimit } from '@/lib/rateLimiter';
 
 /**
  * Tutorial Complete API Endpoint
@@ -21,45 +22,6 @@ import { SettingsService } from '@/lib/services/serviceSetting/server/settingsSe
  *   completedAt: "2024-01-15T10:30:00.000Z"
  * }
  */
-
-// Rate limiting map (in-memory, simple implementation)
-const rateLimitMap = new Map();
-
-/**
- * Simple rate limiter
- * @param {string} userId - User ID
- * @param {number} maxRequests - Maximum requests allowed
- * @param {number} windowMs - Time window in milliseconds
- * @returns {boolean} Whether request is allowed
- */
-function rateLimit(userId, maxRequests = 5, windowMs = 60000) {
-  const now = Date.now();
-  const userRequests = rateLimitMap.get(userId) || [];
-
-  // Filter out requests outside the time window
-  const recentRequests = userRequests.filter(
-    (timestamp) => now - timestamp < windowMs
-  );
-
-  if (recentRequests.length >= maxRequests) {
-    return false;
-  }
-
-  // Add current request
-  recentRequests.push(now);
-  rateLimitMap.set(userId, recentRequests);
-
-  // Clean up old entries periodically
-  if (rateLimitMap.size > 1000) {
-    for (const [key, value] of rateLimitMap.entries()) {
-      if (value.every((timestamp) => now - timestamp > windowMs)) {
-        rateLimitMap.delete(key);
-      }
-    }
-  }
-
-  return true;
-}
 
 /**
  * POST handler - Mark tutorial as complete
@@ -99,7 +61,17 @@ export async function POST(request) {
     // ============================================
     // 3. RATE LIMITING
     // ============================================
-    if (!rateLimit(session.userId, 5, 60000)) {
+    const rateLimitResult = rateLimit(session.userId, {
+      maxRequests: 5,
+      windowMs: 60000,
+      metadata: {
+        eventType: 'tutorial_complete',
+        userId: session.userId,
+        ip: request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || request.headers.get('x-real-ip') || null,
+        userAgent: request.headers.get('user-agent') || null,
+      }
+    });
+    if (!rateLimitResult.allowed) {
       console.warn('⚠️ Rate limit exceeded for user:', session.userId);
       return NextResponse.json(
         { error: 'Too many requests. Please try again later.' },

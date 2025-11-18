@@ -1,8 +1,8 @@
 {
   "metadata": {
     "project": "Weavink Documentation",
-    "last_updated": "2025-11-11",
-    "total_guides": 41,
+    "last_updated": "2025-11-18",
+    "total_guides": 42,
     "version": "1.0.0"
   },
   "categories": {
@@ -76,7 +76,8 @@
       "description": "Testing guides and quality assurance",
       "guides": [
         "testing-rate-limit-036",
-        "testing-rate-limits-collection-037"
+        "testing-rate-limits-collection-037",
+        "testing-rate-limits-collection-v2-038"
       ]
     },
     "general": {
@@ -467,7 +468,7 @@
         "api-design"
       ],
       "related_guides": [
-        "testing-rate-limits-collection-037",
+        "testing-rate-limits-collection-v2-038",
         "features-bot-detection-v2-015",
         "analytics-testing-guide-010"
       ],
@@ -551,7 +552,7 @@
       ],
       "related_guides": [
         "features-bot-detection-v1-016",
-        "testing-rate-limits-collection-037",
+        "testing-rate-limits-collection-v2-038",
         "analytics-implementation-012"
       ],
       "functions": [
@@ -578,7 +579,7 @@
       ],
       "related_guides": [
         "features-bot-detection-v2-015",
-        "testing-rate-limits-collection-037"
+        "testing-rate-limits-collection-v2-038"
       ],
       "functions": [
         "logRateLimitEvent"
@@ -1038,7 +1039,7 @@
       ],
       "related_guides": [
         "features-bot-detection-v2-015",
-        "testing-rate-limits-collection-037"
+        "testing-rate-limits-collection-v2-038"
       ],
       "functions": [],
       "components": [],
@@ -1048,10 +1049,10 @@
     },
     {
       "id": "testing-rate-limits-collection-037",
-      "title": "Rate Limits Collection Guide",
-      "filename": "documentation/testing/RATE_LIMITS_COLLECTION_GUIDE.md",
+      "title": "Rate Limits Collection Guide V1 (DEPRECATED)",
+      "filename": "documentation/testing/archive/RATE_LIMITS_COLLECTION_GUIDE_V1_DEPRECATED.md",
       "category": "testing",
-      "summary": "Complete guide to RateLimits Firestore collection monitoring security events and rate limit violations.",
+      "summary": "Original rate limits collection guide (deprecated - use V2).",
       "tags": [
         "rate-limiting",
         "security",
@@ -1061,14 +1062,48 @@
         "security-events"
       ],
       "related_guides": [
+        "testing-rate-limits-collection-v2-038",
         "features-bot-detection-v2-015",
         "analytics-implementation-012"
       ],
       "functions": [],
       "components": [],
-      "status": "active",
+      "status": "superseded",
+      "superseded_by": "testing-rate-limits-collection-v2-038",
       "created": "2025-01-01",
       "updated": "2025-11-11"
+    },
+    {
+      "id": "testing-rate-limits-collection-v2-038",
+      "title": "Rate Limits Collection Guide V2",
+      "filename": "documentation/testing/RATE_LIMITS_COLLECTION_GUIDE_V2.md",
+      "category": "testing",
+      "summary": "Complete reference guide to RateLimits Firestore collection with comprehensive field documentation, 21 event types across analytics/privacy/application, multi-threshold bot detection (200ms/500ms/1s windows), and detailed monitoring queries for security event analysis.",
+      "tags": [
+        "rate-limiting",
+        "security",
+        "monitoring",
+        "firestore",
+        "logging",
+        "security-events",
+        "bot-detection"
+      ],
+      "related_guides": [
+        "features-bot-detection-v2-015",
+        "analytics-implementation-012",
+        "testing-rate-limit-036"
+      ],
+      "functions": [
+        "rateLimit",
+        "generateFingerprint",
+        "logRateLimitEvent"
+      ],
+      "components": [],
+      "status": "active",
+      "version": "2.0.0",
+      "replaces": "testing-rate-limits-collection-037",
+      "created": "2025-11-18",
+      "updated": "2025-11-18"
     },
     {
       "id": "general-readme-038",

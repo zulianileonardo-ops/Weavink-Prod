@@ -62,14 +62,14 @@ export default function ConsentsTab() {
       const action = newStatus ? 'granted' : 'withdrawn';
 
       // Use context methods to grant or withdraw consent
+      // Note: grantConsent/withdrawConsent already refresh data internally
       if (action === 'granted') {
         await grantConsent(consentType, { version: '1.0' });
       } else {
         await withdrawConsent(consentType, {});
       }
 
-      // Refresh consents
-      await refreshData();
+      // ✅ REMOVED redundant refreshData() call - context methods already refresh
       showLocalNotification(t(`account.consents.notification.${action}`, `Consent ${action} successfully`), 'success');
     } catch (error) {
       console.error('Error updating consent:', error);

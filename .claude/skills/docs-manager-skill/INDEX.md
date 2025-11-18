@@ -1,7 +1,7 @@
 # Weavink Documentation Index
 
-**Last Updated:** 2025-11-11
-**Total Guides:** 41
+**Last Updated:** 2025-11-18
+**Total Guides:** 42
 
 ## Quick Navigation
 - [Admin System](#admin-system) (9 guides)
@@ -9,7 +9,7 @@
 - [RGPD/GDPR Compliance](#rgpdgdpr-compliance) (2 guides)
 - [Feature Implementations](#feature-implementations) (9 guides)
 - [Technical Infrastructure](#technical-infrastructure) (12 guides)
-- [Testing & QA](#testing--qa) (2 guides)
+- [Testing & QA](#testing--qa) (3 guides)
 - [General Documentation](#general-documentation) (4 guides)
 
 ---
@@ -80,7 +80,7 @@
 ### documentation/admin/ANALYTICS_IMPLEMENTATION_GUIDE.md
 **Summary:** Complete technical guide covering analytics system architecture with rate limiting, fingerprinting, session management, and data flow.
 **Tags:** analytics, rate-limiting, fingerprinting, session-management, sendBeacon, bot-detection, firestore, api-design
-**Related:** [documentation/testing/RATE_LIMITS_COLLECTION_GUIDE.md](#rate_limits_collection_guidemd), [documentation/features/BOT_DETECTION_FIX_V2.md](#bot_detection_fix_v2md), [documentation/admin/ANALYTICS_TESTING_GUIDE.md](#analytics_testing_guidemd)
+**Related:** [documentation/testing/RATE_LIMITS_COLLECTION_GUIDE_V2.md](#rate_limits_collection_guide_v2md), [documentation/features/BOT_DETECTION_FIX_V2.md](#bot_detection_fix_v2md), [documentation/admin/ANALYTICS_TESTING_GUIDE.md](#analytics_testing_guidemd)
 
 ---
 
@@ -105,13 +105,13 @@
 ### documentation/features/BOT_DETECTION_FIX_V2.md
 **Summary:** Improved bot detection by including current request in calculations, catching rapid-fire bots with 50ms intervals.
 **Tags:** bot-detection, rate-limiting, security, bug-fix, multi-factor-detection, analytics
-**Related:** [documentation/archive/BOT_DETECTION_FIX.md](#bot_detection_fixmd), [documentation/testing/RATE_LIMITS_COLLECTION_GUIDE.md](#rate_limits_collection_guidemd), [documentation/admin/ANALYTICS_IMPLEMENTATION_GUIDE.md](#analytics_implementation_guidemd)
+**Related:** [documentation/archive/BOT_DETECTION_FIX.md](#bot_detection_fixmd), [documentation/testing/RATE_LIMITS_COLLECTION_GUIDE_V2.md](#rate_limits_collection_guide_v2md), [documentation/admin/ANALYTICS_IMPLEMENTATION_GUIDE.md](#analytics_implementation_guidemd)
 
 ### documentation/archive/BOT_DETECTION_FIX.md
 **Summary:** Implements multi-factor bot detection using 3 criteria (requests per second, average rate, burst windows) to catch sophisticated bots.
 **Status:** ⚠️ Superseded by documentation/features/BOT_DETECTION_FIX_V2.md
 **Tags:** bot-detection, rate-limiting, security, multi-factor-analysis, analytics, firestore-logging
-**Related:** [documentation/features/BOT_DETECTION_FIX_V2.md](#bot_detection_fix_v2md), [documentation/testing/RATE_LIMITS_COLLECTION_GUIDE.md](#rate_limits_collection_guidemd)
+**Related:** [documentation/features/BOT_DETECTION_FIX_V2.md](#bot_detection_fix_v2md), [documentation/testing/RATE_LIMITS_COLLECTION_GUIDE_V2.md](#rate_limits_collection_guide_v2md)
 
 ### documentation/features/CAROUSEL_IMPLEMENTATION.md
 **Summary:** Documents multi-carousel support system allowing users to create multiple independent carousels with grouped item structure.
@@ -221,12 +221,18 @@
 ### documentation/testing/RATE_LIMIT_TESTING.md
 **Summary:** Testing guide for rate limiting system with various attack scenarios and verification methods.
 **Tags:** testing, rate-limiting, security-testing, bot-simulation
-**Related:** [documentation/features/BOT_DETECTION_FIX_V2.md](#bot_detection_fix_v2md), [documentation/testing/RATE_LIMITS_COLLECTION_GUIDE.md](#rate_limits_collection_guidemd)
+**Related:** [documentation/features/BOT_DETECTION_FIX_V2.md](#bot_detection_fix_v2md), [documentation/testing/RATE_LIMITS_COLLECTION_GUIDE_V2.md](#rate_limits_collection_guide_v2md)
 
-### documentation/testing/RATE_LIMITS_COLLECTION_GUIDE.md
-**Summary:** Complete guide to RateLimits Firestore collection monitoring security events and rate limit violations.
+### documentation/testing/RATE_LIMITS_COLLECTION_GUIDE_V2.md
+**Summary:** Complete reference guide to RateLimits Firestore collection with comprehensive field documentation, 21 event types across analytics/privacy/application, multi-threshold bot detection (200ms/500ms/1s windows), and detailed monitoring queries for security event analysis.
+**Tags:** rate-limiting, security, monitoring, firestore, logging, security-events, bot-detection
+**Related:** [documentation/features/BOT_DETECTION_FIX_V2.md](#bot_detection_fix_v2md), [documentation/admin/ANALYTICS_IMPLEMENTATION_GUIDE.md](#analytics_implementation_guidemd), [documentation/testing/RATE_LIMIT_TESTING.md](#rate_limit_testingmd)
+
+### documentation/testing/archive/RATE_LIMITS_COLLECTION_GUIDE_V1_DEPRECATED.md
+**Summary:** Original rate limits collection guide (deprecated - use V2).
+**Status:** ⚠️ Superseded by documentation/testing/RATE_LIMITS_COLLECTION_GUIDE_V2.md
 **Tags:** rate-limiting, security, monitoring, firestore, logging, security-events
-**Related:** [documentation/features/BOT_DETECTION_FIX_V2.md](#bot_detection_fix_v2md), [documentation/admin/ANALYTICS_IMPLEMENTATION_GUIDE.md](#analytics_implementation_guidemd)
+**Related:** [documentation/testing/RATE_LIMITS_COLLECTION_GUIDE_V2.md](#rate_limits_collection_guide_v2md)
 
 ---
 
@@ -288,4 +294,4 @@ Complete analytics implementation from architecture to testing:
 
 ### Security & Rate Limiting Cluster
 Multi-layered security with bot detection and monitoring:
-- documentation/admin/ADMIN_SECURITY_LAYERS_GUIDE.md → documentation/features/BOT_DETECTION_FIX_V2.md → documentation/testing/RATE_LIMITS_COLLECTION_GUIDE.md
+- documentation/admin/ADMIN_SECURITY_LAYERS_GUIDE.md → documentation/features/BOT_DETECTION_FIX_V2.md → documentation/testing/RATE_LIMITS_COLLECTION_GUIDE_V2.md

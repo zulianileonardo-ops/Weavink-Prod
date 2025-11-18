@@ -5,10 +5,12 @@ category: testing
 tags: [testing, rate-limiting, security-testing, bot-simulation]
 status: active
 created: 2025-01-01
-updated: 2025-11-11
+updated: 2025-11-18
 related:
   - BOT_DETECTION_FIX_V2.md
-  - RATE_LIMITS_COLLECTION_GUIDE.md
+  - RATE_LIMITS_COLLECTION_GUIDE_V2.md
+  - ACCOUNT_PRIVACY_TESTING_GUIDE.md
+  - RATE_LIMIT_UI_PATTERN_GUIDE.md
 ---
 
 # Rate Limit Testing Guide
@@ -215,6 +217,233 @@ Current limits (from `analyticsConstants.js`):
 | **TIME_ON_PROFILE** | 60s | 60 | 10 | 70 |
 
 **Effective Limit** = Max Requests + Burst Allowance
+
+---
+
+## 🔐 Testing Privacy & Application Endpoints
+
+### Export Data Rate Limiting
+
+The data export endpoint (`/api/user/privacy/export`) has **stricter rate limiting** than analytics:
+
+| Endpoint | Window | Max Requests | Burst | Total |
+|----------|--------|--------------|-------|-------|
+| **Data Export** | 1 hour | 3 | 0 | 3 |
+| **Consent Updates** | 1 minute | 10 | 2 | 12 |
+| **Settings Updates** | 1 minute | 20 | 5 | 25 |
+
+### Testing Export Rate Limit
+
+**Manual Test:**
+1. Navigate to Account & Privacy → Export Data tab
+2. Click "Export All Data" button
+3. Repeat 3 more times quickly
+4. **Expected Result:**
+   - First 3 exports succeed
+   - 4th export triggers 429 response
+   - UI shows countdown timer
+   - Button is greyed out and disabled
+
+**Automated Test:**
+```javascript
+// test-export-rate-limit.js
+async function testExportRateLimit() {
+  const results = [];
+
+  for (let i = 1; i <= 4; i++) {
+    try {
+      const response = await fetch('/api/user/privacy/export', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          includeContacts: true,
+          includeAnalytics: true,
+          includeConsents: true
+        })
+      });
+
+      if (response.status === 429) {
+        const data = await response.json();
+        console.log(`🚫 [${i}/4] Rate Limited`);
+        console.log(`   resetTime: ${new Date(data.resetTime).toISOString()}`);
+        console.log(`   retryAfter: ${data.retryAfter}s (${Math.floor(data.retryAfter / 60)}m)`);
+        results.push({ success: false, rateLimited: true, data });
+      } else if (response.ok) {
+        console.log(`✅ [${i}/4] Export succeeded`);
+        results.push({ success: true });
+      } else {
+        console.log(`❌ [${i}/4] Failed: ${response.status}`);
+        results.push({ success: false, error: response.statusText });
+      }
+    } catch (error) {
+      console.log(`❌ [${i}/4] Error: ${error.message}`);
+      results.push({ success: false, error: error.message });
+    }
+  }
+
+  return results;
+}
+```
+
+### 429 Response Structure (New Format)
+
+All rate-limited endpoints now return this enhanced structure:
+
+```json
+{
+  "error": "Rate limit exceeded",
+  "message": "You can request a maximum of 3 data exports per hour. Please try again later.",
+  "retryAfter": 3542,        // ← Seconds until reset (relative)
+  "resetTime": 1736976542000, // ← Unix timestamp in ms (absolute) - NEW!
+  "limit": {
+    "max": 3,
+    "windowHours": 1
+  }
+}
+```
+
+**Key Fields:**
+- `retryAfter`: Relative time in **seconds** until rate limit resets
+- `resetTime`: Absolute Unix timestamp in **milliseconds** when limit resets
+- `limit`: Configuration details for user reference
+
+**Why Both Fields?**
+- `resetTime` is **preferred** for accurate countdown timers (immune to clock drift)
+- `retryAfter` is **fallback** for older clients or if resetTime is missing
+
+**HTTP Headers:**
+```
+Status: 429 Too Many Requests
+Retry-After: 3542
+Content-Type: application/json
+```
+
+### Testing Different Event Types
+
+Current rate-limited event types:
+
+**Analytics Events:**
+- `profile_view`
+- `link_click`
+- `time_on_profile`
+
+**Privacy Events:**
+- `data_export_request` (3/hour)
+- `consent_update` (10/minute)
+- `cookies_update` (10/minute)
+
+**Application Events:**
+- `tutorial_complete` (5/hour)
+- `tutorial_skip` (10/hour)
+- `tutorial_progress` (30/minute)
+- `settings_update` (20/minute)
+- `account_deletion_request` (3/day)
+
+**Contact Events:**
+- `contact_share` (100/hour)
+- `contact_submit` (10/hour)
+
+---
+
+## 🔍 Multi-Layer Logging Verification
+
+When a rate limit is triggered, you should see logs at **4 different layers**:
+
+### Layer 1: RateLimiter (`lib/rateLimiter.js`)
+
+```
+🚫 [RateLimiter] Rate limit exceeded: {
+  identifier: 'abc123...',
+  eventType: 'data_export_request',
+  userId: '26v4uXMAk8c6rfLlcWKRZpE1sPC3',
+  oldestRequestTime: '2025-11-18T20:36:06.237Z',
+  resetTime: 1763501766237,
+  resetTimeFormatted: '2025-11-18T21:36:06.237Z',
+  retryAfterSeconds: 3542,
+  retryAfterMinutes: 59,
+  requestCount: 13,
+  effectiveLimit: 4,
+  windowMs: 3600000
+}
+```
+
+### Layer 2: API Route (`app/api/user/privacy/export/route.js`)
+
+```
+📤 [DataExportAPI] Sending 429 response: {
+  userId: '26v4uXMAk8c6rfLlcWKRZpE1sPC3',
+  retryAfter: 3542,
+  retryAfterMinutes: 59,
+  resetTime: 1763501766237,
+  resetTimeFormatted: '2025-11-18T21:36:06.237Z',
+  now: 1763498224237,
+  nowFormatted: '2025-11-18T20:37:04.237Z',
+  payload: { ... }
+}
+```
+
+### Layer 3: API Client (`lib/services/core/ApiClient.js`)
+
+```
+🚨 [ContactApiClient] Rate limit error details: {
+  hasResetTime: true,
+  resetTime: 1763501766237,
+  resetTimeFormatted: '2025-11-18T21:36:06.237Z',
+  hasRetryAfter: true,
+  retryAfter: 3542,
+  retryAfterMinutes: 59,
+  fullErrorData: { ... }
+}
+```
+
+### Layer 4: Frontend Component (`ExportDataTab.jsx`)
+
+```
+📋 [ExportDataTab] Error object structure: {
+  status: 429,
+  code: null,
+  message: 'Rate limit exceeded',
+  hasDetails: true,
+  details: {
+    resetTime: 1763501766237,
+    retryAfter: 3542,
+    limit: { max: 3, windowHours: 1 }
+  }
+}
+
+🚫 [ExportDataTab] Rate limit detected: {
+  hasResetTime: true,
+  resetTime: 1763501766237,
+  resetTimeFormatted: '2025-11-18T21:36:06.237Z',
+  hasRetryAfter: true,
+  retryAfter: 3542,
+  retryAfterMinutes: 59
+}
+
+💾 [ExportDataTab] Rate limit stored in localStorage: {
+  resetTime: 1763501766237,
+  resetTimeFormatted: '2025-11-18T21:36:06.237Z',
+  remainingSeconds: 3589,
+  remainingMinutes: 59
+}
+```
+
+### Verification Checklist
+
+When testing rate limits, verify ALL 4 layers:
+
+- [ ] **Layer 1:** RateLimiter logs show correct `resetTime` and `retryAfter`
+- [ ] **Layer 2:** API route logs show 429 response with both time fields
+- [ ] **Layer 3:** ApiClient logs show parsed error data
+- [ ] **Layer 4:** Frontend logs show state updates and localStorage storage
+- [ ] **Firestore:** RateLimits collection has new entry with correct scenario
+- [ ] **Network:** Browser DevTools shows 429 status with `Retry-After` header
+- [ ] **UI:** User sees countdown timer and greyed-out button
+
+**Missing logs at any layer indicate a problem!**
 
 ---
 

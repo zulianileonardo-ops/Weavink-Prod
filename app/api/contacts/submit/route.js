@@ -168,11 +168,21 @@ export async function POST(request) {
         // --- 2. Rate Limiting (by IP for public endpoint) ---
         const forwarded = request.headers.get("x-forwarded-for");
         const ip = forwarded ? forwarded.split(",")[0] : request.headers.get("x-real-ip") || 'unknown';
-        
-        if (!rateLimit(ip, 5, 60000)) { // 5 submissions per minute per IP
+
+        const rateLimitResult = rateLimit(ip, {
+            maxRequests: 5,
+            windowMs: 60000,
+            metadata: {
+                eventType: 'contact_submit_public',
+                userId: null, // Public endpoint, no user
+                ip: ip,
+                userAgent: request.headers.get('user-agent') || null,
+            }
+        });
+        if (!rateLimitResult.allowed) {
             console.warn(`🚨 Rate limit exceeded for IP: ${ip}`);
-            return NextResponse.json({ 
-                error: 'Too many contact submissions. Please try again in a moment.' 
+            return NextResponse.json({
+                error: 'Too many contact submissions. Please try again in a moment.'
             }, { status: 429 });
         }
 

@@ -20,7 +20,17 @@ export async function POST(request) {
             return NextResponse.json({ error: 'Invalid origin' }, { status: 403 });
         }
 
-        if (!rateLimit(session.userId, 5, 60000)) {
+        const rateLimitResult = rateLimit(session.userId, {
+            maxRequests: 5,
+            windowMs: 60000,
+            metadata: {
+                eventType: 'onboarding_complete',
+                userId: session.userId,
+                ip: request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || request.headers.get('x-real-ip') || null,
+                userAgent: request.headers.get('user-agent') || null,
+            }
+        });
+        if (!rateLimitResult.allowed) {
             return NextResponse.json({ error: 'Too many requests.' }, { status: 429 });
         }
 

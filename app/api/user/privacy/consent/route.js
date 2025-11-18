@@ -43,7 +43,17 @@ export async function GET(request) {
 
     // 3. Rate limiting
     const { max, window } = PRIVACY_RATE_LIMITS.CONSENT_READ;
-    if (!rateLimit(userId, max, window)) {
+    const rateLimitResult = rateLimit(userId, {
+      maxRequests: max,
+      windowMs: window,
+      metadata: {
+        eventType: 'consent_read',
+        userId: userId,
+        ip: request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || request.headers.get('x-real-ip') || null,
+        userAgent: request.headers.get('user-agent') || null,
+      }
+    });
+    if (!rateLimitResult.allowed) {
       return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
     }
 
@@ -108,7 +118,17 @@ export async function POST(request) {
 
     // 3. Rate limiting
     const { max, window } = PRIVACY_RATE_LIMITS.CONSENT_UPDATES;
-    if (!rateLimit(userId, max, window)) {
+    const rateLimitResult = rateLimit(userId, {
+      maxRequests: max,
+      windowMs: window,
+      metadata: {
+        eventType: 'consent_update',
+        userId: userId,
+        ip: request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || request.headers.get('x-real-ip') || null,
+        userAgent: request.headers.get('user-agent') || null,
+      }
+    });
+    if (!rateLimitResult.allowed) {
       return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
     }
 
@@ -195,7 +215,17 @@ export async function PUT(request) {
 
     // 3. Rate limiting
     const { max, window } = PRIVACY_RATE_LIMITS.CONSENT_UPDATES;
-    if (!rateLimit(userId, max, window)) {
+    const rateLimitResult = rateLimit(userId, {
+      maxRequests: max,
+      windowMs: window,
+      metadata: {
+        eventType: 'consent_batch_update',
+        userId: userId,
+        ip: request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || request.headers.get('x-real-ip') || null,
+        userAgent: request.headers.get('user-agent') || null,
+      }
+    });
+    if (!rateLimitResult.allowed) {
       return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
     }
 
@@ -277,7 +307,17 @@ export async function DELETE(request) {
 
     // 3. Rate limiting
     const { max, window } = PRIVACY_RATE_LIMITS.CONSENT_UPDATES;
-    if (!rateLimit(userId, max, window)) {
+    const rateLimitResult = rateLimit(userId, {
+      maxRequests: max,
+      windowMs: window,
+      metadata: {
+        eventType: 'consent_withdraw',
+        userId: userId,
+        ip: request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || request.headers.get('x-real-ip') || null,
+        userAgent: request.headers.get('user-agent') || null,
+      }
+    });
+    if (!rateLimitResult.allowed) {
       return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
     }
 

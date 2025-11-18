@@ -7,7 +7,7 @@ status: active
 created: 2025-01-01
 updated: 2025-11-11
 related:
-  - RATE_LIMITS_COLLECTION_GUIDE.md
+  - RATE_LIMITS_COLLECTION_GUIDE_V2.md
   - BOT_DETECTION_FIX_V2.md
   - ANALYTICS_TESTING_GUIDE.md
 ---
@@ -347,7 +347,7 @@ if (recentRequests.length >= effectiveLimit) {
 - Logging failures don't break rate limiting
 - Only abnormal activity logged (not every request)
 
-**For detailed monitoring and analysis, see:** [RATE_LIMITS_COLLECTION_GUIDE.md](RATE_LIMITS_COLLECTION_GUIDE.md)
+**For detailed monitoring and analysis, see:** [RATE_LIMITS_COLLECTION_GUIDE_V2.md](RATE_LIMITS_COLLECTION_GUIDE_V2.md)
 
 ---
 

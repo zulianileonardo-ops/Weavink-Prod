@@ -12,7 +12,17 @@ export async function GET(request) {
     try {
         const session = await createApiSession(request);
 
-        if (!rateLimit(session.userId, 30, 60000)) {
+        const rateLimitResult = rateLimit(session.userId, {
+            maxRequests: 30,
+            windowMs: 60000,
+            metadata: {
+                eventType: 'settings_read',
+                userId: session.userId,
+                ip: request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || request.headers.get('x-real-ip') || null,
+                userAgent: request.headers.get('user-agent') || null,
+            }
+        });
+        if (!rateLimitResult.allowed) {
             return NextResponse.json({ error: 'Too many requests.' }, { status: 429 });
         }
 
@@ -42,8 +52,18 @@ export async function POST(request) {
         if (!allowedOrigins.includes(origin)) {
             return NextResponse.json({ error: 'Invalid origin' }, { status: 403 });
         }
-        
-        if (!rateLimit(session.userId, 20, 60000)) {
+
+        const rateLimitResult = rateLimit(session.userId, {
+            maxRequests: 20,
+            windowMs: 60000,
+            metadata: {
+                eventType: 'settings_update',
+                userId: session.userId,
+                ip: request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || request.headers.get('x-real-ip') || null,
+                userAgent: request.headers.get('user-agent') || null,
+            }
+        });
+        if (!rateLimitResult.allowed) {
             return NextResponse.json({ error: 'Too many requests.' }, { status: 429 });
         }
 

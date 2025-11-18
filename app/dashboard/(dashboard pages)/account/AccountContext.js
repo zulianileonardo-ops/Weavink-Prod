@@ -32,12 +32,12 @@ export function useAccount() {
 }
 
 export function AccountProvider({ children }) {
-  const { session, currentUser } = useDashboard();
+  const { currentUser, permissions: dashboardPermissions } = useDashboard();
 
-  // Permission flags derived from session
-  const canManageConsents = session?.permissions?.[PRIVACY_PERMISSIONS.CAN_MANAGE_CONSENTS] ?? true;
-  const canExportData = session?.permissions?.[PRIVACY_PERMISSIONS.CAN_EXPORT_DATA] ?? true;
-  const canDeleteAccount = session?.permissions?.[PRIVACY_PERMISSIONS.CAN_DELETE_ACCOUNT] ?? true;
+  // Permission flags derived from dashboard permissions
+  const canManageConsents = dashboardPermissions?.[PRIVACY_PERMISSIONS.CAN_MANAGE_CONSENTS] ?? true;
+  const canExportData = dashboardPermissions?.[PRIVACY_PERMISSIONS.CAN_EXPORT_DATA] ?? true;
+  const canDeleteAccount = dashboardPermissions?.[PRIVACY_PERMISSIONS.CAN_DELETE_ACCOUNT] ?? true;
 
   // Core privacy data (cached)
   const [privacySettings, setPrivacySettings] = useState(null);
@@ -89,8 +89,8 @@ export function AccountProvider({ children }) {
    * Main data fetching function with caching
    */
   const fetchPrivacyData = useCallback(async (forceRefresh = false) => {
-    // Guard: Don't run if there's no session
-    if (!session) {
+    // Guard: Don't run if there's no authenticated user
+    if (!currentUser) {
       setPrivacySettings(null);
       setConsents(null);
       setPendingDeletion(null);
@@ -144,13 +144,13 @@ export function AccountProvider({ children }) {
     } finally {
       setIsLoading(false);
     }
-  }, [session, isCacheValid, updateCache, showNotification]);
+  }, [currentUser, isCacheValid, updateCache, showNotification]);
 
   /**
    * Fetch settings only (for Privacy Settings tab)
    */
   const fetchSettings = useCallback(async (forceRefresh = false) => {
-    if (!session) return;
+    if (!currentUser) return;
 
     try {
       const settingsData = await SettingsService.getSettingsData();
@@ -167,13 +167,13 @@ export function AccountProvider({ children }) {
       console.error('❌ [AccountContext] Error loading settings:', error);
       showNotification('Failed to load settings', 'error');
     }
-  }, [session, updateCache, showNotification]);
+  }, [currentUser, updateCache, showNotification]);
 
   /**
    * Update privacy setting (isPublic, allowMessages, notifications)
    */
   const updatePrivacySetting = useCallback(async (settingKey, value) => {
-    if (!session) return;
+    if (!currentUser) return;
 
     try {
       console.log(`🔄 [AccountContext] Updating ${settingKey} to ${value}`);
@@ -214,13 +214,13 @@ export function AccountProvider({ children }) {
       // Refresh to revert
       await fetchSettings(true);
     }
-  }, [session, invalidateCache, showNotification, fetchSettings]);
+  }, [currentUser, invalidateCache, showNotification, fetchSettings]);
 
   /**
    * Update contact download settings
    */
   const updateContactDownloadSettings = useCallback(async (enabled, fields) => {
-    if (!session) return;
+    if (!currentUser) return;
 
     try {
       console.log('🔄 [AccountContext] Updating contact download settings');
@@ -255,13 +255,13 @@ export function AccountProvider({ children }) {
       await fetchSettings(true);
       throw error;
     }
-  }, [session, invalidateCache, showNotification, fetchSettings]);
+  }, [currentUser, invalidateCache, showNotification, fetchSettings]);
 
   /**
    * Update language preference
    */
   const updateLanguagePreference = useCallback(async (languageCode) => {
-    if (!session) return;
+    if (!currentUser) return;
 
     try {
       console.log(`🔄 [AccountContext] Updating language preference to ${languageCode}`);
@@ -292,21 +292,32 @@ export function AccountProvider({ children }) {
       await fetchSettings(true);
       throw error;
     }
-  }, [session, invalidateCache, showNotification, fetchSettings]);
+  }, [currentUser, invalidateCache, showNotification, fetchSettings]);
 
   /**
    * Grant consent
    */
   const grantConsent = useCallback(async (consentType, metadata) => {
-    if (!session) return;
+    if (!currentUser) return;
 
     try {
       console.log(`🔄 [AccountContext] Granting consent: ${consentType}`);
       await ConsentService.grantConsent(consentType, metadata);
 
-      // Invalidate cache and refresh
+      // Invalidate cache and refresh consents data in background (no loading state)
       invalidateCache();
-      await fetchPrivacyData(true);
+
+      // Fetch updated consents without triggering global loading spinner
+      const consentsData = await ConsentService.getUserConsents();
+      setConsents(consentsData.consents);
+
+      // Update cache with new consents
+      if (cacheRef.current.data) {
+        updateCache({
+          ...cacheRef.current.data,
+          consents: consentsData.consents
+        });
+      }
 
       showNotification('Consent granted successfully', 'success');
       console.log('✅ [AccountContext] Consent granted successfully');
@@ -315,21 +326,32 @@ export function AccountProvider({ children }) {
       showNotification(error.message, 'error');
       throw error;
     }
-  }, [session, invalidateCache, fetchPrivacyData, showNotification]);
+  }, [currentUser, invalidateCache, showNotification, updateCache]);
 
   /**
    * Withdraw consent
    */
   const withdrawConsent = useCallback(async (consentType, metadata) => {
-    if (!session) return;
+    if (!currentUser) return;
 
     try {
       console.log(`🔄 [AccountContext] Withdrawing consent: ${consentType}`);
       await ConsentService.withdrawConsent(consentType, metadata);
 
-      // Invalidate cache and refresh
+      // Invalidate cache and refresh consents data in background (no loading state)
       invalidateCache();
-      await fetchPrivacyData(true);
+
+      // Fetch updated consents without triggering global loading spinner
+      const consentsData = await ConsentService.getUserConsents();
+      setConsents(consentsData.consents);
+
+      // Update cache with new consents
+      if (cacheRef.current.data) {
+        updateCache({
+          ...cacheRef.current.data,
+          consents: consentsData.consents
+        });
+      }
 
       showNotification('Consent withdrawn successfully', 'success');
       console.log('✅ [AccountContext] Consent withdrawn successfully');
@@ -338,13 +360,13 @@ export function AccountProvider({ children }) {
       showNotification(error.message, 'error');
       throw error;
     }
-  }, [session, invalidateCache, fetchPrivacyData, showNotification]);
+  }, [currentUser, invalidateCache, showNotification, updateCache]);
 
   /**
    * Request account deletion
    */
   const requestDeletion = useCallback(async (confirmation, reason, immediate) => {
-    if (!session) return;
+    if (!currentUser) return;
 
     try {
       console.log('🔄 [AccountContext] Requesting account deletion');
@@ -361,13 +383,13 @@ export function AccountProvider({ children }) {
       showNotification(error.message, 'error');
       throw error;
     }
-  }, [session, invalidateCache, fetchPrivacyData, showNotification]);
+  }, [currentUser, invalidateCache, fetchPrivacyData, showNotification]);
 
   /**
    * Cancel account deletion
    */
   const cancelDeletion = useCallback(async () => {
-    if (!session) return;
+    if (!currentUser) return;
 
     try {
       console.log('🔄 [AccountContext] Cancelling account deletion');
@@ -384,13 +406,18 @@ export function AccountProvider({ children }) {
       showNotification(error.message, 'error');
       throw error;
     }
-  }, [session, invalidateCache, fetchPrivacyData, showNotification]);
+  }, [currentUser, invalidateCache, fetchPrivacyData, showNotification]);
 
   /**
    * Request data export
    */
   const requestExport = useCallback(async (options) => {
-    if (!session) return null;
+    if (!currentUser) {
+      const errorMsg = 'No active session. Please refresh the page and try again.';
+      console.error('❌ [AccountContext] Export failed - no session');
+      showNotification(errorMsg, 'error');
+      throw new Error(errorMsg);
+    }
 
     try {
       console.log('🔄 [AccountContext] Requesting data export');
@@ -405,7 +432,7 @@ export function AccountProvider({ children }) {
       showNotification(error.message, 'error');
       throw error;
     }
-  }, [session, showNotification]);
+  }, [currentUser, showNotification]);
 
   /**
    * Refresh all data (force)
@@ -463,7 +490,7 @@ export function AccountProvider({ children }) {
     showNotification,
 
     // Session & Permissions
-    session,
+    currentUser,
     canManageConsents,
     canExportData,
     canDeleteAccount,

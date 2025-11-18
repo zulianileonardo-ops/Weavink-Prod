@@ -45,7 +45,17 @@ export async function GET(request) {
 
     // 3. Rate limiting
     const { max, window } = PRIVACY_RATE_LIMITS.EXPORT_STATUS_CHECK;
-    if (!rateLimit(userId, max, window)) {
+    const rateLimitResult = rateLimit(userId, {
+      maxRequests: max,
+      windowMs: window,
+      metadata: {
+        eventType: 'data_export_status',
+        userId: userId,
+        ip: request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || request.headers.get('x-real-ip') || null,
+        userAgent: request.headers.get('user-agent') || null,
+      }
+    });
+    if (!rateLimitResult.allowed) {
       return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
     }
 
@@ -128,14 +138,46 @@ export async function POST(request) {
 
     // 3. Rate limiting - stricter for export (resource-intensive operation)
     const { max, window } = PRIVACY_RATE_LIMITS.DATA_EXPORTS;
-    if (!rateLimit(userId, max, window)) {
-      return NextResponse.json(
-        {
-          error: PRIVACY_ERROR_MESSAGES.EXPORT_RATE_LIMIT,
-          message: `You can request a maximum of ${max} data exports per hour. Please try again later.`,
-        },
-        { status: 429 }
-      );
+    const rateLimitResult = rateLimit(userId, {
+      maxRequests: max,
+      windowMs: window,
+      metadata: {
+        eventType: 'data_export_request',
+        userId: userId,
+        ip: request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || request.headers.get('x-real-ip') || null,
+        userAgent: request.headers.get('user-agent') || null,
+      }
+    });
+    if (!rateLimitResult.allowed) {
+      const responsePayload = {
+        error: PRIVACY_ERROR_MESSAGES.EXPORT_RATE_LIMIT,
+        message: `You can request a maximum of ${max} data exports per hour. Please try again later.`,
+        retryAfter: rateLimitResult.retryAfter,  // Seconds until reset
+        resetTime: rateLimitResult.resetTime,     // Unix timestamp
+        limit: {
+          max: max,
+          windowHours: 1  // 1 hour window
+        }
+      };
+
+      // Log the 429 response for debugging
+      console.log('📤 [DataExportAPI] Sending 429 response:', {
+        userId,
+        retryAfter: rateLimitResult.retryAfter,
+        retryAfterMinutes: Math.floor(rateLimitResult.retryAfter / 60),
+        resetTime: rateLimitResult.resetTime,
+        resetTimeFormatted: new Date(rateLimitResult.resetTime).toISOString(),
+        now: Date.now(),
+        nowFormatted: new Date().toISOString(),
+        payload: responsePayload
+      });
+
+      return NextResponse.json(responsePayload, {
+        status: 429,
+        headers: {
+          'Retry-After': rateLimitResult.retryAfter.toString()  // Standard HTTP header
+        }
+      });
     }
 
     const body = await request.json().catch(() => ({}));

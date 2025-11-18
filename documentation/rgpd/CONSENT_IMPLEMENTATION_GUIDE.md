@@ -730,6 +730,113 @@ For complete RGPD test coverage (116 tests), see [RGPD_TESTING_GUIDE.md](./RGPD_
 
 ---
 
+## Related UI Patterns
+
+### Consent Blocking vs. Rate Limit Patterns
+
+Both patterns use similar "greyed-out button" UI but serve different purposes:
+
+#### Comparison Table
+
+| Pattern | Use Case | Icon | Message | Duration | Action | User Can Override? |
+|---------|----------|------|---------|----------|--------|-------------------|
+| **Consent Block** | Feature requires GDPR consent | Lock/Shield | "Consent required" | Until consent granted | Grant consent | ✅ Yes (immediate) |
+| **Rate Limit** | Too many requests made | Clock/Timer | "Try again in 45m" | Countdown from server resetTime | Wait | ❌ No (must wait) |
+
+#### Key Differences
+
+**Consent Blocking Pattern** (this guide):
+- **Purpose:** Enforce GDPR consent requirements
+- **State:** Binary (granted/not granted)
+- **Duration:** Permanent until user grants consent
+- **User Control:** Full control (can grant consent anytime)
+- **Visual Cue:** Lock/Shield icon, grey button
+- **Interaction:** Click → Shows popover → Navigate to consent settings
+- **Resolution:** User action (grant consent)
+- **Related Article:** GDPR Art. 7 (Conditions for consent)
+
+**Rate Limit Pattern** ([RATE_LIMIT_UI_PATTERN_GUIDE.md](../tutorials/RATE_LIMIT_UI_PATTERN_GUIDE.md)):
+- **Purpose:** Prevent abuse and protect server resources
+- **State:** Time-based (active/expired)
+- **Duration:** Temporary (countdown timer)
+- **User Control:** No control (must wait for timer)
+- **Visual Cue:** Timer/Clock icon, grey button with countdown
+- **Interaction:** Click → Attempt blocked → See countdown timer
+- **Resolution:** Automatic (timer expiration)
+- **Related Standard:** HTTP 429 Too Many Requests
+
+#### Visual Comparison
+
+**Consent Blocked Button:**
+```jsx
+<button
+  onClick={handleConsentClick}  // Shows popover
+  className="bg-gray-300 text-gray-500 cursor-not-allowed"  // Greyed out
+>
+  <Lock className="w-5 h-5" />
+  Feature Locked
+</button>
+```
+
+**Rate Limited Button:**
+```jsx
+<button
+  onClick={handleAction}  // Attempt blocked
+  disabled={isRateLimited}
+  className="bg-gray-300 text-gray-500 cursor-not-allowed"  // Greyed out
+>
+  <Timer className="w-5 h-5" />
+  Wait 45m 32s
+</button>
+```
+
+#### When to Use Each Pattern
+
+Use **Consent Blocking** when:
+- Feature requires explicit GDPR consent (Art. 6, 7)
+- User must opt-in before using feature
+- Consent can be granted/revoked at any time
+- Feature involves personal data processing
+- Examples: AI features, analytics, marketing emails
+
+Use **Rate Limiting** when:
+- Preventing abuse or bot attacks
+- Protecting server resources
+- Enforcing usage quotas
+- Managing intensive operations (exports, uploads)
+- Examples: Data exports, file uploads, API calls
+
+#### Combining Both Patterns
+
+Some features may need BOTH patterns:
+
+```jsx
+const isBlocked = !hasConsent || isRateLimited;
+const reason = !hasConsent ? 'consent' : isRateLimited ? 'rateLimit' : null;
+
+<button
+  onClick={handleClick}
+  disabled={isBlocked}
+  className={isBlocked ? 'bg-gray-300 cursor-not-allowed' : 'bg-blue-600'}
+>
+  {!hasConsent && <Lock className="w-5 h-5" />}
+  {hasConsent && isRateLimited && <Timer className="w-5 h-5" />}
+  {reason === 'consent' && 'Grant Consent'}
+  {reason === 'rateLimit' && `Wait ${formatTime(timeRemaining)}`}
+  {!reason && 'Use Feature'}
+</button>
+```
+
+**Priority:** Check consent first, then rate limit.
+
+### Further Reading
+
+- [RATE_LIMIT_UI_PATTERN_GUIDE.md](../tutorials/RATE_LIMIT_UI_PATTERN_GUIDE.md) - Complete guide for implementing countdown timer pattern
+- [RATE_LIMIT_TESTING.md](../testing/RATE_LIMIT_TESTING.md) - Testing rate limits
+- [ACCOUNT_PRIVACY_TESTING_GUIDE.md](./ACCOUNT_PRIVACY_TESTING_GUIDE.md) - Testing both patterns
+
+---
+
 ## Related Documentation
 
 - [RGPD_Conformite_Tapit.md](./RGPD_Conformite_Tapit.md) - GDPR compliance overview
@@ -757,6 +864,6 @@ Implementing consent checks requires:
 
 ---
 
-**Last Updated:** 2025-11-11
-**Version:** 1.1
+**Last Updated:** 2025-11-18
+**Version:** 1.2
 **Maintainer:** Development Team

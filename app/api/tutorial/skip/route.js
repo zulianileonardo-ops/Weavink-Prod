@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createApiSession } from '@/lib/server/session';
 import { SettingsService } from '@/lib/services/serviceSetting/server/settingsService';
+import { rateLimit } from '@/lib/rateLimiter';
 
 /**
  * Tutorial Skip API Endpoint
@@ -18,30 +19,6 @@ import { SettingsService } from '@/lib/services/serviceSetting/server/settingsSe
  *   skippedAt: "2024-01-15T10:30:00.000Z"
  * }
  */
-
-// Rate limiting map
-const rateLimitMap = new Map();
-
-/**
- * Rate limiter
- */
-function rateLimit(userId, maxRequests = 5, windowMs = 60000) {
-  const now = Date.now();
-  const userRequests = rateLimitMap.get(userId) || [];
-
-  const recentRequests = userRequests.filter(
-    (timestamp) => now - timestamp < windowMs
-  );
-
-  if (recentRequests.length >= maxRequests) {
-    return false;
-  }
-
-  recentRequests.push(now);
-  rateLimitMap.set(userId, recentRequests);
-
-  return true;
-}
 
 /**
  * POST handler - Skip tutorial
@@ -81,7 +58,17 @@ export async function POST(request) {
     // ============================================
     // 3. RATE LIMITING
     // ============================================
-    if (!rateLimit(session.userId, 5, 60000)) {
+    const rateLimitResult = rateLimit(session.userId, {
+      maxRequests: 5,
+      windowMs: 60000,
+      metadata: {
+        eventType: 'tutorial_skip',
+        userId: session.userId,
+        ip: request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || request.headers.get('x-real-ip') || null,
+        userAgent: request.headers.get('user-agent') || null,
+      }
+    });
+    if (!rateLimitResult.allowed) {
       console.warn('⚠️ Rate limit exceeded for user:', session.userId);
       return NextResponse.json(
         { error: 'Too many requests. Please try again later.' },

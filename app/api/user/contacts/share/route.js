@@ -193,7 +193,17 @@ export async function POST(request) {
         const { uid } = decodedToken;
 
         // --- 3. Rate Limiting ---
-        if (!rateLimit(uid, 5, 60000)) { // 5 share operations per minute
+        const rateLimitResult = rateLimit(uid, {
+            maxRequests: 5,
+            windowMs: 60000,
+            metadata: {
+                eventType: 'contacts_share',
+                userId: uid,
+                ip: request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || request.headers.get('x-real-ip') || null,
+                userAgent: request.headers.get('user-agent') || null,
+            }
+        });
+        if (!rateLimitResult.allowed) {
             return NextResponse.json({ error: 'Too many share requests. Please try again in a moment.' }, { status: 429 });
         }
 
@@ -334,7 +344,17 @@ export async function GET(request) {
         const { uid } = decodedToken;
 
         // --- 2. Rate Limiting ---
-        if (!rateLimit(uid, 30, 60000)) { // 30 requests per minute
+        const rateLimitResult = rateLimit(uid, {
+            maxRequests: 30,
+            windowMs: 60000,
+            metadata: {
+                eventType: 'contacts_share_info',
+                userId: uid,
+                ip: request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || request.headers.get('x-real-ip') || null,
+                userAgent: request.headers.get('user-agent') || null,
+            }
+        });
+        if (!rateLimitResult.allowed) {
             return NextResponse.json({ error: 'Too many requests. Please try again in a moment.' }, { status: 429 });
         }
 
