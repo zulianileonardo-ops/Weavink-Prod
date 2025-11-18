@@ -32,7 +32,7 @@ export function useAccount() {
 }
 
 export function AccountProvider({ children }) {
-  const { session } = useDashboard();
+  const { session, currentUser } = useDashboard();
 
   // Permission flags derived from session
   const canManageConsents = session?.permissions?.[PRIVACY_PERMISSIONS.CAN_MANAGE_CONSENTS] ?? true;
@@ -428,7 +428,7 @@ export function AccountProvider({ children }) {
       setHasLoadError(false);
       invalidateCache();
     }
-  }, [session, fetchPrivacyData, invalidateCache]);
+  }, [currentUser, fetchPrivacyData, invalidateCache]);
 
   const contextValue = {
     // Core privacy data
