@@ -2693,5 +2693,11 @@
         "denied": "您没有此操作的权限"
       }
     }
+  },
+  "roadmap": {
+    "sections": {
+      "all_categories": "所有类别"
+    },
+    "graph_view_coming_soon": "图表视图即将推出"
   }
 }

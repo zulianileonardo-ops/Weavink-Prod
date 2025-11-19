@@ -3164,5 +3164,11 @@
         "denied": "No tiene permiso para esta acción"
       }
     }
+  },
+  "roadmap": {
+    "sections": {
+      "all_categories": "Todas las categorías"
+    },
+    "graph_view_coming_soon": "Vista de gráfico próximamente"
   }
 }

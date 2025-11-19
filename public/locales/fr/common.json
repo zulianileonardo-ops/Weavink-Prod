@@ -3390,5 +3390,11 @@
         "denied": "Vous n'avez pas la permission pour cette action"
       }
     }
+  },
+  "roadmap": {
+    "sections": {
+      "all_categories": "Toutes les catégories"
+    },
+    "graph_view_coming_soon": "Vue graphique bientôt disponible"
   }
 }

@@ -3155,5 +3155,11 @@
         "denied": "Bạn không có quyền thực hiện hành động này"
       }
     }
+  },
+  "roadmap": {
+    "sections": {
+      "all_categories": "Tất cả danh mục"
+    },
+    "graph_view_coming_soon": "Chế độ xem đồ thị sắp ra mắt"
   }
 }
