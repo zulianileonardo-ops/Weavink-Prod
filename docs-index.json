@@ -1,8 +1,8 @@
 {
   "metadata": {
     "project": "Weavink Documentation",
-    "last_updated": "2025-11-18",
-    "total_guides": 62,
+    "last_updated": "2025-11-19",
+    "total_guides": 64,
     "version": "1.0.0"
   },
   "categories": {
@@ -82,7 +82,9 @@
         "technical-rules-grouping-fixes-035",
         "technical-refactoring-cost-tracking-036",
         "technical-build-fix-import-paths-037",
-        "technical-rgpd-architecture-compliance-038"
+        "technical-rgpd-architecture-compliance-038",
+        "infrastructure-firebase-cleanup-047",
+        "infrastructure-audit-log-monitoring-048"
       ]
     },
     "testing": {
@@ -516,7 +518,7 @@
     },
     {
       "id": "rgpd-conformite-tapit-013",
-      "title": "RGPD Conformit\u00e9 Tapit",
+      "title": "RGPD Conformité Tapit",
       "filename": "documentation/rgpd/RGPD_Conformite_Tapit.md",
       "category": "rgpd",
       "summary": "Complete GDPR/RGPD compliance roadmap and implementation plan for Weavink (Tapit SAS).",
@@ -1859,6 +1861,72 @@
       "status": "active",
       "created": "2025-11-18",
       "updated": "2025-11-18"
+    },
+    {
+      "id": "infrastructure-firebase-cleanup-047",
+      "title": "Firebase Scheduled Export Cleanup",
+      "filename": "documentation/infrastructure/FIREBASE_SCHEDULED_CLEANUP.md",
+      "category": "technical",
+      "summary": "Automated daily cleanup of expired GDPR data export requests via Firebase Scheduled Functions for GDPR Article 5(1)(c) data minimization compliance.",
+      "tags": [
+        "firebase",
+        "scheduled-functions",
+        "cloud-functions",
+        "gdpr",
+        "rgpd",
+        "data-minimization",
+        "retention-policy",
+        "automated-cleanup",
+        "cron",
+        "firestore",
+        "audit-logging"
+      ],
+      "related_guides": [
+        "RGPD_IMPLEMENTATION_SUMMARY.md",
+        "RGPD_ARCHITECTURE_COMPLIANCE.md",
+        "ACCOUNT_PRIVACY_TESTING_GUIDE.md",
+        "SUBSCRIPTION_REVALIDATION_SETUP.md"
+      ],
+      "functions": [
+        "cleanupExpiredExports"
+      ],
+      "components": [],
+      "status": "active",
+      "created": "2025-11-19",
+      "updated": "2025-11-19"
+    },
+    {
+      "id": "infrastructure-audit-log-monitoring-048",
+      "title": "Firebase Audit Log Retention Monitoring (5-Year TTL)",
+      "filename": "documentation/infrastructure/FIREBASE_AUDIT_LOG_MONITORING.md",
+      "category": "technical",
+      "summary": "Automated 5-year audit log retention using Firestore TTL with monthly monitoring function for GDPR Article 5(2) accountability compliance.",
+      "tags": [
+        "firebase",
+        "firestore-ttl",
+        "scheduled-functions",
+        "cloud-functions",
+        "gdpr",
+        "rgpd",
+        "audit-logging",
+        "retention-policy",
+        "accountability",
+        "monitoring",
+        "compliance"
+      ],
+      "related_guides": [
+        "FIREBASE_SCHEDULED_CLEANUP.md",
+        "RGPD_COMPLIANCE_MATRIX.md",
+        "RGPD_ARCHITECTURE_COMPLIANCE.md",
+        "ACCOUNT_PRIVACY_TESTING_GUIDE.md"
+      ],
+      "functions": [
+        "monitorAuditLogRetention"
+      ],
+      "components": [],
+      "status": "active",
+      "created": "2025-11-19",
+      "updated": "2025-11-19"
     }
   ]
 }

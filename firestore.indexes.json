@@ -33,6 +33,24 @@
       ]
     },
     {
+      "collectionGroup": "PrivacyRequests",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "expiresAt",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "AuditReports",
       "queryScope": "COLLECTION",
       "fields": [

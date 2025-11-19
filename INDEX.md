@@ -1,14 +1,14 @@
 # Weavink Documentation Index
 
-**Last Updated:** 2025-11-18
-**Total Guides:** 62
+**Last Updated:** 2025-11-19
+**Total Guides:** 64
 
 ## Quick Navigation
 - [Admin System](#admin-system) (9 guides)
 - [Analytics & Tracking](#analytics-tracking) (3 guides)
 - [RGPD/GDPR Compliance](#rgpd-gdpr-compliance) (7 guides)
 - [Feature Implementations](#feature-implementations) (15 guides)
-- [Technical Infrastructure](#technical-infrastructure) (15 guides)
+- [Technical Infrastructure](#technical-infrastructure) (17 guides)
 - [Testing & QA](#testing-qa) (6 guides)
 - [General Documentation](#general-documentation) (4 guides)
 - [Tutorials & Guides](#tutorials-guides) (2 guides)
@@ -201,6 +201,16 @@
 
 ## Technical Infrastructure
 *Architecture, refactoring, and technical improvements*
+
+### FIREBASE_AUDIT_LOG_MONITORING.md
+**Summary:** Automated 5-year audit log retention using Firestore TTL with monthly monitoring function for GDPR Article 5(2) accountability compliance.
+**Tags:** firebase, firestore-ttl, scheduled-functions, cloud-functions, gdpr, rgpd, audit-logging, retention-policy, accountability, monitoring, compliance
+**Related:** [FIREBASE_SCHEDULED_CLEANUP.md](#firebase-scheduled-cleanup-md), [RGPD_COMPLIANCE_MATRIX.md](#rgpd-compliance-matrix-md), [RGPD_ARCHITECTURE_COMPLIANCE.md](#rgpd-architecture-compliance-md), [ACCOUNT_PRIVACY_TESTING_GUIDE.md](#account-privacy-testing-guide-md)
+
+### FIREBASE_SCHEDULED_CLEANUP.md
+**Summary:** Automated daily cleanup of expired GDPR data export requests via Firebase Scheduled Functions for GDPR Article 5(1)(c) data minimization compliance.
+**Tags:** firebase, scheduled-functions, cloud-functions, gdpr, rgpd, data-minimization, retention-policy, automated-cleanup, cron, firestore, audit-logging
+**Related:** [RGPD_IMPLEMENTATION_SUMMARY.md](#rgpd-implementation-summary-md), [RGPD_ARCHITECTURE_COMPLIANCE.md](#rgpd-architecture-compliance-md), [ACCOUNT_PRIVACY_TESTING_GUIDE.md](#account-privacy-testing-guide-md), [SUBSCRIPTION_REVALIDATION_SETUP.md](#subscription-revalidation-setup-md)
 
 ### BUDGET_AFFORDABILITY_CHECK_GUIDE.md
 **Summary:** Documents affordability checking system preventing users from exceeding subscription limits.

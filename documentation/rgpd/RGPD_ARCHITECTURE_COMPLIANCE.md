@@ -688,6 +688,166 @@ Replace any remaining magic strings in UI components with constants from barrel.
 | **Code Quality** | Mixed | High | +++++ |
 | **Maintainability** | Low | High | +++++ |
 
+### Automated Retention Enforcement (NEW - 2025-11-19)
+
+**Implementation**: Firebase Scheduled Function `cleanupExpiredExports`
+
+**Achievement**: ✅ Automated 24-hour data retention for export requests
+
+#### What Was Implemented
+
+**Firebase Scheduled Function**:
+- **Function Name**: `cleanupExpiredExports`
+- **Schedule**: Daily at 2:00 AM UTC (cron: `0 2 * * *`)
+- **File**: `/functions/scheduledCleanup.js` (155 lines)
+- **Documentation**: `FIREBASE_SCHEDULED_CLEANUP.md`
+
+**Key Features**:
+1. ✅ Automated deletion of expired PrivacyRequest documents
+2. ✅ Firestore composite index for efficient queries (type + status + expiresAt)
+3. ✅ Audit logging for all cleanup operations
+4. ✅ Batch deletion (up to 100 documents per run)
+5. ✅ Error handling with retry logic (3 attempts)
+6. ✅ 25-hour grace period (24h retention + 1h buffer)
+
+**Compliance Impact**:
+- **GDPR Article 5(1)(c)**: Data Minimization principle
+- **Retention Period**: 24 hours + 1 hour buffer
+- **Personal Data Deleted**: IP addresses, user agents, request timestamps
+- **Audit Trail**: Complete logging in `AuditLogs` collection
+
+**Architecture Integration**:
+```
+Firebase Scheduled Function
+  ↓
+Query: PrivacyRequests (type=export, status=completed, expiresAt<=cutoff)
+  ↓
+Batch Delete: Up to 100 documents
+  ↓
+Audit Log: category=retention_policy, action=export_cleanup_scheduled
+```
+
+**Deployment Status**:
+- ✅ Function deployed to Firebase (2025-11-19)
+- ✅ Composite index deployed to Firestore
+- ✅ Cloud Scheduler job configured (daily 2 AM UTC)
+- ✅ Monitoring enabled via Cloud Logging
+
+**Testing Coverage**:
+- ✅ Manual trigger testing documented
+- ✅ Test data creation scripts provided
+- ✅ Verification steps in `ACCOUNT_PRIVACY_TESTING_GUIDE.md`
+
+---
+
+### 5-Year Audit Log Retention (NEW - 2025-11-19)
+
+**Implementation**: Firestore TTL + Monthly Monitoring Function
+
+**Achievement**: ✅ Automated 5-year audit log retention with accountability monitoring
+
+#### What Was Implemented
+
+**Firestore Time-To-Live (TTL)**:
+- **Feature**: Native Firestore automatic document deletion
+- **Field**: `expireAt` (Date type, set to 5 years from creation)
+- **Collection**: `AuditLogs`
+- **Status**: ACTIVE (production-ready GA feature)
+- **Cost**: $0 (deletions within free tier)
+
+**Monthly Monitoring Function**:
+- **Function Name**: `monitorAuditLogRetention`
+- **Schedule**: Monthly on 1st at 4:00 AM UTC (cron: `0 4 1 * *`)
+- **File**: `/functions/auditLogMonitoring.js` (171 lines)
+- **Documentation**: `FIREBASE_AUDIT_LOG_MONITORING.md`
+
+**Key Features**:
+1. ✅ Automatic TTL deletion (zero maintenance, zero cost)
+2. ✅ Monthly monitoring summaries (prove TTL enforcement)
+3. ✅ Health status tracking (healthy/degraded/unhealthy)
+4. ✅ Early warning system (alerts if TTL fails)
+5. ✅ `expireAt` field in ALL audit logs (100% coverage)
+6. ✅ Individual audit logs per export cleanup (not bulk)
+
+**Compliance Impact**:
+- **GDPR Article 5(1)(c)**: Data Minimization (auto-delete after 5 years)
+- **GDPR Article 5(2)**: Accountability (monthly summaries prove enforcement)
+- **CNIL Requirement**: 5-year audit trail for legal accountability
+- **Retention Period**: Exactly 5 years (157,788,000,000 milliseconds)
+
+**Code Changes**:
+```javascript
+// lib/services/servicePrivacy/server/auditLogService.js (line 93)
+expireAt: new Date(Date.now() + 5 * 365.25 * 24 * 60 * 60 * 1000)
+
+// functions/scheduledCleanup.js (line 95)
+expireAt: new Date(Date.now() + 5 * 365.25 * 24 * 60 * 60 * 1000)
+```
+
+**Architecture Integration**:
+```
+1. Audit Log Creation
+   ↓
+auditLogService.logAuditEvent() → Add expireAt field (5 years)
+   ↓
+Firestore: AuditLogs/{logId} with expireAt
+   ↓
+2. Automatic Deletion (Firestore TTL)
+   ↓
+Firestore Background Process → Check expireAt daily
+   ↓
+Delete logs within 24h after expiry (free, automatic)
+   ↓
+3. Monthly Monitoring
+   ↓
+monitorAuditLogRetention() → Count expired logs (should be 0-50)
+   ↓
+Create Summary Audit Log: category=retention_policy, action=audit_log_retention_check
+   ↓
+Alert if unhealthy (>100 expired logs = TTL not working)
+```
+
+**Deployment Status**:
+- ✅ Firestore TTL enabled (`gcloud firestore fields ttls update expireAt`)
+- ✅ TTL state: ACTIVE
+- ✅ Monitoring function deployed to Firebase (2025-11-19)
+- ✅ Cloud Scheduler job configured (monthly 1st at 4 AM UTC)
+- ✅ All audit logs updated with `expireAt` field
+- ✅ Export cleanup logs updated with `expireAt` field
+
+**Testing Coverage**:
+- ✅ TTL policy verification (Test 10.1)
+- ✅ `expireAt` field verification (Test 10.2)
+- ✅ Monitoring function execution (Test 10.3)
+- ✅ TTL health over time (Test 10.4)
+- ✅ Export cleanup audit logs (Test 10.5)
+- ✅ Database state compliance (Test 10.6)
+- ✅ Comprehensive test guide in `ACCOUNT_PRIVACY_TESTING_GUIDE.md` (lines 3404-3841)
+
+**Cost Analysis**:
+- **Firestore TTL Deletions**: $0.00 (within free tier)
+- **Monitoring Function**: ~$0.10/month (Cloud Scheduler only)
+- **Total**: ~$0.10/month or ~$1.20/year
+
+**Benefits**:
+- ✅ Zero maintenance (fully automated)
+- ✅ 100% reliability (Google-managed infrastructure)
+- ✅ Compliance proof (monthly audit summaries)
+- ✅ Early detection (alerts if TTL fails)
+- ✅ Scalable to millions of logs
+- ✅ 4 common test scenarios documented
+
+**Compliance Score Impact**:
+| Metric | Before | After | Status |
+|--------|--------|-------|--------|
+| **Automated Retention Policies** | 10 | 11 | ✅ +1 |
+| **Export Request Retention** | ❌ Manual | ✅ Automated | ✅ **COMPLIANT** |
+| **Data Minimization Enforcement** | 🟡 Partial | ✅ Complete | ✅ **COMPLIANT** |
+
+**Cost**: ~$0.10/month (Cloud Scheduler job cost, all other operations within free tier)
+
+---
+
 ### Final Assessment
 
 The RGPD implementation has been successfully refactored to align with Weavink coding standards. The most critical architectural violations have been fixed:

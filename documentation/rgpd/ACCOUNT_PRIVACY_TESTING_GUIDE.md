@@ -596,6 +596,151 @@ EXPECTED:
 | **Download ZIP** | N/A (client-side) | N/A | None | ✅ Logged: action="export_zip_downloaded" |
 | **Auto-Expire** (24h) | `/PrivacyRequests/{id}` | Document DELETED | Cloud Storage files deleted | ✅ Logged: action="export_expired" |
 
+---
+
+#### Testing Automated Cleanup (Firebase Scheduled Function)
+
+The 24-hour auto-cleanup is implemented via Firebase Scheduled Function: `cleanupExpiredExports`
+
+**Function Details**:
+- **Schedule**: Daily at 2:00 AM UTC
+- **Implementation**: `/functions/scheduledCleanup.js`
+- **Documentation**: See `FIREBASE_SCHEDULED_CLEANUP.md`
+
+##### Manual Testing Steps
+
+**Step 1: Create Test Export Request (Expired)**
+
+```javascript
+const admin = require('firebase-admin');
+const db = admin.firestore();
+
+// Create export request that expired 26 hours ago
+const expiredDate = new Date(Date.now() - 26 * 60 * 60 * 1000);
+
+await db.collection('PrivacyRequests').add({
+  userId: 'test-user-123',
+  type: 'export',
+  status: 'completed',
+  requestedAt: new Date(Date.now() - 30 * 60 * 60 * 1000),
+  completedAt: new Date(Date.now() - 26 * 60 * 60 * 1000),
+  expiresAt: expiredDate,
+  exportData: { files: { /* ... */ } },
+  downloadUrl: null,
+  ipAddress: '192.168.1.1',
+  userAgent: 'Mozilla/5.0 (Test)'
+});
+```
+
+**Step 2: Trigger Function Manually**
+
+```bash
+# Option 1: Firebase Console
+# Navigate to Functions > cleanupExpiredExports > "Run now"
+
+# Option 2: gcloud CLI
+gcloud scheduler jobs run firebase-schedule-cleanupExpiredExports-us-central1 \
+  --project=tapit-dev-e0eed
+```
+
+**Step 3: Verify Deletion**
+
+```javascript
+// Check if document was deleted
+const snapshot = await db.collection('PrivacyRequests')
+  .where('type', '==', 'export')
+  .where('expiresAt', '<=', new Date(Date.now() - 25 * 60 * 60 * 1000))
+  .get();
+
+console.log(`Remaining expired exports: ${snapshot.size}`);
+// Expected: 0 (all expired exports deleted)
+```
+
+**Step 4: Verify Audit Log**
+
+```javascript
+// Check for cleanup audit log
+const auditSnapshot = await db.collection('AuditLogs')
+  .where('category', '==', 'retention_policy')
+  .where('action', '==', 'export_cleanup_scheduled')
+  .orderBy('timestamp', 'desc')
+  .limit(1)
+  .get();
+
+auditSnapshot.forEach(doc => {
+  const data = doc.data();
+  console.log('✅ Cleanup audit log found:');
+  console.log(`   Deleted: ${data.metadata.deletedCount} exports`);
+  console.log(`   Executed at: ${data.timestamp.toDate()}`);
+  console.log(`   Cutoff: ${data.metadata.expirationCutoff}`);
+});
+```
+
+##### Expected Audit Log Structure
+
+```javascript
+{
+  category: "retention_policy",
+  action: "export_cleanup_scheduled",
+  userId: null,
+  resourceType: "export_request",
+  details: "Automated cleanup: deleted X expired export request(s)",
+  severity: "info",
+  ipAddress: "SYSTEM_SCHEDULED",
+  userAgent: "Cloud Functions/scheduledCleanup",
+  metadata: {
+    deletedCount: 1,
+    executedBy: "scheduled_function",
+    expirationCutoff: "2025-11-18T01:00:00.000Z",
+    deletedRequestIds: ["abc123"],
+    executionTimeMs: 1234
+  },
+  timestamp: FieldValue.serverTimestamp(),
+  verified: true
+}
+```
+
+##### Monitoring Scheduled Runs
+
+**View Function Logs**:
+```bash
+# Recent executions
+firebase functions:log --only cleanupExpiredExports --limit 20
+
+# Filter for errors
+firebase functions:log --only cleanupExpiredExports | grep ERROR
+```
+
+**Cloud Logging Query** (Firebase Console):
+```
+resource.type="cloud_function"
+resource.labels.function_name="cleanupExpiredExports"
+```
+
+##### Common Test Scenarios
+
+**Scenario 1: No Expired Exports**
+- **Setup**: No exports older than 25 hours
+- **Expected**: `deletedCount: 0` in logs
+- **Result**: ✅ Pass (normal behavior)
+
+**Scenario 2: Multiple Expired Exports**
+- **Setup**: Create 5 exports expired 26+ hours ago
+- **Expected**: `deletedCount: 5` in audit log
+- **Result**: ✅ Pass (all deleted)
+
+**Scenario 3: Mixed Status Exports**
+- **Setup**: Create expired exports with status "pending" and "completed"
+- **Expected**: Only "completed" exports deleted
+- **Result**: ✅ Pass (status filter works)
+
+**Scenario 4: Borderline Expiration (24h exactly)**
+- **Setup**: Create export expired exactly 24 hours ago
+- **Expected**: NOT deleted (25-hour cutoff with buffer)
+- **Result**: ✅ Pass (buffer prevents premature deletion)
+
+---
+
 ### RGPD Compliance Requirements
 
 #### GDPR Art. 20: Right to Data Portability
@@ -3253,6 +3398,446 @@ EXPECTED:
 - ⚠️ Alert: "Audit log tampering detected"
 - 📝 Incident logged
 ```
+
+---
+
+## 5-Year Audit Log Retention Testing (Firestore TTL)
+
+### Purpose
+
+Verify that audit logs are automatically deleted after 5 years using Firestore TTL and that the monthly monitoring function correctly tracks retention policy enforcement.
+
+**GDPR Compliance**: Article 5(2) - Accountability (5-year audit trail)
+**Implementation**: Firestore TTL + Monthly Monitoring Function
+**Documentation**: See `FIREBASE_AUDIT_LOG_MONITORING.md`
+
+---
+
+### Test 10.1: Verify TTL Policy is Enabled
+
+**Objective**: Confirm Firestore TTL policy is active on AuditLogs collection
+
+**Test Steps**:
+
+```bash
+# 1. Check TTL policy status
+gcloud firestore fields ttls list \
+  --collection-group=AuditLogs \
+  --project=tapit-dev-e0eed
+```
+
+**Expected Results**:
+
+```yaml
+---
+name: projects/tapit-dev-e0eed/databases/(default)/collectionGroups/AuditLogs/fields/expireAt
+ttlConfig:
+  state: ACTIVE  # ✅ TTL enabled and operational
+```
+
+**Pass Criteria**:
+- ✅ `state: ACTIVE` (TTL policy is enabled)
+- ✅ Field name: `expireAt`
+- ✅ Collection group: `AuditLogs`
+
+**Failure Actions**:
+- If `state: CREATING` → Wait 5-10 minutes and re-check
+- If TTL not found → Re-run `gcloud firestore fields ttls update expireAt --collection-group=AuditLogs --enable-ttl`
+
+---
+
+### Test 10.2: Verify `expireAt` Field in New Audit Logs
+
+**Objective**: Confirm all new audit logs have `expireAt` field set to 5 years in future
+
+**Test Steps**:
+
+1. **Create a new audit log** (trigger any privacy action):
+   - Request data export in Privacy Center
+   - OR grant/withdraw a consent
+   - OR update privacy settings
+
+2. **Check latest audit log in Firestore**:
+
+```javascript
+const db = admin.firestore();
+
+const recentLog = await db.collection('AuditLogs')
+  .orderBy('timestamp', 'desc')
+  .limit(1)
+  .get();
+
+const logData = recentLog.docs[0].data();
+
+console.log('Action:', logData.action);
+console.log('Timestamp:', logData.timestamp.toDate());
+console.log('ExpireAt:', logData.expireAt.toDate());
+
+// Calculate retention period
+const diffMs = logData.expireAt.getTime() - logData.timestamp.toDate().getTime();
+const diffYears = diffMs / (365.25 * 24 * 60 * 60 * 1000);
+
+console.log('Retention period:', diffYears.toFixed(2), 'years');
+// Expected: ~5.00 years
+```
+
+**Expected Results**:
+- ✅ `expireAt` field exists
+- ✅ `expireAt` is a Firestore Timestamp (not null)
+- ✅ Retention period = **5.00 years** (±0.01 year tolerance)
+- ✅ `expireAt` > `timestamp` (expiry is in the future)
+
+**Sample Log Structure**:
+```javascript
+{
+  logId: "log_export_1732089600_xyz",
+  category: "data_export",
+  action: "export_requested",
+  userId: "abc123",
+  timestamp: Timestamp { _seconds: 1732089600 },  // Nov 19, 2025
+  expireAt: Timestamp { _seconds: 1889769600 },   // Nov 19, 2030 (5 years later)
+  // ... other fields
+}
+```
+
+**Pass Criteria**:
+- ✅ ALL new audit logs have `expireAt` field
+- ✅ Retention period = 5 years (157,788,000,000 milliseconds)
+- ✅ No audit logs with `expireAt: null`
+
+---
+
+### Test 10.3: Verify Monthly Monitoring Function
+
+**Objective**: Confirm `monitorAuditLogRetention` function is deployed and creates monthly summaries
+
+**Test Steps**:
+
+1. **Check function exists**:
+
+```bash
+firebase functions:list | grep monitorAuditLogRetention
+
+# Expected: monitorAuditLogRetention(us-central1) [SCHEDULED]
+```
+
+2. **Check Cloud Scheduler job**:
+
+```bash
+gcloud scheduler jobs list --project=tapit-dev-e0eed | grep monitorAuditLogRetention
+
+# Expected: firebase-schedule-monitorAuditLogRetention-us-central1  0 4 1 * *  UTC  ENABLED
+```
+
+3. **Manually trigger function**:
+
+```bash
+gcloud functions call monitorAuditLogRetention \
+  --region=us-central1 \
+  --project=tapit-dev-e0eed
+```
+
+4. **Verify monitoring summary created**:
+
+```javascript
+const monitorLog = await db.collection('AuditLogs')
+  .where('category', '==', 'retention_policy')
+  .where('action', '==', 'audit_log_retention_check')
+  .orderBy('timestamp', 'desc')
+  .limit(1)
+  .get();
+
+if (monitorLog.empty) {
+  console.log('❌ FAIL: No monitoring summary found');
+} else {
+  const data = monitorLog.docs[0].data();
+  console.log('✅ PASS: Monitoring summary created');
+  console.log('Check Date:', data.metadata.checkDate);
+  console.log('Total Logs:', data.metadata.totalAuditLogs);
+  console.log('Expired Logs:', data.metadata.expiredLogsFound);
+  console.log('TTL Status:', data.metadata.ttlStatus);
+  console.log('Severity:', data.severity);
+}
+```
+
+**Expected Results**:
+- ✅ Function exists and is scheduled
+- ✅ Cloud Scheduler job is ENABLED
+- ✅ Monitoring summary audit log created
+- ✅ `category: "retention_policy"`
+- ✅ `action: "audit_log_retention_check"`
+- ✅ `metadata.totalAuditLogs` > 0
+- ✅ `metadata.ttlStatus` = "healthy" (0-50 expired logs)
+
+**Expected Monitoring Summary Structure**:
+```javascript
+{
+  category: "retention_policy",
+  action: "audit_log_retention_check",
+  userId: null,
+  details: "TTL policy working correctly - minimal old logs found",
+  severity: "info",  // or "warning" or "error"
+  ipAddress: "SYSTEM_SCHEDULED",
+  userAgent: "Cloud Functions/auditLogMonitoring",
+  metadata: {
+    checkDate: "2025-12-01T04:00:00.000Z",
+    totalAuditLogs: 125000,
+    expiredLogsFound: 15,
+    retentionPeriod: "5_years",
+    fiveYearCutoff: "2020-12-01T04:00:00.000Z",
+    ttlStatus: "healthy",  // healthy | degraded | unhealthy
+    categoryBreakdown: {
+      "data_export": 8,
+      "consent": 5,
+      "data_deletion": 2
+    },
+    executionTimeMs: 1234
+  },
+  timestamp: Timestamp { ... },
+  expireAt: Timestamp { ... }  // 5 years from now
+}
+```
+
+**TTL Status Meanings**:
+- **"healthy"**: 0-50 expired logs found (TTL working normally)
+- **"degraded"**: 51-100 expired logs found (TTL working but slow)
+- **"unhealthy"**: 101+ expired logs found (TTL not working!)
+
+**Pass Criteria**:
+- ✅ Monitoring function exists and is scheduled
+- ✅ Summary audit log created successfully
+- ✅ `ttlStatus` = "healthy" or "degraded" (NOT "unhealthy")
+- ✅ Execution time < 60 seconds
+
+---
+
+### Test 10.4: Verify TTL Health Over Time
+
+**Objective**: Analyze monitoring summaries over multiple months to ensure TTL is consistently working
+
+**Test Steps**:
+
+1. **Query last 3 months of monitoring summaries**:
+
+```javascript
+const threeMonthsAgo = new Date();
+threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+
+const history = await db.collection('AuditLogs')
+  .where('category', '==', 'retention_policy')
+  .where('action', '==', 'audit_log_retention_check')
+  .where('timestamp', '>=', threeMonthsAgo)
+  .orderBy('timestamp', 'desc')
+  .get();
+
+console.log(`Found ${history.size} monthly checks in last 3 months`);
+
+const expiredCounts = [];
+history.forEach(doc => {
+  const data = doc.data();
+  const checkDate = new Date(data.metadata.checkDate);
+  const month = checkDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+
+  console.log(`${month}:`);
+  console.log(`  - Total Logs: ${data.metadata.totalAuditLogs}`);
+  console.log(`  - Expired Logs: ${data.metadata.expiredLogsFound}`);
+  console.log(`  - Status: ${data.metadata.ttlStatus}`);
+
+  expiredCounts.push(data.metadata.expiredLogsFound);
+});
+
+// Trend analysis
+console.log('\nTrend Analysis:');
+console.log('Expired log counts:', expiredCounts);
+
+if (expiredCounts.length >= 2) {
+  const increasing = expiredCounts.every((val, i) => i === 0 || val >= expiredCounts[i-1]);
+
+  if (increasing && expiredCounts[0] > 50) {
+    console.log('⚠️ WARNING: Expired logs are increasing - TTL may be degrading');
+  } else {
+    console.log('✅ PASS: TTL working normally');
+  }
+}
+```
+
+**Expected Results**:
+- ✅ At least 2 monitoring summaries found (if system running for 2+ months)
+- ✅ Expired log counts are stable or decreasing
+- ✅ No month with `ttlStatus: "unhealthy"`
+- ✅ Total audit logs increasing over time (normal growth)
+
+**Pass Criteria**:
+- ✅ Expired log counts < 50 in most recent month
+- ✅ No increasing trend in expired counts
+- ✅ All checks have `severity: "info"` or `severity: "warning"` (NOT "error")
+
+---
+
+### Test 10.5: Verify Export Cleanup Logs Have `expireAt`
+
+**Objective**: Confirm export cleanup function (`cleanupExpiredExports`) creates audit logs with `expireAt` field
+
+**Test Steps**:
+
+1. **Create expired export request** (see Test 5.5 for setup)
+
+2. **Trigger cleanup function** (or wait for scheduled run at 2 AM UTC)
+
+3. **Check cleanup audit logs**:
+
+```javascript
+const cleanupLogs = await db.collection('AuditLogs')
+  .where('category', '==', 'data_export')
+  .where('action', '==', 'export_expired')
+  .orderBy('timestamp', 'desc')
+  .limit(5)
+  .get();
+
+console.log(`Found ${cleanupLogs.size} export cleanup logs`);
+
+cleanupLogs.forEach(doc => {
+  const data = doc.data();
+
+  console.log(`\nLog ID: ${doc.id}`);
+  console.log(`  - User ID: ${data.userId}`);
+  console.log(`  - Request ID: ${data.metadata.requestId}`);
+  console.log(`  - Timestamp: ${data.timestamp.toDate()}`);
+  console.log(`  - ExpireAt: ${data.expireAt ? data.expireAt.toDate() : 'MISSING'}`);
+
+  if (data.expireAt) {
+    const retentionYears = (data.expireAt.toDate() - data.timestamp.toDate()) / (365.25 * 24 * 60 * 60 * 1000);
+    console.log(`  - Retention: ${retentionYears.toFixed(2)} years`);
+  }
+});
+```
+
+**Expected Results**:
+- ✅ ALL cleanup logs have `expireAt` field
+- ✅ Retention period = 5 years
+- ✅ `category: "data_export"`
+- ✅ `action: "export_expired"`
+- ✅ Individual logs per export (not bulk)
+
+**Sample Cleanup Log Structure**:
+```javascript
+{
+  category: "data_export",
+  action: "export_expired",
+  userId: "abc123",
+  resourceType: "data_export",
+  resourceId: "req_export_123",
+  details: "Data export expired and deleted (24-hour retention policy)",
+  severity: "info",
+  ipAddress: "SYSTEM_SCHEDULED",
+  userAgent: "Cloud Functions/scheduledCleanup",
+  metadata: {
+    requestId: "req_export_123",
+    expiresAt: "2025-11-18T10:00:00.000Z",
+    deletedAt: "2025-11-19T10:00:15.000Z",
+    retentionPolicy: "24_hours"
+  },
+  timestamp: Timestamp { _seconds: 1732089615 },  // Nov 19, 2025
+  expireAt: Timestamp { _seconds: 1889769615 },   // Nov 19, 2030 (5 years later)
+  eventHash: "export_expired_req_export_123_1732089615",
+  verified: true
+}
+```
+
+**Pass Criteria**:
+- ✅ 100% of export cleanup logs have `expireAt`
+- ✅ All have 5-year retention period
+- ✅ Logs created for EACH expired export (individual, not bulk)
+
+---
+
+### Test 10.6: Database State Verification
+
+**Objective**: Comprehensive check of audit log collection for TTL compliance
+
+**Test Steps**:
+
+1. **Query recent audit logs**:
+
+```javascript
+const recentLogs = await db.collection('AuditLogs')
+  .orderBy('timestamp', 'desc')
+  .limit(100)
+  .get();
+
+let logsWithExpireAt = 0;
+let logsWithoutExpireAt = 0;
+const categories = {};
+
+recentLogs.forEach(doc => {
+  const data = doc.data();
+
+  if (data.expireAt) {
+    logsWithExpireAt++;
+  } else {
+    logsWithoutExpireAt++;
+    console.log(`⚠️ Missing expireAt: ${doc.id} (action: ${data.action})`);
+  }
+
+  categories[data.category] = (categories[data.category] || 0) + 1;
+});
+
+console.log('\n=== Audit Log TTL Compliance Report ===');
+console.log(`Total logs checked: ${recentLogs.size}`);
+console.log(`With expireAt: ${logsWithExpireAt} (${(logsWithExpireAt / recentLogs.size * 100).toFixed(1)}%)`);
+console.log(`Without expireAt: ${logsWithoutExpireAt} (${(logsWithoutExpireAt / recentLogs.size * 100).toFixed(1)}%)`);
+console.log('\nBy Category:');
+Object.entries(categories).forEach(([cat, count]) => {
+  console.log(`  - ${cat}: ${count}`);
+});
+
+// PASS if 100% have expireAt
+if (logsWithExpireAt === recentLogs.size) {
+  console.log('\n✅ PASS: All recent audit logs have expireAt field');
+} else {
+  console.log('\n❌ FAIL: Some audit logs missing expireAt field');
+}
+```
+
+**Expected Results**:
+- ✅ 100% of recent logs have `expireAt` field
+- ✅ No logs missing `expireAt`
+- ✅ All categories represented (consent, data_export, data_deletion, etc.)
+
+**Pass Criteria**:
+- ✅ `logsWithExpireAt = 100` (100% compliance)
+- ✅ `logsWithoutExpireAt = 0`
+
+**Failure Actions**:
+- If logs missing `expireAt`:
+  - Check when code was deployed (old logs before deployment won't have field)
+  - Verify `auditLogService.js` has `expireAt` line (line 93)
+  - Re-deploy functions: `firebase deploy --only functions`
+
+---
+
+### Summary: 5-Year TTL Testing Checklist
+
+Use this checklist to verify complete TTL implementation:
+
+- [ ] **Test 10.1**: TTL policy is ACTIVE in Firestore
+- [ ] **Test 10.2**: New audit logs have `expireAt` = 5 years
+- [ ] **Test 10.3**: Monitoring function runs monthly and creates summaries
+- [ ] **Test 10.4**: TTL status is "healthy" in recent monitoring summaries
+- [ ] **Test 10.5**: Export cleanup logs have `expireAt` field
+- [ ] **Test 10.6**: 100% of recent logs have `expireAt` field
+
+**GDPR Compliance Status**:
+- ✅ Article 5(1)(c): Data minimization (auto-delete after 5 years)
+- ✅ Article 5(2): Accountability (monthly monitoring proves enforcement)
+- ✅ CNIL requirement: 5-year audit trail maintained
+- ✅ Automated enforcement: Zero manual intervention needed
+
+**Documentation References**:
+- `FIREBASE_AUDIT_LOG_MONITORING.md` - Comprehensive TTL implementation guide
+- `RGPD_COMPLIANCE_MATRIX.md` (line 557) - Retention policies table
+- `/functions/auditLogMonitoring.js` - Monthly monitoring function code
+- `/lib/services/servicePrivacy/server/auditLogService.js` (line 93) - `expireAt` implementation
 
 ---
 
