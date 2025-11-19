@@ -139,7 +139,75 @@ PATCH  /api/user/privacy/delete-account           # Modify deletion (postpone)
 
 ---
 
-#### 1.4 Account & Privacy Center UI
+#### 1.4 Multilingual Email Notification System
+**Status**: ✅ COMPLETE
+**GDPR Articles**: Art. 12 (Transparent communication), Art. 34 (Data breach communication)
+
+**Files Created/Modified**:
+- `/lib/services/server/emailService.js` - Email service with multilingual support
+- Translation files: `/public/locales/{en,fr,es,zh,vm}/common.json` (emails section)
+
+**Features**:
+- ✅ Brevo API integration with tracking disabled (GDPR compliance)
+- ✅ Server-side translation loading (dynamic locale support)
+- ✅ Locale-specific date formatting
+- ✅ Non-blocking email sending (failures don't stop operations)
+- ✅ Multilingual support for 5 languages: English, French, Spanish, Chinese, Vietnamese
+
+**Email Types Implemented (5)**:
+
+1. **Account Deletion Confirmation**
+   - Sent when deletion request created
+   - Includes 30-day grace period warning
+   - Lists what will be deleted
+   - Export reminder
+   - Cancel button/link
+   - Locale: User's language
+
+2. **Contact Deletion Notice**
+   - Sent to users who have deleting account as contact
+   - Batch processing for multiple recipients
+   - Each recipient receives email in THEIR language (not deleting user's)
+   - Impact explanation
+   - Export suggestion
+
+3. **Account Deletion Completed**
+   - Sent BEFORE Firebase Auth deletion
+   - Final confirmation of permanent deletion
+   - GDPR Article 17 compliance note
+   - Option to create new account
+
+4. **Account Deletion Cancelled**
+   - Welcome-back message
+   - Confirmation of account restoration
+   - List of preserved data
+   - Dashboard link
+
+5. **Data Export Completed**
+   - Export summary with counts (contacts, groups, consents)
+   - Format listing (JSON, CSV, vCard)
+   - GDPR Article 20 compliance note
+   - Access instructions
+
+**Translation Keys**:
+- Namespace: `emails.*` in common.json
+- Variables: {{date}}, {{userName}}, {{deletedUserName}}
+- Interpolation: Automatic with i18next on server
+
+**Integration Points**:
+- `accountDeletionService.js` - 4 email integrations (confirmation, notices, completed, cancelled)
+- `export/route.js` - 1 email integration (completion notification)
+- User language: `users/{userId}/settings.defaultLanguage`
+
+**Bug Fixes Included**:
+- ✅ Fixed i18n interpolation ({{text}} and {{date}} no longer appear literally)
+- ✅ Added DELETION_CONFIRMATION_TEXTS constant for 5 languages
+- ✅ Locale-based deletion confirmation validation (each language has unique text)
+- ✅ Locale parameter passed through entire deletion flow for audit compliance
+
+---
+
+#### 1.5 Account & Privacy Center UI
 **Status**: ✅ COMPLETE
 **Location**: `/app/dashboard/(dashboard pages)/account/page.jsx`
 **Route**: `http://localhost:3000/dashboard/account`

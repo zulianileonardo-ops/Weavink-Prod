@@ -433,7 +433,17 @@ export async function POST(request) {
 
 ### Translation Structure
 
-All onboarding text is stored in `/public/locales/{locale}/common.json`:
+All onboarding text is stored in `/public/locales/{locale}/common.json`.
+
+**Language Selection Impact**: The language selected during onboarding (stored in `users/{userId}/settings.defaultLanguage`) determines:
+- UI language throughout the application
+- Email notification language (account deletion, data export, etc.)
+- Date and number formatting
+- All GDPR communication language
+
+See `lib/services/server/emailService.js` for multilingual email implementation.
+
+---
 
 ```json
 {

@@ -2,7 +2,7 @@
   "metadata": {
     "project": "Weavink Documentation",
     "last_updated": "2025-11-19",
-    "total_guides": 64,
+    "total_guides": 65,
     "version": "1.0.0"
   },
   "categories": {
@@ -96,7 +96,8 @@
         "testing-rate-limits-collection-v2-041",
         "testing-rgpd-guide-038",
         "testing-rgpd-quickstart-039",
-        "testing-rgpd-results-040"
+        "testing-rgpd-results-040",
+        "testing-email-notifications-065"
       ]
     },
     "general": {
@@ -1927,6 +1928,41 @@
       "status": "active",
       "created": "2025-11-19",
       "updated": "2025-11-19"
+    },
+    {
+      "id": "testing-email-notifications-065",
+      "title": "Email Notification System - Manual Test Guide (Phase 1 & 2)",
+      "filename": "documentation/testing/EMAIL_NOTIFICATION_MANUAL_TEST_GUIDE.md",
+      "category": "testing",
+      "summary": "Focused manual testing guide for multilingual email notification system covering i18n bug fixes and account deletion emails",
+      "tags": [
+        "email",
+        "notifications",
+        "multilingual",
+        "i18n",
+        "rgpd",
+        "manual-testing",
+        "phase1",
+        "phase2",
+        "gdpr",
+        "brevo"
+      ],
+      "status": "active",
+      "created": "2025-11-19",
+      "updated": "2025-11-19",
+      "related_guides": [
+        "RGPD_TESTING_GUIDE.md",
+        "ACCOUNT_PRIVACY_TESTING_GUIDE.md",
+        "RGPD_IMPLEMENTATION_SUMMARY.md"
+      ],
+      "functions": [
+        "sendAccountDeletionConfirmationEmail",
+        "sendContactDeletionNoticeEmail",
+        "sendAccountDeletionCompletedEmail",
+        "sendAccountDeletionCancelledEmail",
+        "sendDataExportCompletedEmail"
+      ],
+      "components": []
     }
   ]
 }

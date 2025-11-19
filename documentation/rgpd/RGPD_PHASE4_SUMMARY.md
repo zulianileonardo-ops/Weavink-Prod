@@ -87,10 +87,17 @@ getBreachNotificationHistory(options)                 // Get history
 ```
 
 #### Notification Channels
-1. **Email** - Primary notification method
+1. **Email** - Primary notification method (uses EmailService.js with multilingual support)
 2. **SMS** - For critical/urgent incidents
 3. **In-App** - Dashboard notifications
 4. **Push** - Mobile app notifications
+
+**Email Implementation**:
+- Integrated with `/lib/services/server/emailService.js`
+- Supports 5 languages (en, fr, es, zh, vm)
+- Server-side translation loading
+- Brevo API integration (tracking disabled for GDPR)
+- Non-blocking email sending
 
 #### Impact
 - **Legal Compliance** with GDPR Art. 34 requirements

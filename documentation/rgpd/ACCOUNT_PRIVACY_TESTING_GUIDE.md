@@ -458,6 +458,71 @@ VERIFICATION:
 - retryAfter is seconds (not milliseconds)
 ```
 
+#### 2.3A Email Notification Tests
+
+##### Test 2.3A.1: Export Completion Email Sent
+```
+STEPS:
+1. Request data export
+2. Wait for export to complete
+3. Check email inbox
+
+EXPECTED:
+- Email received within 30 seconds of export completion
+- Subject: "Your Data Export is Ready - Weavink" (or translated)
+- Email in user's language (based on settings.defaultLanguage)
+
+VERIFY EMAIL CONTAINS:
+- Headline: "Data Export Complete" (translated)
+- Export summary with counts:
+  - Contacts: [X]
+  - Groups: [Y]
+  - Consent Records: [Z]
+- Format listing: "JSON, CSV, vCard"
+- GDPR Article 20 note (Right to Data Portability)
+- Access instructions
+
+EMAIL LANGUAGE TESTS:
+- French user: Subject "Votre exportation de données est prête - Weavink"
+- Spanish user: Subject "Tu exportación de datos está lista - Weavink"
+- English user: Subject "Your Data Export is Ready - Weavink"
+```
+
+##### Test 2.3A.2: Email Summary Accuracy
+```
+STEPS:
+1. Create test account with known data:
+   - 10 contacts
+   - 3 groups
+   - 5 consent records
+2. Request export
+3. Check email summary matches
+
+EXPECTED:
+- Email shows: "Contacts: 10"
+- Email shows: "Groups: 3"
+- Email shows: "Consent Records: 5"
+- Numbers match actual export file counts
+```
+
+##### Test 2.3A.3: Email Failure Non-Blocking
+```
+STEPS:
+1. Temporarily disable email service (or use invalid SMTP config)
+2. Request export
+3. Verify export still completes
+
+EXPECTED:
+- Export request succeeds despite email failure
+- Files still generated and downloadable
+- Error logged in console: "Failed to send data export completion email"
+- User can still access exported data
+```
+
+**Manual Test Reference**: See `documentation/testing/EMAIL_NOTIFICATION_MANUAL_TEST_GUIDE.md` for detailed email testing procedures.
+
+---
+
 #### 2.4 Permission Tests
 
 ##### Test 2.4.1: Free Tier Access
@@ -1102,6 +1167,155 @@ EXPECTED:
 - Link to payment page
 - Deletion blocked until payment cleared
 ```
+
+#### 3.7 Email Notification Tests
+
+##### Test 3.7.1: Deletion Confirmation Email
+```
+STEPS:
+1. Request account deletion (type confirmation text)
+2. Submit deletion request
+3. Check email inbox
+
+EXPECTED:
+- Email received within 30 seconds
+- Subject: "Account Deletion Request Confirmed - Weavink" (or translated)
+- Email in user's language (settings.defaultLanguage)
+
+VERIFY EMAIL CONTAINS:
+- Headline: "Account Deletion Scheduled" (or "In Progress" if immediate)
+- Scheduled deletion date (formatted in user's locale)
+- Grace period warning: "You have 30 days to change your mind"
+- List of what will be deleted (contacts, groups, settings, history)
+- Export reminder
+- "Cancel Deletion" button/link
+- "Thank you for using Weavink"
+
+MULTILINGUAL TESTS:
+- French: Subject "Demande de suppression de compte confirmée - Weavink"
+- Spanish: Subject "Solicitud de eliminación de cuenta confirmada - Weavink"
+- Chinese: Subject in Chinese characters
+- Date format varies by locale:
+  - English: "December 19, 2025"
+  - French: "19 décembre 2025"
+  - Spanish: "19 de diciembre de 2025"
+```
+
+##### Test 3.7.2: Contact Deletion Notice Emails
+```
+SETUP:
+- User A requests deletion
+- User B has User A in their contacts
+- User C has User A in their contacts
+
+STEPS:
+1. User A requests account deletion
+2. Check User B's email inbox
+3. Check User C's email inbox
+
+EXPECTED (User B's email):
+- Email received within 1 minute
+- Subject: "Contact Deletion Notice - Weavink"
+- Email in USER B's language (not User A's language)
+- Contains User A's display name
+- Deletion date mentioned
+- Impact explanation (removed from contact list)
+- Export suggestion with button
+
+EXPECTED (User C's email):
+- Same as above but in USER C's language
+- Each user receives email in THEIR OWN language
+
+BATCH PROCESSING:
+- If User A has 10 contacts, all 10 receive emails
+- All emails sent within 60 seconds (parallel processing)
+- Non-blocking: deletion request still succeeds if some emails fail
+```
+
+##### Test 3.7.3: Deletion Cancelled Email
+```
+STEPS:
+1. Request account deletion
+2. Cancel deletion request
+3. Check email inbox
+
+EXPECTED:
+- Email received within 30 seconds
+- Subject: "Account Deletion Request Cancelled - Weavink" (or translated)
+- Welcoming tone: "Good to have you back!"
+- Confirmation that account is still active
+- List of preserved data
+- "Go to Dashboard" button
+- "Thank you for staying with us!"
+
+TONE VERIFICATION:
+- Positive, welcoming language (not threatening)
+- Reassures user their data is safe
+- Encourages continued use
+```
+
+##### Test 3.7.4: Deletion Completed Email (Manual/Staging Only)
+```
+NOTE: This test requires immediate deletion or waiting 30 days
+
+STEPS:
+1. Request immediate deletion (via API) OR wait 30 days
+2. Check email inbox BEFORE trying to log in
+
+EXPECTED:
+- Email received BEFORE Firebase Auth account deleted
+- Subject: "Your Account Has Been Deleted - Weavink"
+- Final confirmation message
+- List of what was deleted
+- GDPR Article 17 compliance note
+- Option to create new account
+- "Goodbye and good luck!" message
+
+CRITICAL TIMING:
+- Email MUST be sent before auth account deletion
+- Otherwise user cannot receive the email
+```
+
+##### Test 3.7.5: Multilingual Email Validation
+```
+TEST for each language (en, fr, es, zh, vm):
+1. Set user's settings.defaultLanguage to target locale
+2. Request account deletion
+3. Verify email in correct language
+
+VERIFICATION MATRIX:
+| Locale | Deletion Text | Subject Line Keyword |
+|--------|--------------|---------------------|
+| en | DELETE MY ACCOUNT | "Confirmed" |
+| fr | SUPPRIMER MON COMPTE | "confirmée" |
+| es | ELIMINAR MI CUENTA | "confirmada" |
+| zh | 删除我的账户 | Chinese characters |
+| vm | DELETE MY ACCOUNT | Vietnamese text |
+
+- All translations present
+- No English text in non-English emails
+- Date formatting locale-specific
+```
+
+##### Test 3.7.6: Email Service Failure Handling
+```
+STEPS:
+1. Temporarily break email service (invalid API key)
+2. Request account deletion
+3. Check deletion request status
+
+EXPECTED:
+- Deletion request still created in database
+- User account still marked pendingDeletion: true
+- PrivacyRequests document created
+- Error logged: "Failed to send deletion confirmation email"
+- Operation completes successfully (non-blocking)
+- User can still proceed with or cancel deletion
+```
+
+**Manual Test Reference**: See `documentation/testing/EMAIL_NOTIFICATION_MANUAL_TEST_GUIDE.md` for comprehensive Phase 1 & 2 email testing procedures.
+
+---
 
 ### Expected Database State Flow
 

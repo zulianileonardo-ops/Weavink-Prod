@@ -453,9 +453,9 @@ export async function POST(request) {
 **Pattern:** Uses adminDb, static class pattern
 
 **Status:**
-- ✅ **1/13 services converted** (ConsentService)
-- 🟡 **2/13 services pending** (DataExportService, AccountDeletionService - actively used)
-- 🔵 **10/13 services pending** (Advanced services - less frequently used)
+- ✅ **2/14 services converted** (ConsentService, EmailService)
+- 🟡 **2/14 services actively used** (DataExportService, AccountDeletionService)
+- 🔵 **10/14 services pending** (Advanced services - less frequently used)
 
 **ConsentService (CONVERTED):**
 ```javascript
@@ -470,6 +470,37 @@ class ConsentService {
 
 export { ConsentService };
 ```
+
+**EmailService (ACTIVE):**
+```javascript
+// ✅ Static class pattern
+// ✅ Server-side only (uses Node fs module)
+class EmailService {
+  static async sendAccountDeletionConfirmationEmail(
+    recipientEmail, recipientName, scheduledDate, requestId, isImmediate, locale
+  ) {
+    // ✅ Multilingual support (loads translations server-side)
+    // ✅ Locale-specific date formatting
+    // ✅ Brevo API integration (tracking disabled for GDPR)
+    // ✅ Non-blocking (email failures don't stop operations)
+  }
+
+  // 5 total email methods:
+  // - sendAccountDeletionConfirmationEmail
+  // - sendContactDeletionNoticeEmail
+  // - sendAccountDeletionCompletedEmail
+  // - sendAccountDeletionCancelledEmail
+  // - sendDataExportCompletedEmail
+}
+
+export default EmailService;
+```
+
+**Translation Loading (NEW):**
+- Server-side translation loading using fs.readFileSync
+- Loads from `/public/locales/{locale}/common.json`
+- Namespace: `emails.*`
+- Fallback to English if locale missing
 
 **Remaining Services:** Follow same pattern, conversion is mechanical
 
