@@ -2146,6 +2146,10 @@
         "message": "Dữ liệu của bạn đã được xuất thành công. Tải xuống các tệp bên dưới:",
         "back": "← Xuất Lại"
       },
+      "download_all": {
+        "button": "Tải xuống tất cả các tệp"
+      },
+      "individual_files": "Tệp riêng lẻ",
       "error": {
         "message": "{{error}}"
       }
@@ -3032,7 +3036,33 @@
       "formats": "Định dạng",
       "formats_value": "JSON, CSV, vCard",
       "gdpr_note": "Xuất này đáp ứng quyền chuyển dữ liệu theo GDPR Điều 20 của bạn.",
-      "next_steps": "Xuất của bạn đã được bao gồm trong phản hồi API khi bạn yêu cầu. Nếu bạn cần xuất khác, bạn có thể yêu cầu một xuất từ cài đặt tài khoản của mình."
+      "next_steps": "Xuất của bạn đã được bao gồm trong phản hồi API khi bạn yêu cầu. Nếu bạn cần xuất khác, bạn có thể yêu cầu một xuất từ cài đặt tài khoản của mình.",
+      "thank_you": "Cảm ơn,",
+      "team_name": "Đội ngũ Weavink",
+      "request_id": "ID yêu cầu:",
+      "dpo_label": "Nhân viên bảo vệ dữ liệu:"
+    }
+  },
+  "privacy": {
+    "errors": {
+      "consent": {
+        "invalid_type": "Loại đồng ý không hợp lệ",
+        "invalid_action": "Hành động đồng ý không hợp lệ",
+        "update_failed": "Không thể cập nhật tùy chọn đồng ý"
+      },
+      "export": {
+        "failed": "Không thể xuất dữ liệu",
+        "rate_limit": "Đã vượt giới hạn xuất. Vui lòng thử lại sau."
+      },
+      "deletion": {
+        "failed": "Không thể xử lý xóa tài khoản",
+        "invalid_confirmation": "Văn bản xác nhận không hợp lệ",
+        "already_pending": "Bạn đã có yêu cầu xóa đang chờ xử lý",
+        "rate_limit": "Quá nhiều yêu cầu xóa. Vui lòng thử lại sau."
+      },
+      "permission": {
+        "denied": "Bạn không có quyền thực hiện hành động này"
+      }
     }
   }
 }

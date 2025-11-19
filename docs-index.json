@@ -2,7 +2,7 @@
   "metadata": {
     "project": "Weavink Documentation",
     "last_updated": "2025-11-19",
-    "total_guides": 65,
+    "total_guides": 66,
     "version": "1.0.0"
   },
   "categories": {
@@ -115,7 +115,8 @@
       "description": "Implementation guides, tutorials, and how-tos",
       "guides": [
         "tutorials-conversation-manager-001",
-        "tutorials-rate-limit-ui-pattern-042"
+        "tutorials-rate-limit-ui-pattern-042",
+        "tutorials-email-integration-066"
       ]
     },
     "meta": {
@@ -1221,7 +1222,7 @@
       "title": "RGPD Implementation Summary",
       "filename": "documentation/rgpd/RGPD_IMPLEMENTATION_SUMMARY.md",
       "category": "rgpd",
-      "summary": "Complete summary of RGPD Phase 1-4 implementation with consent management, data portability, breach notifications, and compliance features.",
+      "summary": "Complete summary of RGPD Phase 1-4 implementation with consent management, data portability, breach notifications, compliance features, and multilingual API error messages.",
       "tags": [
         "gdpr",
         "rgpd",
@@ -1230,7 +1231,10 @@
         "data-protection",
         "privacy",
         "implementation",
-        "phase-summary"
+        "phase-summary",
+        "translation",
+        "multilingual-errors",
+        "server-side-translation"
       ],
       "related_guides": [
         "rgpd-master-progress-043",
@@ -1247,7 +1251,7 @@
       ],
       "status": "active",
       "created": "2025-01-01",
-      "updated": "2025-11-11"
+      "updated": "2025-11-19"
     },
     {
       "id": "rgpd-master-progress-043",
@@ -1731,7 +1735,7 @@
       "title": "RGPD Architecture Compliance Report",
       "filename": "documentation/rgpd/RGPD_ARCHITECTURE_COMPLIANCE.md",
       "category": "technical",
-      "summary": "Comprehensive refactoring report documenting architectural alignment of RGPD implementation with Weavink 5-layer pattern. Achieved 95% compliance (from 34%), eliminated 12 raw fetch() calls, implemented permission-based security, and centralized constants management. Documents 15 files modified across client services, API routes, server services, and context layers.",
+      "summary": "Comprehensive refactoring report documenting architectural alignment of RGPD implementation with Weavink 5-layer pattern. Achieved 95% compliance (from 34%), eliminated 12 raw fetch() calls, implemented permission-based security, centralized constants management, and multilingual error translation system. Documents 21 files modified across client services, API routes, server services, translation files, and context layers.",
       "tags": [
         "rgpd",
         "gdpr",
@@ -1744,7 +1748,10 @@
         "session-manager",
         "contact-api-client",
         "permissions",
-        "code-quality"
+        "code-quality",
+        "translation",
+        "multilingual-errors",
+        "i18n"
       ],
       "related_guides": [
         "rgpd-implementation-summary-042",
@@ -1762,7 +1769,9 @@
         "cancelDeletion",
         "updatePrivacySetting",
         "updateContactDownloadSettings",
-        "updateLanguagePreference"
+        "updateLanguagePreference",
+        "translateServerSide",
+        "getUserLocale"
       ],
       "components": [
         "ConsentService",
@@ -1774,7 +1783,7 @@
       ],
       "status": "active",
       "created": "2025-11-18",
-      "updated": "2025-11-18"
+      "updated": "2025-11-19"
     },
     {
       "id": "tutorials-conversation-manager-001",
@@ -1931,10 +1940,10 @@
     },
     {
       "id": "testing-email-notifications-065",
-      "title": "Email Notification System - Manual Test Guide (Phase 1 & 2)",
+      "title": "Email Notification System - Manual Test Guide (Phase 1, 2 & 3)",
       "filename": "documentation/testing/EMAIL_NOTIFICATION_MANUAL_TEST_GUIDE.md",
       "category": "testing",
-      "summary": "Focused manual testing guide for multilingual email notification system covering i18n bug fixes and account deletion emails",
+      "summary": "Comprehensive manual testing guide for multilingual email notification system covering i18n bug fixes, account deletion emails, and data export emails. Includes troubleshooting for recent bug fixes.",
       "tags": [
         "email",
         "notifications",
@@ -1944,8 +1953,11 @@
         "manual-testing",
         "phase1",
         "phase2",
+        "phase3",
+        "data-export",
         "gdpr",
-        "brevo"
+        "brevo",
+        "troubleshooting"
       ],
       "status": "active",
       "created": "2025-11-19",
@@ -1953,7 +1965,8 @@
       "related_guides": [
         "RGPD_TESTING_GUIDE.md",
         "ACCOUNT_PRIVACY_TESTING_GUIDE.md",
-        "RGPD_IMPLEMENTATION_SUMMARY.md"
+        "RGPD_IMPLEMENTATION_SUMMARY.md",
+        "EMAIL_INTEGRATION_GUIDE.md"
       ],
       "functions": [
         "sendAccountDeletionConfirmationEmail",
@@ -1961,6 +1974,44 @@
         "sendAccountDeletionCompletedEmail",
         "sendAccountDeletionCancelledEmail",
         "sendDataExportCompletedEmail"
+      ],
+      "components": []
+    },
+    {
+      "id": "tutorials-email-integration-066",
+      "title": "Email Integration Guide - Adding New Email Types",
+      "filename": "documentation/tutorials/EMAIL_INTEGRATION_GUIDE.md",
+      "category": "tutorials",
+      "summary": "Step-by-step developer guide for adding new multilingual email notifications to the Weavink email system. Includes code examples, translation structure, testing checklist, best practices, and cross-reference to API error translation pattern.",
+      "tags": [
+        "email",
+        "notifications",
+        "multilingual",
+        "i18n",
+        "rgpd",
+        "development",
+        "tutorial",
+        "integration",
+        "brevo",
+        "gdpr",
+        "developer-guide",
+        "api-errors",
+        "translation-service"
+      ],
+      "status": "active",
+      "created": "2025-11-19",
+      "updated": "2025-11-19",
+      "related_guides": [
+        "EMAIL_NOTIFICATION_MANUAL_TEST_GUIDE.md",
+        "RGPD_IMPLEMENTATION_SUMMARY.md",
+        "RGPD_ARCHITECTURE_COMPLIANCE.md"
+      ],
+      "functions": [
+        "sendPasswordResetEmail",
+        "loadTranslations",
+        "sendViaBrevo",
+        "translateServerSide",
+        "getUserLocale"
       ],
       "components": []
     }

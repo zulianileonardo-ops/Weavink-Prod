@@ -21,6 +21,7 @@ import {
   getDeletionRequest,
   getUserDeletionRequest,
 } from '../../../../../lib/services/servicePrivacy/server/accountDeletionService.js';
+import { translateServerSide, getUserLocale } from '@/lib/services/server/translationService';
 
 /**
  * GET - Check if user has a pending deletion request
@@ -32,12 +33,14 @@ export async function GET(request) {
     const sessionManager = new SessionManager(session);
     const userId = session.userId;
 
+    // Get user locale for error translation
+    const locale = getUserLocale(session.user);
+
     // 2. Permission check
     if (!session.permissions[PRIVACY_PERMISSIONS.CAN_DELETE_ACCOUNT]) {
       return NextResponse.json(
         {
-          error: PRIVACY_ERROR_MESSAGES.PERMISSION_DENIED,
-          message: 'You do not have permission to delete accounts',
+          error: translateServerSide(PRIVACY_ERROR_MESSAGES.PERMISSION_DENIED, locale),
         },
         { status: 403 }
       );
@@ -64,8 +67,10 @@ export async function GET(request) {
     });
   } catch (error) {
     console.error('❌ [AccountDeletionAPI] Error in GET:', error);
+    const session = await createApiSession(request);
+    const locale = getUserLocale(session.user);
     return NextResponse.json(
-      { error: PRIVACY_ERROR_MESSAGES.DELETION_FAILED, details: error.message },
+      { error: translateServerSide(PRIVACY_ERROR_MESSAGES.DELETION_FAILED, locale), details: error.message },
       { status: 500 }
     );
   }
@@ -86,12 +91,14 @@ export async function POST(request) {
     const sessionManager = new SessionManager(session);
     const userId = session.userId;
 
+    // Get user locale for error translation
+    const userLocale = getUserLocale(session.user);
+
     // 2. Permission check
     if (!session.permissions[PRIVACY_PERMISSIONS.CAN_DELETE_ACCOUNT]) {
       return NextResponse.json(
         {
-          error: PRIVACY_ERROR_MESSAGES.PERMISSION_DENIED,
-          message: 'You do not have permission to delete accounts',
+          error: translateServerSide(PRIVACY_ERROR_MESSAGES.PERMISSION_DENIED, userLocale),
         },
         { status: 403 }
       );
@@ -112,8 +119,7 @@ export async function POST(request) {
     if (!rateLimitResult.allowed) {
       return NextResponse.json(
         {
-          error: PRIVACY_ERROR_MESSAGES.DELETION_RATE_LIMIT,
-          message: 'For security reasons, please wait before trying again.',
+          error: translateServerSide(PRIVACY_ERROR_MESSAGES.DELETION_RATE_LIMIT, userLocale),
         },
         { status: 429 }
       );
@@ -130,8 +136,7 @@ export async function POST(request) {
     if (confirmation !== expectedConfirmation) {
       return NextResponse.json(
         {
-          error: PRIVACY_ERROR_MESSAGES.DELETION_INVALID_CONFIRMATION,
-          message: `You must type "${expectedConfirmation}" to confirm account deletion`,
+          error: translateServerSide(PRIVACY_ERROR_MESSAGES.DELETION_INVALID_CONFIRMATION, userLocale),
           required: expectedConfirmation,
           locale,
         },
@@ -144,8 +149,7 @@ export async function POST(request) {
     if (existingRequest) {
       return NextResponse.json(
         {
-          error: PRIVACY_ERROR_MESSAGES.DELETION_ALREADY_PENDING,
-          message: 'You already have a pending account deletion request',
+          error: translateServerSide(PRIVACY_ERROR_MESSAGES.DELETION_ALREADY_PENDING, userLocale),
           deletionRequest: existingRequest,
           daysRemaining: Math.ceil(
             (new Date(existingRequest.scheduledDeletionDate) - new Date()) / (1000 * 60 * 60 * 24)
@@ -211,11 +215,12 @@ export async function POST(request) {
     });
   } catch (error) {
     console.error('❌ [AccountDeletionAPI] Error in POST:', error);
+    const session = await createApiSession(request);
+    const locale = getUserLocale(session.user);
     return NextResponse.json(
       {
-        error: PRIVACY_ERROR_MESSAGES.DELETION_FAILED,
+        error: translateServerSide(PRIVACY_ERROR_MESSAGES.DELETION_FAILED, locale),
         details: error.message,
-        support: 'If you need assistance, please contact support@weavink.io',
       },
       { status: 500 }
     );
@@ -232,11 +237,14 @@ export async function DELETE(request) {
     const sessionManager = new SessionManager(session);
     const userId = session.userId;
 
+    // Get user locale for error translation
+    const locale = getUserLocale(session.user);
+
     // 2. Permission check
     if (!session.permissions[PRIVACY_PERMISSIONS.CAN_DELETE_ACCOUNT]) {
       return NextResponse.json(
         {
-          error: PRIVACY_ERROR_MESSAGES.PERMISSION_DENIED,
+          error: translateServerSide(PRIVACY_ERROR_MESSAGES.PERMISSION_DENIED, locale),
           message: 'You do not have permission to manage account deletion',
         },
         { status: 403 }
@@ -293,9 +301,11 @@ export async function DELETE(request) {
     });
   } catch (error) {
     console.error('❌ [AccountDeletionAPI] Error in DELETE:', error);
+    const session = await createApiSession(request);
+    const locale = getUserLocale(session.user);
     return NextResponse.json(
       {
-        error: 'Failed to cancel deletion',
+        error: translateServerSide(PRIVACY_ERROR_MESSAGES.DELETION_FAILED, locale),
         details: error.message,
       },
       { status: 500 }
@@ -313,11 +323,14 @@ export async function PATCH(request) {
     const sessionManager = new SessionManager(session);
     const userId = session.userId;
 
+    // Get user locale for error translation
+    const locale = getUserLocale(session.user);
+
     // 2. Permission check
     if (!session.permissions[PRIVACY_PERMISSIONS.CAN_DELETE_ACCOUNT]) {
       return NextResponse.json(
         {
-          error: PRIVACY_ERROR_MESSAGES.PERMISSION_DENIED,
+          error: translateServerSide(PRIVACY_ERROR_MESSAGES.PERMISSION_DENIED, locale),
           message: 'You do not have permission to modify deletion requests',
         },
         { status: 403 }
@@ -360,9 +373,11 @@ export async function PATCH(request) {
     );
   } catch (error) {
     console.error('❌ [AccountDeletionAPI] Error in PATCH:', error);
+    const session = await createApiSession(request);
+    const locale = getUserLocale(session.user);
     return NextResponse.json(
       {
-        error: 'Failed to modify deletion request',
+        error: translateServerSide(PRIVACY_ERROR_MESSAGES.DELETION_FAILED, locale),
         details: error.message,
       },
       { status: 500 }

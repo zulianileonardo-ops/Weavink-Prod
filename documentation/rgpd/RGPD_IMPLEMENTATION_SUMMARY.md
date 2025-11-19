@@ -146,6 +146,7 @@ PATCH  /api/user/privacy/delete-account           # Modify deletion (postpone)
 **Files Created/Modified**:
 - `/lib/services/server/emailService.js` - Email service with multilingual support
 - Translation files: `/public/locales/{en,fr,es,zh,vm}/common.json` (emails section)
+- `.env` - Environment configuration (`SMTP_API` server-side only)
 
 **Features**:
 - ✅ Brevo API integration with tracking disabled (GDPR compliance)
@@ -204,6 +205,10 @@ PATCH  /api/user/privacy/delete-account           # Modify deletion (postpone)
 - ✅ Added DELETION_CONFIRMATION_TEXTS constant for 5 languages
 - ✅ Locale-based deletion confirmation validation (each language has unique text)
 - ✅ Locale parameter passed through entire deletion flow for audit compliance
+- ✅ Fixed email footer translation bug (footer was hardcoded in English) - Added translation variables for `thank_you`, `team_name`, `request_id`, `dpo_label` (2025-11-19)
+- ✅ Fixed consent count showing 0 in data export emails - Property name mismatch resolved (`consentCount` vs `consentsCount`) (2025-11-19)
+- ✅ Fixed environment variable security - Changed from `NEXT_PUBLIC_SMTP_API` (browser-exposed) to `SMTP_API` (server-only) (2025-11-19)
+- ✅ Documented Brevo sender validation and IP whitelisting requirements
 
 ---
 
@@ -235,7 +240,123 @@ PATCH  /api/user/privacy/delete-account           # Modify deletion (postpone)
 
 ---
 
-####  1.5 Privacy Settings Management
+#### 1.5 Multilingual API Error Messages
+**Status**: ✅ COMPLETE
+**GDPR Articles**: Art. 12 (Transparent communication in user's language)
+**Implementation Date**: November 19, 2025
+
+**Files Created/Modified**:
+- `/lib/services/server/translationService.js` - Server-side translation service with caching
+- `/lib/services/servicePrivacy/constants/privacyConstants.js` - Updated PRIVACY_ERROR_MESSAGES to use translation keys
+- `/public/locales/{en,fr,es,ch,vm}/common.json` - Added `privacy.errors` namespace
+- `/app/api/user/privacy/delete-account/route.js` - Updated to translate errors
+- `/app/api/user/privacy/consent/route.js` - Updated to translate errors
+- `/app/api/user/privacy/export/route.js` - Updated to translate errors
+
+**Features**:
+- ✅ **Server-Side Translation Service**: Loads translations from JSON files server-side with Map-based caching
+- ✅ **Automatic Locale Detection**: Extracts user's language from `session.user.settings.defaultLanguage`
+- ✅ **Translation Key Architecture**: Error messages use translation keys instead of hardcoded English strings
+- ✅ **Variable Interpolation**: Supports {{variable}} replacement (e.g., {{date}}, {{userName}})
+- ✅ **Fallback System**: Falls back to English if user's locale is unsupported
+- ✅ **5 Language Support**: English, French, Spanish, Chinese (zh), Vietnamese
+- ✅ **Cache Performance**: Translation files cached in memory to prevent repeated disk reads
+- ✅ **GDPR Compliance**: Ensures error messages comply with Art. 12 (communication in user's language)
+
+**Translation Functions**:
+```javascript
+// Get user's locale from session
+const locale = getUserLocale(session.user);
+// Returns: 'fr', 'en', 'es', 'zh', 'vm'
+
+// Translate error message server-side
+const errorMessage = translateServerSide(
+  PRIVACY_ERROR_MESSAGES.DELETION_RATE_LIMIT,
+  locale
+);
+// French: "Trop de demandes de suppression. Veuillez réessayer plus tard."
+// Spanish: "Demasiadas solicitudes de eliminación. Por favor, inténtelo más tarde."
+// Chinese: "删除请求过多。请稍后再试。"
+```
+
+**Error Types Translated (9 total)**:
+1. **Consent Errors** (3):
+   - `CONSENT_INVALID_TYPE` - Invalid consent type
+   - `CONSENT_INVALID_ACTION` - Invalid consent action
+   - `CONSENT_UPDATE_FAILED` - Failed to update consent preferences
+
+2. **Export Errors** (2):
+   - `EXPORT_FAILED` - Failed to export data
+   - `EXPORT_RATE_LIMIT` - Export rate limit exceeded
+
+3. **Deletion Errors** (4):
+   - `DELETION_FAILED` - Failed to process account deletion
+   - `DELETION_INVALID_CONFIRMATION` - Invalid confirmation text
+   - `DELETION_ALREADY_PENDING` - Already have pending deletion request
+   - `DELETION_RATE_LIMIT` - Too many deletion requests
+
+4. **Permission Errors** (1):
+   - `PERMISSION_DENIED` - No permission for this action
+
+**API Routes Updated (23 error points total)**:
+- `delete-account/route.js`: 8 error translations (GET, POST, DELETE, PATCH handlers)
+- `consent/route.js`: 9 error translations (GET, POST, PUT, DELETE handlers)
+- `export/route.js`: 6 error translations (GET, POST, DELETE handlers)
+
+**Implementation Pattern**:
+```javascript
+// In API route handler
+export async function POST(request) {
+  const session = await createApiSession(request);
+  const locale = getUserLocale(session.user); // Extract user's language
+
+  // Permission check with translated error
+  if (!session.permissions[PRIVACY_PERMISSIONS.CAN_DELETE_ACCOUNT]) {
+    return NextResponse.json(
+      { error: translateServerSide(PRIVACY_ERROR_MESSAGES.PERMISSION_DENIED, locale) },
+      { status: 403 }
+    );
+  }
+
+  // ... other code with translated errors
+}
+```
+
+**Translation File Structure**:
+```json
+{
+  "privacy": {
+    "errors": {
+      "consent": {
+        "invalid_type": "Type de consentement invalide",
+        "invalid_action": "Action de consentement invalide",
+        "update_failed": "Échec de la mise à jour des préférences de consentement"
+      },
+      "deletion": {
+        "rate_limit": "Trop de demandes de suppression. Veuillez réessayer plus tard.",
+        "failed": "Échec du traitement de la suppression du compte"
+      }
+    }
+  }
+}
+```
+
+**Benefits**:
+- ✅ **Better User Experience**: Users see errors in their native language
+- ✅ **GDPR Compliance**: Meets Art. 12 requirement for transparent communication
+- ✅ **Consistent Pattern**: Same translation service used for emails and API errors
+- ✅ **Maintainability**: Centralized error messages in translation files
+- ✅ **Performance**: Translation caching prevents repeated file reads
+- ✅ **Reusability**: Translation service can be used across all API routes
+
+**Related Systems**:
+- Works alongside multilingual email notification system (same translation files)
+- Uses same `getUserLocale()` function for consistent locale detection
+- Integrates with existing constants management system
+
+---
+
+####  1.6 Privacy Settings Management
 **Status**: ✅ COMPLETE
 **GDPR Articles**: Art. 5 (Principles relating to processing), Art. 7 (Conditions for consent)
 
@@ -1139,7 +1260,7 @@ You now have a **production-ready, enterprise-grade RGPD compliance system** tha
 
 ---
 
-**Document Version**: 1.0
-**Last Updated**: January 2025
+**Document Version**: 1.1
+**Last Updated**: November 19, 2025
 **Authors**: Claude (Anthropic AI)
 **For**: Weavink (Tapit SAS)

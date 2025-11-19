@@ -22,6 +22,7 @@ import {
   PRIVACY_ERROR_MESSAGES,
 } from '@/lib/services/constants';
 import { ConsentService } from '../../../../../lib/services/servicePrivacy/server/consentService.js';
+import { translateServerSide, getUserLocale } from '@/lib/services/server/translationService';
 
 /**
  * GET - Retrieve user's current consent status or history
@@ -33,10 +34,13 @@ export async function GET(request) {
     const sessionManager = new SessionManager(session);
     const userId = session.userId;
 
+    // Get user locale for error translation
+    const locale = getUserLocale(session.user);
+
     // 2. Permission check
     if (!session.permissions[PRIVACY_PERMISSIONS.CAN_MANAGE_CONSENTS]) {
       return NextResponse.json(
-        { error: PRIVACY_ERROR_MESSAGES.PERMISSION_DENIED },
+        { error: translateServerSide(PRIVACY_ERROR_MESSAGES.PERMISSION_DENIED, locale) },
         { status: 403 }
       );
     }
@@ -85,8 +89,10 @@ export async function GET(request) {
     return NextResponse.json(result);
   } catch (error) {
     console.error('❌ [ConsentAPI] Error in GET:', error);
+    const session = await createApiSession(request);
+    const locale = getUserLocale(session.user);
     return NextResponse.json(
-      { error: 'Failed to retrieve consent data', details: error.message },
+      { error: translateServerSide(PRIVACY_ERROR_MESSAGES.CONSENT_UPDATE_FAILED, locale), details: error.message },
       { status: 500 }
     );
   }
@@ -108,10 +114,13 @@ export async function POST(request) {
     const sessionManager = new SessionManager(session);
     const userId = session.userId;
 
+    // Get user locale for error translation
+    const locale = getUserLocale(session.user);
+
     // 2. Permission check
     if (!session.permissions[PRIVACY_PERMISSIONS.CAN_MANAGE_CONSENTS]) {
       return NextResponse.json(
-        { error: PRIVACY_ERROR_MESSAGES.PERMISSION_DENIED },
+        { error: translateServerSide(PRIVACY_ERROR_MESSAGES.PERMISSION_DENIED, locale) },
         { status: 403 }
       );
     }
@@ -148,7 +157,7 @@ export async function POST(request) {
     // 5. Validate consent type
     if (!Object.values(CONSENT_TYPES).includes(consentType)) {
       return NextResponse.json(
-        { error: PRIVACY_ERROR_MESSAGES.CONSENT_INVALID_TYPE },
+        { error: translateServerSide(PRIVACY_ERROR_MESSAGES.CONSENT_INVALID_TYPE, locale) },
         { status: 400 }
       );
     }
@@ -156,7 +165,7 @@ export async function POST(request) {
     // 6. Validate action
     if (!Object.values(CONSENT_ACTIONS).includes(action)) {
       return NextResponse.json(
-        { error: PRIVACY_ERROR_MESSAGES.CONSENT_INVALID_ACTION },
+        { error: translateServerSide(PRIVACY_ERROR_MESSAGES.CONSENT_INVALID_ACTION, locale) },
         { status: 400 }
       );
     }
@@ -182,8 +191,10 @@ export async function POST(request) {
     });
   } catch (error) {
     console.error('❌ [ConsentAPI] Error in POST:', error);
+    const session = await createApiSession(request);
+    const locale = getUserLocale(session.user);
     return NextResponse.json(
-      { error: PRIVACY_ERROR_MESSAGES.CONSENT_UPDATE_FAILED, details: error.message },
+      { error: translateServerSide(PRIVACY_ERROR_MESSAGES.CONSENT_UPDATE_FAILED, locale), details: error.message },
       { status: 500 }
     );
   }
@@ -205,10 +216,13 @@ export async function PUT(request) {
     const sessionManager = new SessionManager(session);
     const userId = session.userId;
 
+    // Get user locale for error translation
+    const locale = getUserLocale(session.user);
+
     // 2. Permission check
     if (!session.permissions[PRIVACY_PERMISSIONS.CAN_MANAGE_CONSENTS]) {
       return NextResponse.json(
-        { error: PRIVACY_ERROR_MESSAGES.PERMISSION_DENIED },
+        { error: translateServerSide(PRIVACY_ERROR_MESSAGES.PERMISSION_DENIED, locale) },
         { status: 403 }
       );
     }
@@ -280,8 +294,10 @@ export async function PUT(request) {
     });
   } catch (error) {
     console.error('❌ [ConsentAPI] Error in PUT:', error);
+    const session = await createApiSession(request);
+    const locale = getUserLocale(session.user);
     return NextResponse.json(
-      { error: PRIVACY_ERROR_MESSAGES.CONSENT_UPDATE_FAILED, details: error.message },
+      { error: translateServerSide(PRIVACY_ERROR_MESSAGES.CONSENT_UPDATE_FAILED, locale), details: error.message },
       { status: 500 }
     );
   }
@@ -297,10 +313,13 @@ export async function DELETE(request) {
     const sessionManager = new SessionManager(session);
     const userId = session.userId;
 
+    // Get user locale for error translation
+    const locale = getUserLocale(session.user);
+
     // 2. Permission check
     if (!session.permissions[PRIVACY_PERMISSIONS.CAN_MANAGE_CONSENTS]) {
       return NextResponse.json(
-        { error: PRIVACY_ERROR_MESSAGES.PERMISSION_DENIED },
+        { error: translateServerSide(PRIVACY_ERROR_MESSAGES.PERMISSION_DENIED, locale) },
         { status: 403 }
       );
     }
@@ -346,8 +365,10 @@ export async function DELETE(request) {
     });
   } catch (error) {
     console.error('❌ [ConsentAPI] Error in DELETE:', error);
+    const session = await createApiSession(request);
+    const locale = getUserLocale(session.user);
     return NextResponse.json(
-      { error: PRIVACY_ERROR_MESSAGES.CONSENT_UPDATE_FAILED, details: error.message },
+      { error: translateServerSide(PRIVACY_ERROR_MESSAGES.CONSENT_UPDATE_FAILED, locale), details: error.message },
       { status: 500 }
     );
   }

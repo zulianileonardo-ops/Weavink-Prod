@@ -44,7 +44,7 @@ export default function AccountPageWrapper() {
 // Main component that consumes context
 function AccountPage() {
   const searchParams = useSearchParams();
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const {
     activeTab,
     setActiveTab,
@@ -127,10 +127,14 @@ function AccountPage() {
             <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start space-x-3">
               <AlertCircle className="w-5 h-5 text-red-600 mt-0.5" />
               <div className="flex-1">
-                <h3 className="text-red-900 font-semibold">{t('account.header.deletion_warning_title', 'Account Deletion Pending')}</h3>
+                <h3 className="text-red-900 font-semibold">{t('account.header.deletion_warning_title')}</h3>
                 <p className="text-red-700 text-sm mt-1">
-                  {t('account.header.deletion_warning_message', 'Your account is scheduled for deletion on {{date}}. You can cancel this at any time before that date.', {
-                    date: new Date(pendingDeletion.scheduledDeletionDate).toLocaleDateString()
+                  {t('account.header.deletion_warning_message', {
+                    date: new Date(pendingDeletion.scheduledDeletionDate).toLocaleDateString(locale, {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })
                   })}
                 </p>
               </div>

@@ -2390,6 +2390,10 @@
         "message": "Vos données ont été exportées avec succès. Téléchargez les fichiers ci-dessous :",
         "back": "← Exporter à Nouveau"
       },
+      "download_all": {
+        "button": "Télécharger tous les fichiers"
+      },
+      "individual_files": "Fichiers individuels",
       "error": {
         "message": "{{error}}"
       }
@@ -3266,7 +3270,33 @@
       "formats": "Formats",
       "formats_value": "JSON, CSV, vCard",
       "gdpr_note": "Cette exportation remplit votre droit RGPD Article 20 à la portabilité des données.",
-      "next_steps": "Votre exportation a été incluse dans la réponse API lorsque vous l'avez demandée. Si vous avez besoin d'une autre exportation, vous pouvez en demander une depuis les paramètres de votre compte."
+      "next_steps": "Votre exportation a été incluse dans la réponse API lorsque vous l'avez demandée. Si vous avez besoin d'une autre exportation, vous pouvez en demander une depuis les paramètres de votre compte.",
+      "thank_you": "Merci,",
+      "team_name": "L'équipe Weavink",
+      "request_id": "ID de demande :",
+      "dpo_label": "Délégué à la protection des données :"
+    }
+  },
+  "privacy": {
+    "errors": {
+      "consent": {
+        "invalid_type": "Type de consentement invalide",
+        "invalid_action": "Action de consentement invalide",
+        "update_failed": "Échec de la mise à jour des préférences de consentement"
+      },
+      "export": {
+        "failed": "Échec de l'exportation des données",
+        "rate_limit": "Limite d'exportation dépassée. Veuillez réessayer plus tard."
+      },
+      "deletion": {
+        "failed": "Échec du traitement de la suppression du compte",
+        "invalid_confirmation": "Texte de confirmation invalide",
+        "already_pending": "Vous avez déjà une demande de suppression en attente",
+        "rate_limit": "Trop de demandes de suppression. Veuillez réessayer plus tard."
+      },
+      "permission": {
+        "denied": "Vous n'avez pas la permission pour cette action"
+      }
     }
   }
 }

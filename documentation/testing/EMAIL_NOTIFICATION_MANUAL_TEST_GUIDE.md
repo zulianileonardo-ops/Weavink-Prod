@@ -1,8 +1,8 @@
 ---
 id: testing-email-notifications-065
-title: Email Notification System - Manual Test Guide (Phase 1 & 2)
+title: Email Notification System - Manual Test Guide (Phase 1, 2 & 3)
 category: testing
-tags: [email, notifications, multilingual, i18n, rgpd, manual-testing, phase1, phase2]
+tags: [email, notifications, multilingual, i18n, rgpd, manual-testing, phase1, phase2, phase3, data-export]
 status: active
 created: 2025-11-19
 updated: 2025-11-19
@@ -12,15 +12,16 @@ related:
   - RGPD_IMPLEMENTATION_SUMMARY.md
 ---
 
-# Email Notification System - Manual Test Guide (Phase 1 & 2)
+# Email Notification System - Manual Test Guide (Phase 1, 2 & 3)
 
 ## Purpose
 
 This guide provides focused manual testing procedures for the multilingual email notification system implementation. It covers:
 - **Phase 1**: i18n bug fixes (text and date interpolation + multilingual validation)
 - **Phase 2**: Account deletion email notifications (4 email types)
+- **Phase 3**: Data export email notifications (1 email type)
 
-Use this guide to verify the system works correctly before moving to Phase 3 (data export emails).
+Use this guide to verify all email notification functionality works correctly across all supported languages.
 
 ---
 
@@ -30,7 +31,7 @@ Use this guide to verify the system works correctly before moving to Phase 3 (da
 
 **Required:**
 1. Access to Weavink application (local or staging)
-2. Brevo API key configured in environment (`NEXT_PUBLIC_SMTP_API`)
+2. Brevo API key configured in environment (`SMTP_API` - server-side only)
 3. Access to email inbox for test accounts
 4. Firebase console access
 5. Browser developer tools (for debugging)
@@ -627,6 +628,119 @@ POST /api/user/privacy/delete-account
 
 ---
 
+## Phase 3: Data Export Email
+
+### Test 3.1: Data Export Completed Email
+
+**Email Type:** Confirmation sent when data export package is ready for download
+
+**Test Steps:**
+1. Log in as User A (French account)
+2. Navigate to: Account Settings → Privacy Tab → Export Data section
+3. Click "Exporter mes données" button
+4. Wait 5-10 seconds for export to complete
+5. Check User A's email inbox
+
+**Expected Email:**
+
+**To:** User A's email
+**From:** Weavink <noreply@weavink.io> (or configured sender)
+**Subject:** `Exportation de données terminée - Weavink` (French)
+**Language:** French throughout
+
+**Email Content Should Include:**
+
+✅ **Headline:** "Vos données sont prêtes"
+✅ **Intro:** "Nous avons terminé la préparation de votre exportation de données."
+✅ **Export Summary:**
+   - "Contacts exportés: [COUNT]"
+   - "Groupes exportés: [COUNT]"
+   - "Enregistrements de consentement: [COUNT]"
+✅ **Available Formats:**
+   - "JSON - Données structurées lisibles par machine"
+   - "CSV - Compatible avec Excel et Google Sheets"
+   - "vCard - Format universel pour les contacts"
+✅ **Access Instructions:** "Vous pouvez télécharger vos données depuis votre tableau de bord."
+✅ **Expiration Notice:** "Ce lien expirera dans 24 heures."
+✅ **GDPR Note:** "Cette exportation respecte l'article 20 du RGPD (Droit à la portabilité)."
+✅ **Button:** "Télécharger mes données"
+✅ **Footer:**
+   - "Merci,"
+   - "L'équipe Weavink"
+   - "ID de demande: [REQUEST_ID]"
+   - "Délégué à la protection des données: dpo@weavink.io"
+
+**Verification Checklist:**
+
+- [ ] Email received within 30 seconds
+- [ ] Subject line in French
+- [ ] All body text in French
+- [ ] Export summary shows correct counts (contacts, groups, consents)
+- [ ] Consent count is accurate (not 0 if user has consents)
+- [ ] All 3 formats listed (JSON, CSV, vCard)
+- [ ] Download button present and functional
+- [ ] Footer translated correctly (not in English)
+- [ ] Request ID present
+- [ ] DPO contact info present
+- [ ] HTML renders correctly
+- [ ] No tracking pixels (GDPR compliance)
+
+**Multi-Language Testing:**
+
+Repeat the test with:
+- User B (English): Subject should be "Data Export Completed - Weavink"
+- User C (Spanish): Subject should be "Exportación de datos completada - Weavink"
+- User D (Chinese): Subject should include Chinese text
+- User E (Vietnamese): Subject should use English (Vietnamese fallback)
+
+**Database Verification:**
+1. Open Firebase Console → `PrivacyRequests` collection
+2. Find latest export request document
+3. Verify fields:
+```javascript
+{
+  type: 'export',
+  userId: '[User A ID]',
+  userEmail: '[User A email]',
+  status: 'completed',
+  locale: 'fr',
+  exportSummary: {
+    contactCount: [actual count],   // ← Note: singular property name
+    groupCount: [actual count],     // ← Note: singular property name
+    consentCount: [actual count]    // ← Note: singular property name
+  },
+  completedAt: [timestamp]
+}
+```
+
+**✅ Pass Criteria:**
+- Email received in correct language
+- All text translated properly (including footer)
+- Export summary counts are accurate
+- Consent count matches database (not showing 0 when consents exist)
+- HTML renders without issues
+- Button functional
+
+**❌ Fail Criteria:**
+- No email received after 60 seconds
+- Email in wrong language
+- English text mixed with French (especially footer)
+- Consent count showing 0 when user has active consents
+- Missing export summary
+- Broken HTML/formatting
+
+**Files:**
+- EmailService: `lib/services/server/emailService.js:393-418` (method)
+- Template: `lib/services/server/emailService.js:1508-1644` (HTML generator)
+- Integration: `app/api/user/privacy/export/route.js:108-122`
+- Translations: `public/locales/fr/common.json:3233-3258`
+
+**Known Issues (Fixed):**
+- ✅ **Footer Translation Bug** - Footer was appearing in English regardless of user language. Fixed by adding translation variables for `thank_you`, `team_name`, `request_id`, and `dpo_label`.
+- ✅ **Consent Count Bug** - Count was showing 0 despite user having consents. Fixed by correcting property name from `consentsCount` (plural) to `consentCount` (singular) to match backend.
+
+---
+
 ## Common Issues & Troubleshooting
 
 ### Issue 1: No Emails Received
@@ -644,7 +758,7 @@ POST /api/user/privacy/delete-account
 3. Look for: `✅ Account deletion confirmation email sent to: [email]`
 4. Or: `❌ Failed to send deletion confirmation email:`
 5. Check Brevo dashboard for send statistics
-6. Verify NEXT_PUBLIC_SMTP_API environment variable set
+6. Verify `SMTP_API` environment variable set (server-side only, not `NEXT_PUBLIC_SMTP_API`)
 
 **Non-Blocking Design:**
 - Even if emails fail, account deletion should still proceed
@@ -704,6 +818,136 @@ POST /api/user/privacy/delete-account
 3. Check logs for individual email failures
 4. Verify findUsersWithContact() returns user IDs
 
+### Issue 6: Email Footer in English (Fixed)
+
+**Symptoms:** Email footer appears in English regardless of user's language setting. Shows "Thank you, The Weavink Team" instead of translated version (e.g., "Merci, L'équipe Weavink" for French).
+
+**Root Cause:** Footer text was hardcoded in English in the email template instead of using translation variables.
+
+**Resolution (Fixed 2025-11-19):**
+1. Added translation keys to all 5 language files:
+   - `thank_you` - "Thank you," / "Merci," / "Gracias," / "谢谢，" / "Cảm ơn,"
+   - `team_name` - "The Weavink Team" / "L'équipe Weavink" / "El equipo de Weavink" / "Weavink 团队" / "Đội ngũ Weavink"
+   - `request_id` - "Request ID:" / "ID de demande :" / etc.
+   - `dpo_label` - "Data Protection Officer:" / "Délégué à la protection des données :" / etc.
+
+2. Updated email template to use translation variables instead of hardcoded text
+
+**Files Modified:**
+- `lib/services/server/emailService.js:1469-1472` (added translation variables)
+- `lib/services/server/emailService.js:1570-1574` (updated footer template)
+- All translation files in `/public/locales/{locale}/common.json`
+
+**Verification:**
+- Footer now appears in user's language across all 5 email types
+- Request ID and DPO label also translated
+
+### Issue 7: Consent Count Showing 0 (Fixed)
+
+**Symptoms:** Data export email shows "Consent records: 0" even when user has active consents in database.
+
+**Example:**
+- Database shows: `consents: { ai_business_card_enhancement: { status: true } }`
+- Email shows: "Enregistrements de consentement: 0"
+
+**Root Cause:** Property name mismatch between backend and email template:
+- Backend sends: `exportSummary.consentCount` (singular)
+- Template expected: `exportSummary.consentsCount` (plural)
+- Template variable defaulted to 0 when property not found
+
+**Resolution (Fixed 2025-11-19):**
+Changed email template to use singular property names matching backend:
+```javascript
+// Before (INCORRECT):
+const consentsCount = exportSummary?.consentsCount || 0;
+
+// After (CORRECT):
+const consentsCount = exportSummary?.consentCount || 0;
+```
+
+Also fixed for `contactCount` and `groupCount` (same issue).
+
+**Files Modified:**
+- `lib/services/server/emailService.js:1459-1461` (property name fix)
+
+**Verification:**
+- Consent count now displays correctly in data export emails
+- All summary counts (contacts, groups, consents) accurate
+
+**Debug Tips:**
+- Check server logs for calculated consent count
+- Verify `exportSummary` object structure in database
+- Ensure property names match between backend and template
+
+### Issue 8: Brevo Sender Email Not Validated
+
+**Symptoms:** Emails rejected by Brevo with error:
+```
+"Sending has been rejected because the sender you used noreply@weavink.com is not valid.
+Validate your sender or authenticate your domain."
+```
+
+**Root Cause:** Brevo requires sender email addresses to be validated before use for security and anti-spam purposes.
+
+**Resolution (Two Options):**
+
+**Option A: Validate Single Sender (Quick)**
+1. Log in to Brevo dashboard
+2. Navigate to: Settings → Senders & IP
+3. Add sender email: `noreply@weavink.io`
+4. Verify email via confirmation link sent by Brevo
+5. Set as default sender
+
+**Option B: Authenticate Domain (Production)**
+1. Add domain in Brevo dashboard: Settings → Senders & IP → Domains
+2. Add DNS records (SPF, DKIM, DMARC) to domain DNS configuration
+3. Wait for DNS propagation (24-48 hours)
+4. Verify domain in Brevo dashboard
+5. All emails from `@weavink.io` will be validated
+
+**Recommendation:** Use Option A for development/testing, Option B for production.
+
+**Files to Check:**
+- `lib/services/server/emailService.js:126` (sender email configuration)
+
+### Issue 9: Brevo API 401 Unauthorized
+
+**Symptoms:** Brevo API returns 401 Unauthorized error with message "Key not found" despite API key being configured.
+
+**Possible Causes:**
+1. Wrong API key format (e.g., base64 encoded instead of raw key)
+2. API key not starting with `xkeysib-` prefix
+3. IP address not whitelisted in Brevo (if IP restriction enabled)
+4. Environment variable not loaded correctly
+
+**Resolution:**
+1. **Check API Key Format:** Brevo keys start with `xkeysib-` followed by alphanumeric characters
+   - ✅ Correct: `xkeysib-abc123...`
+   - ❌ Wrong: `eyJhcGlfa2V5IjoieGtl...` (base64)
+
+2. **Check IP Whitelisting:** If enabled in Brevo dashboard:
+   - Add server's public IPv4 and IPv6 addresses
+   - For development: Add your local machine's public IP
+   - Check current IP: `curl https://api.ipify.org`
+
+3. **Verify Environment Variable:**
+   - Variable name: `SMTP_API` (server-side only)
+   - NOT `NEXT_PUBLIC_SMTP_API` (this exposes key to browser)
+   - Restart dev server after changing .env file
+
+**Debug Steps:**
+1. Check server logs for API key prefix: Should show `xkeysib-...` not base64
+2. Check Brevo dashboard: Settings → Senders & IP → IP Management
+3. Test API key with curl:
+```bash
+curl -X GET https://api.brevo.com/v3/account \
+  -H "api-key: YOUR_API_KEY"
+```
+
+**Files to Check:**
+- `.env` file (line 38): `SMTP_API=xkeysib-...`
+- `lib/services/server/emailService.js:6` (API key loading)
+
 ---
 
 ## Test Results Template
@@ -711,7 +955,7 @@ POST /api/user/privacy/delete-account
 Use this template to record your test results:
 
 ```markdown
-# Email Notification Testing Results - Phase 1 & 2
+# Email Notification Testing Results - Phase 1, 2 & 3
 **Date:** YYYY-MM-DD
 **Tester:** [Your Name]
 **Environment:** [Local / Staging / Production]
@@ -742,6 +986,7 @@ Use this template to record your test results:
 - Email received: YES / NO
 - Correct language: YES / NO
 - Date format correct: YES / NO
+- Footer translated: YES / NO
 - Notes:
 
 ### Test 2.3: Contact Deletion Notices
@@ -758,6 +1003,18 @@ Use this template to record your test results:
 - [ ] PASS / [ ] FAIL
 - Notes:
 
+## Phase 3: Data Export Email
+
+### Test 3.1: Data Export Completed Email
+- [ ] PASS / [ ] FAIL
+- Language tested: [French / English / Spanish / etc.]
+- Email received: YES / NO
+- Correct language: YES / NO
+- Footer translated: YES / NO
+- Export summary accurate: YES / NO
+- Consent count correct: YES / NO (not showing 0 when consents exist)
+- Notes:
+
 ## Issues Found
 1. [Describe any issues]
 2. [With reproduction steps]
@@ -765,7 +1022,10 @@ Use this template to record your test results:
 ## Overall Status
 - [ ] All Phase 1 tests passing
 - [ ] All Phase 2 tests passing
-- [ ] Ready for Phase 3 testing
+- [ ] All Phase 3 tests passing
+- [ ] All 5 email types verified
+- [ ] Footer translation verified across all emails
+- [ ] Ready for production deployment
 ```
 
 ---
@@ -773,24 +1033,30 @@ Use this template to record your test results:
 ## Next Steps After Testing
 
 ### If All Tests Pass ✅
-1. Mark this phase as complete
-2. Proceed to Phase 3 testing (Data Export Emails)
-3. Update RGPD compliance documentation
-4. Consider automated testing for regression
+1. Mark all phases (1, 2 & 3) as complete
+2. Update RGPD compliance documentation
+3. Consider automated testing for regression
+4. Deploy to staging environment for QA testing
+5. Prepare production deployment checklist
 
 ### If Tests Fail ❌
 1. Document failures using template above
-2. Check Common Issues section for solutions
+2. Check Common Issues section for solutions (Issues 1-9)
 3. Review server logs for errors
 4. Check code references in each test section
 5. Re-test after fixes applied
 
-### Phase 3 Preview
-Next testing phase will cover:
-- Data export completion email (1 email type)
-- Summary verification
-- Format listing
-- GDPR Article 20 compliance
+### Production Deployment Checklist
+Before deploying to production:
+- [ ] All Phase 1, 2 & 3 tests passing
+- [ ] Brevo sender email validated or domain authenticated
+- [ ] `SMTP_API` environment variable set (server-side only)
+- [ ] IP whitelisting configured in Brevo (if enabled)
+- [ ] All 5 languages tested (en, fr, es, zh, vm)
+- [ ] Footer translation verified across all email types
+- [ ] Export summary counts verified (not showing 0)
+- [ ] Email deliverability tested (check spam folders)
+- [ ] Error logging and monitoring in place
 
 ---
 
@@ -820,4 +1086,5 @@ Next testing phase will cover:
 
 **Last Updated:** 2025-11-19
 **Status:** Active
-**Coverage:** Phase 1 (i18n fixes) + Phase 2 (Account deletion emails)
+**Coverage:** Phase 1 (i18n fixes) + Phase 2 (Account deletion emails) + Phase 3 (Data export emails)
+**Total Email Types:** 5 (All multilingual across en, fr, es, zh, vm)

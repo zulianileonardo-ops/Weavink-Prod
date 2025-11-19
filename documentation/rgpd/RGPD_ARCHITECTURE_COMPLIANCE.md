@@ -502,11 +502,472 @@ export default EmailService;
 - Namespace: `emails.*`
 - Fallback to English if locale missing
 
+### Email System Architecture Diagram
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│                   Email Notification System Architecture                │
+└────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────┐
+│   Trigger Source    │
+├─────────────────────┤
+│ • API Routes        │
+│ • Server Services   │
+│ • Scheduled Jobs    │
+│ • User Actions      │
+└──────────┬──────────┘
+           │
+           ▼
+┌──────────────────────────────────────────────────────────────┐
+│              EmailService (Static Class)                      │
+├──────────────────────────────────────────────────────────────┤
+│                                                               │
+│  Method: sendXxxEmail(recipient, data, locale)                │
+│    ↓                                                          │
+│  1. Load Translations (Server-Side)                           │
+│     • fs.readFileSync('/public/locales/{locale}/common.json') │
+│     • Namespace: emails.*                                     │
+│     • Fallback: English                                       │
+│    ↓                                                          │
+│  2. Prepare Variables                                         │
+│     • subject, headline, intro, etc.                          │
+│     • Replace {{variables}} with actual data                  │
+│    ↓                                                          │
+│  3. Generate HTML Template                                    │
+│     • Inline CSS (email client compatibility)                 │
+│     • Responsive design (600px max width)                     │
+│     • GDPR compliant (no tracking pixels)                     │
+│    ↓                                                          │
+│  4. Send via Brevo API                                        │
+│     • POST https://api.brevo.com/v3/smtp/email                │
+│     • Headers: api-key (SMTP_API from .env)                   │
+│     • Body: sender, recipient, subject, htmlContent           │
+│     • Params: TRACKING = 0 (GDPR compliance)                  │
+│    ↓                                                          │
+│  5. Return Success/Failure (Non-Blocking)                     │
+│     • Log success: ✅ Email sent                              │
+│     • Log failure: ❌ Email failed (but don't throw)          │
+│                                                               │
+└──────────────────────────────────────────────────────────────┘
+           │
+           ▼
+┌──────────────────────┐
+│    Brevo Email API   │
+├──────────────────────┤
+│ • Email delivery     │
+│ • Queue management   │
+│ • Sender validation  │
+│ • IP whitelisting    │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│   Email Recipient    │
+├──────────────────────┤
+│ • User's inbox       │
+│ • Language: locale   │
+│ • All text translated│
+│ • Footer localized   │
+└──────────────────────┘
+
+┌────────────────────────────────────────────────────────────────────────┐
+│                          Email Types Implemented                        │
+├────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│  1. sendAccountDeletionConfirmationEmail                                │
+│     Trigger: User requests account deletion                             │
+│     Recipient: Deleting user                                            │
+│     Content: 30-day grace period, what gets deleted, cancel button      │
+│                                                                         │
+│  2. sendContactDeletionNoticeEmail                                      │
+│     Trigger: User requests account deletion                             │
+│     Recipients: Users who have deleting user in contacts (batch)        │
+│     Content: Notification of contact removal, data export suggestion    │
+│     Note: Each recipient gets email in THEIR language                   │
+│                                                                         │
+│  3. sendAccountDeletionCompletedEmail                                   │
+│     Trigger: Account deletion executed                                  │
+│     Recipient: Deleted user (sent BEFORE auth deletion)                 │
+│     Content: Confirmation of deletion, GDPR Art. 17 compliance          │
+│                                                                         │
+│  4. sendAccountDeletionCancelledEmail                                   │
+│     Trigger: User cancels deletion request                              │
+│     Recipient: User                                                     │
+│     Content: Welcome back message, confirmation of preserved data       │
+│                                                                         │
+│  5. sendDataExportCompletedEmail                                        │
+│     Trigger: Data export package ready                                  │
+│     Recipient: Requesting user                                          │
+│     Content: Export summary (contacts, groups, consents), download link │
+│                                                                         │
+└────────────────────────────────────────────────────────────────────────┘
+
+┌────────────────────────────────────────────────────────────────────────┐
+│                        Translation File Structure                       │
+├────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│  /public/locales/                                                       │
+│    ├── en/common.json  (English)                                        │
+│    ├── fr/common.json  (French)                                         │
+│    ├── es/common.json  (Spanish)                                        │
+│    ├── ch/common.json  (Chinese - code uses 'zh')                       │
+│    └── vm/common.json  (Vietnamese)                                     │
+│                                                                         │
+│  Structure within each file:                                            │
+│  {                                                                      │
+│    "emails": {                                                          │
+│      "account_deletion_confirmation": { ... },                          │
+│      "contact_deletion_notice": { ... },                                │
+│      "account_deletion_completed": { ... },                             │
+│      "account_deletion_cancelled": { ... },                             │
+│      "data_export_completed": { ... }                                   │
+│    },                                                                   │
+│    "thank_you": "Thank you," / "Merci," / etc.                          │
+│    "team_name": "The Weavink Team" / "L'équipe Weavink" / etc.         │
+│    "request_id": "Request ID:" / "ID de demande :" / etc.               │
+│    "dpo_label": "Data Protection Officer:" / "Délégué..." / etc.       │
+│  }                                                                      │
+│                                                                         │
+└────────────────────────────────────────────────────────────────────────┘
+
+┌────────────────────────────────────────────────────────────────────────┐
+│                          Integration Points                             │
+├────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│  ┌─────────────────────────────────────────────────────────────┐       │
+│  │  accountDeletionService.js                                   │       │
+│  ├─────────────────────────────────────────────────────────────┤       │
+│  │  Line 87-101:  sendAccountDeletionConfirmationEmail()        │       │
+│  │  Line 469-497: sendContactDeletionNoticeEmail() (batch)      │       │
+│  │  Line 149-164: sendAccountDeletionCompletedEmail()           │       │
+│  │  Line 646-661: sendAccountDeletionCancelledEmail()           │       │
+│  └─────────────────────────────────────────────────────────────┘       │
+│                                                                         │
+│  ┌─────────────────────────────────────────────────────────────┐       │
+│  │  app/api/user/privacy/export/route.js                        │       │
+│  ├─────────────────────────────────────────────────────────────┤       │
+│  │  Line 108-122: sendDataExportCompletedEmail()                │       │
+│  └─────────────────────────────────────────────────────────────┘       │
+│                                                                         │
+│  Non-Blocking Pattern:                                                  │
+│  EmailService.sendXxxEmail(...).catch(err => {                          │
+│    console.error('Email failed but continuing:', err);                  │
+│  });                                                                    │
+│  // Continue with main operation                                        │
+│                                                                         │
+└────────────────────────────────────────────────────────────────────────┘
+
+┌────────────────────────────────────────────────────────────────────────┐
+│                     Recent Bug Fixes (2025-11-19)                       │
+├────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│  ✅ Bug Fix 1: Email Footer Translation                                 │
+│     Problem: Footer appeared in English for all languages               │
+│     Solution: Added translation variables (thank_you, team_name, etc.)  │
+│     Files: emailService.js:1469-1472, 1570-1574 + all locale files      │
+│                                                                         │
+│  ✅ Bug Fix 2: Consent Count Showing 0                                  │
+│     Problem: Property name mismatch (consentCount vs consentsCount)     │
+│     Solution: Changed template to use singular names matching backend   │
+│     Files: emailService.js:1459-1461                                    │
+│                                                                         │
+│  ✅ Bug Fix 3: Environment Variable Security                            │
+│     Problem: NEXT_PUBLIC_SMTP_API exposed API key to browser            │
+│     Solution: Renamed to SMTP_API (server-side only)                    │
+│     Files: .env:38, emailService.js:6                                   │
+│                                                                         │
+│  ✅ Enhancement: Brevo Troubleshooting Documentation                     │
+│     Added: Sender validation guide, IP whitelisting guide               │
+│     Files: EMAIL_NOTIFICATION_MANUAL_TEST_GUIDE.md (Issues 8-9)         │
+│                                                                         │
+└────────────────────────────────────────────────────────────────────────┘
+```
+
 **Remaining Services:** Follow same pattern, conversion is mechanical
 
 **Recommendation:** Convert as needed during active development
 
 **Status:** 🟡 **PARTIAL COMPLIANCE** (75% vs 50% before)
+
+---
+
+### 6. Multilingual Error Translation System ✅ COMPLETE
+
+**Problem:** API error messages were hardcoded in English, violating GDPR Art. 12 (communication in user's language)
+
+**Solution:** Implement server-side translation service for all privacy API errors
+
+#### 6.1 Translation Service Architecture
+
+**Created:** `/lib/services/server/translationService.js` (159 lines)
+
+**Key Features:**
+- ✅ Server-side translation loading using Node.js `fs` module
+- ✅ Map-based caching to prevent repeated file reads
+- ✅ Automatic locale detection from `session.user.settings.defaultLanguage`
+- ✅ Variable interpolation support ({{date}}, {{userName}}, etc.)
+- ✅ Fallback to English for unsupported locales
+- ✅ Supports 5 languages: en, fr, es, zh, vm
+
+**Functions:**
+```javascript
+// Get user's locale from session
+export function getUserLocale(user) {
+  const locale = user.settings?.defaultLanguage || user.locale || 'en';
+  const supportedLocales = ['en', 'fr', 'es', 'zh', 'vm'];
+  return supportedLocales.includes(locale) ? locale : 'en';
+}
+
+// Translate error message server-side
+export function translateServerSide(key, locale = 'en', variables = {}) {
+  const translations = loadTranslations(locale); // with caching
+  // Navigate nested keys (e.g., 'privacy.errors.deletion.rate_limit')
+  // Replace {{variables}}
+  return translatedString;
+}
+
+// Clear cache (for testing)
+export function clearTranslationCache() {
+  translationCache.clear();
+}
+```
+
+#### 6.2 Constants Updated
+
+**Modified:** `lib/services/servicePrivacy/constants/privacyConstants.js`
+
+**Before:**
+```javascript
+export const PRIVACY_ERROR_MESSAGES = {
+  DELETION_RATE_LIMIT: 'Too many deletion requests. Please wait before trying again.',
+  EXPORT_FAILED: 'Failed to export data',
+  PERMISSION_DENIED: 'You do not have permission for this action'
+};
+```
+
+**After:**
+```javascript
+/**
+ * Standardized error message KEYS for privacy operations
+ * These are translation keys that will be translated server-side based on user's language
+ *
+ * IMPORTANT: These are now translation keys, not English text!
+ * Use translateServerSide(PRIVACY_ERROR_MESSAGES.XXX, locale) in API routes
+ */
+export const PRIVACY_ERROR_MESSAGES = {
+  // Consent errors
+  CONSENT_INVALID_TYPE: 'privacy.errors.consent.invalid_type',
+  CONSENT_INVALID_ACTION: 'privacy.errors.consent.invalid_action',
+  CONSENT_UPDATE_FAILED: 'privacy.errors.consent.update_failed',
+
+  // Export errors
+  EXPORT_FAILED: 'privacy.errors.export.failed',
+  EXPORT_RATE_LIMIT: 'privacy.errors.export.rate_limit',
+
+  // Deletion errors
+  DELETION_FAILED: 'privacy.errors.deletion.failed',
+  DELETION_INVALID_CONFIRMATION: 'privacy.errors.deletion.invalid_confirmation',
+  DELETION_ALREADY_PENDING: 'privacy.errors.deletion.already_pending',
+  DELETION_RATE_LIMIT: 'privacy.errors.deletion.rate_limit',
+
+  // Permission errors
+  PERMISSION_DENIED: 'privacy.errors.permission.denied',
+};
+```
+
+#### 6.3 API Routes Updated
+
+**Implementation Pattern:**
+```javascript
+import { translateServerSide, getUserLocale } from '@/lib/services/server/translationService';
+import { PRIVACY_ERROR_MESSAGES } from '@/lib/services/constants';
+
+export async function POST(request) {
+  const session = await createApiSession(request);
+  const locale = getUserLocale(session.user); // Extract user's language
+
+  // Permission check with translated error
+  if (!session.permissions[PRIVACY_PERMISSIONS.CAN_DELETE_ACCOUNT]) {
+    return NextResponse.json(
+      { error: translateServerSide(PRIVACY_ERROR_MESSAGES.PERMISSION_DENIED, locale) },
+      { status: 403 }
+    );
+  }
+
+  // Rate limit with translated error
+  if (!rateLimitResult.allowed) {
+    return NextResponse.json(
+      { error: translateServerSide(PRIVACY_ERROR_MESSAGES.DELETION_RATE_LIMIT, locale) },
+      { status: 429 }
+    );
+  }
+
+  // Catch block with translated error
+  try {
+    // ... operation
+  } catch (error) {
+    const locale = getUserLocale(session.user);
+    return NextResponse.json(
+      { error: translateServerSide(PRIVACY_ERROR_MESSAGES.DELETION_FAILED, locale) },
+      { status: 500 }
+    );
+  }
+}
+```
+
+**Files Modified (23 error points total):**
+- ✅ `app/api/user/privacy/delete-account/route.js` (8 errors translated)
+  - GET: PERMISSION_DENIED, DELETION_FAILED
+  - POST: PERMISSION_DENIED, DELETION_RATE_LIMIT, DELETION_INVALID_CONFIRMATION, DELETION_ALREADY_PENDING, DELETION_FAILED
+  - DELETE: PERMISSION_DENIED, DELETION_FAILED
+  - PATCH: PERMISSION_DENIED, DELETION_FAILED
+
+- ✅ `app/api/user/privacy/consent/route.js` (9 errors translated)
+  - GET: PERMISSION_DENIED, CONSENT_UPDATE_FAILED
+  - POST: PERMISSION_DENIED, CONSENT_INVALID_TYPE, CONSENT_INVALID_ACTION, CONSENT_UPDATE_FAILED
+  - PUT: PERMISSION_DENIED, CONSENT_UPDATE_FAILED
+  - DELETE: PERMISSION_DENIED, CONSENT_UPDATE_FAILED
+
+- ✅ `app/api/user/privacy/export/route.js` (6 errors translated)
+  - GET: PERMISSION_DENIED, EXPORT_FAILED
+  - POST: PERMISSION_DENIED, EXPORT_RATE_LIMIT, EXPORT_FAILED
+  - DELETE: PERMISSION_DENIED, EXPORT_FAILED
+
+#### 6.4 Translation File Structure
+
+**Location:** `/public/locales/{locale}/common.json`
+
+**Structure:**
+```json
+{
+  "privacy": {
+    "errors": {
+      "consent": {
+        "invalid_type": "Type de consentement invalide",
+        "invalid_action": "Action de consentement invalide",
+        "update_failed": "Échec de la mise à jour des préférences de consentement"
+      },
+      "export": {
+        "failed": "Échec de l'exportation des données",
+        "rate_limit": "Limite de débit d'exportation dépassée. Veuillez réessayer plus tard."
+      },
+      "deletion": {
+        "failed": "Échec du traitement de la suppression du compte",
+        "invalid_confirmation": "Texte de confirmation invalide",
+        "already_pending": "Vous avez déjà une demande de suppression en attente",
+        "rate_limit": "Trop de demandes de suppression. Veuillez réessayer plus tard."
+      },
+      "permission": {
+        "denied": "Vous n'avez pas la permission pour cette action"
+      }
+    }
+  }
+}
+```
+
+**Languages Supported:**
+- English (en): "Too many deletion requests. Please wait before trying again."
+- French (fr): "Trop de demandes de suppression. Veuillez réessayer plus tard."
+- Spanish (es): "Demasiadas solicitudes de eliminación. Por favor, inténtelo más tarde."
+- Chinese (zh): "删除请求过多。请稍后再试。"
+- Vietnamese (vm): "Quá nhiều yêu cầu xóa. Vui lòng thử lại sau."
+
+#### 6.5 Architecture Diagram
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│              Multilingual API Error Translation Flow                   │
+└────────────────────────────────────────────────────────────────────────┘
+
+API Request (with auth token)
+           ↓
+┌──────────────────────┐
+│  createApiSession()  │
+├──────────────────────┤
+│ • Verify auth token  │
+│ • Load user session  │
+│ • Extract user data  │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│  getUserLocale()     │
+├──────────────────────┤
+│ • Read user settings │
+│ • defaultLanguage    │
+│ • Fallback to 'en'   │
+│ • Returns: 'fr'      │
+└──────────┬───────────┘
+           │
+           ▼
+Error Condition Triggered
+(permission denied, rate limit, etc.)
+           │
+           ▼
+┌──────────────────────────────────────────────────┐
+│  translateServerSide(key, locale, variables)     │
+├──────────────────────────────────────────────────┤
+│  1. Check cache for locale                        │
+│     • translationCache.get(locale)                │
+│     • If cached: return translations              │
+│                                                   │
+│  2. Load translation file (if not cached)         │
+│     • fs.readFileSync('public/locales/fr/...')    │
+│     • JSON.parse(fileContent)                     │
+│     • translationCache.set(locale, translations)  │
+│                                                   │
+│  3. Navigate nested keys                          │
+│     • Split: 'privacy.errors.deletion.rate_limit' │
+│     • Navigate: translations.privacy.errors...    │
+│                                                   │
+│  4. Replace variables                             │
+│     • {{date}} → '19 novembre 2025'               │
+│     • {{userName}} → 'Jean Dupont'                │
+│                                                   │
+│  5. Return translated string                      │
+│     • "Trop de demandes de suppression..."        │
+└──────────┬───────────────────────────────────────┘
+           │
+           ▼
+┌──────────────────────┐
+│  NextResponse.json() │
+├──────────────────────┤
+│ {                    │
+│   error: "Trop de    │
+│     demandes..."     │
+│ }                    │
+│ status: 429          │
+└──────────────────────┘
+```
+
+#### 6.6 Compliance Impact
+
+**GDPR Article 12 Compliance:**
+- ✅ **Transparent Communication**: Errors appear in user's native language
+- ✅ **User-Friendly**: No need to understand English for error messages
+- ✅ **Consistent Experience**: Same translation system as emails
+
+**Benefits:**
+1. **User Experience**: Users see errors in their language
+2. **GDPR Compliance**: Meets Art. 12 requirement
+3. **Maintainability**: Centralized error messages in translation files
+4. **Reusability**: Translation service can be used across all API routes
+5. **Performance**: Translation caching prevents repeated file reads
+
+**Status:** ✅ **COMPLETE** (2025-11-19)
+
+**Files Modified (Total: 9):**
+- ✅ `lib/services/server/translationService.js` (CREATED)
+- ✅ `lib/services/servicePrivacy/constants/privacyConstants.js` (UPDATED - error messages to translation keys)
+- ✅ `public/locales/en/common.json` (ADDED privacy.errors)
+- ✅ `public/locales/fr/common.json` (ADDED privacy.errors)
+- ✅ `public/locales/es/common.json` (ADDED privacy.errors)
+- ✅ `public/locales/ch/common.json` (ADDED privacy.errors)
+- ✅ `public/locales/vm/common.json` (ADDED privacy.errors)
+- ✅ `app/api/user/privacy/delete-account/route.js` (REFACTORED - 8 errors)
+- ✅ `app/api/user/privacy/consent/route.js` (REFACTORED - 9 errors)
+- ✅ `app/api/user/privacy/export/route.js` (REFACTORED - 6 errors)
 
 ---
 
@@ -901,7 +1362,7 @@ The RGPD implementation has been successfully refactored to align with Weavink c
 
 ---
 
-**Report Generated:** 2025-11-18
+**Report Generated:** 2025-11-19 (Updated with multilingual error translation system)
 **Author:** Claude Code Refactoring Agent
 **Reference:** code-manager-skill, RGPD_COMPLIANCE_MATRIX.md
 
@@ -909,19 +1370,27 @@ The RGPD implementation has been successfully refactored to align with Weavink c
 
 ## Appendix: Files Changed
 
-### Created (1)
+### Created (2)
 - `lib/services/servicePrivacy/constants/privacyConstants.js`
+- `lib/services/server/translationService.js` (2025-11-19)
 
-### Modified (14)
+### Modified (19)
 **Core Infrastructure:**
 - `lib/services/constants.js` (barrel export updated)
+
+**Translation Files** (2025-11-19):
+- `public/locales/en/common.json` (Added privacy.errors namespace)
+- `public/locales/fr/common.json` (Added privacy.errors namespace)
+- `public/locales/es/common.json` (Added privacy.errors namespace)
+- `public/locales/ch/common.json` (Added privacy.errors namespace)
+- `public/locales/vm/common.json` (Added privacy.errors namespace)
 
 **Client Services:**
 - `lib/services/servicePrivacy/client/services/ConsentService.js`
 - `lib/services/servicePrivacy/client/services/DataExportService.js`
 - `lib/services/servicePrivacy/client/services/AccountDeletionService.js`
 
-**API Routes:**
+**API Routes** (Updated 2025-11-19 with error translation):
 - `app/api/user/privacy/consent/route.js`
 - `app/api/user/privacy/export/route.js`
 - `app/api/user/privacy/delete-account/route.js`
@@ -929,10 +1398,13 @@ The RGPD implementation has been successfully refactored to align with Weavink c
 **Server Services:**
 - `lib/services/servicePrivacy/server/consentService.js`
 
+**Constants** (Updated 2025-11-19):
+- `lib/services/servicePrivacy/constants/privacyConstants.js` (Error messages → translation keys)
+
 **Context:**
 - `app/dashboard/(dashboard pages)/account/AccountContext.js`
 
-### Total Files Changed: 15
+### Total Files Changed: 21 (15 original + 6 translation updates)
 
 ---
 

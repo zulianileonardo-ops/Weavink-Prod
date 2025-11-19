@@ -1693,6 +1693,10 @@
         "message": "您的数据已成功导出。请下载以下文件：",
         "back": "← 再次导出"
       },
+      "download_all": {
+        "button": "下载所有文件"
+      },
+      "individual_files": "单个文件",
       "error": {
         "message": "{{error}}"
       }
@@ -2569,7 +2573,33 @@
       "formats": "格式",
       "formats_value": "JSON, CSV, vCard",
       "gdpr_note": "此导出履行了您的 GDPR 第20条数据可移植性权利。",
-      "next_steps": "您的导出已包含在您请求时的 API 响应中。如果您需要另一次导出，可以从账户设置中请求。"
+      "next_steps": "您的导出已包含在您请求时的 API 响应中。如果您需要另一次导出，可以从账户设置中请求。",
+      "thank_you": "谢谢，",
+      "team_name": "Weavink 团队",
+      "request_id": "请求ID：",
+      "dpo_label": "数据保护官："
+    }
+  },
+  "privacy": {
+    "errors": {
+      "consent": {
+        "invalid_type": "无效的同意类型",
+        "invalid_action": "无效的同意操作",
+        "update_failed": "更新同意偏好失败"
+      },
+      "export": {
+        "failed": "导出数据失败",
+        "rate_limit": "超出导出速率限制。请稍后再试。"
+      },
+      "deletion": {
+        "failed": "处理账户删除失败",
+        "invalid_confirmation": "确认文本无效",
+        "already_pending": "您已有待处理的删除请求",
+        "rate_limit": "删除请求过多。请稍后再试。"
+      },
+      "permission": {
+        "denied": "您没有此操作的权限"
+      }
     }
   }
 }

@@ -906,6 +906,10 @@
         "message": "Your data has been exported successfully. Download the files below:",
         "back": "← Export Again"
       },
+      "download_all": {
+        "button": "Download All Files"
+      },
+      "individual_files": "Individual Files",
       "error": {
         "message": "{{error}}"
       }
@@ -1782,7 +1786,33 @@
       "formats": "Formats",
       "formats_value": "JSON, CSV, vCard",
       "gdpr_note": "This export fulfills your GDPR Article 20 right to data portability.",
-      "next_steps": "Your export was included in the API response when you requested it. If you need another export, you can request one from your account settings."
+      "next_steps": "Your export was included in the API response when you requested it. If you need another export, you can request one from your account settings.",
+      "thank_you": "Thank you,",
+      "team_name": "The Weavink Team",
+      "request_id": "Request ID:",
+      "dpo_label": "Data Protection Officer:"
+    }
+  },
+  "privacy": {
+    "errors": {
+      "consent": {
+        "invalid_type": "Invalid consent type",
+        "invalid_action": "Invalid consent action",
+        "update_failed": "Failed to update consent preferences"
+      },
+      "export": {
+        "failed": "Failed to export data",
+        "rate_limit": "Export rate limit exceeded. Please try again later."
+      },
+      "deletion": {
+        "failed": "Failed to process account deletion",
+        "invalid_confirmation": "Invalid confirmation text",
+        "already_pending": "You already have a pending deletion request",
+        "rate_limit": "Too many deletion requests. Please wait before trying again."
+      },
+      "permission": {
+        "denied": "You do not have permission for this action"
+      }
     }
   }
 }

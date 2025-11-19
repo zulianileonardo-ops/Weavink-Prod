@@ -23,6 +23,7 @@ import {
 } from '../../../../../lib/services/servicePrivacy/server/dataExportService.js';
 import { EmailService } from '../../../../../lib/services/server/emailService.js';
 import { adminDb } from '../../../../../lib/firebaseAdmin.js';
+import { translateServerSide, getUserLocale } from '@/lib/services/server/translationService';
 
 /**
  * GET - Retrieve export request status or download export
@@ -34,11 +35,14 @@ export async function GET(request) {
     const sessionManager = new SessionManager(session);
     const userId = session.userId;
 
+    // Get user locale for error translation
+    const locale = getUserLocale(session.user);
+
     // 2. Permission check
     if (!session.permissions[PRIVACY_PERMISSIONS.CAN_EXPORT_DATA]) {
       return NextResponse.json(
         {
-          error: PRIVACY_ERROR_MESSAGES.PERMISSION_DENIED,
+          error: translateServerSide(PRIVACY_ERROR_MESSAGES.PERMISSION_DENIED, locale),
           upgrade: 'Data export requires a subscription upgrade',
         },
         { status: 403 }
@@ -102,8 +106,10 @@ export async function GET(request) {
     });
   } catch (error) {
     console.error('❌ [DataExportAPI] Error in GET:', error);
+    const session = await createApiSession(request);
+    const locale = getUserLocale(session.user);
     return NextResponse.json(
-      { error: PRIVACY_ERROR_MESSAGES.EXPORT_FAILED, details: error.message },
+      { error: translateServerSide(PRIVACY_ERROR_MESSAGES.EXPORT_FAILED, locale), details: error.message },
       { status: 500 }
     );
   }
@@ -127,11 +133,14 @@ export async function POST(request) {
     const sessionManager = new SessionManager(session);
     const userId = session.userId;
 
+    // Get user locale for error translation
+    const locale = getUserLocale(session.user);
+
     // 2. Permission check
     if (!session.permissions[PRIVACY_PERMISSIONS.CAN_EXPORT_DATA]) {
       return NextResponse.json(
         {
-          error: PRIVACY_ERROR_MESSAGES.PERMISSION_DENIED,
+          error: translateServerSide(PRIVACY_ERROR_MESSAGES.PERMISSION_DENIED, locale),
           upgrade: 'Data export requires a subscription upgrade',
         },
         { status: 403 }
@@ -152,7 +161,7 @@ export async function POST(request) {
     });
     if (!rateLimitResult.allowed) {
       const responsePayload = {
-        error: PRIVACY_ERROR_MESSAGES.EXPORT_RATE_LIMIT,
+        error: translateServerSide(PRIVACY_ERROR_MESSAGES.EXPORT_RATE_LIMIT, locale),
         message: `You can request a maximum of ${max} data exports per hour. Please try again later.`,
         retryAfter: rateLimitResult.retryAfter,  // Seconds until reset
         resetTime: rateLimitResult.resetTime,     // Unix timestamp
@@ -270,9 +279,11 @@ export async function POST(request) {
     }
   } catch (error) {
     console.error('❌ [DataExportAPI] Error in POST:', error);
+    const session = await createApiSession(request);
+    const locale = getUserLocale(session.user);
     return NextResponse.json(
       {
-        error: PRIVACY_ERROR_MESSAGES.EXPORT_FAILED,
+        error: translateServerSide(PRIVACY_ERROR_MESSAGES.EXPORT_FAILED, locale),
         details: error.message,
         troubleshooting: {
           largeDataset: 'If you have a large number of contacts, the export may take longer',
@@ -295,10 +306,13 @@ export async function DELETE(request) {
     const sessionManager = new SessionManager(session);
     const userId = session.userId;
 
+    // Get user locale for error translation
+    const locale = getUserLocale(session.user);
+
     // 2. Permission check
     if (!session.permissions[PRIVACY_PERMISSIONS.CAN_EXPORT_DATA]) {
       return NextResponse.json(
-        { error: PRIVACY_ERROR_MESSAGES.PERMISSION_DENIED },
+        { error: translateServerSide(PRIVACY_ERROR_MESSAGES.PERMISSION_DENIED, locale) },
         { status: 403 }
       );
     }
@@ -340,8 +354,10 @@ export async function DELETE(request) {
     });
   } catch (error) {
     console.error('❌ [DataExportAPI] Error in DELETE:', error);
+    const session = await createApiSession(request);
+    const locale = getUserLocale(session.user);
     return NextResponse.json(
-      { error: 'Failed to cancel export', details: error.message },
+      { error: translateServerSide(PRIVACY_ERROR_MESSAGES.EXPORT_FAILED, locale), details: error.message },
       { status: 500 }
     );
   }

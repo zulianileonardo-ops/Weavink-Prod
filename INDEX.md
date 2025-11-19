@@ -1,7 +1,7 @@
 # Weavink Documentation Index
 
 **Last Updated:** 2025-11-19
-**Total Guides:** 64
+**Total Guides:** 66
 
 ## Quick Navigation
 - [Admin System](#admin-system) (9 guides)
@@ -9,9 +9,9 @@
 - [RGPD/GDPR Compliance](#rgpd-gdpr-compliance) (7 guides)
 - [Feature Implementations](#feature-implementations) (15 guides)
 - [Technical Infrastructure](#technical-infrastructure) (17 guides)
-- [Testing & QA](#testing-qa) (6 guides)
+- [Testing & QA](#testing-qa) (7 guides)
 - [General Documentation](#general-documentation) (4 guides)
-- [Tutorials & Guides](#tutorials-guides) (2 guides)
+- [Tutorials & Guides](#tutorials-guides) (3 guides)
 - [Meta Documentation](#meta-documentation) (2 guides)
 
 ---
@@ -110,8 +110,8 @@
 **Related:** [rgpd-implementation-summary-042](#rgpd-implementation-summary-042), [rgpd-conformite-tapit-013](#rgpd-conformite-tapit-013), [testing-rgpd-guide-038](#testing-rgpd-guide-038)
 
 ### RGPD_IMPLEMENTATION_SUMMARY.md
-**Summary:** Complete summary of RGPD Phase 1-4 implementation with consent management, data portability, breach notifications, and compliance features.
-**Tags:** gdpr, rgpd, compliance, consent, data-protection, privacy, implementation, phase-summary
+**Summary:** Complete summary of RGPD Phase 1-4 implementation with consent management, data portability, breach notifications, compliance features, and multilingual API error messages.
+**Tags:** gdpr, rgpd, compliance, consent, data-protection, privacy, implementation, phase-summary, translation, multilingual-errors, server-side-translation
 **Related:** [rgpd-master-progress-043](#rgpd-master-progress-043), [rgpd-phase4-summary-044](#rgpd-phase4-summary-044), [rgpd-conformite-tapit-013](#rgpd-conformite-tapit-013)
 
 ### RGPD_MASTER_PROGRESS.md
@@ -261,8 +261,8 @@
 **Related:** [technical-cost-tracking-migration-024](#technical-cost-tracking-migration-024), [technical-comprehensive-refactoring-025](#technical-comprehensive-refactoring-025)
 
 ### RGPD_ARCHITECTURE_COMPLIANCE.md
-**Summary:** Comprehensive refactoring report documenting architectural alignment of RGPD implementation with Weavink 5-layer pattern. Achieved 95% compliance (from 34%), eliminated 12 raw fetch() calls, implemented permission-based security, and centralized constants management. Documents 15 files modified across client services, API routes, server services, and context layers.
-**Tags:** rgpd, gdpr, architecture, refactoring, compliance, 5-layer-pattern, security, constants, session-manager, contact-api-client, permissions, code-quality
+**Summary:** Comprehensive refactoring report documenting architectural alignment of RGPD implementation with Weavink 5-layer pattern. Achieved 95% compliance (from 34%), eliminated 12 raw fetch() calls, implemented permission-based security, centralized constants management, and multilingual error translation system. Documents 21 files modified across client services, API routes, server services, translation files, and context layers.
+**Tags:** rgpd, gdpr, architecture, refactoring, compliance, 5-layer-pattern, security, constants, session-manager, contact-api-client, permissions, code-quality, translation, multilingual-errors, i18n
 **Related:** [rgpd-implementation-summary-042](#rgpd-implementation-summary-042), [rgpd-master-progress-043](#rgpd-master-progress-043), [rgpd-consent-guide-045](#rgpd-consent-guide-045), [technical-comprehensive-refactoring-025](#technical-comprehensive-refactoring-025), [admin-security-layers-007](#admin-security-layers-007)
 
 ### RULES_GROUPING_FIXES.md
@@ -288,6 +288,11 @@
 
 ## Testing & QA
 *Testing guides and quality assurance*
+
+### EMAIL_NOTIFICATION_MANUAL_TEST_GUIDE.md
+**Summary:** Comprehensive manual testing guide for multilingual email notification system covering i18n bug fixes, account deletion emails, and data export emails. Includes troubleshooting for recent bug fixes.
+**Tags:** email, notifications, multilingual, i18n, rgpd, manual-testing, phase1, phase2, phase3, data-export, gdpr, brevo, troubleshooting
+**Related:** [RGPD_TESTING_GUIDE.md](#rgpd-testing-guide-md), [ACCOUNT_PRIVACY_TESTING_GUIDE.md](#account-privacy-testing-guide-md), [RGPD_IMPLEMENTATION_SUMMARY.md](#rgpd-implementation-summary-md), [EMAIL_INTEGRATION_GUIDE.md](#email-integration-guide-md)
 
 ### RATE_LIMIT_TESTING.md
 **Summary:** Testing guide for rate limiting system with various attack scenarios and verification methods.
@@ -349,6 +354,11 @@
 **Summary:** Design and implementation plan for a conversation-manager-skill that automatically saves conversation history from Claude Code sessions, linking them to git commits and enabling smart conversation continuation detection.
 **Tags:** skill, conversation, git-integration, automation, documentation, claude-code, implementation-guide, planned
 **Related:** [git-manager-skill](#git-manager-skill), [docs-manager-skill](#docs-manager-skill)
+
+### EMAIL_INTEGRATION_GUIDE.md
+**Summary:** Step-by-step developer guide for adding new multilingual email notifications to the Weavink email system. Includes code examples, translation structure, testing checklist, best practices, and cross-reference to API error translation pattern.
+**Tags:** email, notifications, multilingual, i18n, rgpd, development, tutorial, integration, brevo, gdpr, developer-guide, api-errors, translation-service
+**Related:** [EMAIL_NOTIFICATION_MANUAL_TEST_GUIDE.md](#email-notification-manual-test-guide-md), [RGPD_IMPLEMENTATION_SUMMARY.md](#rgpd-implementation-summary-md), [RGPD_ARCHITECTURE_COMPLIANCE.md](#rgpd-architecture-compliance-md)
 
 ### RATE_LIMIT_UI_PATTERN_GUIDE.md
 **Summary:** Comprehensive guide for implementing a reusable UI pattern for handling rate limit errors (HTTP 429) with real-time countdown timer, greyed-out button, localStorage persistence, multi-tab synchronization, and accurate timing using server's absolute resetTime.

@@ -8,7 +8,7 @@ import { useAccount } from '../AccountContext';
 import { useSearchParams } from 'next/navigation';
 
 export default function ConsentsTab() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const searchParams = useSearchParams();
   const expandParam = searchParams.get('expand');
   const { consents, grantConsent, withdrawConsent, refreshData, showNotification } = useAccount();
@@ -335,8 +335,12 @@ export default function ConsentsTab() {
                             {/* Last Updated */}
                             {consentData.lastUpdated && (
                               <p className="text-xs text-gray-500 mt-1">
-                                {t('account.consents.last_updated', 'Last updated: {{date}}', {
-                                  date: new Date(consentData.lastUpdated._seconds * 1000).toLocaleDateString()
+                                {t('account.consents.last_updated', {
+                                  date: new Date(consentData.lastUpdated._seconds * 1000).toLocaleDateString(locale, {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric'
+                                  })
                                 })}
                               </p>
                             )}

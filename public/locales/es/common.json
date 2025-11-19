@@ -2164,6 +2164,10 @@
         "message": "Tus datos se han exportado correctamente. Descarga los archivos a continuación:",
         "back": "← Exportar de Nuevo"
       },
+      "download_all": {
+        "button": "Descargar todos los archivos"
+      },
+      "individual_files": "Archivos individuales",
       "error": {
         "message": "{{error}}"
       }
@@ -3040,7 +3044,33 @@
       "formats": "Formatos",
       "formats_value": "JSON, CSV, vCard",
       "gdpr_note": "Esta exportación cumple con su derecho GDPR Artículo 20 a la portabilidad de datos.",
-      "next_steps": "Su exportación se incluyó en la respuesta API cuando la solicitó. Si necesita otra exportación, puede solicitarla desde la configuración de su cuenta."
+      "next_steps": "Su exportación se incluyó en la respuesta API cuando la solicitó. Si necesita otra exportación, puede solicitarla desde la configuración de su cuenta.",
+      "thank_you": "Gracias,",
+      "team_name": "El equipo de Weavink",
+      "request_id": "ID de solicitud:",
+      "dpo_label": "Responsable de protección de datos:"
+    }
+  },
+  "privacy": {
+    "errors": {
+      "consent": {
+        "invalid_type": "Tipo de consentimiento inválido",
+        "invalid_action": "Acción de consentimiento inválida",
+        "update_failed": "Error al actualizar las preferencias de consentimiento"
+      },
+      "export": {
+        "failed": "Error al exportar datos",
+        "rate_limit": "Límite de exportación excedido. Por favor, inténtelo más tarde."
+      },
+      "deletion": {
+        "failed": "Error al procesar la eliminación de cuenta",
+        "invalid_confirmation": "Texto de confirmación inválido",
+        "already_pending": "Ya tiene una solicitud de eliminación pendiente",
+        "rate_limit": "Demasiadas solicitudes de eliminación. Por favor, inténtelo más tarde."
+      },
+      "permission": {
+        "denied": "No tiene permiso para esta acción"
+      }
     }
   }
 }
