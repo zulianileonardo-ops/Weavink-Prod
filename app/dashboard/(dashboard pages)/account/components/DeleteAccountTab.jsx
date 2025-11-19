@@ -6,7 +6,7 @@ import { useTranslation } from '@/lib/translation/useTranslation';
 import { useAccount } from '../AccountContext';
 
 export default function DeleteAccountTab() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const { pendingDeletion, requestDeletion, cancelDeletion, refreshData } = useAccount();
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [confirmationText, setConfirmationText] = useState('');
@@ -22,7 +22,8 @@ export default function DeleteAccountTab() {
       await requestDeletion(
         confirmationText,
         'User requested',
-        false
+        false,
+        locale
       );
 
       // Refresh data
@@ -52,8 +53,8 @@ export default function DeleteAccountTab() {
         <div className="bg-red-50 border border-red-200 rounded-lg p-6">
           <h2 className="text-2xl font-bold text-red-900 mb-4">{t('account.delete.pending.title', 'Account Deletion Pending')}</h2>
           <p className="text-red-800 mb-4">
-            {t('account.delete.pending.message', 'Your account is scheduled for permanent deletion on {{date}}.', {
-              date: new Date(pendingDeletion.scheduledDeletionDate).toLocaleDateString()
+            {t('account.delete.pending.message', {
+              date: new Date(pendingDeletion.scheduledDeletionDate).toLocaleDateString(locale)
             })}
           </p>
           <p className="text-red-800 mb-6">
@@ -100,7 +101,7 @@ export default function DeleteAccountTab() {
         <div className="bg-white border-2 border-red-300 rounded-lg p-6 space-y-4">
           <h3 className="text-lg font-semibold text-gray-900">{t('account.delete.confirmation.title', 'Confirm Account Deletion')}</h3>
           <p className="text-sm text-gray-600">
-            {t('account.delete.confirmation.instruction', 'Type {{text}} to confirm:', { text: t('account.delete.confirmation.text', 'DELETE MY ACCOUNT') })}
+            {t('account.delete.confirmation.instruction', { text: t('account.delete.confirmation.text') })}
           </p>
           <input
             type="text"
@@ -112,7 +113,7 @@ export default function DeleteAccountTab() {
           <div className="flex space-x-3">
             <button
               onClick={handleDelete}
-              disabled={confirmationText !== 'DELETE MY ACCOUNT' || deleting}
+              disabled={confirmationText !== t('account.delete.confirmation.text') || deleting}
               className="px-6 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
               {deleting ? t('account.delete.button.deleting', 'Deleting...') : t('account.delete.button.confirm', 'Confirm Deletion')}

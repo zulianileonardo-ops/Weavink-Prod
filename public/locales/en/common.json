@@ -1724,5 +1724,65 @@
         "description": "Add your Linktree to your Twitter profile. Simply copy your Linktree URL, go to your profile, click on Edit Profile, and paste your Linktree URL into the Website field."
       }
     }
+  },
+  "emails": {
+    "account_deletion_confirmation": {
+      "subject": "Account Deletion Request Confirmed - Weavink",
+      "headline": "Account Deletion Scheduled",
+      "headline_immediate": "Account Deletion In Progress",
+      "intro": "We have received your request to delete your Weavink account. Your account is scheduled for deletion on {{date}}.",
+      "intro_immediate": "We are processing your request to delete your Weavink account immediately.",
+      "grace_period": "You have a 30-day grace period to change your mind. You can cancel this request at any time before {{date}}.",
+      "what_deleted": "All your data will be permanently deleted, including:",
+      "item_contacts": "All contacts and groups",
+      "item_settings": "Profile settings and preferences",
+      "item_history": "Activity history and analytics",
+      "export_reminder": "If you haven't already, we recommend exporting your data before the deletion date.",
+      "cancel_instructions": "To cancel this request, visit your account settings or contact our support team.",
+      "button_cancel": "Cancel Deletion",
+      "thank_you": "Thank you for using Weavink."
+    },
+    "contact_deletion_notice": {
+      "subject": "Contact Update - {{deletedUserName}} Account Deletion",
+      "headline": "Contact Deletion Notice",
+      "intro": "{{deletedUserName}} has requested deletion of their Weavink account.",
+      "when_deleted": "Their contact information will be anonymized on {{date}}.",
+      "your_notes": "Your notes and interactions with this contact will remain available, but their personal information will be anonymized.",
+      "automated": "This is an automated notice to keep you informed about changes to your contacts."
+    },
+    "account_deletion_completed": {
+      "subject": "Your Weavink Account Has Been Deleted",
+      "headline": "Account Deletion Complete",
+      "intro": "Your Weavink account has been permanently deleted.",
+      "all_data_deleted": "All your personal data has been removed from our systems, including:",
+      "item_profile": "Your profile and settings",
+      "item_contacts": "All contacts and groups",
+      "item_activity": "Activity history and analytics",
+      "billing_retained": "Billing records have been archived for legal compliance (10 years as required by law).",
+      "thank_you": "Thank you for using Weavink. We're sorry to see you go.",
+      "reregister": "If you change your mind, you can always create a new account at any time."
+    },
+    "account_deletion_cancelled": {
+      "subject": "Account Deletion Cancelled - Weavink",
+      "headline": "Deletion Request Cancelled",
+      "intro": "Your account deletion request has been successfully cancelled.",
+      "account_safe": "Your account is safe and remains fully active.",
+      "no_data_lost": "No data has been deleted. All your contacts, groups, and settings are intact.",
+      "all_features": "You can continue using all Weavink features without any interruption.",
+      "button_dashboard": "Go to Dashboard"
+    },
+    "data_export_completed": {
+      "subject": "Your Data Export is Ready - Weavink",
+      "headline": "Data Export Complete",
+      "intro": "Your data export has been completed successfully.",
+      "summary": "Export Summary:",
+      "contacts": "Contacts",
+      "groups": "Groups",
+      "consents": "Consent Records",
+      "formats": "Formats",
+      "formats_value": "JSON, CSV, vCard",
+      "gdpr_note": "This export fulfills your GDPR Article 20 right to data portability.",
+      "next_steps": "Your export was included in the API response when you requested it. If you need another export, you can request one from your account settings."
+    }
   }
 }

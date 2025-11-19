@@ -13,7 +13,7 @@ import {
   PRIVACY_PERMISSIONS,
   PRIVACY_RATE_LIMITS,
   PRIVACY_ERROR_MESSAGES,
-  DELETION_CONFIRMATION_TEXT,
+  DELETION_CONFIRMATION_TEXTS,
 } from '@/lib/services/constants';
 import {
   requestAccountDeletion,
@@ -122,14 +122,18 @@ export async function POST(request) {
     const body = await request.json();
 
     // 4. Validate confirmation text
-    const { confirmation, reason, immediate = false } = body;
+    const { confirmation, reason, immediate = false, locale = 'en' } = body;
 
-    if (confirmation !== DELETION_CONFIRMATION_TEXT) {
+    // Get the expected confirmation text for the user's locale
+    const expectedConfirmation = DELETION_CONFIRMATION_TEXTS[locale] || DELETION_CONFIRMATION_TEXTS.en;
+
+    if (confirmation !== expectedConfirmation) {
       return NextResponse.json(
         {
           error: PRIVACY_ERROR_MESSAGES.DELETION_INVALID_CONFIRMATION,
-          message: `You must type "${DELETION_CONFIRMATION_TEXT}" to confirm account deletion`,
-          required: DELETION_CONFIRMATION_TEXT,
+          message: `You must type "${expectedConfirmation}" to confirm account deletion`,
+          required: expectedConfirmation,
+          locale,
         },
         { status: 400 }
       );
@@ -164,6 +168,7 @@ export async function POST(request) {
         reason,
         immediate,
         keepBillingData: true, // Always keep billing data (legal requirement)
+        locale, // Track language used for deletion confirmation (compliance)
       }
     );
 

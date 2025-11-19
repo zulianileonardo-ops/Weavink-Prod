@@ -365,12 +365,12 @@ export function AccountProvider({ children }) {
   /**
    * Request account deletion
    */
-  const requestDeletion = useCallback(async (confirmation, reason, immediate) => {
+  const requestDeletion = useCallback(async (confirmation, reason, immediate, locale = 'en') => {
     if (!currentUser) return;
 
     try {
       console.log('🔄 [AccountContext] Requesting account deletion');
-      await AccountDeletionService.requestDeletion(confirmation, reason, immediate);
+      await AccountDeletionService.requestDeletion(confirmation, reason, immediate, locale);
 
       // Invalidate cache and refresh
       invalidateCache();

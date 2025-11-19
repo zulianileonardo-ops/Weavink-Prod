@@ -21,6 +21,8 @@ import {
   getExportRequest,
   getUserExportRequests,
 } from '../../../../../lib/services/servicePrivacy/server/dataExportService.js';
+import EmailService from '../../../../../lib/services/server/emailService.js';
+import { adminDb } from '../../../../../lib/firebaseAdmin.js';
 
 /**
  * GET - Retrieve export request status or download export
@@ -212,12 +214,31 @@ export async function POST(request) {
 
       console.log(`✅ [DataExportAPI] Export completed for user ${userId}:`, exportResult.summary);
 
+      // Send completion email notification
+      try {
+        const userDoc = await adminDb.collection('users').doc(userId).get();
+        if (userDoc.exists) {
+          const userData = userDoc.data();
+          const userLanguage = userData.settings?.defaultLanguage || 'en';
+          await EmailService.sendDataExportCompletedEmail(
+            userData.email,
+            userData.profile?.displayName || userData.username || 'User',
+            exportResult.summary,
+            exportRequest.requestId,
+            userLanguage
+          );
+          console.log(`📧 [DataExportAPI] Export completion email sent to ${userData.email}`);
+        }
+      } catch (emailError) {
+        console.error('Failed to send data export completion email:', emailError);
+        // Non-blocking: continue even if email fails
+      }
+
       // Return the export data immediately
       // In production, you might want to:
       // 1. Upload files to Cloud Storage
       // 2. Generate a secure download URL
-      // 3. Send an email notification
-      // 4. Return just the download URL instead of full data
+      // 3. Return just the download URL instead of full data
 
       return NextResponse.json({
         success: true,

@@ -3208,5 +3208,65 @@
         "description": "Ajoutez votre Linktree à votre profil Twitter. Copiez simplement l'URL de votre Linktree, allez sur votre profil, cliquez sur Modifier le profil et collez l'URL de votre Linktree dans le champ Site web."
       }
     }
+  },
+  "emails": {
+    "account_deletion_confirmation": {
+      "subject": "Demande de suppression de compte confirmée - Weavink",
+      "headline": "Suppression de compte programmée",
+      "headline_immediate": "Suppression de compte en cours",
+      "intro": "Nous avons reçu votre demande de suppression de votre compte Weavink. Votre compte est programmé pour suppression le {{date}}.",
+      "intro_immediate": "Nous traitons votre demande de suppression immédiate de votre compte Weavink.",
+      "grace_period": "Vous disposez d'un délai de grâce de 30 jours pour changer d'avis. Vous pouvez annuler cette demande à tout moment avant le {{date}}.",
+      "what_deleted": "Toutes vos données seront définitivement supprimées, y compris :",
+      "item_contacts": "Tous les contacts et groupes",
+      "item_settings": "Paramètres et préférences du profil",
+      "item_history": "Historique d'activité et analyses",
+      "export_reminder": "Si vous ne l'avez pas encore fait, nous vous recommandons d'exporter vos données avant la date de suppression.",
+      "cancel_instructions": "Pour annuler cette demande, visitez les paramètres de votre compte ou contactez notre équipe d'assistance.",
+      "button_cancel": "Annuler la suppression",
+      "thank_you": "Merci d'avoir utilisé Weavink."
+    },
+    "contact_deletion_notice": {
+      "subject": "Mise à jour du contact - Suppression du compte de {{deletedUserName}}",
+      "headline": "Avis de suppression de contact",
+      "intro": "{{deletedUserName}} a demandé la suppression de son compte Weavink.",
+      "when_deleted": "Ses informations de contact seront anonymisées le {{date}}.",
+      "your_notes": "Vos notes et interactions avec ce contact resteront disponibles, mais ses informations personnelles seront anonymisées.",
+      "automated": "Ceci est un avis automatique pour vous informer des modifications apportées à vos contacts."
+    },
+    "account_deletion_completed": {
+      "subject": "Votre compte Weavink a été supprimé",
+      "headline": "Suppression de compte terminée",
+      "intro": "Votre compte Weavink a été définitivement supprimé.",
+      "all_data_deleted": "Toutes vos données personnelles ont été supprimées de nos systèmes, y compris :",
+      "item_profile": "Votre profil et paramètres",
+      "item_contacts": "Tous les contacts et groupes",
+      "item_activity": "Historique d'activité et analyses",
+      "billing_retained": "Les enregistrements de facturation ont été archivés pour conformité légale (10 ans comme requis par la loi).",
+      "thank_you": "Merci d'avoir utilisé Weavink. Nous sommes désolés de vous voir partir.",
+      "reregister": "Si vous changez d'avis, vous pouvez toujours créer un nouveau compte à tout moment."
+    },
+    "account_deletion_cancelled": {
+      "subject": "Suppression de compte annulée - Weavink",
+      "headline": "Demande de suppression annulée",
+      "intro": "Votre demande de suppression de compte a été annulée avec succès.",
+      "account_safe": "Votre compte est sécurisé et reste entièrement actif.",
+      "no_data_lost": "Aucune donnée n'a été supprimée. Tous vos contacts, groupes et paramètres sont intacts.",
+      "all_features": "Vous pouvez continuer à utiliser toutes les fonctionnalités de Weavink sans interruption.",
+      "button_dashboard": "Aller au tableau de bord"
+    },
+    "data_export_completed": {
+      "subject": "Votre exportation de données est prête - Weavink",
+      "headline": "Exportation de données terminée",
+      "intro": "Votre exportation de données a été effectuée avec succès.",
+      "summary": "Résumé de l'exportation :",
+      "contacts": "Contacts",
+      "groups": "Groupes",
+      "consents": "Enregistrements de consentement",
+      "formats": "Formats",
+      "formats_value": "JSON, CSV, vCard",
+      "gdpr_note": "Cette exportation remplit votre droit RGPD Article 20 à la portabilité des données.",
+      "next_steps": "Votre exportation a été incluse dans la réponse API lorsque vous l'avez demandée. Si vous avez besoin d'une autre exportation, vous pouvez en demander une depuis les paramètres de votre compte."
+    }
   }
 }

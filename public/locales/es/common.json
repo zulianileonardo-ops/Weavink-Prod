@@ -2982,5 +2982,65 @@
         "description": "Añade tu Linktree a tu perfil de Twitter. Simplemente copia la URL de tu Linktree, ve a tu perfil, haz clic en Editar perfil y pega la URL de tu Linktree en el campo Sitio web."
       }
     }
+  },
+  "emails": {
+    "account_deletion_confirmation": {
+      "subject": "Solicitud de eliminación de cuenta confirmada - Weavink",
+      "headline": "Eliminación de cuenta programada",
+      "headline_immediate": "Eliminación de cuenta en curso",
+      "intro": "Hemos recibido su solicitud para eliminar su cuenta de Weavink. Su cuenta está programada para eliminación el {{date}}.",
+      "intro_immediate": "Estamos procesando su solicitud de eliminación inmediata de su cuenta de Weavink.",
+      "grace_period": "Tiene un período de gracia de 30 días para cambiar de opinión. Puede cancelar esta solicitud en cualquier momento antes del {{date}}.",
+      "what_deleted": "Todos sus datos serán eliminados permanentemente, incluyendo:",
+      "item_contacts": "Todos los contactos y grupos",
+      "item_settings": "Configuración y preferencias del perfil",
+      "item_history": "Historial de actividad y análisis",
+      "export_reminder": "Si aún no lo ha hecho, le recomendamos exportar sus datos antes de la fecha de eliminación.",
+      "cancel_instructions": "Para cancelar esta solicitud, visite la configuración de su cuenta o contacte a nuestro equipo de soporte.",
+      "button_cancel": "Cancelar eliminación",
+      "thank_you": "Gracias por usar Weavink."
+    },
+    "contact_deletion_notice": {
+      "subject": "Actualización de contacto - Eliminación de cuenta de {{deletedUserName}}",
+      "headline": "Aviso de eliminación de contacto",
+      "intro": "{{deletedUserName}} ha solicitado la eliminación de su cuenta de Weavink.",
+      "when_deleted": "Su información de contacto será anonimizada el {{date}}.",
+      "your_notes": "Sus notas e interacciones con este contacto permanecerán disponibles, pero su información personal será anonimizada.",
+      "automated": "Este es un aviso automatizado para mantenerle informado sobre cambios en sus contactos."
+    },
+    "account_deletion_completed": {
+      "subject": "Su cuenta de Weavink ha sido eliminada",
+      "headline": "Eliminación de cuenta completada",
+      "intro": "Su cuenta de Weavink ha sido eliminada permanentemente.",
+      "all_data_deleted": "Todos sus datos personales han sido eliminados de nuestros sistemas, incluyendo:",
+      "item_profile": "Su perfil y configuración",
+      "item_contacts": "Todos los contactos y grupos",
+      "item_activity": "Historial de actividad y análisis",
+      "billing_retained": "Los registros de facturación se han archivado para cumplimiento legal (10 años según lo requerido por ley).",
+      "thank_you": "Gracias por usar Weavink. Lamentamos verle partir.",
+      "reregister": "Si cambia de opinión, siempre puede crear una nueva cuenta en cualquier momento."
+    },
+    "account_deletion_cancelled": {
+      "subject": "Eliminación de cuenta cancelada - Weavink",
+      "headline": "Solicitud de eliminación cancelada",
+      "intro": "Su solicitud de eliminación de cuenta ha sido cancelada exitosamente.",
+      "account_safe": "Su cuenta está segura y permanece totalmente activa.",
+      "no_data_lost": "No se han eliminado datos. Todos sus contactos, grupos y configuraciones están intactos.",
+      "all_features": "Puede continuar usando todas las funciones de Weavink sin interrupción.",
+      "button_dashboard": "Ir al panel"
+    },
+    "data_export_completed": {
+      "subject": "Su exportación de datos está lista - Weavink",
+      "headline": "Exportación de datos completada",
+      "intro": "Su exportación de datos se ha completado exitosamente.",
+      "summary": "Resumen de exportación:",
+      "contacts": "Contactos",
+      "groups": "Grupos",
+      "consents": "Registros de consentimiento",
+      "formats": "Formatos",
+      "formats_value": "JSON, CSV, vCard",
+      "gdpr_note": "Esta exportación cumple con su derecho GDPR Artículo 20 a la portabilidad de datos.",
+      "next_steps": "Su exportación se incluyó en la respuesta API cuando la solicitó. Si necesita otra exportación, puede solicitarla desde la configuración de su cuenta."
+    }
   }
 }

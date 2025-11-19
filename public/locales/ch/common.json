@@ -2511,5 +2511,65 @@
         "description": "将您的 Linktree 添加到 Twitter 个人资料。只需复制您的 Linktree URL，进入您的个人资料，点击编辑个人资料，并将您的 Linktree URL 粘贴到网站字段中。"
       }
     }
+  },
+  "emails": {
+    "account_deletion_confirmation": {
+      "subject": "账户删除请求已确认 - Weavink",
+      "headline": "账户删除已安排",
+      "headline_immediate": "账户删除进行中",
+      "intro": "我们已收到您删除 Weavink 账户的请求。您的账户计划于 {{date}} 删除。",
+      "intro_immediate": "我们正在处理您立即删除 Weavink 账户的请求。",
+      "grace_period": "您有30天的宽限期可以改变主意。您可以在 {{date}} 之前随时取消此请求。",
+      "what_deleted": "您的所有数据将被永久删除，包括：",
+      "item_contacts": "所有联系人和群组",
+      "item_settings": "个人资料设置和偏好",
+      "item_history": "活动历史和分析",
+      "export_reminder": "如果您还没有导出数据，我们建议您在删除日期之前导出。",
+      "cancel_instructions": "要取消此请求，请访问您的账户设置或联系我们的支持团队。",
+      "button_cancel": "取消删除",
+      "thank_you": "感谢您使用 Weavink。"
+    },
+    "contact_deletion_notice": {
+      "subject": "联系人更新 - {{deletedUserName}} 账户删除",
+      "headline": "联系人删除通知",
+      "intro": "{{deletedUserName}} 已请求删除其 Weavink 账户。",
+      "when_deleted": "他们的联系信息将于 {{date}} 匿名化。",
+      "your_notes": "您与此联系人的笔记和互动将保持可用，但其个人信息将被匿名化。",
+      "automated": "这是一条自动通知，用于告知您联系人的变更。"
+    },
+    "account_deletion_completed": {
+      "subject": "您的 Weavink 账户已被删除",
+      "headline": "账户删除完成",
+      "intro": "您的 Weavink 账户已被永久删除。",
+      "all_data_deleted": "您的所有个人数据已从我们的系统中删除，包括：",
+      "item_profile": "您的个人资料和设置",
+      "item_contacts": "所有联系人和群组",
+      "item_activity": "活动历史和分析",
+      "billing_retained": "账单记录已存档以符合法律合规要求（法律要求保存10年）。",
+      "thank_you": "感谢您使用 Weavink。很遗憾看到您离开。",
+      "reregister": "如果您改变主意，您随时可以创建新账户。"
+    },
+    "account_deletion_cancelled": {
+      "subject": "账户删除已取消 - Weavink",
+      "headline": "删除请求已取消",
+      "intro": "您的账户删除请求已成功取消。",
+      "account_safe": "您的账户安全且保持完全活跃。",
+      "no_data_lost": "没有数据被删除。您的所有联系人、群组和设置都完好无损。",
+      "all_features": "您可以继续使用所有 Weavink 功能而不会中断。",
+      "button_dashboard": "前往仪表板"
+    },
+    "data_export_completed": {
+      "subject": "您的数据导出已准备就绪 - Weavink",
+      "headline": "数据导出完成",
+      "intro": "您的数据导出已成功完成。",
+      "summary": "导出摘要：",
+      "contacts": "联系人",
+      "groups": "群组",
+      "consents": "同意记录",
+      "formats": "格式",
+      "formats_value": "JSON, CSV, vCard",
+      "gdpr_note": "此导出履行了您的 GDPR 第20条数据可移植性权利。",
+      "next_steps": "您的导出已包含在您请求时的 API 响应中。如果您需要另一次导出，可以从账户设置中请求。"
+    }
   }
 }
