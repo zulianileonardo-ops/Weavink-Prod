@@ -1,13 +1,13 @@
 # Weavink Documentation Index
 
 **Last Updated:** 2025-11-19
-**Total Guides:** 66
+**Total Guides:** 69
 
 ## Quick Navigation
 - [Admin System](#admin-system) (9 guides)
 - [Analytics & Tracking](#analytics-tracking) (3 guides)
-- [RGPD/GDPR Compliance](#rgpd-gdpr-compliance) (7 guides)
-- [Feature Implementations](#feature-implementations) (15 guides)
+- [RGPD/GDPR Compliance](#rgpd-gdpr-compliance) (9 guides)
+- [Feature Implementations](#feature-implementations) (16 guides)
 - [Technical Infrastructure](#technical-infrastructure) (17 guides)
 - [Testing & QA](#testing-qa) (7 guides)
 - [General Documentation](#general-documentation) (4 guides)
@@ -89,6 +89,11 @@
 ## RGPD/GDPR Compliance
 *Data protection, privacy, and compliance features*
 
+### ACCOUNT_DELETION_TECHNICAL_FLOW.md
+**Summary:** Complete technical walkthrough of account deletion process from User A requesting deletion to User B receiving notifications. Includes 10-phase breakdown, database schema changes, timeline analysis (2-second backend, 5-second email), parallel operations, multi-language handling, and future non-user deletion feature specification.
+**Tags:** account-deletion, gdpr, notifications, cascade-deletion, email, firestore, privacy, technical-flow, database-operations, multilingual
+**Related:** [EMAIL_NOTIFICATION_MANUAL_TEST_GUIDE.md](#email-notification-manual-test-guide-md), [RGPD_COMPLIANCE_MATRIX.md](#rgpd-compliance-matrix-md), [RGPD_COMPLIANCE_MATRIX.PREVIOUS.md](#rgpd-compliance-matrix-previous-md), [RGPD_IMPLEMENTATION_SUMMARY.md](#rgpd-implementation-summary-md), [RGPD_ARCHITECTURE_COMPLIANCE.md](#rgpd-architecture-compliance-md)
+
 ### ANONYMOUS_ANALYTICS_PLAN.md
 **Summary:** Implementation plan for anonymous aggregated analytics tracking for users who withdraw consent, using legitimate interest legal basis.
 **Tags:** gdpr, rgpd, analytics, anonymous-tracking, legitimate-interest, privacy, planning, dual-track
@@ -108,6 +113,11 @@
 **Summary:** Comprehensive guide for implementing GDPR-compliant consent checks with greyed-out buttons and consent popovers in React/Next.js applications. Includes automated test coverage (12/12 passing tests).
 **Tags:** gdpr, rgpd, consent, ui-implementation, react, nextjs, consent-popovers, blocked-features, testing, test-coverage
 **Related:** [rgpd-implementation-summary-042](#rgpd-implementation-summary-042), [rgpd-conformite-tapit-013](#rgpd-conformite-tapit-013), [testing-rgpd-guide-038](#testing-rgpd-guide-038)
+
+### CONTACT_DELETION_WARNING_IMPLEMENTATION.md
+**Summary:** Implementation of comprehensive warning system that notifies users when viewing or editing contacts whose Weavink accounts are scheduled for deletion. Supports both userId-based matching (for Weavink user accounts) and email-based matching (for form-submitted contacts), ensuring GDPR transparency requirements are met.
+**Tags:** contact-deletion, gdpr, notifications, ui-warnings, email-matching, api-endpoint, service-layer, firestore, multilingual
+**Related:** [ACCOUNT_DELETION_TECHNICAL_FLOW.md](#account-deletion-technical-flow-md), [EMAIL_NOTIFICATION_MANUAL_TEST_GUIDE.md](#email-notification-manual-test-guide-md), [RGPD_IMPLEMENTATION_SUMMARY.md](#rgpd-implementation-summary-md), [CONTACTS_COMPONENT_INTERNATIONALIZATION.md](#contacts-component-internationalization-md)
 
 ### RGPD_IMPLEMENTATION_SUMMARY.md
 **Summary:** Complete summary of RGPD Phase 1-4 implementation with consent management, data portability, breach notifications, compliance features, and multilingual API error messages.
@@ -146,6 +156,11 @@
 ### CONTACT_DOWNLOAD_SETTINGS.md
 **Summary:** Feature implementation allowing profile owners to control who can download their contact information with granular field-level permissions.
 **Tags:** contacts, download, vcard, privacy, permissions, dashboard, settings, field-control
+
+### CONTACTS_COMPONENT_INTERNATIONALIZATION.md
+**Summary:** Complete internationalization of ContactCard and EditContactModal components, translating 54 hardcoded English strings across 5 languages (English, French, Spanish, Chinese, Vietnamese) to enable full multilingual support for contact management features.
+**Tags:** contacts, i18n, multilingual, translation, contactcard, editcontactmodal, react, nextjs
+**Related:** [CONTACT_DELETION_WARNING_IMPLEMENTATION.md](#contact-deletion-warning-implementation-md), [RGPD_ARCHITECTURE_COMPLIANCE.md](#rgpd-architecture-compliance-md)
 
 ### CV_FEATURES_ENHANCEMENT.md
 **Summary:** Comprehensive implementation of CV/resume features including service-level caching, individual link activation with toggle in appearance page, bidirectional navigation with visual highlighting, document validation with auto-activation, and real-time synchronization. Includes 35 passing tests covering all functionality.

@@ -1,8 +1,11 @@
 //app/dashboard/(dashboard pages)/contacts/components/contacts/ContactCard.jsx
 "use client";
 
-import { useState, memo } from 'react';
+import { useState, useEffect, memo } from 'react';
 import { useTranslation } from "@/lib/translation/useTranslation";
+import { useLanguage } from "@/lib/translation/languageContext";
+import { AccountDeletionService } from '@/lib/services/servicePrivacy/client/services/AccountDeletionService';
+import { AlertCircle } from 'lucide-react';
 
 // Country flag emoji mapping
 const countryFlags = {
@@ -45,8 +48,76 @@ function getCountryFromPhone(phoneNumber) {
 
 const ContactCard = memo(function ContactCard({ contact, onEdit, onStatusUpdate, onDelete, onContactAction, onMapView, onShowGroups, groups = [], isPremium = false }) {
     const { t } = useTranslation();
+    const { locale } = useLanguage();
     const [expanded, setExpanded] = useState(false);
+    const [deletionInfo, setDeletionInfo] = useState(null);
+    const [checkingDeletion, setCheckingDeletion] = useState(false);
     const contactGroups = groups.filter(group => group.contactIds && group.contactIds.includes(contact.id));
+
+    // Check if contact has pending account deletion
+    useEffect(() => {
+        async function checkDeletionStatus() {
+            console.log('[ContactCard - DeletionCheck] useEffect triggered for contact:', contact?.name);
+
+            if (!contact) {
+                console.log('[ContactCard - DeletionCheck] No contact provided, skipping check');
+                setDeletionInfo(null);
+                return;
+            }
+
+            const contactUserId = contact.userId || contact.weavinkUserId;
+            const contactEmail = contact.email;
+            console.log('[ContactCard - DeletionCheck] Extracted contact identifiers:', {
+                contactUserId,
+                fromField: contact.userId ? 'contact.userId' : (contact.weavinkUserId ? 'contact.weavinkUserId' : 'none'),
+                contactEmail,
+                contactName: contact.name
+            });
+
+            if (!contactUserId && !contactEmail) {
+                console.log('[ContactCard - DeletionCheck] No userId or email found on contact, skipping check');
+                setDeletionInfo(null);
+                return;
+            }
+
+            setCheckingDeletion(true);
+            console.log('[ContactCard - DeletionCheck] Calling AccountDeletionService.getContactDeletionStatus with:', {
+                userId: contactUserId,
+                email: contactEmail
+            });
+
+            try {
+                const status = await AccountDeletionService.getContactDeletionStatus(contactUserId, contactEmail);
+                console.log('[ContactCard - DeletionCheck] API Response:', status);
+
+                if (status.hasPendingDeletion) {
+                    console.log('[ContactCard - DeletionCheck] ✅ Pending deletion found!', {
+                        userName: status.userName,
+                        scheduledDate: status.scheduledDate
+                    });
+                    setDeletionInfo({
+                        scheduledDate: status.scheduledDate,
+                        userName: status.userName
+                    });
+                } else {
+                    console.log('[ContactCard - DeletionCheck] ❌ No pending deletion found');
+                    setDeletionInfo(null);
+                }
+            } catch (error) {
+                console.error('[ContactCard - DeletionCheck] ❌ Error checking deletion status:', error);
+                console.error('[ContactCard - DeletionCheck] Error details:', {
+                    message: error.message,
+                    stack: error.stack
+                });
+                setDeletionInfo(null);
+            } finally {
+                setCheckingDeletion(false);
+                console.log('[ContactCard - DeletionCheck] Check complete');
+            }
+        }
+
+        checkDeletionStatus();
+    }, [contact]);
 
     // Extract job title from details array or direct field
     const extractJobTitle = () => {
@@ -135,10 +206,10 @@ const ContactCard = memo(function ContactCard({ contact, onEdit, onStatusUpdate,
 
     // Match confidence helpers for rerank scores
     const getMatchConfidenceLabel = (score) => {
-        if (score >= 0.8) return '🎯 Excellent Match';
-        if (score >= 0.6) return '✅ Good Match';
-        if (score >= 0.4) return '⚠️ Fair Match';
-        return '🔍 Weak Match';
+        if (score >= 0.8) return `🎯 ${t('contacts.match_excellent', 'Excellent Match')}`;
+        if (score >= 0.6) return `✅ ${t('contacts.match_good', 'Good Match')}`;
+        if (score >= 0.4) return `⚠️ ${t('contacts.match_fair', 'Fair Match')}`;
+        return `🔍 ${t('contacts.match_weak', 'Weak Match')}`;
     };
 
     const getMatchConfidenceBadgeColor = (score) => {
@@ -171,9 +242,9 @@ const ContactCard = memo(function ContactCard({ contact, onEdit, onStatusUpdate,
                     <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between">
                             <div className="flex-1 min-w-0">
-                                <h3 className="font-semibold text-gray-900 text-sm truncate">{contact.name || 'No Name'}</h3>
+                                <h3 className="font-semibold text-gray-900 text-sm truncate">{contact.name || t('contacts.no_name', 'No Name')}</h3>
                                 <p className="text-xs text-gray-500 truncate">
-                                    {jobTitle ? `${jobTitle}` : contact.email || 'No Email'}
+                                    {jobTitle ? `${jobTitle}` : contact.email || t('contacts.no_email', 'No Email')}
                                     {jobTitle && contact.company ? ` at ${contact.company}` : (!jobTitle && contact.company ? contact.company : '')}
                                 </p>
 
@@ -187,10 +258,25 @@ const ContactCard = memo(function ContactCard({ contact, onEdit, onStatusUpdate,
                                     <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${getStatusColor(contact.status)}`}>
                                         {t(`contacts.status_${contact.status}`) || contact.status}
                                     </span>
+                                    {deletionInfo && (
+                                        <span
+                                            className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-semibold rounded-full bg-red-100 text-red-800 border border-red-300"
+                                            title={`${deletionInfo.userName}'s account scheduled for deletion on ${new Date(deletionInfo.scheduledDate).toLocaleDateString(locale, {
+                                                year: 'numeric',
+                                                month: 'long',
+                                                day: 'numeric'
+                                            })}`}
+                                        >
+                                            ⚠️ {new Date(deletionInfo.scheduledDate).toLocaleDateString(locale, {
+                                                month: 'short',
+                                                day: 'numeric'
+                                            })}
+                                        </span>
+                                    )}
                                     {hasRerankScore && (
                                         <span
                                             className={`inline-flex px-2 py-0.5 text-xs font-semibold rounded-full border ${getMatchConfidenceBadgeColor(contact.searchMetadata.rerankScore)}`}
-                                            title={`Match confidence: ${getMatchConfidenceLabel(contact.searchMetadata.rerankScore)}`}
+                                            title={t('contacts.match_confidence_tooltip', { label: getMatchConfidenceLabel(contact.searchMetadata.rerankScore) }, `Match confidence: ${getMatchConfidenceLabel(contact.searchMetadata.rerankScore)}`)}
                                         >
                                             {(contact.searchMetadata.rerankScore * 100).toFixed(1)}%
                                         </span>
@@ -199,7 +285,7 @@ const ContactCard = memo(function ContactCard({ contact, onEdit, onStatusUpdate,
                                     {isFromTeamMember && <span className="text-xs text-purple-600">👥</span>}
                                     {isTestData && <span className="text-xs text-orange-600" title="Test Data">🧪</span>}
                                     {allDynamicFields.length > 0 && (
-                                        <span className="text-xs text-purple-500" title={`${allDynamicFields.length} AI-detected fields`}>
+                                        <span className="text-xs text-purple-500" title={t('contacts.ai_fields_tooltip', { count: allDynamicFields.length }, `${allDynamicFields.length} AI-detected fields`)}>
                                             ✨{allDynamicFields.length}
                                         </span>
                                     )}
@@ -217,6 +303,32 @@ const ContactCard = memo(function ContactCard({ contact, onEdit, onStatusUpdate,
             {expanded && (
                 <div className="border-t border-gray-100">
                     <div className="p-3 sm:p-4 space-y-4">
+                        {/* Deletion Warning Banner */}
+                        {deletionInfo && (
+                            <div className="p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3 mb-4">
+                                <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                                <div>
+                                    <h4 className="text-red-900 font-semibold">
+                                        {t('contacts.deletion_warning_title', 'Contact Scheduled for Deletion')}
+                                    </h4>
+                                    <p className="text-red-700 text-sm mt-1">
+                                        {t('contacts.deletion_warning_message', {
+                                            name: deletionInfo.userName,
+                                            date: new Date(deletionInfo.scheduledDate).toLocaleDateString(locale, {
+                                                year: 'numeric',
+                                                month: 'long',
+                                                day: 'numeric'
+                                            })
+                                        }, `${deletionInfo.userName}'s account is scheduled for deletion on ${new Date(deletionInfo.scheduledDate).toLocaleDateString(locale, {
+                                            year: 'numeric',
+                                            month: 'long',
+                                            day: 'numeric'
+                                        })}. Their contact information will be anonymized after this date.`)}
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+
                         {/* Basic Contact Information */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                             {contact.email && (
@@ -264,7 +376,7 @@ const ContactCard = memo(function ContactCard({ contact, onEdit, onStatusUpdate,
                             {linkedin && (
                                 <div className="flex items-center gap-2">
                                     <span className="text-gray-400 w-4 h-4 flex-shrink-0">💼</span>
-                                    <a href={linkedin.startsWith('http') ? linkedin : `https://${linkedin}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline truncate">LinkedIn Profile</a>
+                                    <a href={linkedin.startsWith('http') ? linkedin : `https://${linkedin}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline truncate">{t('contacts.linkedin_profile', 'LinkedIn Profile')}</a>
                                 </div>
                             )}
                             {contact.address && (
@@ -279,7 +391,7 @@ const ContactCard = memo(function ContactCard({ contact, onEdit, onStatusUpdate,
                         {contact.notes && (
                             <div className="pt-3 border-t border-gray-100">
                                 <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2 flex items-center gap-2">
-                                    📝 Notes
+                                    📝 {t('contacts.section_notes', 'Notes')}
                                 </h4>
                                 <div className="p-3 bg-yellow-50 rounded-lg border border-yellow-200">
                                     <p className="text-sm text-gray-700 whitespace-pre-wrap">{contact.notes}</p>
@@ -291,7 +403,7 @@ const ContactCard = memo(function ContactCard({ contact, onEdit, onStatusUpdate,
                         {contact.message && (
                             <div className="pt-3 border-t border-gray-100">
                                 <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2 flex items-center gap-2">
-                                    💬 Message
+                                    💬 {t('contacts.section_message', 'Message')}
                                 </h4>
                                 <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
                                     <p className="text-sm text-gray-700 whitespace-pre-wrap">{contact.message}</p>
@@ -303,19 +415,19 @@ const ContactCard = memo(function ContactCard({ contact, onEdit, onStatusUpdate,
                         {contact.eventInfo && (contact.eventInfo.eventName || contact.eventInfo.eventType || contact.eventInfo.venue) && (
                             <div className="pt-3 border-t border-gray-100">
                                 <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2 flex items-center gap-2">
-                                    🎯 Event Information
+                                    🎯 {t('contacts.section_event_info', 'Event Information')}
                                 </h4>
                                 <div className="p-3 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
                                     <div className="space-y-2">
                                         {contact.eventInfo.eventName && (
                                             <div>
-                                                <span className="text-xs text-gray-500 block mb-1">Event Name:</span>
+                                                <span className="text-xs text-gray-500 block mb-1">{t('contacts.event_name_label', 'Event Name:')}</span>
                                                 <p className="text-sm font-semibold text-gray-900">{contact.eventInfo.eventName}</p>
                                             </div>
                                         )}
                                         {contact.eventInfo.eventType && (
                                             <div>
-                                                <span className="text-xs text-gray-500 block mb-1">Event Type:</span>
+                                                <span className="text-xs text-gray-500 block mb-1">{t('contacts.event_type_label', 'Event Type:')}</span>
                                                 <span className="inline-flex px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
                                                     {contact.eventInfo.eventType.replace(/_/g, ' ')}
                                                 </span>
@@ -323,13 +435,13 @@ const ContactCard = memo(function ContactCard({ contact, onEdit, onStatusUpdate,
                                         )}
                                         {contact.eventInfo.venue && (
                                             <div>
-                                                <span className="text-xs text-gray-500 block mb-1">Venue:</span>
+                                                <span className="text-xs text-gray-500 block mb-1">{t('contacts.venue_label', 'Venue:')}</span>
                                                 <p className="text-sm text-gray-700">{contact.eventInfo.venue}</p>
                                             </div>
                                         )}
                                         {contact.eventInfo.eventDates && (
                                             <div>
-                                                <span className="text-xs text-gray-500 block mb-1">Event Dates:</span>
+                                                <span className="text-xs text-gray-500 block mb-1">{t('contacts.event_dates_label', 'Event Dates:')}</span>
                                                 <p className="text-sm text-gray-700">{contact.eventInfo.eventDates}</p>
                                             </div>
                                         )}
@@ -342,30 +454,30 @@ const ContactCard = memo(function ContactCard({ contact, onEdit, onStatusUpdate,
                         {contact.location && (contact.location.latitude || contact.location.longitude) && (
                             <div className="pt-3 border-t border-gray-100">
                                 <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2 flex items-center gap-2">
-                                    🗺️ Location Data
+                                    🗺️ {t('contacts.section_location_data', 'Location Data')}
                                 </h4>
                                 <div className="grid grid-cols-2 gap-2 text-sm">
                                     {contact.location.latitude && (
                                         <div className="p-2 bg-gray-50 rounded">
-                                            <span className="text-gray-500 text-xs">Latitude:</span>
+                                            <span className="text-gray-500 text-xs">{t('contacts.latitude_label', 'Latitude:')}</span>
                                             <p className="font-mono text-gray-700">{contact.location.latitude.toFixed(6)}</p>
                                         </div>
                                     )}
                                     {contact.location.longitude && (
                                         <div className="p-2 bg-gray-50 rounded">
-                                            <span className="text-gray-500 text-xs">Longitude:</span>
+                                            <span className="text-gray-500 text-xs">{t('contacts.longitude_label', 'Longitude:')}</span>
                                             <p className="font-mono text-gray-700">{contact.location.longitude.toFixed(6)}</p>
                                         </div>
                                     )}
                                     {contact.location.accuracy && (
                                         <div className="p-2 bg-gray-50 rounded">
-                                            <span className="text-gray-500 text-xs">Accuracy:</span>
+                                            <span className="text-gray-500 text-xs">{t('contacts.accuracy_label', 'Accuracy:')}</span>
                                             <p className="text-gray-700">{contact.location.accuracy}m</p>
                                         </div>
                                     )}
                                     {contact.location.timestamp && (
                                         <div className="p-2 bg-gray-50 rounded">
-                                            <span className="text-gray-500 text-xs">Captured:</span>
+                                            <span className="text-gray-500 text-xs">{t('contacts.captured_label', 'Captured:')}</span>
                                             <p className="text-gray-700">{formatDate(contact.location.timestamp)}</p>
                                         </div>
                                     )}
@@ -377,10 +489,10 @@ const ContactCard = memo(function ContactCard({ contact, onEdit, onStatusUpdate,
                         {((contact.phoneNumbers && contact.phoneNumbers.length > 0) || contact.phone) && (
                             <div className="pt-3 border-t border-gray-100">
                                 <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2 flex items-center gap-2">
-                                    📞 Phone Numbers
+                                    📞 {t('contacts.section_phone_numbers', 'Phone Numbers')}
                                     {isPremium && (
                                         <span className="px-2 py-0.5 text-xs font-medium bg-purple-100 text-purple-800 rounded-full normal-case">
-                                            Premium: Country Detection
+                                            {t('contacts.premium_country_detection', 'Premium: Country Detection')}
                                         </span>
                                     )}
                                 </h4>
@@ -438,7 +550,7 @@ const ContactCard = memo(function ContactCard({ contact, onEdit, onStatusUpdate,
                         {contact.details && contact.details.length > 0 && (
                             <div className="pt-3 border-t border-gray-100">
                                 <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2 flex items-center gap-2">
-                                    📋 All Details
+                                    📋 {t('contacts.section_all_details', 'All Details')}
                                 </h4>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                     {contact.details.map((detail, index) => (
@@ -478,7 +590,7 @@ const ContactCard = memo(function ContactCard({ contact, onEdit, onStatusUpdate,
                         {allDynamicFields.length > 0 && (
                             <div className="pt-3 border-t border-gray-100">
                                 <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2 flex items-center gap-1">
-                                    ✨ AI-Detected Information
+                                    ✨ {t('contacts.section_ai_detected', 'AI-Detected Information')}
                                 </h4>
                                 <div className="space-y-2">
                                     {allDynamicFields.map((field, index) => (
@@ -516,7 +628,7 @@ const ContactCard = memo(function ContactCard({ contact, onEdit, onStatusUpdate,
                         {/* Groups section */}
                         {contactGroups.length > 0 && (
                              <div className="pt-3 border-t border-gray-100">
-                                <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2">Groups</h4>
+                                <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2">{t('contacts.section_groups', 'Groups')}</h4>
                                 <div className="flex flex-wrap gap-1.5">
                                     {contactGroups.map(group => (
                                         <span key={group.id} className="px-2.5 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
@@ -531,11 +643,11 @@ const ContactCard = memo(function ContactCard({ contact, onEdit, onStatusUpdate,
                         {hasRerankScore && (
                             <div className="pt-3 border-t border-gray-100">
                                 <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2 flex items-center gap-2">
-                                    🎯 Search Match Quality
+                                    🎯 {t('contacts.section_match_quality', 'Search Match Quality')}
                                 </h4>
                                 <div className={`p-3 bg-gradient-to-br ${getMatchConfidenceGradient(contact.searchMetadata.rerankScore)} rounded-lg border`}>
                                     <div className="flex items-center justify-between mb-2">
-                                        <span className="text-xs text-gray-600 font-medium">Match Confidence:</span>
+                                        <span className="text-xs text-gray-600 font-medium">{t('contacts.match_confidence_label', 'Match Confidence:')}</span>
                                         <span className={`text-2xl font-bold ${contact.searchMetadata.rerankScore >= 0.8 ? 'text-green-700' : contact.searchMetadata.rerankScore >= 0.6 ? 'text-yellow-700' : contact.searchMetadata.rerankScore >= 0.4 ? 'text-orange-700' : 'text-red-700'}`}>
                                             {(contact.searchMetadata.rerankScore * 100).toFixed(1)}%
                                         </span>
@@ -548,11 +660,11 @@ const ContactCard = memo(function ContactCard({ contact, onEdit, onStatusUpdate,
                                     {contact.searchMetadata.hybridScore && (
                                         <div className="text-xs text-gray-600 mt-2 pt-2 border-t border-gray-300">
                                             <div className="flex justify-between">
-                                                <span>Vector Similarity:</span>
+                                                <span>{t('contacts.vector_similarity_label', 'Vector Similarity:')}</span>
                                                 <span className="font-mono">{(contact._vectorScore || 0).toFixed(3)}</span>
                                             </div>
                                             <div className="flex justify-between mt-1">
-                                                <span>Hybrid Score:</span>
+                                                <span>{t('contacts.hybrid_score_label', 'Hybrid Score:')}</span>
                                                 <span className="font-mono">{contact.searchMetadata.hybridScore.toFixed(3)}</span>
                                             </div>
                                         </div>
@@ -563,11 +675,11 @@ const ContactCard = memo(function ContactCard({ contact, onEdit, onStatusUpdate,
 
                         {/* Metadata section */}
                         <div className="pt-3 border-t border-gray-100">
-                            <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2">Metadata</h4>
+                            <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2">{t('contacts.section_metadata', 'Metadata')}</h4>
                             <div className="grid grid-cols-2 gap-2 text-xs">
                                 {contact.originalSource && (
                                     <div className="p-2 bg-gradient-to-br from-green-50 to-emerald-50 rounded border border-green-200">
-                                        <span className="text-gray-500 block mb-1">How We Met:</span>
+                                        <span className="text-gray-500 block mb-1">{t('contacts.how_we_met_label', 'How We Met:')}</span>
                                         <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${
                                             contact.originalSource === 'business_card_scan' ? 'bg-green-100 text-green-700' :
                                             contact.originalSource === 'exchange_form' ? 'bg-blue-100 text-blue-700' :
@@ -583,7 +695,7 @@ const ContactCard = memo(function ContactCard({ contact, onEdit, onStatusUpdate,
                                 )}
                                 {contact.source && !contact.originalSource && (
                                     <div className="p-2 bg-gray-50 rounded">
-                                        <span className="text-gray-500 block mb-1">Source:</span>
+                                        <span className="text-gray-500 block mb-1">{t('contacts.source_label', 'Source:')}</span>
                                         <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${
                                             contact.source === 'business_card_scan' ? 'bg-green-100 text-green-700' :
                                             contact.source === 'exchange_form' ? 'bg-blue-100 text-blue-700' :
@@ -599,25 +711,25 @@ const ContactCard = memo(function ContactCard({ contact, onEdit, onStatusUpdate,
                                 )}
                                 {contact.submittedAt && (
                                     <div className="p-2 bg-gray-50 rounded">
-                                        <span className="text-gray-500 block mb-1">Submitted:</span>
+                                        <span className="text-gray-500 block mb-1">{t('contacts.submitted_label', 'Submitted:')}</span>
                                         <span className="text-gray-700">{formatDate(contact.submittedAt)}</span>
                                     </div>
                                 )}
                                 {contact.lastModified && (
                                     <div className="p-2 bg-gray-50 rounded">
-                                        <span className="text-gray-500 block mb-1">Modified:</span>
+                                        <span className="text-gray-500 block mb-1">{t('contacts.modified_label', 'Modified:')}</span>
                                         <span className="text-gray-700">{formatDate(contact.lastModified)}</span>
                                     </div>
                                 )}
                                 {contact.generatedAt && (
                                     <div className="p-2 bg-gray-50 rounded">
-                                        <span className="text-gray-500 block mb-1">Generated:</span>
+                                        <span className="text-gray-500 block mb-1">{t('contacts.generated_label', 'Generated:')}</span>
                                         <span className="text-gray-700">{formatDate(contact.generatedAt)}</span>
                                     </div>
                                 )}
                                 {contact.generatedBy && (
                                     <div className="p-2 bg-gray-50 rounded">
-                                        <span className="text-gray-500 block mb-1">Generated By:</span>
+                                        <span className="text-gray-500 block mb-1">{t('contacts.generated_by_label', 'Generated By:')}</span>
                                         <span className="text-gray-700">{contact.generatedBy}</span>
                                     </div>
                                 )}
@@ -732,7 +844,7 @@ const ContactCard = memo(function ContactCard({ contact, onEdit, onStatusUpdate,
                                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                                 </svg>
-                                <span>Show Groups ({contactGroups.length})</span>
+                                <span>{t('contacts.show_groups', { count: contactGroups.length }, `Show Groups (${contactGroups.length})`)}</span>
                             </button>
                         )}
                     </div>

@@ -10,6 +10,7 @@
   import { getFirestore, doc, onSnapshot } from 'firebase/firestore';
   import { app } from '@/important/firebase';
   import { ConsentService } from '@/lib/services/servicePrivacy/client/services/ConsentService';
+  import { AccountDeletionService } from '@/lib/services/servicePrivacy/client/services/AccountDeletionService';
 
   const DashboardContext = createContext();
 
@@ -30,6 +31,7 @@
     const [budgetInfo, setBudgetInfo] = useState(null);
     const [budgetLoading, setBudgetLoading] = useState(false);
     const [consents, setConsents] = useState(null);
+    const [pendingDeletion, setPendingDeletion] = useState(null);
   const didFetch = useRef(false);
 
     const fetchDashboardData = useCallback(async (forceRefresh = false) => {
@@ -57,6 +59,16 @@
         const consentData = consentResponse.consents;
         setConsents(consentData);
         console.log('✅ DashboardProvider: Consents loaded successfully');
+
+        // Fetch account deletion status
+        const deletionResponse = await AccountDeletionService.getDeletionStatus();
+        if (deletionResponse.hasPendingDeletion) {
+          setPendingDeletion(deletionResponse.deletionRequest);
+          console.log('✅ DashboardProvider: Deletion status loaded - pending deletion found');
+        } else {
+          setPendingDeletion(null);
+          console.log('✅ DashboardProvider: Deletion status loaded - no pending deletion');
+        }
 
         // 🔍 DEBUG: Log permissions for carousel and media embed features
         console.log('🔍 [DashboardContext] Permissions Debug:', {
@@ -239,7 +251,10 @@
       refreshBudget: fetchBudgetInfo,
 
       // Consent information
-      consents
+      consents,
+
+      // Account deletion information
+      pendingDeletion
     };
 
     return (

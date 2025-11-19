@@ -24,6 +24,40 @@ import {
 import { translateServerSide, getUserLocale } from '@/lib/services/server/translationService';
 
 /**
+ * Serialize Firestore Timestamps to ISO strings for JSON response
+ * Firestore Timestamps have .toDate() method and look like {_seconds, _nanoseconds}
+ * @param {Object} deletionRequest - Deletion request with potential Timestamp fields
+ * @returns {Object} Serialized deletion request with ISO date strings
+ */
+function serializeDeletionRequest(deletionRequest) {
+  if (!deletionRequest) return null;
+
+  const serialized = { ...deletionRequest };
+
+  // Convert Firestore Timestamp fields to ISO strings
+  const timestampFields = ['scheduledDeletionDate', 'requestedAt', 'completedAt', 'cancelledAt'];
+
+  for (const field of timestampFields) {
+    if (serialized[field]) {
+      // Check if it's a Firestore Timestamp (has toDate method)
+      if (typeof serialized[field].toDate === 'function') {
+        serialized[field] = serialized[field].toDate().toISOString();
+      }
+      // If it's already a Date object
+      else if (serialized[field] instanceof Date) {
+        serialized[field] = serialized[field].toISOString();
+      }
+      // If it's a Firestore Timestamp object {_seconds, _nanoseconds}
+      else if (serialized[field]._seconds !== undefined) {
+        serialized[field] = new Date(serialized[field]._seconds * 1000).toISOString();
+      }
+    }
+  }
+
+  return serialized;
+}
+
+/**
  * GET - Check if user has a pending deletion request
  */
 export async function GET(request) {
@@ -57,12 +91,20 @@ export async function GET(request) {
       });
     }
 
+    // Serialize Firestore Timestamps to ISO strings for client
+    const serializedRequest = serializeDeletionRequest(deletionRequest);
+
+    // Calculate days remaining using the original Timestamp or serialized date
+    const scheduledDate = deletionRequest.scheduledDeletionDate?.toDate?.()
+      ? deletionRequest.scheduledDeletionDate.toDate()
+      : new Date(serializedRequest.scheduledDeletionDate);
+
     return NextResponse.json({
       success: true,
       hasPendingDeletion: true,
-      deletionRequest,
+      deletionRequest: serializedRequest,
       daysRemaining: Math.ceil(
-        (new Date(deletionRequest.scheduledDeletionDate) - new Date()) / (1000 * 60 * 60 * 24)
+        (scheduledDate - new Date()) / (1000 * 60 * 60 * 24)
       ),
     });
   } catch (error) {

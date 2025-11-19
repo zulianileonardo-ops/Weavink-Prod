@@ -3,15 +3,21 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslation } from "@/lib/translation/useTranslation";
+import { useLanguage } from "@/lib/translation/languageContext";
+import { AccountDeletionService } from '@/lib/services/servicePrivacy/client/services/AccountDeletionService';
+import { AlertCircle } from 'lucide-react';
 
 export default function EditContactModal({ contact, isOpen, onClose, onSave }) {
     const { t } = useTranslation();
-    const [formData, setFormData] = useState({ 
-        name: '', email: '', phone: '', company: '', 
+    const { locale } = useLanguage();
+    const [formData, setFormData] = useState({
+        name: '', email: '', phone: '', company: '',
         jobTitle: '', website: '', message: '', status: 'new',
         dynamicFields: []
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [deletionInfo, setDeletionInfo] = useState(null);
+    const [checkingDeletion, setCheckingDeletion] = useState(false);
 
     useEffect(() => {
         if (contact) {
@@ -45,7 +51,73 @@ export default function EditContactModal({ contact, isOpen, onClose, onSave }) {
             });
         }
     }, [contact]);
-    
+
+    // Check if contact has pending account deletion
+    useEffect(() => {
+        async function checkDeletionStatus() {
+            console.log('[EditContactModal - DeletionCheck] useEffect triggered');
+            console.log('[EditContactModal - DeletionCheck] Contact object:', contact);
+
+            if (!contact) {
+                console.log('[EditContactModal - DeletionCheck] No contact provided, skipping check');
+                setDeletionInfo(null);
+                return;
+            }
+
+            const contactUserId = contact.userId || contact.weavinkUserId;
+            const contactEmail = contact.email;
+            console.log('[EditContactModal - DeletionCheck] Extracted contact identifiers:', {
+                contactUserId,
+                fromField: contact.userId ? 'contact.userId' : (contact.weavinkUserId ? 'contact.weavinkUserId' : 'none'),
+                contactEmail,
+                contactName: contact.name
+            });
+
+            if (!contactUserId && !contactEmail) {
+                console.log('[EditContactModal - DeletionCheck] No userId or email found on contact, skipping check');
+                setDeletionInfo(null);
+                return;
+            }
+
+            setCheckingDeletion(true);
+            console.log('[EditContactModal - DeletionCheck] Calling AccountDeletionService.getContactDeletionStatus with:', {
+                userId: contactUserId,
+                email: contactEmail
+            });
+
+            try {
+                const status = await AccountDeletionService.getContactDeletionStatus(contactUserId, contactEmail);
+                console.log('[EditContactModal - DeletionCheck] API Response:', status);
+
+                if (status.hasPendingDeletion) {
+                    console.log('[EditContactModal - DeletionCheck] ✅ Pending deletion found!', {
+                        userName: status.userName,
+                        scheduledDate: status.scheduledDate
+                    });
+                    setDeletionInfo({
+                        scheduledDate: status.scheduledDate,
+                        userName: status.userName
+                    });
+                } else {
+                    console.log('[EditContactModal - DeletionCheck] ❌ No pending deletion found');
+                    setDeletionInfo(null);
+                }
+            } catch (error) {
+                console.error('[EditContactModal - DeletionCheck] ❌ Error checking deletion status:', error);
+                console.error('[EditContactModal - DeletionCheck] Error details:', {
+                    message: error.message,
+                    stack: error.stack
+                });
+                setDeletionInfo(null);
+            } finally {
+                setCheckingDeletion(false);
+                console.log('[EditContactModal - DeletionCheck] Check complete, checkingDeletion set to false');
+            }
+        }
+
+        checkDeletionStatus();
+    }, [contact]);
+
     const handleDynamicFieldChange = (index, key, value) => {
         const updatedFields = [...formData.dynamicFields];
         updatedFields[index] = { ...updatedFields[index], [key]: value };
@@ -107,6 +179,33 @@ export default function EditContactModal({ contact, isOpen, onClose, onSave }) {
                         </svg>
                     </button>
                 </div>
+
+                {/* Deletion Warning Banner */}
+                {deletionInfo && (
+                    <div className="mx-4 mt-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+                        <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                        <div>
+                            <h4 className="text-red-900 font-semibold">
+                                {t('contacts.deletion_warning_title', 'Contact Scheduled for Deletion')}
+                            </h4>
+                            <p className="text-red-700 text-sm mt-1">
+                                {t('contacts.deletion_warning_message', {
+                                    name: deletionInfo.userName,
+                                    date: new Date(deletionInfo.scheduledDate).toLocaleDateString(locale, {
+                                        year: 'numeric',
+                                        month: 'long',
+                                        day: 'numeric'
+                                    })
+                                }, `${deletionInfo.userName}'s account is scheduled for deletion on ${new Date(deletionInfo.scheduledDate).toLocaleDateString(locale, {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric'
+                                })}. Their contact information will be anonymized after this date.`)}
+                            </p>
+                        </div>
+                    </div>
+                )}
+
                <form onSubmit={handleSubmit} className="p-4 space-y-4">
                     {/* Standard Fields */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -127,11 +226,11 @@ export default function EditContactModal({ contact, isOpen, onClose, onSave }) {
                             <input type="text" value={formData.company} onChange={(e) => setFormData({ ...formData, company: e.target.value })} className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-base" disabled={isSubmitting} />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Job Title</label>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">{t('contacts.job_title', 'Job Title')}</label>
                             <input type="text" value={formData.jobTitle} onChange={(e) => setFormData({ ...formData, jobTitle: e.target.value })} className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-base" disabled={isSubmitting} />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Website</label>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">{t('contacts.website', 'Website')}</label>
                             <input type="url" value={formData.website} onChange={(e) => setFormData({ ...formData, website: e.target.value })} className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-base" disabled={isSubmitting} />
                         </div>
                     </div>
@@ -139,13 +238,13 @@ export default function EditContactModal({ contact, isOpen, onClose, onSave }) {
                     {/* Dynamic Fields Section */}
                     {formData.dynamicFields.length > 0 && (
                         <div className="pt-4 mt-4 border-t">
-                             <h3 className="text-md font-semibold text-gray-800 mb-3">Additional Information</h3>
+                             <h3 className="text-md font-semibold text-gray-800 mb-3">{t('contacts.additional_information', 'Additional Information')}</h3>
                              <div className="space-y-3">
                                 {formData.dynamicFields.map((field, index) => (
                                     <div key={field.id || index} className="grid grid-cols-1 sm:grid-cols-3 gap-2 items-center">
                                         <input
                                             type="text"
-                                            placeholder="Label (e.g., LinkedIn)"
+                                            placeholder={t('contacts.placeholder_field_label', 'Label (e.g., LinkedIn)')}
                                             value={field.label}
                                             onChange={(e) => handleDynamicFieldChange(index, 'label', e.target.value)}
                                             className="col-span-1 sm:col-span-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
@@ -153,7 +252,7 @@ export default function EditContactModal({ contact, isOpen, onClose, onSave }) {
                                         <div className="col-span-1 sm:col-span-2 flex items-center gap-2">
                                             <input
                                                 type="text"
-                                                placeholder="Value (e.g., https://...)"
+                                                placeholder={t('contacts.placeholder_field_value', 'Value (e.g., https://...)')}
                                                 value={field.value}
                                                 onChange={(e) => handleDynamicFieldChange(index, 'value', e.target.value)}
                                                 className="flex-grow px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
@@ -169,7 +268,7 @@ export default function EditContactModal({ contact, isOpen, onClose, onSave }) {
                     )}
                     <button type="button" onClick={addDynamicField} className="w-full mt-2 flex items-center justify-center gap-2 p-2 text-sm text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
-                        Add Custom Field
+                        {t('contacts.add_custom_field', 'Add Custom Field')}
                     </button>
                     
                     <div>

@@ -2,7 +2,7 @@
   "metadata": {
     "project": "Weavink Documentation",
     "last_updated": "2025-11-19",
-    "total_guides": 66,
+    "total_guides": 69,
     "version": "1.0.0"
   },
   "categories": {
@@ -40,7 +40,9 @@
         "rgpd-master-progress-043",
         "rgpd-phase4-summary-044",
         "rgpd-consent-guide-045",
-        "rgpd-anonymous-analytics-046"
+        "rgpd-anonymous-analytics-046",
+        "rgpd-account-deletion-flow-047",
+        "rgpd-contact-deletion-warning-048"
       ]
     },
     "features": {
@@ -61,7 +63,8 @@
         "features-cv-enhancement-026",
         "features-image-handling-027",
         "features-tutorial-account-018",
-        "features-media-enhancement-027"
+        "features-media-enhancement-027",
+        "features-contacts-i18n-028"
       ]
     },
     "technical": {
@@ -2014,6 +2017,115 @@
         "getUserLocale"
       ],
       "components": []
+    },
+    {
+      "id": "rgpd-account-deletion-flow-047",
+      "title": "Account Deletion Technical Flow - User Deletion to Contact Notification",
+      "filename": "documentation/rgpd/ACCOUNT_DELETION_TECHNICAL_FLOW.md",
+      "category": "rgpd",
+      "summary": "Complete technical walkthrough of account deletion process from User A requesting deletion to User B receiving notifications. Includes 10-phase breakdown, database schema changes, timeline analysis (2-second backend, 5-second email), parallel operations, multi-language handling, and future non-user deletion feature specification.",
+      "tags": [
+        "account-deletion",
+        "gdpr",
+        "notifications",
+        "cascade-deletion",
+        "email",
+        "firestore",
+        "privacy",
+        "technical-flow",
+        "database-operations",
+        "multilingual"
+      ],
+      "related_guides": [
+        "EMAIL_NOTIFICATION_MANUAL_TEST_GUIDE.md",
+        "RGPD_COMPLIANCE_MATRIX.md",
+        "RGPD_COMPLIANCE_MATRIX.PREVIOUS.md",
+        "RGPD_IMPLEMENTATION_SUMMARY.md",
+        "RGPD_ARCHITECTURE_COMPLIANCE.md"
+      ],
+      "functions": [
+        "requestAccountDeletion",
+        "findUsersWithContact",
+        "notifyContactDeletion",
+        "sendContactDeletionNoticeEmail",
+        "sendAccountDeletionConfirmationEmail"
+      ],
+      "components": [
+        "AccountDeletionService",
+        "EmailService",
+        "PrivacyRequests collection",
+        "notifications subcollection"
+      ],
+      "status": "active",
+      "created": "2025-11-19",
+      "updated": "2025-11-19"
+    },
+    {
+      "id": "rgpd-contact-deletion-warning-048",
+      "title": "Contact Deletion Warning Implementation Guide",
+      "filename": "documentation/rgpd/CONTACT_DELETION_WARNING_IMPLEMENTATION.md",
+      "category": "rgpd",
+      "summary": "Implementation of comprehensive warning system that notifies users when viewing or editing contacts whose Weavink accounts are scheduled for deletion. Supports both userId-based matching (for Weavink user accounts) and email-based matching (for form-submitted contacts), ensuring GDPR transparency requirements are met.",
+      "tags": [
+        "contact-deletion",
+        "gdpr",
+        "notifications",
+        "ui-warnings",
+        "email-matching",
+        "api-endpoint",
+        "service-layer",
+        "firestore",
+        "multilingual"
+      ],
+      "related_guides": [
+        "ACCOUNT_DELETION_TECHNICAL_FLOW.md",
+        "EMAIL_NOTIFICATION_MANUAL_TEST_GUIDE.md",
+        "RGPD_IMPLEMENTATION_SUMMARY.md",
+        "CONTACTS_COMPONENT_INTERNATIONALIZATION.md"
+      ],
+      "functions": [
+        "getContactDeletionStatus",
+        "AccountDeletionService.getContactDeletionStatus"
+      ],
+      "components": [
+        "ContactCard",
+        "EditContactModal"
+      ],
+      "status": "active",
+      "created": "2025-11-19",
+      "updated": "2025-11-19"
+    },
+    {
+      "id": "features-contacts-i18n-028",
+      "title": "Contacts Component Internationalization",
+      "filename": "documentation/features/CONTACTS_COMPONENT_INTERNATIONALIZATION.md",
+      "category": "features",
+      "summary": "Complete internationalization of ContactCard and EditContactModal components, translating 54 hardcoded English strings across 5 languages (English, French, Spanish, Chinese, Vietnamese) to enable full multilingual support for contact management features.",
+      "tags": [
+        "contacts",
+        "i18n",
+        "multilingual",
+        "translation",
+        "contactcard",
+        "editcontactmodal",
+        "react",
+        "nextjs"
+      ],
+      "related_guides": [
+        "CONTACT_DELETION_WARNING_IMPLEMENTATION.md",
+        "RGPD_ARCHITECTURE_COMPLIANCE.md"
+      ],
+      "functions": [
+        "useTranslation",
+        "useLanguage"
+      ],
+      "components": [
+        "ContactCard",
+        "EditContactModal"
+      ],
+      "status": "active",
+      "created": "2025-11-19",
+      "updated": "2025-11-19"
     }
   ]
 }

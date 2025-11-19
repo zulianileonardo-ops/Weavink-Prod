@@ -4,6 +4,7 @@
  */
 "use client";
 import { useTranslation } from "@/lib/translation/useTranslation";
+import { useLanguage } from "@/lib/translation/languageContext";
 import { isAdmin } from "@/lib/adminAuth";
 import { getAppearanceData } from "@/lib/services/serviceAppearance/client/appearanceService.js";
 import { useDashboard } from '../../dashboard/DashboardContext';
@@ -25,9 +26,10 @@ let globalNavDataCache = null;
 export default function NavBar() {
     const router = usePathname();
     const { t, isInitialized } = useTranslation();
-    
+    const { locale } = useLanguage();
+
     // GET EVERYTHING FROM THE DASHBOARD PROVIDER
-    const { currentUser, isLoading: isSessionLoading } = useDashboard();
+    const { currentUser, isLoading: isSessionLoading, pendingDeletion } = useDashboard();
     
     // State specific to the NavBar's appearance data
     const [activePage, setActivePage] = useState(0);
@@ -401,6 +403,8 @@ export default function NavBar() {
                 shareCardRef={shareCardRef}
                 ProfileCard={ProfileCard}
                 ShareCard={ShareCard}
+                pendingDeletion={pendingDeletion}
+                locale={locale}
             />
 
             {/* Mobile Top Bar */}
@@ -414,6 +418,8 @@ export default function NavBar() {
                 shareCardRef={shareCardRef}
                 ProfileCard={ProfileCard}
                 ShareCard={ShareCard}
+                pendingDeletion={pendingDeletion}
+                locale={locale}
             />
 
             {/* Mobile Bottom Bar */}

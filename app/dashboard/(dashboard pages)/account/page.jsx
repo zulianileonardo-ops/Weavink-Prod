@@ -17,7 +17,7 @@
 
 import { useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Shield, Download, Trash2, CheckSquare, Settings, Info, AlertCircle, FileUser, Globe } from 'lucide-react';
+import { Shield, Download, Trash2, CheckSquare, Settings, Info, FileUser, Globe } from 'lucide-react';
 import { useTranslation } from '@/lib/translation/useTranslation';
 import { AccountProvider, useAccount } from './AccountContext';
 import { useTutorial } from '@/contexts/TutorialContext';
@@ -28,6 +28,7 @@ import ExportDataTab from './components/ExportDataTab';
 import DeleteAccountTab from './components/DeleteAccountTab';
 import ConsentsTab from './components/ConsentsTab';
 import PrivacySettingsTab from './components/PrivacySettingsTab';
+import AccountDeletionWarning from './components/AccountDeletionWarning';
 import ContactDownloadTab from './components/ContactDownloadTab';
 import WebsiteConfigTab from './components/WebsiteConfigTab';
 import TutorialProgressionSection from './components/TutorialProgressionSection';
@@ -124,21 +125,10 @@ function AccountPage() {
 
           {/* Pending Deletion Warning */}
           {pendingDeletion && (
-            <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start space-x-3">
-              <AlertCircle className="w-5 h-5 text-red-600 mt-0.5" />
-              <div className="flex-1">
-                <h3 className="text-red-900 font-semibold">{t('account.header.deletion_warning_title')}</h3>
-                <p className="text-red-700 text-sm mt-1">
-                  {t('account.header.deletion_warning_message', {
-                    date: new Date(pendingDeletion.scheduledDeletionDate).toLocaleDateString(locale, {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
-                    })
-                  })}
-                </p>
-              </div>
-            </div>
+            <AccountDeletionWarning
+              pendingDeletion={pendingDeletion}
+              locale={locale}
+            />
           )}
         </div>
 

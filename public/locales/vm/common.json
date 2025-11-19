@@ -559,7 +559,9 @@
     "links": "Liên kết",
     "appearance": "Giao diện",
     "analytics": "Phân tích",
-    "settings": "Cài đặt"
+    "settings": "Cài đặt",
+    "deletion_warning": "Xóa tài khoản: {{date}}",
+    "deletion_warning_short": "Xóa: {{date}}"
   },
   "dashboard": {
     "navigation": {
@@ -2883,7 +2885,75 @@
         "save_success": "Liên hệ đã được lưu!",
         "save_error": "Lưu liên hệ thất bại."
       }
-    }
+    },
+    "edit_contact": "Chỉnh sửa Liên hệ",
+    "name": "Tên",
+    "email": "Email",
+    "phone": "Điện thoại",
+    "company": "Công ty",
+    "status": "Trạng thái",
+    "status_new": "Mới",
+    "status_viewed": "Đã xem",
+    "status_archived": "Đã lưu trữ",
+    "message": "Tin nhắn",
+    "saving": "Đang lưu...",
+    "save_changes": "Lưu Thay đổi",
+    "deletion_warning_title": "Liên hệ được lên lịch xóa",
+    "deletion_warning_message": "Tài khoản của {{name}} được lên lịch xóa vào {{date}}. Thông tin liên hệ của họ sẽ được ẩn danh sau ngày này.",
+    "job_title": "Chức danh",
+    "website": "Trang web",
+    "additional_information": "Thông tin bổ sung",
+    "placeholder_field_label": "Nhãn (ví dụ: LinkedIn)",
+    "placeholder_field_value": "Giá trị (ví dụ: https://...)",
+    "add_custom_field": "Thêm trường tùy chỉnh",
+    "section_notes": "Ghi chú",
+    "section_message": "Tin nhắn",
+    "section_event_info": "Thông tin sự kiện",
+    "section_location_data": "Dữ liệu vị trí",
+    "section_phone_numbers": "Số điện thoại",
+    "section_all_details": "Tất cả chi tiết",
+    "section_ai_detected": "Thông tin được AI phát hiện",
+    "section_groups": "Nhóm",
+    "section_match_quality": "Chất lượng khớp tìm kiếm",
+    "section_metadata": "Siêu dữ liệu",
+    "event_name_label": "Tên sự kiện:",
+    "event_type_label": "Loại sự kiện:",
+    "venue_label": "Địa điểm:",
+    "event_dates_label": "Ngày sự kiện:",
+    "latitude_label": "Vĩ độ:",
+    "longitude_label": "Kinh độ:",
+    "accuracy_label": "Độ chính xác:",
+    "captured_label": "Đã chụp:",
+    "match_confidence_label": "Độ tin cậy khớp:",
+    "vector_similarity_label": "Độ tương đồng vector:",
+    "hybrid_score_label": "Điểm số hỗn hợp:",
+    "how_we_met_label": "Cách chúng tôi gặp nhau:",
+    "source_label": "Nguồn:",
+    "submitted_label": "Đã gửi:",
+    "modified_label": "Đã sửa đổi:",
+    "generated_label": "Đã tạo:",
+    "generated_by_label": "Tạo bởi:",
+    "linkedin_profile": "Hồ sơ LinkedIn",
+    "premium_country_detection": "Premium: Phát hiện quốc gia",
+    "edit": "Chỉnh sửa",
+    "mark_as_viewed": "Đánh dấu đã xem",
+    "viewed": "Đã xem",
+    "archive": "Lưu trữ",
+    "restore": "Khôi phục",
+    "delete": "Xóa",
+    "call": "Gọi",
+    "map_button": "Bản đồ",
+    "show_groups": "Hiển thị nhóm ({{count}})",
+    "no_name": "Không có tên",
+    "no_email": "Không có email",
+    "country_unknown": "Không rõ",
+    "match_excellent": "Khớp xuất sắc",
+    "match_good": "Khớp tốt",
+    "match_fair": "Khớp khá",
+    "match_weak": "Khớp yếu",
+    "deletion_tooltip": "Tài khoản của {{name}} được lên lịch xóa vào {{date}}",
+    "match_confidence_tooltip": "Độ tin cậy khớp: {{label}}",
+    "ai_fields_tooltip": "{{count}} trường được AI phát hiện"
   },
   "profileCard": {
     "myAccount": "Tài khoản của tôi",
@@ -2972,6 +3042,7 @@
   "emails": {
     "account_deletion_confirmation": {
       "subject": "Yêu cầu xóa tài khoản đã được xác nhận - Weavink",
+      "greeting": "Xin chào",
       "headline": "Đã lên lịch xóa tài khoản",
       "headline_immediate": "Đang xử lý xóa tài khoản",
       "intro": "Chúng tôi đã nhận được yêu cầu xóa tài khoản Weavink của bạn. Tài khoản của bạn được lên lịch xóa vào ngày {{date}}.",
@@ -2984,10 +3055,12 @@
       "export_reminder": "Nếu bạn chưa làm, chúng tôi khuyên bạn nên xuất dữ liệu trước ngày xóa.",
       "cancel_instructions": "Để hủy yêu cầu này, hãy truy cập cài đặt tài khoản hoặc liên hệ với nhóm hỗ trợ của chúng tôi.",
       "button_cancel": "Hủy xóa",
-      "thank_you": "Cảm ơn bạn đã sử dụng Weavink."
+      "thank_you": "Cảm ơn bạn đã sử dụng Weavink.",
+      "team_name": "Đội ngũ Weavink"
     },
     "contact_deletion_notice": {
       "subject": "Thông báo về liên hệ đã xóa - Weavink",
+      "greeting": "Xin chào",
       "headline": "Thông báo xóa liên hệ",
       "intro": "Chúng tôi muốn thông báo cho bạn rằng {{deletedUserName}} đã yêu cầu xóa tài khoản Weavink của họ.",
       "deletion_date": "Tài khoản của họ sẽ bị xóa vào ngày {{date}}.",
@@ -2997,10 +3070,12 @@
       "item_data": "Mọi dữ liệu được chia sẻ với họ sẽ không còn khả dụng cho họ",
       "export_suggestion": "Nếu bạn cần giữ bất kỳ thông tin nào liên quan đến liên hệ này, chúng tôi khuyên bạn nên xuất dữ liệu của mình ngay bây giờ.",
       "button_export": "Xuất dữ liệu của tôi",
-      "thank_you": "Cảm ơn bạn đã hiểu."
+      "thank_you": "Cảm ơn bạn đã hiểu.",
+      "team_name": "Đội ngũ Weavink"
     },
     "account_deletion_completed": {
       "subject": "Tài khoản của bạn đã bị xóa - Weavink",
+      "greeting": "Xin chào",
       "headline": "Tài khoản đã bị xóa",
       "intro": "Tài khoản Weavink của bạn đã được xóa vĩnh viễn theo yêu cầu của bạn.",
       "what_deleted": "Những gì đã bị xóa:",
@@ -3011,10 +3086,13 @@
       "gdpr_note": "Việc xóa này tuân thủ GDPR Điều 17 (Quyền bị xóa/bỏ).",
       "return_message": "Nếu bạn thay đổi ý định, bạn luôn có thể tạo một tài khoản mới, nhưng dữ liệu trước đó của bạn không thể khôi phục.",
       "button_create": "Tạo tài khoản mới",
-      "goodbye": "Tạm biệt và chúc bạn may mắn!"
+      "goodbye": "Tạm biệt và chúc bạn may mắn!",
+      "best_regards": "Trân trọng,",
+      "team_name": "Đội ngũ Weavink"
     },
     "account_deletion_cancelled": {
       "subject": "Yêu cầu xóa tài khoản đã bị hủy - Weavink",
+      "greeting": "Xin chào",
       "headline": "Xóa tài khoản đã bị hủy",
       "intro": "Tốt là có bạn trở lại! Yêu cầu xóa tài khoản của bạn đã được hủy thành công.",
       "status": "Tài khoản của bạn vẫn hoạt động và tất cả dữ liệu của bạn đã được giữ nguyên:",
@@ -3023,10 +3101,13 @@
       "item_history": "Lịch sử hoạt động và phân tích của bạn",
       "next_steps": "Bạn có thể tiếp tục sử dụng Weavink như bình thường. Nếu bạn có bất kỳ câu hỏi nào, đừng ngần ngại liên hệ với nhóm hỗ trợ của chúng tôi.",
       "button_dashboard": "Đi tới bảng điều khiển",
-      "thank_you": "Cảm ơn bạn đã ở lại với chúng tôi!"
+      "thank_you": "Cảm ơn bạn đã ở lại với chúng tôi!",
+      "welcome_back": "Chào mừng trở lại!",
+      "team_name": "Đội ngũ Weavink"
     },
     "data_export_completed": {
       "subject": "Xuất dữ liệu của bạn đã sẵn sàng - Weavink",
+      "greeting": "Xin chào",
       "headline": "Xuất dữ liệu hoàn tất",
       "intro": "Xuất dữ liệu của bạn đã hoàn tất thành công.",
       "summary": "Tóm tắt xuất:",
