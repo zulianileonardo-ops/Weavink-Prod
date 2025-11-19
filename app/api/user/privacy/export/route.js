@@ -21,7 +21,7 @@ import {
   getExportRequest,
   getUserExportRequests,
 } from '../../../../../lib/services/servicePrivacy/server/dataExportService.js';
-import EmailService from '../../../../../lib/services/server/emailService.js';
+import { EmailService } from '../../../../../lib/services/server/emailService.js';
 import { adminDb } from '../../../../../lib/firebaseAdmin.js';
 
 /**
