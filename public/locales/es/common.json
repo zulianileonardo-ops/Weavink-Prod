@@ -3114,6 +3114,16 @@
       "welcome_back": "¡Bienvenido de nuevo!",
       "team_name": "El equipo de Weavink"
     },
+    "contact_deletion_cancelled": {
+      "subject": "Eliminación de contacto cancelada - {{userName}}",
+      "greeting": "Hola",
+      "headline": "Eliminación de cuenta de contacto cancelada",
+      "intro": "La solicitud de eliminación de cuenta de {{userName}} ha sido cancelada.",
+      "account_active": "Su cuenta de Weavink permanece activa y su información de contacto no será anonimizada.",
+      "no_action_needed": "No se requiere ninguna acción de su parte. Esto es solo para su información.",
+      "team_name": "El equipo de Weavink",
+      "best_regards": "Saludos cordiales,"
+    },
     "data_export_completed": {
       "subject": "Su exportación de datos está lista - Weavink",
       "greeting": "Hola",

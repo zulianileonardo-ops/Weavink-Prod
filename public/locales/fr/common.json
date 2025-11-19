@@ -3340,6 +3340,16 @@
       "welcome_back": "Bon retour !",
       "team_name": "L'équipe Weavink"
     },
+    "contact_deletion_cancelled": {
+      "subject": "Suppression de contact annulée - {{userName}}",
+      "greeting": "Bonjour",
+      "headline": "Suppression de compte contact annulée",
+      "intro": "La demande de suppression de compte de {{userName}} a été annulée.",
+      "account_active": "Leur compte Weavink reste actif et leurs informations de contact ne seront pas anonymisées.",
+      "no_action_needed": "Aucune action n'est requise de votre part. Ceci est à titre informatif uniquement.",
+      "team_name": "L'équipe Weavink",
+      "best_regards": "Cordialement,"
+    },
     "data_export_completed": {
       "subject": "Votre exportation de données est prête - Weavink",
       "greeting": "Bonjour",

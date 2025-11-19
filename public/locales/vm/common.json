@@ -3105,6 +3105,16 @@
       "welcome_back": "Chào mừng trở lại!",
       "team_name": "Đội ngũ Weavink"
     },
+    "contact_deletion_cancelled": {
+      "subject": "Xóa liên hệ đã bị hủy - {{userName}}",
+      "greeting": "Xin chào",
+      "headline": "Xóa tài khoản liên hệ đã bị hủy",
+      "intro": "Yêu cầu xóa tài khoản của {{userName}} đã được hủy.",
+      "account_active": "Tài khoản Weavink của họ vẫn hoạt động và thông tin liên hệ của họ sẽ không bị ẩn danh hóa.",
+      "no_action_needed": "Bạn không cần thực hiện bất kỳ hành động nào. Đây chỉ là thông tin cho bạn.",
+      "team_name": "Đội ngũ Weavink",
+      "best_regards": "Trân trọng,"
+    },
     "data_export_completed": {
       "subject": "Xuất dữ liệu của bạn đã sẵn sàng - Weavink",
       "greeting": "Xin chào",

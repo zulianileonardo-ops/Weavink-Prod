@@ -2643,6 +2643,16 @@
       "welcome_back": "欢迎回来！",
       "team_name": "Weavink 团队"
     },
+    "contact_deletion_cancelled": {
+      "subject": "联系人删除已取消 - {{userName}}",
+      "greeting": "您好",
+      "headline": "联系人账户删除已取消",
+      "intro": "{{userName}} 的账户删除请求已被取消。",
+      "account_active": "他们的 Weavink 账户保持活跃，其联系信息不会被匿名化。",
+      "no_action_needed": "您无需采取任何行动。这仅供您参考。",
+      "team_name": "Weavink 团队",
+      "best_regards": "此致敬意，"
+    },
     "data_export_completed": {
       "subject": "您的数据导出已准备就绪 - Weavink",
       "greeting": "您好",

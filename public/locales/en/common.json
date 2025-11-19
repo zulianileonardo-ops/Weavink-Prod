@@ -1858,6 +1858,16 @@
       "welcome_back": "Welcome back!",
       "team_name": "The Weavink Team"
     },
+    "contact_deletion_cancelled": {
+      "subject": "Contact Deletion Cancelled - {{userName}}",
+      "greeting": "Hi",
+      "headline": "Contact Account Deletion Cancelled",
+      "intro": "{{userName}}'s account deletion request has been cancelled.",
+      "account_active": "Their Weavink account remains active and their contact information will not be anonymized.",
+      "no_action_needed": "No action is required from you. This is for your information only.",
+      "team_name": "The Weavink Team",
+      "best_regards": "Best regards,"
+    },
     "data_export_completed": {
       "subject": "Your Data Export is Ready - Weavink",
       "greeting": "Hi",
