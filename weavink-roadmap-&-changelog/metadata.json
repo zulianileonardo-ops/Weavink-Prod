@@ -1,0 +1,5 @@
+{
+  "name": "Weavink Roadmap & Changelog",
+  "description": "A dual-purpose roadmap and changelog system visualizing git commits and future plans in an interactive tree structure.",
+  "requestFramePermissions": []
+}
