@@ -2826,7 +2826,9 @@
       "export_suggestion": "Nếu bạn cần giữ bất kỳ thông tin nào liên quan đến liên hệ này, chúng tôi khuyên bạn nên xuất dữ liệu của mình ngay bây giờ.",
       "button_export": "Xuất dữ liệu của tôi",
       "thank_you": "Cảm ơn bạn đã hiểu.",
-      "team_name": "Đội ngũ Weavink"
+      "team_name": "Đội ngũ Weavink",
+      "request_id": "Mã yêu cầu:",
+      "dpo_label": "Nhân viên Bảo vệ Dữ liệu:"
     },
     "account_deletion_completed": {
       "subject": "Tài khoản của bạn đã bị xóa - Weavink",

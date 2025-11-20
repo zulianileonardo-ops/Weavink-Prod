@@ -2840,7 +2840,9 @@
       "your_notes": "Sus notas e interacciones con este contacto permanecerán disponibles, pero su información personal será anonimizada.",
       "automated": "Este es un aviso automatizado para mantenerle informado sobre cambios en sus contactos.",
       "thank_you": "Gracias,",
-      "team_name": "El equipo de Weavink"
+      "team_name": "El equipo de Weavink",
+      "request_id": "ID de solicitud:",
+      "dpo_label": "Oficial de Protección de Datos:"
     },
     "account_deletion_completed": {
       "subject": "Su cuenta de Weavink ha sido eliminada",

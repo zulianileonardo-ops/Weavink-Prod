@@ -2400,7 +2400,9 @@
       "your_notes": "您与此联系人的笔记和互动将保持可用，但其个人信息将被匿名化。",
       "automated": "这是一条自动通知，用于告知您联系人的变更。",
       "thank_you": "谢谢，",
-      "team_name": "Weavink 团队"
+      "team_name": "Weavink 团队",
+      "request_id": "请求 ID：",
+      "dpo_label": "数据保护官："
     },
     "account_deletion_completed": {
       "subject": "您的 Weavink 账户已被删除",

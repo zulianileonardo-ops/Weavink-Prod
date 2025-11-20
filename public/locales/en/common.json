@@ -1832,7 +1832,9 @@
       "your_notes": "Your notes and interactions with this contact will remain available, but their personal information will be anonymized.",
       "automated": "This is an automated notice to keep you informed about changes to your contacts.",
       "thank_you": "Thank you,",
-      "team_name": "The Weavink Team"
+      "team_name": "The Weavink Team",
+      "request_id": "Request ID:",
+      "dpo_label": "Data Protection Officer:"
     },
     "account_deletion_completed": {
       "subject": "Your Weavink Account Has Been Deleted",

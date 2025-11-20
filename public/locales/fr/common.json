@@ -3055,7 +3055,9 @@
       "your_notes": "Vos notes et interactions avec ce contact resteront disponibles, mais ses informations personnelles seront anonymisées.",
       "automated": "Ceci est un avis automatique pour vous informer des modifications apportées à vos contacts.",
       "thank_you": "Merci,",
-      "team_name": "L'équipe Weavink"
+      "team_name": "L'équipe Weavink",
+      "request_id": "Identifiant de la demande :",
+      "dpo_label": "Délégué à la protection des données :"
     },
     "account_deletion_completed": {
       "subject": "Votre compte Weavink a été supprimé",
