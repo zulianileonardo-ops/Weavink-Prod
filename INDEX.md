@@ -1,15 +1,15 @@
 # Weavink Documentation Index
 
 **Last Updated:** 2025-11-20
-**Total Guides:** 76
+**Total Guides:** 77
 
 ## Quick Navigation
 - [Admin System](#admin-system) (9 guides)
 - [Analytics & Tracking](#analytics-tracking) (3 guides)
-- [RGPD/GDPR Compliance](#rgpd-gdpr-compliance) (9 guides)
+- [RGPD/GDPR Compliance](#rgpd-gdpr-compliance) (10 guides)
 - [Feature Implementations](#feature-implementations) (22 guides)
 - [Technical Infrastructure](#technical-infrastructure) (17 guides)
-- [Testing & QA](#testing-qa) (8 guides)
+- [Testing & QA](#testing-qa) (9 guides)
 - [General Documentation](#general-documentation) (4 guides)
 - [Tutorials & Guides](#tutorials-guides) (3 guides)
 - [Meta Documentation](#meta-documentation) (2 guides)
@@ -95,9 +95,9 @@
 **Related:** [EMAIL_NOTIFICATION_MANUAL_TEST_GUIDE.md](#email-notification-manual-test-guide-md), [RGPD_COMPLIANCE_MATRIX.md](#rgpd-compliance-matrix-md), [RGPD_COMPLIANCE_MATRIX.PREVIOUS.md](#rgpd-compliance-matrix-previous-md), [RGPD_IMPLEMENTATION_SUMMARY.md](#rgpd-implementation-summary-md), [RGPD_ARCHITECTURE_COMPLIANCE.md](#rgpd-architecture-compliance-md)
 
 ### ANONYMOUS_ANALYTICS_PLAN.md
-**Summary:** Implementation plan for anonymous aggregated analytics tracking for users who withdraw consent, using legitimate interest legal basis.
-**Tags:** gdpr, rgpd, analytics, anonymous-tracking, legitimate-interest, privacy, planning, dual-track
-**Related:** [analytics-implementation-012](#analytics-implementation-012), [rgpd-implementation-summary-042](#rgpd-implementation-summary-042)
+**Summary:** Implementation plan and completed implementation for anonymous aggregated analytics tracking for users who withdraw consent, using legitimate interest legal basis. Includes Phase 1-3 complete with TTL configuration, translations, and automated tests.
+**Tags:** gdpr, rgpd, analytics, anonymous-tracking, legitimate-interest, privacy, implementation, dual-track, firestore-ttl, multilingual, testing
+**Related:** [analytics-implementation-012](#analytics-implementation-012), [rgpd-implementation-summary-042](#rgpd-implementation-summary-042), [testing-anonymous-analytics-077](#testing-anonymous-analytics-077)
 
 ### COMMIT_SUMMARY.md
 **Summary:** Complete implementation summary of RGPD Phase 1-2 with consent management, data export, account deletion, and cookie consent.
@@ -333,6 +333,11 @@
 
 ## Testing & QA
 *Testing guides and quality assurance*
+
+### ANONYMOUS_ANALYTICS_MANUAL_TEST_GUIDE.md
+**Summary:** Comprehensive manual testing guide for Phase 3.3 of anonymous analytics implementation. Covers 8 test categories with 35+ individual tests including consent withdrawal scenarios, Firestore verification, TTL validation, GDPR compliance, multi-language testing, rate limiting, edge cases, and client-side integration.
+**Tags:** testing, manual-testing, anonymous-analytics, gdpr, rgpd, consent-withdrawal, firestore-verification, ttl, rate-limiting, multi-language, troubleshooting
+**Related:** [rgpd-anonymous-analytics-046](#rgpd-anonymous-analytics-046), [testing-rgpd-guide-038](#testing-rgpd-guide-038), [testing-email-notifications-065](#testing-email-notifications-065), [analytics-implementation-012](#analytics-implementation-012)
 
 ### EMAIL_NOTIFICATION_BUG_FIXES.md
 **Summary:** Documents 3 bugs discovered during email notification system testing: completion email fetch-after-delete bug, Firebase composite index requirement, and contact deletion notifications not updating on completion. Includes root cause analysis, fixes, and verification.

@@ -8,6 +8,7 @@
 
 import { NextResponse } from 'next/server';
 import { TrackAnalyticsService } from '@/lib/services/serviceUser/server/services/trackAnalyticsService';
+import { AnonymousAnalyticsService } from '@/lib/services/serviceUser/server/services/AnonymousAnalyticsService';
 import { applyAnalyticsRateLimit } from '@/lib/rateLimiter';
 import {
     ANALYTICS_EVENT_TYPES,
@@ -90,13 +91,19 @@ export async function POST(request) {
             const hasBasicConsent = consents?.[CONSENT_TYPES.ANALYTICS_BASIC]?.status === true;
 
             if (!hasBasicConsent) {
-                console.warn('⚠️ Analytics API: User has not granted analytics consent');
+                console.log('📊 Analytics API: No consent - forwarding to anonymous tracking');
+                // Forward to anonymous tracking for system monitoring (legitimate interest)
+                const linkType = linkData?.linkType || 'other';
+
+                await AnonymousAnalyticsService.trackEvent(eventType, { linkType });
+
                 return NextResponse.json(
                     {
-                        error: 'Analytics consent required',
-                        message: 'User has not granted permission for analytics tracking'
+                        success: true,
+                        tracked: 'anonymous',
+                        message: 'Event tracked anonymously for system monitoring'
                     },
-                    { status: 403 }
+                    { status: 200 }
                 );
             }
 

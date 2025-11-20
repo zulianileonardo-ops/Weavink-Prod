@@ -1690,6 +1690,13 @@
       "cookies_analytics": "分析 Cookies",
       "yes": "是",
       "no": "否"
+    },
+    "errors": {
+      "invalid_event_type": "无效的事件类型",
+      "rate_limit_exceeded": "请求过多。请稍后再试",
+      "database_error": "保存分析数据时发生错误",
+      "invalid_link_type": "无效的链接类型",
+      "missing_parameters": "缺少必需的参数"
     }
   },
   "account": {

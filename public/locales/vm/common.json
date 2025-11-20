@@ -2502,6 +2502,13 @@
       "cookies_analytics": "Cookies Phân Tích",
       "yes": "có",
       "no": "không"
+    },
+    "errors": {
+      "invalid_event_type": "Loại sự kiện không hợp lệ",
+      "rate_limit_exceeded": "Quá nhiều yêu cầu. Vui lòng thử lại sau",
+      "database_error": "Đã xảy ra lỗi khi lưu dữ liệu phân tích",
+      "invalid_link_type": "Loại liên kết không hợp lệ",
+      "missing_parameters": "Thiếu tham số bắt buộc"
     }
   },
   "onboarding": {

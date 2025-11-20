@@ -834,6 +834,13 @@
       "cookies_analytics": "Analytics Cookies",
       "yes": "yes",
       "no": "no"
+    },
+    "errors": {
+      "invalid_event_type": "Invalid event type",
+      "rate_limit_exceeded": "Too many requests. Please try again later",
+      "database_error": "An error occurred while saving analytics data",
+      "invalid_link_type": "Invalid link type",
+      "missing_parameters": "Missing required parameters"
     }
   },
   "account": {

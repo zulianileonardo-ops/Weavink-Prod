@@ -2520,6 +2520,13 @@
       "cookies_analytics": "Cookies de Análisis",
       "yes": "sí",
       "no": "no"
+    },
+    "errors": {
+      "invalid_event_type": "Tipo de evento inválido",
+      "rate_limit_exceeded": "Demasiadas solicitudes. Por favor, inténtalo de nuevo más tarde",
+      "database_error": "Ocurrió un error al guardar los datos analíticos",
+      "invalid_link_type": "Tipo de enlace inválido",
+      "missing_parameters": "Faltan parámetros requeridos"
     }
   },
   "onboarding": {

@@ -2,7 +2,7 @@
   "metadata": {
     "project": "Weavink Documentation",
     "last_updated": "2025-11-20",
-    "total_guides": 76,
+    "total_guides": 77,
     "version": "1.0.0"
   },
   "categories": {
@@ -42,7 +42,8 @@
         "rgpd-consent-guide-045",
         "rgpd-anonymous-analytics-046",
         "rgpd-account-deletion-flow-047",
-        "rgpd-contact-deletion-warning-048"
+        "rgpd-contact-deletion-warning-048",
+        "rgpd-anonymous-analytics-testing-077"
       ]
     },
     "features": {
@@ -107,7 +108,8 @@
         "testing-rgpd-quickstart-039",
         "testing-rgpd-results-040",
         "testing-email-notifications-065",
-        "testing-email-notification-bugs-076"
+        "testing-email-notification-bugs-076",
+        "testing-anonymous-analytics-077"
       ]
     },
     "general": {
@@ -1375,7 +1377,7 @@
       "title": "Anonymous Analytics Plan",
       "filename": "documentation/admin/ANONYMOUS_ANALYTICS_PLAN.md",
       "category": "rgpd",
-      "summary": "Implementation plan for anonymous aggregated analytics tracking for users who withdraw consent, using legitimate interest legal basis.",
+      "summary": "Implementation plan and completed implementation for anonymous aggregated analytics tracking for users who withdraw consent, using legitimate interest legal basis. Includes Phase 1-3 complete with TTL configuration, translations, and automated tests.",
       "tags": [
         "gdpr",
         "rgpd",
@@ -1383,18 +1385,30 @@
         "anonymous-tracking",
         "legitimate-interest",
         "privacy",
-        "planning",
-        "dual-track"
+        "implementation",
+        "dual-track",
+        "firestore-ttl",
+        "multilingual",
+        "testing"
       ],
       "related_guides": [
         "analytics-implementation-012",
-        "rgpd-implementation-summary-042"
+        "rgpd-implementation-summary-042",
+        "testing-anonymous-analytics-077"
       ],
-      "functions": [],
-      "components": [],
-      "status": "draft",
+      "functions": [
+        "trackEvent",
+        "trackAnonymousView",
+        "trackAnonymousClick",
+        "trackAnonymousShare",
+        "trackAnonymousQRScan"
+      ],
+      "components": [
+        "AnonymousAnalyticsService"
+      ],
+      "status": "active",
       "created": "2025-11-07",
-      "updated": "2025-11-11"
+      "updated": "2025-11-20"
     },
     {
       "id": "testing-rgpd-guide-038",
@@ -2366,6 +2380,44 @@
       "components": [
         "ContactCard",
         "EditContactModal"
+      ],
+      "status": "active",
+      "created": "2025-11-20",
+      "updated": "2025-11-20"
+    },
+    {
+      "id": "testing-anonymous-analytics-077",
+      "title": "Anonymous Analytics Manual Test Guide",
+      "filename": "documentation/testing/ANONYMOUS_ANALYTICS_MANUAL_TEST_GUIDE.md",
+      "category": "testing",
+      "summary": "Comprehensive manual testing guide for Phase 3.3 of anonymous analytics implementation. Covers 8 test categories with 35+ individual tests including consent withdrawal scenarios, Firestore verification, TTL validation, GDPR compliance, multi-language testing, rate limiting, edge cases, and client-side integration.",
+      "tags": [
+        "testing",
+        "manual-testing",
+        "anonymous-analytics",
+        "gdpr",
+        "rgpd",
+        "consent-withdrawal",
+        "firestore-verification",
+        "ttl",
+        "rate-limiting",
+        "multi-language",
+        "troubleshooting"
+      ],
+      "related_guides": [
+        "rgpd-anonymous-analytics-046",
+        "testing-rgpd-guide-038",
+        "testing-email-notifications-065",
+        "analytics-implementation-012"
+      ],
+      "functions": [
+        "trackAnonymousView",
+        "trackAnonymousClick",
+        "trackAnonymousShare",
+        "trackAnonymousQRScan"
+      ],
+      "components": [
+        "AnonymousAnalyticsService"
       ],
       "status": "active",
       "created": "2025-11-20",
