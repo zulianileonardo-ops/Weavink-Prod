@@ -2926,6 +2926,90 @@
       "permission": {
         "denied": "No tiene permiso para esta acción"
       }
+    },
+    "export": {
+      "files": {
+        "user_profile": {
+          "description": "Su perfil de usuario e información de cuenta completos"
+        },
+        "readme": {
+          "description": "Información sobre su exportación de datos"
+        },
+        "contacts_json": {
+          "description": "Sus contactos en formato JSON"
+        },
+        "contacts_csv": {
+          "description": "Sus contactos en formato CSV (compatible con Excel)"
+        },
+        "contacts_vcf": {
+          "description": "Sus contactos en formato vCard (compatible con todos los gestores de contactos)"
+        },
+        "groups": {
+          "description": "Sus grupos y categorías de contactos"
+        },
+        "analytics": {
+          "description": "Sus datos analíticos de perfil (anonimizados)"
+        },
+        "consent_history": {
+          "description": "Su historial de consentimientos y preferencias"
+        },
+        "settings": {
+          "description": "Sus configuraciones y preferencias de aplicación"
+        }
+      },
+      "readme": {
+        "title": "EXPORTACIÓN DE DATOS WEAVINK",
+        "subtitle": "Su Paquete de Datos Personales",
+        "intro": "Este paquete contiene todos sus datos personales almacenados en Weavink, exportados en cumplimiento del Artículo 20 del RGPD (Derecho a la Portabilidad de Datos).",
+        "sections": {
+          "files": {
+            "title": "ARCHIVOS EN ESTE PAQUETE",
+            "user_profile": "📄 user_profile.json - Su perfil de usuario e información de cuenta completos",
+            "contacts_json": "📇 contacts.json - Todos sus contactos en formato JSON (legible por máquina)",
+            "contacts_csv": "📊 contacts.csv - Todos sus contactos en formato CSV (compatible con Excel)",
+            "contacts_vcf": "📇 contacts.vcf - Todos sus contactos en formato vCard (compatible con: Google Contacts, Apple Contacts, Microsoft Outlook, Todos los principales sistemas CRM)",
+            "groups": "📁 groups.json - Sus grupos y categorías de contactos",
+            "analytics": "📈 analytics.json - Sus datos analíticos de perfil (direcciones IP anonimizadas)",
+            "consent_history": "✅ consent_history.json - Historial completo de sus consentimientos de privacidad",
+            "settings": "⚙️ settings.json - Sus configuraciones y preferencias de aplicación"
+          },
+          "usage": {
+            "title": "QUÉ PUEDE HACER CON ESTOS DATOS",
+            "import": "✓ Importar contactos en cualquier sistema de gestión de contactos",
+            "migrate": "✓ Migrar a un servicio competidor (sin bloqueo de proveedor)",
+            "backup": "✓ Mantener una copia de seguridad local de sus datos",
+            "review": "✓ Revisar qué datos almacena Weavink sobre usted",
+            "transfer": "✓ Transferir a otro servicio compatible con RGPD"
+          },
+          "deletion": {
+            "title": "RETENCIÓN Y ELIMINACIÓN DE DATOS",
+            "note": "Esta exportación NO elimina sus datos de Weavink. Para eliminar su cuenta y todos los datos asociados:",
+            "step1": "1. Vaya a Configuración → Centro de Privacidad",
+            "step2": "2. Haga clic en \"Eliminar Mi Cuenta\"",
+            "step3": "3. Confirme la eliminación",
+            "warning": "⚠️ La eliminación es permanente y no se puede deshacer."
+          },
+          "rights": {
+            "title": "SUS DERECHOS SEGÚN EL RGPD",
+            "access": "• Derecho de acceso (Art. 15) - ESTÁ AQUÍ",
+            "rectification": "• Derecho de rectificación (Art. 16) - Editar sus datos",
+            "erasure": "• Derecho de supresión (Art. 17) - Eliminar su cuenta",
+            "portability": "• Derecho a la portabilidad (Art. 20) - Esta exportación",
+            "object": "• Derecho de oposición (Art. 21) - Rechazar el procesamiento",
+            "restriction": "• Derecho a la limitación (Art. 18) - Limitar el procesamiento"
+          },
+          "contact": {
+            "title": "¿PREGUNTAS O INQUIETUDES?",
+            "dpo": "Delegado de Protección de Datos: dpo@weavink.io",
+            "privacy_policy": "Política de Privacidad: https://weavink.io/privacy-policy",
+            "support": "Soporte: support@weavink.io"
+          },
+          "footer": {
+            "generated": "Esta exportación fue generada automáticamente por el sistema de cumplimiento RGPD de Weavink. Todos los datos han sido exportados en formatos estándar y legibles por máquina para garantizar la portabilidad.",
+            "thanks": "¡Gracias por confiar en Weavink con su red profesional!"
+          }
+        }
+      }
     }
   },
   "roadmap": {

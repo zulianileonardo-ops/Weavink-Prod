@@ -120,8 +120,8 @@
 **Related:** [ACCOUNT_DELETION_TECHNICAL_FLOW.md](#account-deletion-technical-flow-md), [EMAIL_NOTIFICATION_MANUAL_TEST_GUIDE.md](#email-notification-manual-test-guide-md), [RGPD_IMPLEMENTATION_SUMMARY.md](#rgpd-implementation-summary-md), [CONTACTS_COMPONENT_INTERNATIONALIZATION.md](#contacts-component-internationalization-md)
 
 ### RGPD_IMPLEMENTATION_SUMMARY.md
-**Summary:** Complete summary of RGPD Phase 1-4 implementation with consent management, data portability, breach notifications, compliance features, and multilingual API error messages.
-**Tags:** gdpr, rgpd, compliance, consent, data-protection, privacy, implementation, phase-summary, translation, multilingual-errors, server-side-translation
+**Summary:** Complete summary of RGPD Phase 1-4 implementation with consent management, data portability with multilingual export support, breach notifications, compliance features, and multilingual API error messages.
+**Tags:** gdpr, rgpd, compliance, consent, data-protection, privacy, implementation, phase-summary, translation, multilingual-errors, server-side-translation, data-export-i18n
 **Related:** [rgpd-master-progress-043](#rgpd-master-progress-043), [rgpd-phase4-summary-044](#rgpd-phase4-summary-044), [rgpd-conformite-tapit-013](#rgpd-conformite-tapit-013)
 
 ### RGPD_MASTER_PROGRESS.md

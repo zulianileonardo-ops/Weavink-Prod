@@ -1232,7 +1232,7 @@
       "title": "RGPD Implementation Summary",
       "filename": "documentation/rgpd/RGPD_IMPLEMENTATION_SUMMARY.md",
       "category": "rgpd",
-      "summary": "Complete summary of RGPD Phase 1-4 implementation with consent management, data portability, breach notifications, compliance features, and multilingual API error messages.",
+      "summary": "Complete summary of RGPD Phase 1-4 implementation with consent management, data portability with multilingual export support, breach notifications, compliance features, and multilingual API error messages.",
       "tags": [
         "gdpr",
         "rgpd",
@@ -1244,14 +1244,18 @@
         "phase-summary",
         "translation",
         "multilingual-errors",
-        "server-side-translation"
+        "server-side-translation",
+        "data-export-i18n"
       ],
       "related_guides": [
         "rgpd-master-progress-043",
         "rgpd-phase4-summary-044",
         "rgpd-conformite-tapit-013"
       ],
-      "functions": [],
+      "functions": [
+        "generateReadmeContent",
+        "generateExportFiles"
+      ],
       "components": [
         "ConsentService",
         "DataExportService",
@@ -1261,7 +1265,7 @@
       ],
       "status": "active",
       "created": "2025-01-01",
-      "updated": "2025-11-19"
+      "updated": "2025-11-20"
     },
     {
       "id": "rgpd-master-progress-043",

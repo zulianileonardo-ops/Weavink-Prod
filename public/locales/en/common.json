@@ -1918,6 +1918,90 @@
       "permission": {
         "denied": "You do not have permission for this action"
       }
+    },
+    "export": {
+      "files": {
+        "user_profile": {
+          "description": "Your complete user profile and account information"
+        },
+        "readme": {
+          "description": "Information about your data export"
+        },
+        "contacts_json": {
+          "description": "Your contacts in JSON format"
+        },
+        "contacts_csv": {
+          "description": "Your contacts in CSV format (Excel compatible)"
+        },
+        "contacts_vcf": {
+          "description": "Your contacts in vCard format (compatible with all contact managers)"
+        },
+        "groups": {
+          "description": "Your contact groups and categories"
+        },
+        "analytics": {
+          "description": "Your profile analytics data (anonymized)"
+        },
+        "consent_history": {
+          "description": "Your consent history and preferences"
+        },
+        "settings": {
+          "description": "Your application settings and preferences"
+        }
+      },
+      "readme": {
+        "title": "WEAVINK DATA EXPORT",
+        "subtitle": "Your Personal Data Package",
+        "intro": "This package contains all your personal data stored in Weavink, exported in compliance with GDPR Article 20 (Right to Data Portability).",
+        "sections": {
+          "files": {
+            "title": "FILES IN THIS PACKAGE",
+            "user_profile": "📄 user_profile.json - Your complete user profile and account information",
+            "contacts_json": "📇 contacts.json - All your contacts in JSON format (machine-readable)",
+            "contacts_csv": "📊 contacts.csv - All your contacts in CSV format (Excel compatible)",
+            "contacts_vcf": "📇 contacts.vcf - All your contacts in vCard format (compatible with: Google Contacts, Apple Contacts, Microsoft Outlook, All major CRM systems)",
+            "groups": "📁 groups.json - Your contact groups and categories",
+            "analytics": "📈 analytics.json - Your profile analytics data (IP addresses anonymized)",
+            "consent_history": "✅ consent_history.json - Complete history of your privacy consents",
+            "settings": "⚙️ settings.json - Your application settings and preferences"
+          },
+          "usage": {
+            "title": "WHAT YOU CAN DO WITH THIS DATA",
+            "import": "✓ Import contacts into any contact management system",
+            "migrate": "✓ Migrate to a competitor service (no vendor lock-in)",
+            "backup": "✓ Keep a local backup of your data",
+            "review": "✓ Review what data Weavink stores about you",
+            "transfer": "✓ Transfer to another GDPR-compliant service"
+          },
+          "deletion": {
+            "title": "DATA RETENTION & DELETION",
+            "note": "This export does NOT delete your data from Weavink. To delete your account and all associated data:",
+            "step1": "1. Go to Settings → Privacy Center",
+            "step2": "2. Click \"Delete My Account\"",
+            "step3": "3. Confirm deletion",
+            "warning": "⚠️ Deletion is permanent and cannot be undone."
+          },
+          "rights": {
+            "title": "YOUR RIGHTS UNDER GDPR",
+            "access": "• Right to access (Art. 15) - YOU ARE HERE",
+            "rectification": "• Right to rectification (Art. 16) - Edit your data",
+            "erasure": "• Right to erasure (Art. 17) - Delete your account",
+            "portability": "• Right to portability (Art. 20) - This export",
+            "object": "• Right to object (Art. 21) - Opt-out of processing",
+            "restriction": "• Right to restriction (Art. 18) - Limit processing"
+          },
+          "contact": {
+            "title": "QUESTIONS OR CONCERNS?",
+            "dpo": "Data Protection Officer: dpo@weavink.io",
+            "privacy_policy": "Privacy Policy: https://weavink.io/privacy-policy",
+            "support": "Support: support@weavink.io"
+          },
+          "footer": {
+            "generated": "This export was generated automatically by Weavink's GDPR compliance system. All data has been exported in standard, machine-readable formats to ensure portability.",
+            "thanks": "Thank you for trusting Weavink with your professional network!"
+          }
+        }
+      }
     }
   },
   "roadmap": {

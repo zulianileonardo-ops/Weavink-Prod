@@ -2917,6 +2917,90 @@
       "permission": {
         "denied": "Bạn không có quyền thực hiện hành động này"
       }
+    },
+    "export": {
+      "files": {
+        "user_profile": {
+          "description": "Hồ sơ người dùng và thông tin tài khoản đầy đủ của bạn"
+        },
+        "readme": {
+          "description": "Thông tin về việc xuất dữ liệu của bạn"
+        },
+        "contacts_json": {
+          "description": "Danh bạ của bạn ở định dạng JSON"
+        },
+        "contacts_csv": {
+          "description": "Danh bạ của bạn ở định dạng CSV (tương thích Excel)"
+        },
+        "contacts_vcf": {
+          "description": "Danh bạ của bạn ở định dạng vCard (tương thích với mọi trình quản lý danh bạ)"
+        },
+        "groups": {
+          "description": "Nhóm và danh mục danh bạ của bạn"
+        },
+        "analytics": {
+          "description": "Dữ liệu phân tích hồ sơ của bạn (đã ẩn danh)"
+        },
+        "consent_history": {
+          "description": "Lịch sử đồng ý và tùy chọn của bạn"
+        },
+        "settings": {
+          "description": "Cài đặt và tùy chọn ứng dụng của bạn"
+        }
+      },
+      "readme": {
+        "title": "XUẤT DỮ LIỆU WEAVINK",
+        "subtitle": "Gói Dữ Liệu Cá Nhân Của Bạn",
+        "intro": "Gói này chứa tất cả dữ liệu cá nhân của bạn được lưu trữ trong Weavink, được xuất theo Điều 20 của GDPR (Quyền Chuyển Dữ Liệu).",
+        "sections": {
+          "files": {
+            "title": "CÁC TỆP TRONG GÓI NÀY",
+            "user_profile": "📄 user_profile.json - Hồ sơ người dùng và thông tin tài khoản đầy đủ của bạn",
+            "contacts_json": "📇 contacts.json - Tất cả danh bạ của bạn ở định dạng JSON (máy có thể đọc)",
+            "contacts_csv": "📊 contacts.csv - Tất cả danh bạ của bạn ở định dạng CSV (tương thích Excel)",
+            "contacts_vcf": "📇 contacts.vcf - Tất cả danh bạ của bạn ở định dạng vCard (tương thích với: Google Contacts, Apple Contacts, Microsoft Outlook, Tất cả các hệ thống CRM chính)",
+            "groups": "📁 groups.json - Nhóm và danh mục danh bạ của bạn",
+            "analytics": "📈 analytics.json - Dữ liệu phân tích hồ sơ của bạn (địa chỉ IP đã ẩn danh)",
+            "consent_history": "✅ consent_history.json - Lịch sử đầy đủ các đồng ý về quyền riêng tư của bạn",
+            "settings": "⚙️ settings.json - Cài đặt và tùy chọn ứng dụng của bạn"
+          },
+          "usage": {
+            "title": "BẠN CÓ THỂ LÀM GÌ VỚI DỮ LIỆU NÀY",
+            "import": "✓ Nhập danh bạ vào bất kỳ hệ thống quản lý danh bạ nào",
+            "migrate": "✓ Chuyển sang dịch vụ đối thủ (không bị khóa nhà cung cấp)",
+            "backup": "✓ Giữ bản sao lưu cục bộ dữ liệu của bạn",
+            "review": "✓ Xem xét dữ liệu mà Weavink lưu trữ về bạn",
+            "transfer": "✓ Chuyển sang dịch vụ tuân thủ GDPR khác"
+          },
+          "deletion": {
+            "title": "LƯU TRỮ VÀ XÓA DỮ LIỆU",
+            "note": "Việc xuất này KHÔNG xóa dữ liệu của bạn khỏi Weavink. Để xóa tài khoản và tất cả dữ liệu liên quan:",
+            "step1": "1. Vào Cài đặt → Trung tâm Quyền riêng tư",
+            "step2": "2. Nhấp vào \"Xóa Tài Khoản Của Tôi\"",
+            "step3": "3. Xác nhận xóa",
+            "warning": "⚠️ Việc xóa là vĩnh viễn và không thể hoàn tác."
+          },
+          "rights": {
+            "title": "QUYỀN CỦA BẠN THEO GDPR",
+            "access": "• Quyền truy cập (Điều 15) - BẠN Ở ĐÂY",
+            "rectification": "• Quyền chỉnh sửa (Điều 16) - Chỉnh sửa dữ liệu của bạn",
+            "erasure": "• Quyền xóa (Điều 17) - Xóa tài khoản của bạn",
+            "portability": "• Quyền chuyển dữ liệu (Điều 20) - Xuất này",
+            "object": "• Quyền phản đối (Điều 21) - Từ chối xử lý",
+            "restriction": "• Quyền hạn chế (Điều 18) - Giới hạn xử lý"
+          },
+          "contact": {
+            "title": "CÓ CÂU HỎI HAY THẮC MẮC?",
+            "dpo": "Cán bộ Bảo vệ Dữ liệu: dpo@weavink.io",
+            "privacy_policy": "Chính sách Quyền riêng tư: https://weavink.io/privacy-policy",
+            "support": "Hỗ trợ: support@weavink.io"
+          },
+          "footer": {
+            "generated": "Xuất này được tạo tự động bởi hệ thống tuân thủ GDPR của Weavink. Tất cả dữ liệu đã được xuất ở định dạng chuẩn, máy có thể đọc để đảm bảo tính chuyển đổi.",
+            "thanks": "Cảm ơn bạn đã tin tưởng Weavink với mạng lưới chuyên nghiệp của bạn!"
+          }
+        }
+      }
     }
   },
   "roadmap": {

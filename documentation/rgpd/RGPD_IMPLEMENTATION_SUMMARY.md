@@ -57,6 +57,7 @@ DELETE /api/user/privacy/consent?type=...         # Withdraw specific consent
 - `/lib/services/servicePrivacy/server/dataExportService.js`
 - `/lib/utils/vCardGenerator.js`
 - `/app/api/user/privacy/export/route.js`
+- Translation keys in `/public/locales/{en,fr,es,ch,vm}/common.json` - Data export strings (`privacy.export.*`)
 
 **Features**:
 - ✅ Complete data export in multiple formats:
@@ -69,6 +70,15 @@ DELETE /api/user/privacy/consent?type=...         # Withdraw specific consent
   - `consent_history.json` - Consent logs
   - `settings.json` - User preferences
   - `README.txt` - Human-readable guide
+
+- ✅ **Multilingual export support** (Added 2025-11-20):
+  - File descriptions translated into 5 languages (en, fr, es, ch, vm)
+  - README.txt content fully internationalized with user's locale
+  - Date formatting uses user's locale (e.g., French users see French date format)
+  - Automatic language detection from user settings (`defaultLanguage`)
+  - Translation keys: `privacy.export.files.*` and `privacy.export.readme.*`
+  - CSV headers kept in English (standard practice for data portability)
+  - Uses existing `translateServerSide()` infrastructure
 
 - ✅ vCard 3.0 compliance (RFC 2426)
 - ✅ Compatible with:

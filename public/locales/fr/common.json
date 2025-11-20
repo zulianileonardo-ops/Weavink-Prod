@@ -3141,6 +3141,90 @@
       "permission": {
         "denied": "Vous n'avez pas la permission pour cette action"
       }
+    },
+    "export": {
+      "files": {
+        "user_profile": {
+          "description": "Votre profil utilisateur et informations de compte complets"
+        },
+        "readme": {
+          "description": "Informations sur votre exportation de données"
+        },
+        "contacts_json": {
+          "description": "Vos contacts au format JSON"
+        },
+        "contacts_csv": {
+          "description": "Vos contacts au format CSV (compatible Excel)"
+        },
+        "contacts_vcf": {
+          "description": "Vos contacts au format vCard (compatible avec tous les gestionnaires de contacts)"
+        },
+        "groups": {
+          "description": "Vos groupes et catégories de contacts"
+        },
+        "analytics": {
+          "description": "Vos données analytiques de profil (anonymisées)"
+        },
+        "consent_history": {
+          "description": "Votre historique de consentements et préférences"
+        },
+        "settings": {
+          "description": "Vos paramètres et préférences d'application"
+        }
+      },
+      "readme": {
+        "title": "EXPORTATION DE DONNÉES WEAVINK",
+        "subtitle": "Votre Paquet de Données Personnelles",
+        "intro": "Ce paquet contient toutes vos données personnelles stockées dans Weavink, exportées conformément à l'Article 20 du RGPD (Droit à la Portabilité des Données).",
+        "sections": {
+          "files": {
+            "title": "FICHIERS DANS CE PAQUET",
+            "user_profile": "📄 user_profile.json - Votre profil utilisateur et informations de compte complets",
+            "contacts_json": "📇 contacts.json - Tous vos contacts au format JSON (lisible par machine)",
+            "contacts_csv": "📊 contacts.csv - Tous vos contacts au format CSV (compatible Excel)",
+            "contacts_vcf": "📇 contacts.vcf - Tous vos contacts au format vCard (compatible avec : Google Contacts, Apple Contacts, Microsoft Outlook, Tous les principaux systèmes CRM)",
+            "groups": "📁 groups.json - Vos groupes et catégories de contacts",
+            "analytics": "📈 analytics.json - Vos données analytiques de profil (adresses IP anonymisées)",
+            "consent_history": "✅ consent_history.json - Historique complet de vos consentements de confidentialité",
+            "settings": "⚙️ settings.json - Vos paramètres et préférences d'application"
+          },
+          "usage": {
+            "title": "CE QUE VOUS POUVEZ FAIRE AVEC CES DONNÉES",
+            "import": "✓ Importer les contacts dans n'importe quel système de gestion de contacts",
+            "migrate": "✓ Migrer vers un service concurrent (pas de verrouillage fournisseur)",
+            "backup": "✓ Conserver une sauvegarde locale de vos données",
+            "review": "✓ Examiner les données que Weavink stocke sur vous",
+            "transfer": "✓ Transférer vers un autre service conforme au RGPD"
+          },
+          "deletion": {
+            "title": "CONSERVATION ET SUPPRESSION DES DONNÉES",
+            "note": "Cette exportation ne supprime PAS vos données de Weavink. Pour supprimer votre compte et toutes les données associées :",
+            "step1": "1. Allez dans Paramètres → Centre de Confidentialité",
+            "step2": "2. Cliquez sur \"Supprimer Mon Compte\"",
+            "step3": "3. Confirmez la suppression",
+            "warning": "⚠️ La suppression est permanente et ne peut pas être annulée."
+          },
+          "rights": {
+            "title": "VOS DROITS EN VERTU DU RGPD",
+            "access": "• Droit d'accès (Art. 15) - VOUS ÊTES ICI",
+            "rectification": "• Droit de rectification (Art. 16) - Modifier vos données",
+            "erasure": "• Droit à l'effacement (Art. 17) - Supprimer votre compte",
+            "portability": "• Droit à la portabilité (Art. 20) - Cette exportation",
+            "object": "• Droit d'opposition (Art. 21) - Refuser le traitement",
+            "restriction": "• Droit à la limitation (Art. 18) - Limiter le traitement"
+          },
+          "contact": {
+            "title": "QUESTIONS OU PRÉOCCUPATIONS ?",
+            "dpo": "Délégué à la Protection des Données : dpo@weavink.io",
+            "privacy_policy": "Politique de Confidentialité : https://weavink.io/privacy-policy",
+            "support": "Support : support@weavink.io"
+          },
+          "footer": {
+            "generated": "Cette exportation a été générée automatiquement par le système de conformité RGPD de Weavink. Toutes les données ont été exportées dans des formats standards et lisibles par machine pour assurer la portabilité.",
+            "thanks": "Merci de faire confiance à Weavink pour votre réseau professionnel !"
+          }
+        }
+      }
     }
   },
   "roadmap": {
