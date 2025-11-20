@@ -8,7 +8,7 @@ import CategoryBadge from './CategoryBadge';
 import NewBadge from './NewBadge';
 import { useTranslation } from '@/lib/translation/useTranslation';
 import { ROADMAP_LIMITS } from '@/lib/services/serviceRoadmap/constants/roadmapConstants';
-import { hasNewCommits } from './roadmapUtils';
+import { hasNewCommits, hasNewSubcategoryCommits } from './roadmapUtils';
 
 /**
  * CategoryTree - Hierarchical tree view with expand/collapse
@@ -75,7 +75,7 @@ export default function CategoryTree({ tree, defaultExpanded = false }) {
               onClick={() => toggleCategory(category.name)}
               className="w-full flex items-center justify-between p-5 hover:bg-gray-50 transition-colors text-left"
               aria-expanded={isExpanded}
-              aria-label={`Toggle ${category.displayName} category`}
+              aria-label={`Toggle ${t(`roadmap.categories.${category.name}.name`, category.name)} category`}
             >
               <div className="flex items-center gap-3">
                 {isExpanded ? (
@@ -89,7 +89,7 @@ export default function CategoryTree({ tree, defaultExpanded = false }) {
                 <div>
                   <div className="flex items-center gap-2">
                     <h3 className="text-lg font-semibold text-gray-900">
-                      {t(`roadmap.categories.${category.name}.name`, category.displayName)}
+                      {t(`roadmap.categories.${category.name}.name`, category.name)}
                     </h3>
                     {hasNew && <NewBadge showAlways={true} />}
                   </div>
@@ -153,6 +153,8 @@ export default function CategoryTree({ tree, defaultExpanded = false }) {
                     {Object.values(category.subcategories).map(subcategory => {
                       const subKey = `${category.name}-${subcategory.name}`;
                       const isSubExpanded = expandedSubcategories[subKey];
+                      const hasNewSub = hasNewSubcategoryCommits(subcategory, ROADMAP_LIMITS.NEW_BADGE_THRESHOLD_DAYS);
+                      const formattedSubName = subcategory.name.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 
                       return (
                         <div key={subcategory.name} className="ml-4 border-l-2 border-gray-300 pl-4">
@@ -160,7 +162,7 @@ export default function CategoryTree({ tree, defaultExpanded = false }) {
                             onClick={() => toggleSubcategory(category.name, subcategory.name)}
                             className="w-full flex items-center gap-2 p-3 bg-white rounded-lg hover:bg-gray-100 transition-colors text-left mb-2"
                             aria-expanded={isSubExpanded}
-                            aria-label={`Toggle ${subcategory.displayName} subcategory`}
+                            aria-label={`Toggle ${formattedSubName} subcategory`}
                           >
                             {isSubExpanded ? (
                               <ChevronDown className="w-4 h-4 text-gray-400" />
@@ -168,8 +170,9 @@ export default function CategoryTree({ tree, defaultExpanded = false }) {
                               <ChevronRight className="w-4 h-4 text-gray-400" />
                             )}
                             <span className="font-medium text-gray-700">
-                              {subcategory.displayName}
+                              {formattedSubName}
                             </span>
+                            {hasNewSub && <NewBadge showAlways={true} />}
                             <span className="text-sm text-gray-500">
                               ({subcategory.items.length})
                             </span>

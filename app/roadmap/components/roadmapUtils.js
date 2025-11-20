@@ -36,3 +36,21 @@ export function hasNewCommits(category, thresholdDays = 3) {
 
   return false;
 }
+
+/**
+ * Check if a subcategory has any new commits within the threshold
+ * @param {Object} subcategory - Subcategory object with items
+ * @param {number} thresholdDays - Days to consider "new"
+ * @returns {boolean} True if subcategory has new commits
+ */
+export function hasNewSubcategoryCommits(subcategory, thresholdDays = 3) {
+  const now = new Date();
+  const thresholdMs = thresholdDays * 24 * 60 * 60 * 1000;
+
+  return subcategory.items?.some(item => {
+    if (item.type !== 'commit') return false;
+    const itemDate = new Date(item.date);
+    const diffMs = now - itemDate;
+    return diffMs >= 0 && diffMs <= thresholdMs;
+  });
+}

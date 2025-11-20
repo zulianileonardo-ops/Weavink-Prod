@@ -1,6 +1,7 @@
 "use client";
 import React, { useMemo, useRef, useEffect } from 'react';
 import { CATEGORY_CONFIG } from '@/lib/services/constants';
+import { useTranslation } from '@/lib/translation/useTranslation';
 
 // Layout Configuration
 const CONFIG = {
@@ -13,6 +14,8 @@ const CONFIG = {
 export default function RoadmapGraphView({ tree, selectedCommitHash }) {
   const containerRef = useRef(null);
   const svgRef = useRef(null);
+  const { t } = useTranslation();
+
   // Transform tree data into graph nodes and links with layout coordinates
   const { nodes, links, width, height } = useMemo(() => {
     if (!tree || Object.keys(tree).length === 0) {
@@ -126,9 +129,11 @@ export default function RoadmapGraphView({ tree, selectedCommitHash }) {
                 children: []
             }));
 
+            const formattedSubName = sub.name.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+
             return {
                 id: `sub-${cat.name}-${sub.name}`,
-                label: sub.displayName,
+                label: formattedSubName,
                 type: 'subcategory',
                 data: sub,
                 children: itemChildren
@@ -146,7 +151,7 @@ export default function RoadmapGraphView({ tree, selectedCommitHash }) {
 
         return {
             id: `cat-${cat.name}`,
-            label: cat.displayName,
+            label: t(`roadmap.categories.${cat.name}.name`, cat.name),
             type: 'category',
             data: cat,
             children: [...subChildren, ...directItemChildren]
@@ -175,7 +180,7 @@ export default function RoadmapGraphView({ tree, selectedCommitHash }) {
         height: Math.max(600, currentY + 50)
     };
 
-  }, [tree]);
+  }, [tree, t]);
 
   // Auto-scroll to selected commit
   useEffect(() => {
