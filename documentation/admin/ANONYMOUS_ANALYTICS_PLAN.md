@@ -1,6 +1,7 @@
 # Anonymous Analytics Tracking - Implementation Plan
 
-**Date**: November 7, 2025
+**Date**: November 7, 2025 (Updated: November 20, 2025)
+**Version**: 1.1
 **Status**: Planning Phase
 **Priority**: Medium (Post-MVP Enhancement)
 
@@ -331,6 +332,38 @@ Update Firestore: /Analytics_Anonymous/global/summary/
 ✅ Anonymous aggregates updated
 ```
 
+### Architecture Integration Notes (Nov 2025 Updates)
+
+#### TranslationService Integration
+All error messages and user-facing text will use the TranslationService for multilingual support:
+- API endpoints return errors in user's preferred language
+- Console logs can be translated for international development teams
+- Privacy policy sections available in all 5 supported languages (en, fr, es, ch, vm)
+
+**Example**:
+```javascript
+const errorMessage = await TranslationService.getServerTranslation(
+  'errors.anonymous_analytics_failed',
+  userLanguage || 'en'
+);
+```
+
+#### Public Consent API Pattern
+The anonymous analytics endpoint follows the public API pattern established for consent management:
+- No authentication required (public endpoint)
+- No session cookies needed
+- CORS-friendly for future external integrations
+- Rate limiting to prevent abuse
+
+**Pattern Consistency**: Mirrors `/api/user/privacy/consent/public/:username` for unauthenticated access to privacy-related features.
+
+#### Firestore TTL Integration
+Documents in `/Analytics_Anonymous/daily/dates/` collection automatically expire after 26 months using Firestore TTL:
+- Each document includes `expireAt: Date` field
+- Firestore automatically deletes expired documents
+- GDPR Article 5(1)(e) compliance (storage limitation)
+- No manual cleanup scripts required
+
 ---
 
 ## Implementation Plan
@@ -338,7 +371,9 @@ Update Firestore: /Analytics_Anonymous/global/summary/
 ### Phase 1: Core Infrastructure (Week 1-2)
 
 #### Step 1.1: Create Anonymous Analytics Constants
-**File**: `/lib/services/serviceUser/constants/anonymousAnalyticsConstants.js`
+**File**: `/constants/anonymousAnalyticsConstants.js`
+
+**Note**: Following the project's updated constants management pattern using barrel exports from `/constants/` directory (see [constant-manager-skill](../../guides/CONSTANT_MANAGER_SKILL_GUIDE.md)).
 
 ```javascript
 export const ANONYMOUS_EVENT_TYPES = {
@@ -365,16 +400,21 @@ export const RATE_LIMITS = {
 };
 
 export const DATA_RETENTION = {
-  DAILY_DATA: 26 * 30, // 26 months in days
+  DAILY_DATA: 26 * 30, // 26 months in days (GDPR/CNIL compliant)
   HOURLY_DATA: 90 // 90 days
 };
 ```
 
+**Integration Note**: Add these constants to `/constants/index.js` for barrel export pattern compliance.
+
 #### Step 1.2: Create Client-Side Anonymous Service
 **File**: `/lib/services/serviceUser/client/services/AnonymousAnalyticsService.js`
 
+**Integration Note**: Uses TranslationService for multilingual error messages (see [TranslationService pattern](../../services/TRANSLATION_SERVICE_GUIDE.md)).
+
 ```javascript
-import { ANONYMOUS_EVENT_TYPES, LINK_TYPES } from '../constants/anonymousAnalyticsConstants';
+import { ANONYMOUS_EVENT_TYPES, LINK_TYPES } from '@/constants';
+import { TranslationService } from '@/lib/services/server/translationService';
 
 /**
  * Anonymous Analytics Service (Client-Side)
@@ -400,6 +440,7 @@ export class AnonymousAnalyticsService {
       });
     } catch (error) {
       // Silent fail - don't break user experience
+      // Uses TranslationService for multilingual logging if needed
       console.warn('Anonymous analytics failed:', error);
     }
   }
@@ -429,10 +470,13 @@ export class AnonymousAnalyticsService {
 #### Step 1.3: Create Server-Side Anonymous Service
 **File**: `/lib/services/serviceUser/server/services/AnonymousAnalyticsService.js`
 
+**Integration Note**: Uses TranslationService for multilingual error messages and follows Firebase TTL pattern with `expireAt` field.
+
 ```javascript
 import { adminDb } from '@/lib/firebaseAdmin';
 import { FieldValue } from 'firebase-admin/firestore';
-import { ANONYMOUS_EVENT_TYPES } from '../constants/anonymousAnalyticsConstants';
+import { ANONYMOUS_EVENT_TYPES, DATA_RETENTION } from '@/constants';
+import { TranslationService } from '@/lib/services/server/translationService';
 
 /**
  * Anonymous Analytics Service (Server-Side)
@@ -452,6 +496,10 @@ export class AnonymousAnalyticsService {
     const hour = new Date().getHours(); // 0-23
 
     try {
+      // Calculate expiration date (26 months from now for GDPR compliance)
+      const expireAt = new Date();
+      expireAt.setDate(expireAt.getDate() + DATA_RETENTION.DAILY_DATA);
+
       // Update daily aggregates
       const dailyRef = adminDb
         .collection('Analytics_Anonymous')
@@ -463,7 +511,8 @@ export class AnonymousAnalyticsService {
         date: today,
         [`total${capitalize(eventType)}s`]: FieldValue.increment(1),
         [`hourlyDistribution.${hour}`]: FieldValue.increment(1),
-        timestamp: FieldValue.serverTimestamp()
+        timestamp: FieldValue.serverTimestamp(),
+        expireAt: expireAt // TTL field for automatic deletion
       }, { merge: true });
 
       // If click event, track link type
@@ -487,7 +536,13 @@ export class AnonymousAnalyticsService {
       }, { merge: true });
 
     } catch (error) {
-      console.error('Anonymous analytics aggregation failed:', error);
+      // Use TranslationService for multilingual error logging
+      const errorMessage = await TranslationService.getServerTranslation(
+        'errors.anonymous_analytics_failed',
+        'en',
+        { error: error.message }
+      );
+      console.error(errorMessage, error);
       // Don't throw - analytics failures shouldn't break the app
     }
   }
@@ -498,19 +553,31 @@ function capitalize(str) {
 }
 ```
 
+**TTL Configuration**: Requires Firestore TTL policy configured for `expireAt` field:
+```bash
+gcloud firestore fields ttls update expireAt \
+  --collection-group=dates \
+  --enable-ttl
+```
+
 #### Step 1.4: Create Anonymous API Endpoint
 **File**: `/app/api/user/analytics/track-anonymous/route.js`
+
+**Integration Note**: Uses public API pattern (no auth required) and TranslationService for multilingual error responses.
 
 ```javascript
 import { NextResponse } from 'next/server';
 import { AnonymousAnalyticsService } from '@/lib/services/serviceUser/server/services/AnonymousAnalyticsService';
-import { ANONYMOUS_EVENT_TYPES } from '@/lib/services/serviceUser/constants/anonymousAnalyticsConstants';
+import { ANONYMOUS_EVENT_TYPES } from '@/constants';
+import { TranslationService } from '@/lib/services/server/translationService';
 
 /**
  * Anonymous Analytics Tracking Endpoint
  *
  * Public endpoint (no auth required) for anonymous analytics.
  * GDPR Compliant: Legitimate interest for system monitoring.
+ *
+ * Follows public consent API pattern (no authentication).
  */
 export async function POST(request) {
   try {
@@ -518,8 +585,12 @@ export async function POST(request) {
 
     // Validate event type
     if (!Object.values(ANONYMOUS_EVENT_TYPES).includes(eventType)) {
+      const errorMessage = await TranslationService.getServerTranslation(
+        'errors.invalid_event_type',
+        'en'
+      );
       return NextResponse.json(
-        { error: 'Invalid event type' },
+        { error: errorMessage || 'Invalid event type' },
         { status: 400 }
       );
     }
@@ -531,13 +602,19 @@ export async function POST(request) {
 
   } catch (error) {
     console.error('Anonymous analytics endpoint error:', error);
+    const errorMessage = await TranslationService.getServerTranslation(
+      'errors.internal_server_error',
+      'en'
+    );
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: errorMessage || 'Internal server error' },
       { status: 500 }
     );
   }
 }
 ```
+
+**Public API Pattern**: Following the pattern established by `/api/user/privacy/consent/public/:username` for public, unauthenticated endpoints.
 
 ### Phase 2: Modify Existing Services (Week 2)
 
@@ -655,8 +732,16 @@ See [Privacy Policy Updates](#privacy-policy-updates) section below.
     other: { clicks: 110 }
   },
 
-  timestamp: FirebaseTimestamp          // Last update time
+  timestamp: FirebaseTimestamp,         // Last update time
+  expireAt: Date                        // TTL field for automatic deletion (26 months from creation)
 }
+```
+
+**TTL Field**: The `expireAt` field enables automatic document deletion after 26 months (GDPR/CNIL compliant retention period). Requires Firestore TTL policy configuration:
+```bash
+gcloud firestore fields ttls update expireAt \
+  --collection-group=dates \
+  --enable-ttl
 ```
 
 #### `/Analytics_Anonymous/global/summary/totals`
@@ -844,8 +929,41 @@ While this data is anonymous and cannot identify you, you still have
 the right to object to this processing. Contact us at privacy@weavink.io
 
 **Legal Basis**: Legitimate interest (GDPR Article 6(1)(f))
-**Data Retention**: 26 months (standard analytics period)
+**Data Retention**: 26 months (standard analytics period) - automated via Firestore TTL
 **Processing Location**: EU (Google Cloud Platform - Paris region)
+
+### Integration with Other Features
+
+This anonymous analytics system complements other privacy-compliant features implemented in Weavink:
+
+#### Email Notifications for Account Deletion
+When users delete their accounts, the system sends multilingual email notifications to:
+- The deleted user (confirmation and completion emails)
+- Contacts of the deleted user (notification of deletion)
+
+**Anonymous Analytics Impact**: If a user has withdrawn analytics consent, their account deletion events contribute only to anonymous aggregates (e.g., "total account deletions this month") without personal attribution.
+
+#### Contact Deletion Notifications
+When a user deletes their account, contacts receive real-time notifications through:
+- In-app notification system (`/notifications` collection)
+- Email notifications in user's preferred language
+- UI badges and status indicators
+
+**Anonymous Analytics Impact**: Contact notification views and interactions are tracked anonymously if the viewing user has withdrawn consent.
+
+#### Audit Log Retention
+System maintains audit logs for:
+- Privacy requests (account deletion, data export)
+- Consent changes
+- Analytics events
+
+**Retention Periods**:
+- Anonymous analytics: 26 months (TTL-based automatic deletion)
+- Privacy requests: 36 months (legal compliance requirement)
+- Consent logs: Indefinite (proof of consent/withdrawal)
+- Audit logs: 36 months (security and compliance)
+
+All retention periods follow GDPR Article 5(1)(e) (storage limitation principle).
 
 ### Difference Between Personal and Anonymous Analytics
 
@@ -892,38 +1010,183 @@ the right to object to this processing. Contact us at privacy@weavink.io
 
 ### Technical Success
 
-- [x] Anonymous tracking fires when consent = false
-- [x] Personal tracking unchanged when consent = true
-- [x] Zero PII in `/Analytics_Anonymous/` collection
-- [x] Aggregates increment correctly
-- [x] Hourly distribution accurate
-- [x] Link type tracking works
-- [x] Rate limiting prevents abuse
-- [x] All 124 tests passing (116 + 8 new)
+- [ ] Anonymous tracking fires when consent = false
+- [ ] Personal tracking unchanged when consent = true
+- [ ] Zero PII in `/Analytics_Anonymous/` collection
+- [ ] Aggregates increment correctly
+- [ ] Hourly distribution accurate
+- [ ] Link type tracking works
+- [ ] Rate limiting prevents abuse
+- [ ] All 124 tests passing (116 existing + 8 new anonymous analytics tests)
+
+**Current Test Status** (as of Nov 20, 2025):
+- Existing RGPD tests: 116 (all passing)
+- Email notification tests: 12 (Phase 1-3 complete)
+- Anonymous analytics tests: 0 (not yet implemented)
+- **Total when implemented**: 124 tests
 
 ### Business Success
 
-- [x] Platform monitoring always works
-- [x] Growth trends visible (daily/weekly/monthly)
-- [x] Link type popularity insights
-- [x] System health dashboards operational
-- [x] Marketing has platform-level KPIs
+- [ ] Platform monitoring always works
+- [ ] Growth trends visible (daily/weekly/monthly)
+- [ ] Link type popularity insights
+- [ ] System health dashboards operational
+- [ ] Marketing has platform-level KPIs
 
 ### Legal Success
 
-- [x] GDPR compliance verified
-- [x] CNIL requirements met
-- [x] Privacy policy updated
-- [x] DPO approval obtained
-- [x] Legitimate interest documented
-- [x] Balancing test passed
+- [ ] GDPR compliance verified
+- [ ] CNIL requirements met
+- [ ] Privacy policy updated
+- [ ] DPO approval obtained
+- [ ] Legitimate interest documented
+- [ ] Balancing test passed
 
 ### User Success
 
-- [x] No UX impact for users
-- [x] Clear explanation in consent UI
-- [x] No consent fatigue (no new prompts)
-- [x] Privacy respected (anonymous when consent withdrawn)
+- [ ] No UX impact for users
+- [ ] Clear explanation in consent UI
+- [ ] No consent fatigue (no new prompts)
+- [ ] Privacy respected (anonymous when consent withdrawn)
+
+---
+
+## Integration with Existing Features
+
+This anonymous analytics implementation will integrate seamlessly with features developed in November 2025:
+
+### 1. Constants Management System
+
+**Integration Point**: All analytics constants will follow the barrel export pattern managed by `constant-manager-skill`.
+
+**Benefits**:
+- Centralized constant definitions in `/constants/`
+- Automatic validation and consistency checks
+- Easy refactoring and renaming across the codebase
+
+**Files Affected**:
+- `/constants/anonymousAnalyticsConstants.js` (new)
+- `/constants/index.js` (updated to export new constants)
+
+**Reference**: [CONSTANT_MANAGER_SKILL_GUIDE.md](../guides/CONSTANT_MANAGER_SKILL_GUIDE.md)
+
+### 2. Translation Service (Multilingual Support)
+
+**Integration Point**: All user-facing messages and error responses will use TranslationService for multilingual support.
+
+**Supported Languages**: en, fr, es, ch, vm (Vietnamese)
+
+**Implementation**:
+- API error messages translated based on user language
+- Console warnings in user's preferred language
+- Privacy policy sections available in all 5 languages
+
+**Translation Keys Required** (add to `common.json`):
+```json
+{
+  "analytics": {
+    "anonymous_tracking_enabled": "Anonymous analytics enabled for system monitoring",
+    "consent_withdrawn_tracking_anonymous": "Tracking anonymously (consent withdrawn)"
+  },
+  "errors": {
+    "anonymous_analytics_failed": "Anonymous analytics tracking failed: {{error}}",
+    "invalid_event_type": "Invalid analytics event type",
+    "internal_server_error": "Internal server error"
+  }
+}
+```
+
+**Reference**: [TRANSLATION_SERVICE_GUIDE.md](../services/TRANSLATION_SERVICE_GUIDE.md)
+
+### 3. Firestore TTL (Time-To-Live)
+
+**Integration Point**: Anonymous analytics documents will automatically expire after 26 months using Firestore TTL.
+
+**Configuration**:
+```bash
+gcloud firestore fields ttls update expireAt \
+  --collection-group=dates \
+  --enable-ttl
+```
+
+**Benefits**:
+- Automatic GDPR compliance (data retention limits)
+- No manual cleanup scripts required
+- Reduces storage costs
+
+**Pattern**: Same TTL pattern used for PrivacyRequests and audit logs.
+
+**Reference**: [TTL_CONFIGURATION_GUIDE.md](../guides/TTL_CONFIGURATION_GUIDE.md)
+
+### 4. Email Notification System
+
+**Integration Point**: When users receive email notifications (account deletion, contact updates), their interaction with these emails can be tracked anonymously if consent is withdrawn.
+
+**Use Cases**:
+- Email open tracking (anonymous aggregate)
+- Link click tracking from emails (anonymous)
+- Platform health monitoring via email engagement
+
+**Privacy Compliance**:
+- No personal email addresses stored in anonymous data
+- Only aggregates: "total emails sent", "total links clicked"
+
+**Reference**: [EMAIL_NOTIFICATION_MANUAL_TEST_GUIDE.md](../testing/EMAIL_NOTIFICATION_MANUAL_TEST_GUIDE.md)
+
+### 5. Contact Deletion Notifications
+
+**Integration Point**: When contacts view deletion notifications in the UI, these views can be tracked anonymously.
+
+**Anonymous Metrics Available**:
+- Total contact deletion notifications viewed
+- Click rate on "Learn More" links
+- Notification dismissal rate
+
+**No PII Tracked**:
+- ❌ No tracking of which specific users viewed notifications
+- ❌ No tracking of deleted user identity
+- ✅ Only aggregate interaction counts
+
+**Reference**: [RGPD_CONTACT_NOTIFICATION_GUIDE.md](../guides/RGPD_CONTACT_NOTIFICATION_GUIDE.md)
+
+### 6. Public Consent API Pattern
+
+**Integration Point**: Anonymous analytics endpoint follows the public API pattern (no authentication required).
+
+**Pattern Benefits**:
+- Consistent with `/api/user/privacy/consent/public/:username`
+- No session/cookie requirements
+- CORS-friendly for future external integrations
+
+**Security**:
+- Rate limiting to prevent abuse
+- Input validation
+- No sensitive data exposure
+
+### 7. Test Manager Skill
+
+**Integration Point**: New anonymous analytics tests will be managed through test-manager-skill.
+
+**Test Organization**:
+- Test files in `/lib/services/servicePrivacy/tests/`
+- Automatic test index updates
+- Documentation linking
+
+**Expected Tests**: 8 new tests for anonymous analytics (see Testing Strategy section)
+
+**Reference**: [TEST_MANAGER_SKILL_GUIDE.md](../guides/TEST_MANAGER_SKILL_GUIDE.md)
+
+### 8. Documentation Manager Skill
+
+**Integration Point**: All documentation updates will be tracked and indexed through docs-manager-skill.
+
+**Documents to Create/Update**:
+- [ ] New: `ANONYMOUS_ANALYTICS_IMPLEMENTATION.md` (implementation guide)
+- [ ] Update: Privacy policy with anonymous analytics section
+- [ ] Update: `INDEX.md` with new anonymous analytics guides
+- [ ] Update: `docs-index.json` with new guide metadata
+
+**Reference**: [DOCS_MANAGER_SKILL_GUIDE.md](../guides/DOCS_MANAGER_SKILL_GUIDE.md)
 
 ---
 
@@ -981,9 +1244,21 @@ the right to object to this processing. Contact us at privacy@weavink.io
 
 ### Related Documentation
 
+#### Core RGPD Documentation
 - [RGPD_IMPLEMENTATION_SUMMARY.md](./RGPD_IMPLEMENTATION_SUMMARY.md) - Main RGPD implementation
 - [RGPD_TESTING_GUIDE.md](./RGPD_TESTING_GUIDE.md) - Testing procedures
 - [RGPD_Conformite_Tapit.md](./RGPD_Conformite_Tapit.md) - Legal compliance framework
+
+#### Implementation Guides (November 2025 Updates)
+- [EMAIL_NOTIFICATION_MANUAL_TEST_GUIDE.md](../testing/EMAIL_NOTIFICATION_MANUAL_TEST_GUIDE.md) - Email notification testing (Phases 1-3)
+- [EMAIL_NOTIFICATION_BUG_FIXES.md](../testing/EMAIL_NOTIFICATION_BUG_FIXES.md) - Bug fixes and solutions
+- [RGPD_ACCOUNT_DELETION_GUIDE.md](../guides/RGPD_ACCOUNT_DELETION_GUIDE.md) - Account deletion workflows
+- [RGPD_CONTACT_NOTIFICATION_GUIDE.md](../guides/RGPD_CONTACT_NOTIFICATION_GUIDE.md) - Contact notification system
+
+#### Service Documentation
+- [TRANSLATION_SERVICE_GUIDE.md](../services/TRANSLATION_SERVICE_GUIDE.md) - Multilingual support patterns
+- [CONSTANT_MANAGER_SKILL_GUIDE.md](../guides/CONSTANT_MANAGER_SKILL_GUIDE.md) - Constants management system
+- [TTL_CONFIGURATION_GUIDE.md](../guides/TTL_CONFIGURATION_GUIDE.md) - Firestore TTL setup
 
 ### References
 
@@ -1005,9 +1280,21 @@ the right to object to this processing. Contact us at privacy@weavink.io
 ---
 
 **Document Created**: November 7, 2025
-**Last Updated**: November 7, 2025
-**Status**: Planning Phase - Ready for Implementation
+**Last Updated**: November 20, 2025
+**Version**: 1.1
+**Status**: Planning Phase - Ready for Implementation (Updated with Nov 2025 integrations)
 **Next Step**: Phase 1 - Create core infrastructure files
+
+**Changelog**:
+- **Nov 20, 2025**: Updated plan to reflect recent codebase changes
+  - Added TranslationService integration for multilingual support
+  - Updated constants path to use barrel export pattern
+  - Added Firestore TTL configuration for automatic data expiration
+  - Documented integration with email notification system
+  - Documented integration with contact deletion notifications
+  - Added new documentation references (8 new guides)
+  - Updated test count status (116 → 124 tests when implemented)
+  - Added comprehensive "Integration with Existing Features" section
 
 ---
 
