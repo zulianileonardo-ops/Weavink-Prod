@@ -1,6 +1,7 @@
 "use client";
 import React from 'react';
 import { CATEGORY_CONFIG } from '@/lib/services/constants';
+import { useTranslation } from '@/lib/translation/useTranslation';
 
 /**
  * CategoryBadge - Display category with icon and color
@@ -9,6 +10,7 @@ import { CATEGORY_CONFIG } from '@/lib/services/constants';
  * @param {boolean} props.showIcon - Whether to show icon (default: true)
  */
 export default function CategoryBadge({ categoryKey, showIcon = true }) {
+  const { t } = useTranslation();
   const config = CATEGORY_CONFIG[categoryKey];
 
   if (!config) {
@@ -24,7 +26,7 @@ export default function CategoryBadge({ categoryKey, showIcon = true }) {
       {showIcon && config.icon && (
         <span className="mr-1">{config.icon}</span>
       )}
-      <span>{config.displayName}</span>
+      <span>{t(`roadmap.categories.${categoryKey}.name`, config.displayName)}</span>
     </div>
   );
 }

@@ -3173,6 +3173,45 @@
       "view_in_graph": "Voir dans le graphique",
       "graph": "Graphique"
     },
-    "graph_view_coming_soon": "Vue graphique bientôt disponible"
+    "graph_view_coming_soon": "Vue graphique bientôt disponible",
+    "new_badge": "NOUVEAU",
+    "categories": {
+      "features": {
+        "name": "Fonctionnalités"
+      },
+      "fixes": {
+        "name": "Corrections de bogues"
+      },
+      "documentation": {
+        "name": "Documentation"
+      },
+      "configuration": {
+        "name": "Configuration"
+      },
+      "internationalization": {
+        "name": "Internationalisation"
+      },
+      "testing": {
+        "name": "Tests"
+      },
+      "security": {
+        "name": "Sécurité"
+      },
+      "performance": {
+        "name": "Performance"
+      },
+      "refactoring": {
+        "name": "Refactorisation"
+      },
+      "ui": {
+        "name": "Interface utilisateur"
+      },
+      "styling": {
+        "name": "Stylisation"
+      },
+      "other": {
+        "name": "Autre"
+      }
+    }
   }
 }

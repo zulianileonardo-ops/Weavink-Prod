@@ -2518,6 +2518,45 @@
       "view_in_graph": "在图表中查看",
       "graph": "图表"
     },
-    "graph_view_coming_soon": "图表视图即将推出"
+    "graph_view_coming_soon": "图表视图即将推出",
+    "new_badge": "新",
+    "categories": {
+      "features": {
+        "name": "功能"
+      },
+      "fixes": {
+        "name": "错误修复"
+      },
+      "documentation": {
+        "name": "文档"
+      },
+      "configuration": {
+        "name": "配置"
+      },
+      "internationalization": {
+        "name": "国际化"
+      },
+      "testing": {
+        "name": "测试"
+      },
+      "security": {
+        "name": "安全"
+      },
+      "performance": {
+        "name": "性能"
+      },
+      "refactoring": {
+        "name": "重构"
+      },
+      "ui": {
+        "name": "用户界面"
+      },
+      "styling": {
+        "name": "样式"
+      },
+      "other": {
+        "name": "其他"
+      }
+    }
   }
 }

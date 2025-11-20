@@ -2958,6 +2958,45 @@
       "view_in_graph": "Ver en el gráfico",
       "graph": "Gráfico"
     },
-    "graph_view_coming_soon": "Vista de gráfico próximamente"
+    "graph_view_coming_soon": "Vista de gráfico próximamente",
+    "new_badge": "NUEVO",
+    "categories": {
+      "features": {
+        "name": "Características"
+      },
+      "fixes": {
+        "name": "Correcciones de errores"
+      },
+      "documentation": {
+        "name": "Documentación"
+      },
+      "configuration": {
+        "name": "Configuración"
+      },
+      "internationalization": {
+        "name": "Internacionalización"
+      },
+      "testing": {
+        "name": "Pruebas"
+      },
+      "security": {
+        "name": "Seguridad"
+      },
+      "performance": {
+        "name": "Rendimiento"
+      },
+      "refactoring": {
+        "name": "Refactorización"
+      },
+      "ui": {
+        "name": "Interfaz de usuario"
+      },
+      "styling": {
+        "name": "Estilización"
+      },
+      "other": {
+        "name": "Otro"
+      }
+    }
   }
 }

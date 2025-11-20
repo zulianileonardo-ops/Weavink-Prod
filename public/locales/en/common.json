@@ -87,7 +87,7 @@
     "apple": "Apple",
     "login_successful": "Login Successful",
     "google_signin_successful": "Google Sign-in Successful",
-    "microsoft_signin_successful": "Microsoft Sign-in Successful", 
+    "microsoft_signin_successful": "Microsoft Sign-in Successful",
     "apple_signin_successful": "Apple Sign-in Successful",
     "invalid_credentials": "Invalid Login credentials!",
     "google_signin_failed": "Google sign-in failed!",
@@ -97,13 +97,13 @@
   },
   "signup": {
     "title": "Create your account",
-    "username_placeholder": "fabiconcept", 
+    "username_placeholder": "fabiconcept",
     "email_placeholder": "Email",
     "password_placeholder": "Password",
     "create_account": "Create Account",
     "or_continue_with": "Or continue with",
     "google": "Google",
-    "microsoft": "Microsoft", 
+    "microsoft": "Microsoft",
     "apple": "Apple",
     "already_have_account": "Already have an account?",
     "login": "Log in",
@@ -135,7 +135,7 @@
   "dashboard": {
     "navigation": {
       "links": "Links",
-      "appearance": "Appearance", 
+      "appearance": "Appearance",
       "analytics": "Analytics",
       "contacts": "Contacts",
       "settings": "Settings"
@@ -621,25 +621,25 @@
       "preview": "Preview",
       "add_link": "Add Link",
       "enter_url": "Enter Url",
-  "saved_success": "Links saved!",
-  "saved_error": "Could not save links.",
-  "loading_error": "Failed to load links.",
-  "errors": {
-    "carousel_permission": "Upgrade to {{tier}} to use the Content Carousel feature.",
-    "carousel_limit": "Maximum of {{count}} carousel link(s) reached for the {{plan}} plan.",
-    "media_permission": "Upgrade to {{tier}} to use the Media feature.",
-    "media_limit": "Maximum of {{count}} media link(s) reached for the {{plan}} plan.",
-    "update_failed": "Failed to update link."
-  },
-  "status": {
-    "loading": "Loading your links...",
-    "saving": "Saving links...",
-    "syncing": "Syncing with server..."
-  },
-  "toasts": {
-    "carousel_added": "Carousel link added - go to Appearance to add items",
-    "carousel_creation_failed": "Carousel link added but failed to create carousel container",
-    "cv_added": "CV item added - go to Appearance to upload document",
+      "saved_success": "Links saved!",
+      "saved_error": "Could not save links.",
+      "loading_error": "Failed to load links.",
+      "errors": {
+        "carousel_permission": "Upgrade to {{tier}} to use the Content Carousel feature.",
+        "carousel_limit": "Maximum of {{count}} carousel link(s) reached for the {{plan}} plan.",
+        "media_permission": "Upgrade to {{tier}} to use the Media feature.",
+        "media_limit": "Maximum of {{count}} media link(s) reached for the {{plan}} plan.",
+        "update_failed": "Failed to update link."
+      },
+      "status": {
+        "loading": "Loading your links...",
+        "saving": "Saving links...",
+        "syncing": "Syncing with server..."
+      },
+      "toasts": {
+        "carousel_added": "Carousel link added - go to Appearance to add items",
+        "carousel_creation_failed": "Carousel link added but failed to create carousel container",
+        "cv_added": "CV item added - go to Appearance to upload document",
         "cv_creation_failed": "CV link added but failed to create document slot",
         "media_added": "Media link added - go to Appearance to configure your media",
         "media_creation_failed": "Media link added but failed to create media item slot"
@@ -694,7 +694,7 @@
       "go_back_button": "Go Back",
       "age_buttons": {
         "over_18": "I'm over 18",
-        "over_21": "I'm over 21", 
+        "over_21": "I'm over 21",
         "over_25": "I'm over 25",
         "under_18": "I'm under 18",
         "under_21": "I'm under 21",
@@ -1950,6 +1950,45 @@
       "view_in_graph": "View in graph",
       "graph": "Graph"
     },
-    "graph_view_coming_soon": "Graph view coming soon"
+    "graph_view_coming_soon": "Graph view coming soon",
+    "new_badge": "NEW",
+    "categories": {
+      "features": {
+        "name": "Features"
+      },
+      "fixes": {
+        "name": "Bug Fixes"
+      },
+      "documentation": {
+        "name": "Documentation"
+      },
+      "configuration": {
+        "name": "Configuration"
+      },
+      "internationalization": {
+        "name": "Internationalization"
+      },
+      "testing": {
+        "name": "Testing"
+      },
+      "security": {
+        "name": "Security"
+      },
+      "performance": {
+        "name": "Performance"
+      },
+      "refactoring": {
+        "name": "Refactoring"
+      },
+      "ui": {
+        "name": "User Interface"
+      },
+      "styling": {
+        "name": "Styling"
+      },
+      "other": {
+        "name": "Other"
+      }
+    }
   }
 }

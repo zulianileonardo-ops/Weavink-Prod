@@ -2949,6 +2949,45 @@
       "view_in_graph": "Xem trong biểu đồ",
       "graph": "Biểu đồ"
     },
-    "graph_view_coming_soon": "Chế độ xem đồ thị sắp ra mắt"
+    "graph_view_coming_soon": "Chế độ xem đồ thị sắp ra mắt",
+    "new_badge": "MỚI",
+    "categories": {
+      "features": {
+        "name": "Tính năng"
+      },
+      "fixes": {
+        "name": "Sửa lỗi"
+      },
+      "documentation": {
+        "name": "Tài liệu"
+      },
+      "configuration": {
+        "name": "Cấu hình"
+      },
+      "internationalization": {
+        "name": "Quốc tế hóa"
+      },
+      "testing": {
+        "name": "Kiểm thử"
+      },
+      "security": {
+        "name": "Bảo mật"
+      },
+      "performance": {
+        "name": "Hiệu suất"
+      },
+      "refactoring": {
+        "name": "Tái cấu trúc"
+      },
+      "ui": {
+        "name": "Giao diện người dùng"
+      },
+      "styling": {
+        "name": "Kiểu dáng"
+      },
+      "other": {
+        "name": "Khác"
+      }
+    }
   }
 }

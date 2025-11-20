@@ -5,7 +5,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import CommitCard from './CommitCard';
 import IssueCard from './IssueCard';
 import CategoryBadge from './CategoryBadge';
+import NewBadge from './NewBadge';
 import { useTranslation } from '@/lib/translation/useTranslation';
+import { ROADMAP_LIMITS } from '@/lib/services/serviceRoadmap/constants/roadmapConstants';
+import { hasNewCommits } from './roadmapUtils';
 
 /**
  * CategoryTree - Hierarchical tree view with expand/collapse
@@ -54,6 +57,7 @@ export default function CategoryTree({ tree, defaultExpanded = false }) {
       {Object.values(tree).map(category => {
         const isExpanded = expandedCategories[category.name];
         const hasItems = category.items.length > 0 || Object.keys(category.subcategories).length > 0;
+        const hasNew = hasNewCommits(category, ROADMAP_LIMITS.NEW_BADGE_THRESHOLD_DAYS);
 
         // Skip empty categories
         if (!hasItems) return null;
@@ -83,9 +87,12 @@ export default function CategoryTree({ tree, defaultExpanded = false }) {
                 <span className="text-3xl">{category.icon}</span>
 
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    {category.displayName}
-                  </h3>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      {t(`roadmap.categories.${category.name}.name`, category.displayName)}
+                    </h3>
+                    {hasNew && <NewBadge showAlways={true} />}
+                  </div>
                   {category.description && (
                     <p className="text-xs text-gray-500 mt-0.5">
                       {category.description}
