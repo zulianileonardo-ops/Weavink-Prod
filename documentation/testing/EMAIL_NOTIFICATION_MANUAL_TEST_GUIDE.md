@@ -361,6 +361,58 @@ POST /api/user/privacy/delete-account
 
 **Skip if:** You cannot trigger immediate deletion (requires backend modification)
 
+### Test 2.2 Results - PASSING ✅
+
+**Tested:** 2025-11-20
+**Test Accounts:**
+- User A (deleted): leozul0204@gmail.com (French, UID: 26v4uXMAk8c6rfLlcWKRZpE1sPC3)
+- User B (contact): reynard.ladislaslr2004@gmail.com (French, UID: ScmVq6p8ubQ9JFbniF2Vg5ocmbv2)
+
+**Implementation Note:** Added temporary UI checkbox in `DeleteAccountTab.jsx` for testing immediate deletion feature (bypasses 30-day grace period).
+
+**Emails Received (All Successful):**
+
+1. **✅ Deletion Confirmation Email** (immediate variant)
+   - **Recipient:** leozul0204@gmail.com (User A)
+   - **Subject:** "Demande de Suppression de Compte Confirmée - Weavink" (French)
+   - **Headline:** "Suppression de Compte en Cours" ("Account Deletion In Progress" - correct immediate variant)
+   - **Content Verification:**
+     - ✅ Immediate action language (NOT "scheduled for...")
+     - ✅ No grace period warning section
+     - ✅ No cancel button
+     - ✅ Export data reminder present
+     - ✅ Request ID included
+   - **Delivery Time:** Immediate
+
+2. **✅ Deletion Completed Email**
+   - **Recipient:** leozul0204@gmail.com (User A)
+   - **Subject:** "Votre Compte Weavink a été Supprimé" (French)
+   - **Content Verification:**
+     - ✅ GDPR Article 17 reference present
+     - ✅ Final confirmation of deletion
+     - ✅ Request ID included
+   - **Delivery Time:** Within seconds of deletion
+   - **Bug Fixed:** Previously failed to send due to fetch-after-delete issue (see [EMAIL_NOTIFICATION_BUG_FIXES.md](./EMAIL_NOTIFICATION_BUG_FIXES.md))
+
+3. **✅ Contact Notification Email** (cascade notification to User B)
+   - **Recipient:** reynard.ladislaslr2004@gmail.com (User B - French)
+   - **Subject:** "Un Contact a Supprimé son Compte - Weavink" (French - recipient's language)
+   - **Content Verification:**
+     - ✅ Notifies User B that contact deleted account
+     - ✅ Same request ID as User A's emails
+     - ✅ Language matches recipient (French), not deleted user
+   - **Delivery Time:** Within seconds of deletion
+
+**Expected Server Behavior:**
+After successful deletion, the following "errors" appear in server logs - **these are EXPECTED and indicate success**:
+- "User account not found" errors when frontend tries to refresh data
+- GET requests to `/api/user/privacy/delete-account`, `/api/user/settings`, `/api/user/privacy/consent` fail with 404/500
+- These errors confirm the account was successfully deleted
+
+**Bugs Discovered & Fixed:**
+1. **Completion Email Bug:** Email service tried to fetch user data AFTER deletion, causing `userDoc.exists` check to fail. Fixed by fetching user data at start of deletion process. See [EMAIL_NOTIFICATION_BUG_FIXES.md](./EMAIL_NOTIFICATION_BUG_FIXES.md) for details.
+2. **Firebase Index:** Composite index on `PrivacyRequests` collection required (auto-created on first run).
+
 ---
 
 ### Test 2.3: Contact Deletion Notice Email (Cascade Notifications)

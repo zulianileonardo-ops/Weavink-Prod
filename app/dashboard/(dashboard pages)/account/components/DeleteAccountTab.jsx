@@ -12,6 +12,7 @@ export default function DeleteAccountTab() {
   const [confirmationText, setConfirmationText] = useState('');
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState(null);
+  const [immediateDelete, setImmediateDelete] = useState(false);
 
   const handleDelete = async () => {
     try {
@@ -22,7 +23,7 @@ export default function DeleteAccountTab() {
       await requestDeletion(
         confirmationText,
         'User requested',
-        false,
+        immediateDelete,
         locale
       );
 
@@ -110,6 +111,21 @@ export default function DeleteAccountTab() {
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
             placeholder={t('account.delete.confirmation.placeholder', 'DELETE MY ACCOUNT')}
           />
+
+          {/* Immediate deletion checkbox for testing */}
+          <div className="flex items-center space-x-2 p-3 bg-orange-50 border border-orange-300 rounded">
+            <input
+              type="checkbox"
+              id="immediateDelete"
+              checked={immediateDelete}
+              onChange={(e) => setImmediateDelete(e.target.checked)}
+              className="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
+            />
+            <label htmlFor="immediateDelete" className="text-sm text-orange-900">
+              <span className="font-semibold">Delete immediately</span> (bypasses 30-day grace period - for testing only)
+            </label>
+          </div>
+
           <div className="flex space-x-3">
             <button
               onClick={handleDelete}

@@ -1,7 +1,7 @@
 # Weavink Documentation Index
 
 **Last Updated:** 2025-11-20
-**Total Guides:** 75
+**Total Guides:** 76
 
 ## Quick Navigation
 - [Admin System](#admin-system) (9 guides)
@@ -9,7 +9,7 @@
 - [RGPD/GDPR Compliance](#rgpd-gdpr-compliance) (9 guides)
 - [Feature Implementations](#feature-implementations) (22 guides)
 - [Technical Infrastructure](#technical-infrastructure) (17 guides)
-- [Testing & QA](#testing-qa) (7 guides)
+- [Testing & QA](#testing-qa) (8 guides)
 - [General Documentation](#general-documentation) (4 guides)
 - [Tutorials & Guides](#tutorials-guides) (3 guides)
 - [Meta Documentation](#meta-documentation) (2 guides)
@@ -334,10 +334,15 @@
 ## Testing & QA
 *Testing guides and quality assurance*
 
+### EMAIL_NOTIFICATION_BUG_FIXES.md
+**Summary:** Documents bugs discovered during email notification system testing, including completion email fetch-after-delete bug and Firebase composite index requirement. Includes root cause analysis and fixes.
+**Tags:** email, notifications, bug-fixes, rgpd, testing, account-deletion, firebase, debugging, root-cause-analysis
+**Related:** [EMAIL_NOTIFICATION_MANUAL_TEST_GUIDE.md](#email-notification-manual-test-guide-md), [RGPD_ACCOUNT_DELETION_GUIDE.md](#rgpd-account-deletion-guide-md)
+
 ### EMAIL_NOTIFICATION_MANUAL_TEST_GUIDE.md
-**Summary:** Comprehensive manual testing guide for multilingual email notification system covering i18n bug fixes, account deletion emails, and data export emails. Includes troubleshooting for recent bug fixes.
-**Tags:** email, notifications, multilingual, i18n, rgpd, manual-testing, phase1, phase2, phase3, data-export, gdpr, brevo, troubleshooting
-**Related:** [RGPD_TESTING_GUIDE.md](#rgpd-testing-guide-md), [ACCOUNT_PRIVACY_TESTING_GUIDE.md](#account-privacy-testing-guide-md), [RGPD_IMPLEMENTATION_SUMMARY.md](#rgpd-implementation-summary-md), [EMAIL_INTEGRATION_GUIDE.md](#email-integration-guide-md)
+**Summary:** Comprehensive manual testing guide for multilingual email notification system covering i18n bug fixes, account deletion emails, and data export emails. Includes Test 2.2 results (immediate deletion variant).
+**Tags:** email, notifications, multilingual, i18n, rgpd, manual-testing, phase1, phase2, phase3, data-export, gdpr, brevo, troubleshooting, immediate-deletion
+**Related:** [RGPD_TESTING_GUIDE.md](#rgpd-testing-guide-md), [ACCOUNT_PRIVACY_TESTING_GUIDE.md](#account-privacy-testing-guide-md), [RGPD_IMPLEMENTATION_SUMMARY.md](#rgpd-implementation-summary-md), [EMAIL_INTEGRATION_GUIDE.md](#email-integration-guide-md), [EMAIL_NOTIFICATION_BUG_FIXES.md](#email-notification-bug-fixes-md)
 
 ### RATE_LIMIT_TESTING.md
 **Summary:** Testing guide for rate limiting system with various attack scenarios and verification methods.

@@ -2,7 +2,7 @@
   "metadata": {
     "project": "Weavink Documentation",
     "last_updated": "2025-11-20",
-    "total_guides": 75,
+    "total_guides": 76,
     "version": "1.0.0"
   },
   "categories": {
@@ -106,7 +106,8 @@
         "testing-rgpd-guide-038",
         "testing-rgpd-quickstart-039",
         "testing-rgpd-results-040",
-        "testing-email-notifications-065"
+        "testing-email-notifications-065",
+        "testing-email-notification-bugs-076"
       ]
     },
     "general": {
@@ -1952,7 +1953,7 @@
       "title": "Email Notification System - Manual Test Guide (Phase 1, 2 & 3)",
       "filename": "documentation/testing/EMAIL_NOTIFICATION_MANUAL_TEST_GUIDE.md",
       "category": "testing",
-      "summary": "Comprehensive manual testing guide for multilingual email notification system covering i18n bug fixes, account deletion emails, and data export emails. Includes troubleshooting for recent bug fixes.",
+      "summary": "Comprehensive manual testing guide for multilingual email notification system covering i18n bug fixes, account deletion emails, and data export emails. Includes Test 2.2 results (immediate deletion variant).",
       "tags": [
         "email",
         "notifications",
@@ -1966,16 +1967,18 @@
         "data-export",
         "gdpr",
         "brevo",
-        "troubleshooting"
+        "troubleshooting",
+        "immediate-deletion"
       ],
       "status": "active",
       "created": "2025-11-19",
-      "updated": "2025-11-19",
+      "updated": "2025-11-20",
       "related_guides": [
         "RGPD_TESTING_GUIDE.md",
         "ACCOUNT_PRIVACY_TESTING_GUIDE.md",
         "RGPD_IMPLEMENTATION_SUMMARY.md",
-        "EMAIL_INTEGRATION_GUIDE.md"
+        "EMAIL_INTEGRATION_GUIDE.md",
+        "EMAIL_NOTIFICATION_BUG_FIXES.md"
       ],
       "functions": [
         "sendAccountDeletionConfirmationEmail",
@@ -1985,6 +1988,38 @@
         "sendDataExportCompletedEmail"
       ],
       "components": []
+    },
+    {
+      "id": "testing-email-notification-bugs-076",
+      "title": "Email Notification System - Bug Fixes Documentation",
+      "filename": "documentation/testing/EMAIL_NOTIFICATION_BUG_FIXES.md",
+      "category": "testing",
+      "summary": "Documents bugs discovered during email notification system testing, including completion email fetch-after-delete bug and Firebase composite index requirement. Includes root cause analysis and fixes.",
+      "tags": [
+        "email",
+        "notifications",
+        "bug-fixes",
+        "rgpd",
+        "testing",
+        "account-deletion",
+        "firebase",
+        "debugging",
+        "root-cause-analysis"
+      ],
+      "status": "active",
+      "created": "2025-11-20",
+      "updated": "2025-11-20",
+      "related_guides": [
+        "EMAIL_NOTIFICATION_MANUAL_TEST_GUIDE.md",
+        "RGPD_ACCOUNT_DELETION_GUIDE.md"
+      ],
+      "functions": [
+        "executeAccountDeletion",
+        "sendAccountDeletionCompletedEmail"
+      ],
+      "components": [
+        "DeleteAccountTab"
+      ]
     },
     {
       "id": "tutorials-email-integration-066",
