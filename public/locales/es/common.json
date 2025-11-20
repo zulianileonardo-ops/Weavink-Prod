@@ -2827,7 +2827,9 @@
       "cancel_instructions": "Para cancelar esta solicitud, visite la configuración de su cuenta o contacte a nuestro equipo de soporte.",
       "button_cancel": "Cancelar eliminación",
       "thank_you": "Gracias por usar Weavink.",
-      "team_name": "El equipo de Weavink"
+      "team_name": "El equipo de Weavink",
+      "request_id": "ID de solicitud:",
+      "dpo_label": "Oficial de Protección de Datos:"
     },
     "contact_deletion_notice": {
       "subject": "Actualización de contacto - Eliminación de cuenta de {{deletedUserName}}",

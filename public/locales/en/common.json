@@ -1819,7 +1819,9 @@
       "cancel_instructions": "To cancel this request, visit your account settings or contact our support team.",
       "button_cancel": "Cancel Deletion",
       "thank_you": "Thank you for using Weavink.",
-      "team_name": "The Weavink Team"
+      "team_name": "The Weavink Team",
+      "request_id": "Request ID:",
+      "dpo_label": "Data Protection Officer:"
     },
     "contact_deletion_notice": {
       "subject": "Contact Update - {{deletedUserName}} Account Deletion",

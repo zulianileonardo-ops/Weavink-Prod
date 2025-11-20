@@ -2809,7 +2809,9 @@
       "cancel_instructions": "Để hủy yêu cầu này, hãy truy cập cài đặt tài khoản hoặc liên hệ với nhóm hỗ trợ của chúng tôi.",
       "button_cancel": "Hủy xóa",
       "thank_you": "Cảm ơn bạn đã sử dụng Weavink.",
-      "team_name": "Đội ngũ Weavink"
+      "team_name": "Đội ngũ Weavink",
+      "request_id": "Mã yêu cầu:",
+      "dpo_label": "Nhân viên Bảo vệ Dữ liệu:"
     },
     "contact_deletion_notice": {
       "subject": "Thông báo về liên hệ đã xóa - Weavink",

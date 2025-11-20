@@ -3042,7 +3042,9 @@
       "cancel_instructions": "Pour annuler cette demande, visitez les paramètres de votre compte ou contactez notre équipe d'assistance.",
       "button_cancel": "Annuler la suppression",
       "thank_you": "Merci d'avoir utilisé Weavink.",
-      "team_name": "L'équipe Weavink"
+      "team_name": "L'équipe Weavink",
+      "request_id": "Identifiant de la demande :",
+      "dpo_label": "Délégué à la protection des données :"
     },
     "contact_deletion_notice": {
       "subject": "Mise à jour du contact - Suppression du compte de {{deletedUserName}}",

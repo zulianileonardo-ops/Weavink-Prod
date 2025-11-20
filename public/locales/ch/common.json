@@ -2387,7 +2387,9 @@
       "cancel_instructions": "要取消此请求，请访问您的账户设置或联系我们的支持团队。",
       "button_cancel": "取消删除",
       "thank_you": "感谢您使用 Weavink。",
-      "team_name": "Weavink 团队"
+      "team_name": "Weavink 团队",
+      "request_id": "请求 ID：",
+      "dpo_label": "数据保护官："
     },
     "contact_deletion_notice": {
       "subject": "联系人更新 - {{deletedUserName}} 账户删除",
