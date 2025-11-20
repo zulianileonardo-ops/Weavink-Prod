@@ -2,7 +2,7 @@
 import React from 'react';
 import { GitCommit, User, Calendar, GitGraph } from 'lucide-react';
 import { useTranslation } from '@/lib/translation/useTranslation';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import NewBadge from './NewBadge';
 import { ROADMAP_LIMITS } from '@/lib/services/serviceRoadmap/constants/roadmapConstants';
 
@@ -14,6 +14,7 @@ import { ROADMAP_LIMITS } from '@/lib/services/serviceRoadmap/constants/roadmapC
 export default function CommitCard({ commit }) {
   const { t } = useTranslation();
   const router = useRouter();
+  const pathname = usePathname();
 
   // Format date
   const formattedDate = new Date(commit.date).toLocaleDateString('en-US', {
@@ -22,9 +23,13 @@ export default function CommitCard({ commit }) {
     day: 'numeric',
   });
 
+  // Detect if we're in dashboard context and use appropriate base path
+  const isDashboard = pathname?.startsWith('/dashboard');
+  const basePath = isDashboard ? '/dashboard/roadmap' : '/roadmap';
+
   // Handle navigation to graph view with this commit selected
   const handleViewInGraph = () => {
-    router.push(`/roadmap?view=graph&commit=${commit.hash}`);
+    router.push(`${basePath}?view=graph&commit=${commit.hash}`);
   };
 
   // Generate GitHub commit URL (if GITHUB_REPO_OWNER and GITHUB_REPO_NAME are available)

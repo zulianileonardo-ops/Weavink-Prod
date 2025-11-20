@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from '@/lib/translation/useTranslation';
 import { RoadmapService } from '@/lib/services/serviceRoadmap/client/roadmapService';
@@ -14,10 +15,22 @@ import toast from 'react-hot-toast';
 export default function DashboardRoadmapPage() {
   const { currentUser, getValidToken } = useAuth();
   const { t } = useTranslation();
+  const searchParams = useSearchParams();
   const [categoryTree, setCategoryTree] = useState(null);
   const [stats, setStats] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [view, setView] = useState('list');
+
+  // Extract URL parameters
+  const urlView = searchParams.get('view');
+  const selectedCommitHash = searchParams.get('commit');
+
+  // Initialize view from URL if present
+  useEffect(() => {
+    if (urlView && (urlView === 'list' || urlView === 'graph')) {
+      setView(urlView);
+    }
+  }, [urlView]);
 
   const fetchRoadmap = useCallback(async (forceRefresh = false) => {
     if (!currentUser) {
@@ -85,7 +98,7 @@ export default function DashboardRoadmapPage() {
         </div>
 
         <div className="flex items-center gap-3">
-          <ViewToggle onViewChange={setView} defaultView="list" />
+          <ViewToggle onViewChange={setView} defaultView={urlView || 'list'} />
           <button
             onClick={() => fetchRoadmap(true)}
             className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"
@@ -142,7 +155,7 @@ export default function DashboardRoadmapPage() {
       )}
 
       {view === 'graph' && categoryTree && (
-        <RoadmapGraphView tree={categoryTree} />
+        <RoadmapGraphView tree={categoryTree} selectedCommitHash={selectedCommitHash} />
       )}
     </div>
   );
