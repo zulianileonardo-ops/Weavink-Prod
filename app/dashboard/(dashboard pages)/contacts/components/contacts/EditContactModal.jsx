@@ -96,10 +96,21 @@ export default function EditContactModal({ contact, isOpen, onClose, onSave }) {
                     });
                     setDeletionInfo({
                         scheduledDate: status.scheduledDate,
-                        userName: status.userName
+                        userName: status.userName,
+                        status: 'pending'
+                    });
+                } else if (status.isDeleted) {
+                    console.log('[EditContactModal - DeletionCheck] ✅ Deletion completed found!', {
+                        userName: status.userName,
+                        completedAt: status.completedAt
+                    });
+                    setDeletionInfo({
+                        completedAt: status.completedAt,
+                        userName: status.userName,
+                        status: 'completed'
                     });
                 } else {
-                    console.log('[EditContactModal - DeletionCheck] ❌ No pending deletion found');
+                    console.log('[EditContactModal - DeletionCheck] ❌ No deletion found');
                     setDeletionInfo(null);
                 }
             } catch (error) {
@@ -180,8 +191,8 @@ export default function EditContactModal({ contact, isOpen, onClose, onSave }) {
                     </button>
                 </div>
 
-                {/* Deletion Warning Banner */}
-                {deletionInfo && (
+                {/* Deletion Warning/Info Banner */}
+                {deletionInfo && deletionInfo.status === 'pending' && (
                     <div className="mx-4 mt-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
                         <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
                         <div>
@@ -201,6 +212,21 @@ export default function EditContactModal({ contact, isOpen, onClose, onSave }) {
                                     month: 'long',
                                     day: 'numeric'
                                 })}. Their contact information will be anonymized after this date.`)}
+                            </p>
+                        </div>
+                    </div>
+                )}
+                {deletionInfo && deletionInfo.status === 'completed' && (
+                    <div className="mx-4 mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg flex items-start gap-3">
+                        <AlertCircle className="w-5 h-5 text-gray-600 flex-shrink-0 mt-0.5" />
+                        <div>
+                            <h4 className="text-gray-900 font-semibold">
+                                {t('contacts.deletion_completed_title', 'Contact Account Deleted')}
+                            </h4>
+                            <p className="text-gray-700 text-sm mt-1">
+                                {t('contacts.deletion_completed_message', {
+                                    name: deletionInfo.userName
+                                }, `${deletionInfo.userName}'s account has been deleted and their contact information has been anonymized.`)}
                             </p>
                         </div>
                     </div>

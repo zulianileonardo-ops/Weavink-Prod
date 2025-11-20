@@ -185,6 +185,206 @@ firebase firestore:indexes:create \
 
 ---
 
+## Bug #3: Contact Deletion Notifications Not Updated on Completion
+
+**Discovered:** 2025-11-20
+**Test:** Manual testing of immediate deletion feature
+**Severity:** High (incorrect UI state for contacts)
+**Status:** ✅ FIXED
+
+### Symptoms
+
+When User A deletes their account (immediate deletion), User B (who has User A as a contact) receives an initial notification showing "deletion pending" with a red badge. However:
+1. ❌ The notification in Firestore is NOT updated when deletion completes
+2. ❌ The badge in User B's dashboard/contacts still shows "⚠️ deletion pending" instead of "❌ Account Deleted"
+3. ❌ User B has no indication that the account was actually deleted
+
+### Root Cause
+
+In `lib/services/servicePrivacy/server/accountDeletionService.js`, the `executeAccountDeletion` function successfully:
+1. Deletes the user account
+2. Sends completion email to deleted user
+3. Deletes Firebase Auth account
+4. Updates the PrivacyRequests document
+
+**Problem:** There was NO code to update the notifications in other users' collections from `contact_deletion` (pending) to `contact_deletion_completed`.
+
+**Missing functionality:**
+- No notification update logic after deletion completes
+- Notifications collection remained in "pending" state forever
+- UI always queried for `type: 'contact_deletion'` which never changed
+
+### The Fix
+
+**File:** `lib/services/servicePrivacy/server/accountDeletionService.js`
+
+#### Change 1: Added Notification Update Function (lines 512-574)
+
+Created new `notifyContactDeletionCompleted()` function:
+
+```javascript
+async function notifyContactDeletionCompleted(deletedUserId, deletedEmail, userIds, deletedUserName) {
+  console.log(`[AccountDeletion] Updating ${userIds.length} notifications to 'completed' status`);
+
+  const updatePromises = userIds.map(async (userId) => {
+    // Find the existing notification
+    const notificationsRef = db.collection('users').doc(userId).collection('notifications');
+
+    // Try to find by deletedUserId first
+    let querySnapshot = await notificationsRef
+      .where('type', '==', 'contact_deletion')
+      .where('deletedUserId', '==', deletedUserId)
+      .limit(1)
+      .get();
+
+    // Fallback to email matching if userId doesn't match
+    if (querySnapshot.empty && deletedEmail) {
+      querySnapshot = await notificationsRef
+        .where('type', '==', 'contact_deletion')
+        .where('deletedUserEmail', '==', deletedEmail)
+        .limit(1)
+        .get();
+    }
+
+    if (!querySnapshot.empty) {
+      const notificationDoc = querySnapshot.docs[0];
+
+      // Update notification to completed status
+      await notificationDoc.ref.update({
+        type: 'contact_deletion_completed',
+        status: 'completed',
+        completedAt: FieldValue.serverTimestamp(),
+        message: `${deletedUserName}'s account has been deleted. Their contact information has been anonymized.`,
+        title: 'Contact Account Deleted',
+        read: false,  // Mark as unread again to alert user
+      });
+    }
+  });
+
+  await Promise.allSettled(updatePromises);
+}
+```
+
+#### Change 2: Call Notification Update in executeAccountDeletion (lines 175-187)
+
+Added Step 4.5 after auth deletion:
+
+```javascript
+// Step 4: Delete Firebase Auth account
+deletionSteps.push(await deleteAuthAccount(userId));
+
+// Step 4.5: Update notifications for affected users to show deletion completion
+try {
+  const usersWithContact = await findUsersWithContact(userId, userEmail);
+
+  if (usersWithContact.length > 0) {
+    console.log(`[AccountDeletion] Updating notifications for ${usersWithContact.length} users`);
+    await notifyContactDeletionCompleted(userId, userEmail, usersWithContact, userName);
+  }
+} catch (notificationError) {
+  console.error('❌ Failed to update notifications:', notificationError);
+  // Non-blocking: continue even if notification update fails
+}
+```
+
+#### Change 3: Enhanced API Endpoint (deletion-status/route.js)
+
+Updated query to check for BOTH pending and completed notifications:
+
+```javascript
+// Query for ANY deletion notification (pending or completed)
+querySnapshot = await notificationsRef
+  .where('type', 'in', ['contact_deletion', 'contact_deletion_completed'])
+  .where('deletedUserId', '==', contactUserId)
+  .limit(1)
+  .get();
+
+// Return enhanced status
+return NextResponse.json({
+  hasPendingDeletion: !isCompleted,
+  isDeleted: isCompleted,
+  status: notification.status || (isCompleted ? 'completed' : 'pending'),
+  userName: notification.deletedUserName,
+  scheduledDate: scheduledDate,
+  completedAt: completedAt || null
+});
+```
+
+#### Change 4: Updated UI Components
+
+**ContactCard.jsx** (lines 93-116, 272-297, 329-367):
+- Handle both `hasPendingDeletion` and `isDeleted` states
+- Show red badge "⚠️ Dec 19" for pending
+- Show gray badge "❌ Account Deleted" for completed
+- Show appropriate warning/info banners
+
+**EditContactModal.jsx** (lines 92-115, 195-233):
+- Same updates as ContactCard for consistency
+
+#### Change 5: Added Translations
+
+Added 4 new translation keys in all 5 languages (en, fr, es, ch, vm):
+- `contacts.deletion_completed_badge`: "Account Deleted"
+- `contacts.deletion_completed_badge_tooltip`: "{{name}}'s account has been deleted"
+- `contacts.deletion_completed_title`: "Contact Account Deleted"
+- `contacts.deletion_completed_message`: "{{name}}'s account has been deleted..."
+
+### Verification
+
+**Test Date:** 2025-11-20
+**Test Accounts:**
+- User A: leozul0204@gmail.com (deleted immediately)
+- User B: reynard.ladislaslr2004@gmail.com, nathalie.gillet@repereetvision.com (contacts)
+
+**Server Logs Confirmed:**
+```
+[AccountDeletion] Updating notifications for 2 users
+[AccountDeletion] Updating 2 notifications to 'completed' status
+✅ Updated notification for user HCeK48O48oRSWY1c657KY8lNqzI2
+✅ Updated notification for user ScmVq6p8ubQ9JFbniF2Vg5ocmbv2
+[AccountDeletion] Completed updating notifications
+```
+
+**Expected Results:**
+1. ✅ Notifications in Firestore updated to `type: 'contact_deletion_completed'`
+2. ✅ User B's contacts page shows gray "❌ Account Deleted" badge (not red pending)
+3. ✅ Expanding contact shows gray info banner "Contact Account Deleted"
+4. ✅ API returns `isDeleted: true, status: 'completed'`
+
+### Files Modified
+
+1. `lib/services/servicePrivacy/server/accountDeletionService.js`
+   - Added: `notifyContactDeletionCompleted()` function
+   - Modified: `executeAccountDeletion()` to call notification update
+
+2. `app/api/user/contacts/deletion-status/route.js`
+   - Enhanced query to check for both notification types
+   - Return enhanced status with completion info
+
+3. `app/dashboard/(dashboard pages)/contacts/components/contacts/ContactCard.jsx`
+   - Handle pending and completed states
+   - Updated badge and banner displays
+
+4. `app/dashboard/(dashboard pages)/contacts/components/contacts/EditContactModal.jsx`
+   - Same updates as ContactCard
+
+5. Translation files (5 languages):
+   - `public/locales/{en,fr,es,ch,vm}/common.json`
+
+### Lessons Learned
+
+1. **Complete the notification lifecycle:** When creating notifications for external users, ensure they're updated when the triggering event completes.
+
+2. **Dual-state UI:** UI components must handle both in-progress and completed states for any async operation.
+
+3. **Non-blocking updates:** Notification updates should not block the main deletion process (wrapped in try-catch with logging).
+
+4. **Firestore queries:** Use `where('type', 'in', [...])` to query multiple notification types efficiently.
+
+5. **Bidirectional communication:** When User A's action affects User B's UI, ensure User B's data is updated, not just emails sent.
+
+---
+
 ## Expected "Errors" (Not Bugs)
 
 ### User Account Not Found After Deletion
@@ -225,9 +425,10 @@ Since the account was just deleted, these requests correctly return:
 |-----|----------|--------|------|
 | Completion email not sent | High | ✅ Fixed | Test 2.2 |
 | Firebase index missing | Medium | ✅ Auto-resolved | Test 2.2 |
+| Contact notifications not updated | High | ✅ Fixed | Manual test |
 
-**Total bugs discovered:** 2
-**Total bugs fixed:** 2
+**Total bugs discovered:** 3
+**Total bugs fixed:** 3
 **Test success rate:** 100% (after fixes)
 
 ---

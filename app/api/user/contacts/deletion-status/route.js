@@ -3,14 +3,16 @@ import { adminAuth, adminDb } from '@/lib/firebaseAdmin';
 
 /**
  * GET /api/user/contacts/deletion-status
- * Check if a specific contact has a pending account deletion
+ * Check if a specific contact has a pending or completed account deletion
  *
  * Query params:
  * - contactUserId: The Weavink user ID of the contact to check
+ * - contactEmail: The email of the contact to check (fallback if userId not available)
  *
  * Returns:
- * - { hasPendingDeletion: false } if no deletion found
- * - { hasPendingDeletion: true, userName: string, scheduledDate: string } if deletion found
+ * - { hasPendingDeletion: false, isDeleted: false } if no deletion found
+ * - { hasPendingDeletion: true, status: 'pending', userName: string, scheduledDate: string } if deletion pending
+ * - { isDeleted: true, status: 'completed', userName: string, completedAt: string } if deletion completed
  */
 export async function GET(request) {
   try {
@@ -50,17 +52,17 @@ export async function GET(request) {
       );
     }
 
-    // 3. Query user's notifications for contact deletion
+    // 3. Query user's notifications for contact deletion (both pending and completed)
     const notificationsRef = adminDb
       .collection('users')
       .doc(currentUserId)
       .collection('notifications');
 
-    // Try to find by userId first (if provided)
+    // Try to find by userId first (if provided) - check for both pending and completed
     let querySnapshot = null;
     if (contactUserId) {
       querySnapshot = await notificationsRef
-        .where('type', '==', 'contact_deletion')
+        .where('type', 'in', ['contact_deletion', 'contact_deletion_completed'])
         .where('deletedUserId', '==', contactUserId)
         .limit(1)
         .get();
@@ -69,7 +71,7 @@ export async function GET(request) {
     // If not found by userId and email is provided, try by email
     if ((!querySnapshot || querySnapshot.empty) && contactEmail) {
       querySnapshot = await notificationsRef
-        .where('type', '==', 'contact_deletion')
+        .where('type', 'in', ['contact_deletion', 'contact_deletion_completed'])
         .where('deletedUserEmail', '==', contactEmail)
         .limit(1)
         .get();
@@ -78,22 +80,35 @@ export async function GET(request) {
     // 4. Return result
     if (querySnapshot.empty) {
       return NextResponse.json({
-        hasPendingDeletion: false
+        hasPendingDeletion: false,
+        isDeleted: false
       });
     }
 
     const notification = querySnapshot.docs[0].data();
 
-    // Convert Firestore Timestamp to ISO string if needed
+    // Determine status based on notification type
+    const isCompleted = notification.type === 'contact_deletion_completed';
+    const status = notification.status || (isCompleted ? 'completed' : 'pending');
+
+    // Convert Firestore Timestamps to ISO strings if needed
     let scheduledDate = notification.scheduledDate;
     if (scheduledDate && typeof scheduledDate.toDate === 'function') {
       scheduledDate = scheduledDate.toDate().toISOString();
     }
 
+    let completedAt = notification.completedAt;
+    if (completedAt && typeof completedAt.toDate === 'function') {
+      completedAt = completedAt.toDate().toISOString();
+    }
+
     return NextResponse.json({
-      hasPendingDeletion: true,
+      hasPendingDeletion: !isCompleted,
+      isDeleted: isCompleted,
+      status: status,
       userName: notification.deletedUserName || 'Unknown User',
-      scheduledDate: scheduledDate
+      scheduledDate: scheduledDate,
+      completedAt: completedAt || null
     });
 
   } catch (error) {

@@ -335,8 +335,8 @@
 *Testing guides and quality assurance*
 
 ### EMAIL_NOTIFICATION_BUG_FIXES.md
-**Summary:** Documents bugs discovered during email notification system testing, including completion email fetch-after-delete bug and Firebase composite index requirement. Includes root cause analysis and fixes.
-**Tags:** email, notifications, bug-fixes, rgpd, testing, account-deletion, firebase, debugging, root-cause-analysis
+**Summary:** Documents 3 bugs discovered during email notification system testing: completion email fetch-after-delete bug, Firebase composite index requirement, and contact deletion notifications not updating on completion. Includes root cause analysis, fixes, and verification.
+**Tags:** email, notifications, bug-fixes, rgpd, testing, account-deletion, firebase, debugging, root-cause-analysis, notification-update, notifications-collection, contacts-ui
 **Related:** [EMAIL_NOTIFICATION_MANUAL_TEST_GUIDE.md](#email-notification-manual-test-guide-md), [RGPD_ACCOUNT_DELETION_GUIDE.md](#rgpd-account-deletion-guide-md)
 
 ### EMAIL_NOTIFICATION_MANUAL_TEST_GUIDE.md

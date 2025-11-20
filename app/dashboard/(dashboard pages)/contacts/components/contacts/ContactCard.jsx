@@ -97,10 +97,21 @@ const ContactCard = memo(function ContactCard({ contact, onEdit, onStatusUpdate,
                     });
                     setDeletionInfo({
                         scheduledDate: status.scheduledDate,
-                        userName: status.userName
+                        userName: status.userName,
+                        status: 'pending'
+                    });
+                } else if (status.isDeleted) {
+                    console.log('[ContactCard - DeletionCheck] ✅ Deletion completed found!', {
+                        userName: status.userName,
+                        completedAt: status.completedAt
+                    });
+                    setDeletionInfo({
+                        completedAt: status.completedAt,
+                        userName: status.userName,
+                        status: 'completed'
                     });
                 } else {
-                    console.log('[ContactCard - DeletionCheck] ❌ No pending deletion found');
+                    console.log('[ContactCard - DeletionCheck] ❌ No deletion found');
                     setDeletionInfo(null);
                 }
             } catch (error) {
@@ -260,17 +271,28 @@ const ContactCard = memo(function ContactCard({ contact, onEdit, onStatusUpdate,
                                     </span>
                                     {deletionInfo && (
                                         <span
-                                            className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-semibold rounded-full bg-red-100 text-red-800 border border-red-300"
-                                            title={`${deletionInfo.userName}'s account scheduled for deletion on ${new Date(deletionInfo.scheduledDate).toLocaleDateString(locale, {
-                                                year: 'numeric',
-                                                month: 'long',
-                                                day: 'numeric'
-                                            })}`}
+                                            className={`inline-flex items-center gap-1 px-2 py-0.5 text-xs font-semibold rounded-full ${
+                                                deletionInfo.status === 'completed'
+                                                    ? 'bg-gray-100 text-gray-800 border border-gray-300'
+                                                    : 'bg-red-100 text-red-800 border border-red-300'
+                                            }`}
+                                            title={
+                                                deletionInfo.status === 'completed'
+                                                    ? t('contacts.deletion_completed_badge_tooltip', { name: deletionInfo.userName }, `${deletionInfo.userName}'s account has been deleted`)
+                                                    : `${deletionInfo.userName}'s account scheduled for deletion on ${new Date(deletionInfo.scheduledDate).toLocaleDateString(locale, {
+                                                        year: 'numeric',
+                                                        month: 'long',
+                                                        day: 'numeric'
+                                                    })}`
+                                            }
                                         >
-                                            ⚠️ {new Date(deletionInfo.scheduledDate).toLocaleDateString(locale, {
-                                                month: 'short',
-                                                day: 'numeric'
-                                            })}
+                                            {deletionInfo.status === 'completed'
+                                                ? `❌ ${t('contacts.deletion_completed_badge', 'Account Deleted')}`
+                                                : `⚠️ ${new Date(deletionInfo.scheduledDate).toLocaleDateString(locale, {
+                                                    month: 'short',
+                                                    day: 'numeric'
+                                                })}`
+                                            }
                                         </span>
                                     )}
                                     {hasRerankScore && (
@@ -303,8 +325,8 @@ const ContactCard = memo(function ContactCard({ contact, onEdit, onStatusUpdate,
             {expanded && (
                 <div className="border-t border-gray-100">
                     <div className="p-3 sm:p-4 space-y-4">
-                        {/* Deletion Warning Banner */}
-                        {deletionInfo && (
+                        {/* Deletion Warning/Info Banner */}
+                        {deletionInfo && deletionInfo.status === 'pending' && (
                             <div className="p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3 mb-4">
                                 <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
                                 <div>
@@ -324,6 +346,21 @@ const ContactCard = memo(function ContactCard({ contact, onEdit, onStatusUpdate,
                                             month: 'long',
                                             day: 'numeric'
                                         })}. Their contact information will be anonymized after this date.`)}
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+                        {deletionInfo && deletionInfo.status === 'completed' && (
+                            <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg flex items-start gap-3 mb-4">
+                                <AlertCircle className="w-5 h-5 text-gray-600 flex-shrink-0 mt-0.5" />
+                                <div>
+                                    <h4 className="text-gray-900 font-semibold">
+                                        {t('contacts.deletion_completed_title', 'Contact Account Deleted')}
+                                    </h4>
+                                    <p className="text-gray-700 text-sm mt-1">
+                                        {t('contacts.deletion_completed_message', {
+                                            name: deletionInfo.userName
+                                        }, `${deletionInfo.userName}'s account has been deleted and their contact information has been anonymized.`)}
                                     </p>
                                 </div>
                             </div>

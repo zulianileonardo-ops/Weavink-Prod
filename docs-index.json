@@ -1994,7 +1994,7 @@
       "title": "Email Notification System - Bug Fixes Documentation",
       "filename": "documentation/testing/EMAIL_NOTIFICATION_BUG_FIXES.md",
       "category": "testing",
-      "summary": "Documents bugs discovered during email notification system testing, including completion email fetch-after-delete bug and Firebase composite index requirement. Includes root cause analysis and fixes.",
+      "summary": "Documents 3 bugs discovered during email notification system testing: completion email fetch-after-delete bug, Firebase composite index requirement, and contact deletion notifications not updating on completion. Includes root cause analysis, fixes, and verification.",
       "tags": [
         "email",
         "notifications",
@@ -2004,7 +2004,10 @@
         "account-deletion",
         "firebase",
         "debugging",
-        "root-cause-analysis"
+        "root-cause-analysis",
+        "notification-update",
+        "notifications-collection",
+        "contacts-ui"
       ],
       "status": "active",
       "created": "2025-11-20",
@@ -2015,10 +2018,14 @@
       ],
       "functions": [
         "executeAccountDeletion",
-        "sendAccountDeletionCompletedEmail"
+        "sendAccountDeletionCompletedEmail",
+        "notifyContactDeletionCompleted",
+        "getContactDeletionStatus"
       ],
       "components": [
-        "DeleteAccountTab"
+        "DeleteAccountTab",
+        "ContactCard",
+        "EditContactModal"
       ]
     },
     {
