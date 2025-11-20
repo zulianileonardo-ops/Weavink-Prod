@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { adminAuth, adminDb } from '@/lib/firebaseAdmin';
 
+// Force dynamic rendering since this route requires authentication headers
+export const dynamic = 'force-dynamic';
+
 /**
  * GET /api/user/contacts/deletion-status
  * Check if a specific contact has a pending or completed account deletion
