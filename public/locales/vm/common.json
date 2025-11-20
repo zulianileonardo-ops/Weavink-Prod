@@ -2953,40 +2953,52 @@
     "new_badge": "MỚI",
     "categories": {
       "features": {
-        "name": "Tính năng"
+        "name": "Tính năng",
+        "description": "Tính năng mới và cải tiến"
       },
       "fixes": {
-        "name": "Sửa lỗi"
+        "name": "Sửa lỗi",
+        "description": "Sửa lỗi và sửa chữa"
       },
       "documentation": {
-        "name": "Tài liệu"
+        "name": "Tài liệu",
+        "description": "Cập nhật tài liệu"
       },
       "configuration": {
-        "name": "Cấu hình"
+        "name": "Cấu hình",
+        "description": "Thay đổi cấu hình"
       },
       "internationalization": {
-        "name": "Quốc tế hóa"
+        "name": "Quốc tế hóa",
+        "description": "Ngôn ngữ và bản địa hóa"
       },
       "testing": {
-        "name": "Kiểm thử"
+        "name": "Kiểm thử",
+        "description": "Phạm vi và chất lượng kiểm tra"
       },
       "security": {
-        "name": "Bảo mật"
+        "name": "Bảo mật",
+        "description": "Cải thiện bảo mật"
       },
       "performance": {
-        "name": "Hiệu suất"
+        "name": "Hiệu suất",
+        "description": "Tối ưu hóa hiệu suất"
       },
       "refactoring": {
-        "name": "Tái cấu trúc"
+        "name": "Tái cấu trúc",
+        "description": "Cải thiện chất lượng mã"
       },
       "ui": {
-        "name": "Giao diện người dùng"
+        "name": "Giao diện người dùng",
+        "description": "Cải thiện giao diện/trải nghiệm người dùng"
       },
       "styling": {
-        "name": "Kiểu dáng"
+        "name": "Kiểu dáng",
+        "description": "Cập nhật thiết kế trực quan"
       },
       "other": {
-        "name": "Khác"
+        "name": "Khác",
+        "description": "Thay đổi khác"
       }
     }
   }

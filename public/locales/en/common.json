@@ -1954,40 +1954,52 @@
     "new_badge": "NEW",
     "categories": {
       "features": {
-        "name": "Features"
+        "name": "Features",
+        "description": "New features and enhancements"
       },
       "fixes": {
-        "name": "Bug Fixes"
+        "name": "Bug Fixes",
+        "description": "Bug fixes and corrections"
       },
       "documentation": {
-        "name": "Documentation"
+        "name": "Documentation",
+        "description": "Documentation updates"
       },
       "configuration": {
-        "name": "Configuration"
+        "name": "Configuration",
+        "description": "Configuration changes"
       },
       "internationalization": {
-        "name": "Internationalization"
+        "name": "Internationalization",
+        "description": "Language and localization"
       },
       "testing": {
-        "name": "Testing"
+        "name": "Testing",
+        "description": "Test coverage and quality"
       },
       "security": {
-        "name": "Security"
+        "name": "Security",
+        "description": "Security improvements"
       },
       "performance": {
-        "name": "Performance"
+        "name": "Performance",
+        "description": "Performance optimizations"
       },
       "refactoring": {
-        "name": "Refactoring"
+        "name": "Refactoring",
+        "description": "Code quality improvements"
       },
       "ui": {
-        "name": "User Interface"
+        "name": "User Interface",
+        "description": "UI/UX improvements"
       },
       "styling": {
-        "name": "Styling"
+        "name": "Styling",
+        "description": "Visual design updates"
       },
       "other": {
-        "name": "Other"
+        "name": "Other",
+        "description": "Miscellaneous changes"
       }
     }
   }

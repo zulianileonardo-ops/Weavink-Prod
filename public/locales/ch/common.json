@@ -2522,40 +2522,52 @@
     "new_badge": "新",
     "categories": {
       "features": {
-        "name": "功能"
+        "name": "功能",
+        "description": "新功能和增强功能"
       },
       "fixes": {
-        "name": "错误修复"
+        "name": "错误修复",
+        "description": "错误修复和更正"
       },
       "documentation": {
-        "name": "文档"
+        "name": "文档",
+        "description": "文档更新"
       },
       "configuration": {
-        "name": "配置"
+        "name": "配置",
+        "description": "配置更改"
       },
       "internationalization": {
-        "name": "国际化"
+        "name": "国际化",
+        "description": "语言和本地化"
       },
       "testing": {
-        "name": "测试"
+        "name": "测试",
+        "description": "测试覆盖率和质量"
       },
       "security": {
-        "name": "安全"
+        "name": "安全",
+        "description": "安全改进"
       },
       "performance": {
-        "name": "性能"
+        "name": "性能",
+        "description": "性能优化"
       },
       "refactoring": {
-        "name": "重构"
+        "name": "重构",
+        "description": "代码质量改进"
       },
       "ui": {
-        "name": "用户界面"
+        "name": "用户界面",
+        "description": "用户界面/用户体验改进"
       },
       "styling": {
-        "name": "样式"
+        "name": "样式",
+        "description": "视觉设计更新"
       },
       "other": {
-        "name": "其他"
+        "name": "其他",
+        "description": "其他更改"
       }
     }
   }

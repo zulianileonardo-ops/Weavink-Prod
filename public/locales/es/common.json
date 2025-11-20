@@ -2962,40 +2962,52 @@
     "new_badge": "NUEVO",
     "categories": {
       "features": {
-        "name": "Características"
+        "name": "Características",
+        "description": "Nuevas características y mejoras"
       },
       "fixes": {
-        "name": "Correcciones de errores"
+        "name": "Correcciones de errores",
+        "description": "Correcciones de errores y correcciones"
       },
       "documentation": {
-        "name": "Documentación"
+        "name": "Documentación",
+        "description": "Actualizaciones de documentación"
       },
       "configuration": {
-        "name": "Configuración"
+        "name": "Configuración",
+        "description": "Cambios de configuración"
       },
       "internationalization": {
-        "name": "Internacionalización"
+        "name": "Internacionalización",
+        "description": "Idioma y localización"
       },
       "testing": {
-        "name": "Pruebas"
+        "name": "Pruebas",
+        "description": "Cobertura y calidad de pruebas"
       },
       "security": {
-        "name": "Seguridad"
+        "name": "Seguridad",
+        "description": "Mejoras de seguridad"
       },
       "performance": {
-        "name": "Rendimiento"
+        "name": "Rendimiento",
+        "description": "Optimizaciones de rendimiento"
       },
       "refactoring": {
-        "name": "Refactorización"
+        "name": "Refactorización",
+        "description": "Mejoras de calidad del código"
       },
       "ui": {
-        "name": "Interfaz de usuario"
+        "name": "Interfaz de usuario",
+        "description": "Mejoras de UI/UX"
       },
       "styling": {
-        "name": "Estilización"
+        "name": "Estilización",
+        "description": "Actualizaciones de diseño visual"
       },
       "other": {
-        "name": "Otro"
+        "name": "Otro",
+        "description": "Cambios diversos"
       }
     }
   }

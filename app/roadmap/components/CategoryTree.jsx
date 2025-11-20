@@ -95,7 +95,7 @@ export default function CategoryTree({ tree, defaultExpanded = false }) {
                   </div>
                   {category.description && (
                     <p className="text-xs text-gray-500 mt-0.5">
-                      {category.description}
+                      {t(`roadmap.categories.${category.name}.description`, category.description)}
                     </p>
                   )}
                 </div>
