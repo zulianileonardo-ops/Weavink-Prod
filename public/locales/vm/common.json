@@ -2858,7 +2858,9 @@
       "button_dashboard": "Đi tới bảng điều khiển",
       "thank_you": "Cảm ơn bạn đã ở lại với chúng tôi!",
       "welcome_back": "Chào mừng trở lại!",
-      "team_name": "Đội ngũ Weavink"
+      "team_name": "Đội ngũ Weavink",
+      "request_id": "Mã yêu cầu:",
+      "dpo_label": "Nhân viên Bảo vệ Dữ liệu:"
     },
     "contact_deletion_cancelled": {
       "subject": "Xóa liên hệ đã bị hủy - {{userName}}",

@@ -2427,7 +2427,9 @@
       "all_features": "您可以继续使用所有 Weavink 功能而不会中断。",
       "button_dashboard": "前往仪表板",
       "welcome_back": "欢迎回来！",
-      "team_name": "Weavink 团队"
+      "team_name": "Weavink 团队",
+      "request_id": "请求 ID：",
+      "dpo_label": "数据保护官："
     },
     "contact_deletion_cancelled": {
       "subject": "联系人删除已取消 - {{userName}}",

@@ -2867,7 +2867,9 @@
       "all_features": "Puede continuar usando todas las funciones de Weavink sin interrupción.",
       "button_dashboard": "Ir al panel",
       "welcome_back": "¡Bienvenido de nuevo!",
-      "team_name": "El equipo de Weavink"
+      "team_name": "El equipo de Weavink",
+      "request_id": "ID de solicitud:",
+      "dpo_label": "Oficial de Protección de Datos:"
     },
     "contact_deletion_cancelled": {
       "subject": "Eliminación de contacto cancelada - {{userName}}",

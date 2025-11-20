@@ -3082,7 +3082,9 @@
       "all_features": "Vous pouvez continuer à utiliser toutes les fonctionnalités de Weavink sans interruption.",
       "button_dashboard": "Aller au tableau de bord",
       "welcome_back": "Bon retour !",
-      "team_name": "L'équipe Weavink"
+      "team_name": "L'équipe Weavink",
+      "request_id": "Identifiant de la demande :",
+      "dpo_label": "Délégué à la protection des données :"
     },
     "contact_deletion_cancelled": {
       "subject": "Suppression de contact annulée - {{userName}}",
