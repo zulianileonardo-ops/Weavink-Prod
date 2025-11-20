@@ -4,6 +4,7 @@ import LiElement from "./elements/LiElement";
 import Profile from "./elements/Profile";
 import { NavContext } from "../General Components/NavBar";
 import { useTranslation } from "@/lib/translation/useTranslation";
+import { Map } from "lucide-react";
 
 const ProfileCard = forwardRef(function ProfileCard(_props, ref) {
     const { t } = useTranslation();
@@ -32,6 +33,10 @@ const ProfileCard = forwardRef(function ProfileCard(_props, ref) {
                                 width={16}
                             />
                             <span>{t('profileCard.myAccount')}</span>
+                        </LiElement>
+                        <LiElement url={"/dashboard/roadmap"}>
+                            <Map className="w-4 h-4" />
+                            <span>{t('profileCard.roadmap')}</span>
                         </LiElement>
                         <LiElement url={"/dashboard/logout"}>
                             <Image

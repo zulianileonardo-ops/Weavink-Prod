@@ -2957,6 +2957,7 @@
   },
   "profileCard": {
     "myAccount": "Tài khoản của tôi",
+    "roadmap": "Lộ trình",
     "signOut": "Đăng xuất"
   },
   "shareCard": {
@@ -3157,8 +3158,42 @@
     }
   },
   "roadmap": {
+    "title": "Lộ trình và nhật ký thay đổi",
+    "subtitle": "Theo dõi tiến độ của chúng tôi và xem những gì sắp ra mắt. Mọi tính năng chúng tôi xây dựng và mọi cải tiến chúng tôi thực hiện đều được ghi lại ở đây.",
+    "dashboard_subtitle": "Tổng quan toàn diện về công việc đã hoàn thành và các tính năng dự kiến",
+    "description": "Xem tiến độ và các tính năng dự kiến của chúng tôi",
+    "views": {
+      "list": "Danh sách",
+      "graph": "Đồ thị"
+    },
     "sections": {
       "all_categories": "Tất cả danh mục"
+    },
+    "stats": {
+      "commits": "commits",
+      "issues": "vấn đề",
+      "total": "tổng cộng",
+      "completed": "Đã hoàn thành",
+      "planned": "Dự kiến",
+      "progress": "Tiến độ",
+      "total_items": "Tổng số mục"
+    },
+    "charts": {
+      "category_breakdown": "Phân tích theo danh mục",
+      "completion_overview": "Tổng quan hoàn thành"
+    },
+    "empty_states": {
+      "no_data": "Không có dữ liệu lộ trình",
+      "no_commits": "Không tìm thấy commit",
+      "no_issues": "Không có tính năng dự kiến"
+    },
+    "errors": {
+      "fetch_failed": "Không tải được lộ trình",
+      "unauthorized": "Vui lòng đăng nhập để xem trang này"
+    },
+    "actions": {
+      "retry": "Thử lại",
+      "refresh": "Làm mới"
     },
     "graph_view_coming_soon": "Chế độ xem đồ thị sắp ra mắt"
   }

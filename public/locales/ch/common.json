@@ -2504,6 +2504,7 @@
   },
   "profileCard": {
     "myAccount": "我的账户",
+    "roadmap": "路线图",
     "signOut": "退出登录"
   },
   "shareCard": {
@@ -2695,8 +2696,42 @@
     }
   },
   "roadmap": {
+    "title": "路线图和更新日志",
+    "subtitle": "追踪我们的进展，了解即将推出的功能。我们构建的每个功能和做出的每个改进都在这里记录。",
+    "dashboard_subtitle": "已完成工作和计划功能的全面概览",
+    "description": "查看我们的进展和计划功能",
+    "views": {
+      "list": "列表",
+      "graph": "图表"
+    },
     "sections": {
       "all_categories": "所有类别"
+    },
+    "stats": {
+      "commits": "提交",
+      "issues": "问题",
+      "total": "总计",
+      "completed": "已完成",
+      "planned": "已计划",
+      "progress": "进度",
+      "total_items": "总项目"
+    },
+    "charts": {
+      "category_breakdown": "类别细分",
+      "completion_overview": "完成概览"
+    },
+    "empty_states": {
+      "no_data": "没有可用的路线图数据",
+      "no_commits": "未找到提交",
+      "no_issues": "没有计划的功能"
+    },
+    "errors": {
+      "fetch_failed": "加载路线图失败",
+      "unauthorized": "请登录以查看此页面"
+    },
+    "actions": {
+      "retry": "重试",
+      "refresh": "刷新"
     },
     "graph_view_coming_soon": "图表视图即将推出"
   }

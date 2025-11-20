@@ -3201,6 +3201,7 @@
   },
   "profileCard": {
     "myAccount": "Mon compte",
+    "roadmap": "Feuille de route",
     "signOut": "Se déconnecter"
   },
   "shareCard": {
@@ -3392,8 +3393,42 @@
     }
   },
   "roadmap": {
+    "title": "Feuille de route et journal des modifications",
+    "subtitle": "Suivez nos progrès et découvrez ce qui arrive ensuite. Chaque fonctionnalité que nous créons et chaque amélioration que nous apportons est documentée ici.",
+    "dashboard_subtitle": "Vue complète du travail terminé et des fonctionnalités prévues",
+    "description": "Consultez nos progrès et fonctionnalités prévues",
+    "views": {
+      "list": "Liste",
+      "graph": "Graphique"
+    },
     "sections": {
       "all_categories": "Toutes les catégories"
+    },
+    "stats": {
+      "commits": "commits",
+      "issues": "problèmes",
+      "total": "total",
+      "completed": "Terminé",
+      "planned": "Prévu",
+      "progress": "Progrès",
+      "total_items": "Éléments totaux"
+    },
+    "charts": {
+      "category_breakdown": "Répartition par catégorie",
+      "completion_overview": "Vue d'ensemble de l'achèvement"
+    },
+    "empty_states": {
+      "no_data": "Aucune donnée de feuille de route disponible",
+      "no_commits": "Aucun commit trouvé",
+      "no_issues": "Aucune fonctionnalité prévue"
+    },
+    "errors": {
+      "fetch_failed": "Échec du chargement de la feuille de route",
+      "unauthorized": "Veuillez vous connecter pour voir cette page"
+    },
+    "actions": {
+      "retry": "Réessayer",
+      "refresh": "Actualiser"
     },
     "graph_view_coming_soon": "Vue graphique bientôt disponible"
   }
