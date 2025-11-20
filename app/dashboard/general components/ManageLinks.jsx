@@ -479,7 +479,7 @@ useEffect(() => {
                 {/* Empty state */}
                 {hasInitiallyLoaded.current && data.length === 0 && (
                     <div className="p-6 flex-col gap-4 flex items-center justify-center opacity-30">
-                        <Image src={"https://linktree.sirv.com/Images/logo-icon.svg"} alt="logo" height={100} width={100} className="opacity-50 sm:w-24 w-16" />
+                        <Image src={"https://firebasestorage.googleapis.com/v0/b/tapit-dev-e0eed.firebasestorage.app/o/Images-Weavink%2Flogo-icon.png?alt=media&token=bcfebd8b-cbea-4a56-aed1-a0ad057b2dee"} alt="logo" height={100} width={100} className="opacity-50 sm:w-24 w-16" />
                         <span className="text-center sm:text-base text-sm max-w-[15rem] font-semibold">{translations.emptyStateTitle}</span>
                         <span className="text-center sm:text-base text-sm max-w-[15rem] opacity-70">{translations.emptyStateSubtitle}</span>
                     </div>

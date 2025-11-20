@@ -177,13 +177,13 @@ export default function ForgotPasswordForm() {
     return (
         <div className="flex-1 sm:p-12 px-4 py-8 flex flex-col overflow-y-auto">
             <Link href={'/'} className="sm:p-0 p-3">
-                <Image 
-                    src={"https://linktree.sirv.com/Images/full-logo.svg"} 
-                    alt="logo" 
-                    height={150} 
-                    width={100} 
-                    className="w-[7.05rem]" 
-                    priority 
+                <Image
+                    src={"https://firebasestorage.googleapis.com/v0/b/tapit-dev-e0eed.firebasestorage.app/o/Images-Weavink%2Ffull-logo.png?alt=media&token=1ca917c6-cf13-43df-9efa-567b6e6b97b0"}
+                    alt="logo"
+                    height={150}
+                    width={100}
+                    className="w-[7.05rem]"
+                    priority
                 />
             </Link>
             

@@ -42,10 +42,10 @@ export default function MobileTopBar({
                 ) : (
                     <Link href={'/dashboard'} className="ml-1">
                         <Image
-                            src={"https://linktree.sirv.com/Images/logo-icon.svg"}
+                            src={"https://firebasestorage.googleapis.com/v0/b/tapit-dev-e0eed.firebasestorage.app/o/Images-Weavink%2Flogo-icon.png?alt=media&token=bcfebd8b-cbea-4a56-aed1-a0ad057b2dee"}
                             alt="logo"
-                            height={23}
-                            width={23}
+                            height={35}
+                            width={35}
                             priority
                         />
                     </Link>

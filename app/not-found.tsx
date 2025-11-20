@@ -7,7 +7,7 @@ export default function NotFound() {
     <div className="flex h-screen w-screen">
       <div className="flex-1 flex flex-col sm:p-12 py-8 p-2 relative">
         <Link href={'/'} className="sm:p-0 p-3 w-fit relative z-20">
-          <Image priority src={"https://linktree.sirv.com/Images/full-logo.svg"} alt="logo" height={150} width={100} className="w-[7.05rem]" />
+          <Image priority src={"https://firebasestorage.googleapis.com/v0/b/tapit-dev-e0eed.firebasestorage.app/o/Images-Weavink%2Ffull-logo.png?alt=media&token=1ca917c6-cf13-43df-9efa-567b6e6b97b0"} alt="logo" height={150} width={100} className="w-[7.05rem]" />
         </Link>
         <div className="flex-1 flex items-center flex-col relative z-20 justify-center px-10">
           <div className="grid place-items-center">
