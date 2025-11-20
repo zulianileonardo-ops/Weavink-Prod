@@ -1908,5 +1908,45 @@
         "denied": "You do not have permission for this action"
       }
     }
+  },
+  "roadmap": {
+    "title": "Roadmap & Changelog",
+    "subtitle": "Track our progress and see what's coming next. Every feature we build and every improvement we make is documented here.",
+    "dashboard_subtitle": "Comprehensive view of completed work and planned features",
+    "description": "View our progress and planned features",
+    "views": {
+      "list": "List",
+      "graph": "Graph"
+    },
+    "sections": {
+      "all_categories": "All Categories"
+    },
+    "stats": {
+      "commits": "commits",
+      "issues": "issues",
+      "total": "total",
+      "completed": "Completed",
+      "planned": "Planned",
+      "progress": "Progress",
+      "total_items": "Total Items"
+    },
+    "charts": {
+      "category_breakdown": "Category Breakdown",
+      "completion_overview": "Completion Overview"
+    },
+    "empty_states": {
+      "no_data": "No roadmap data available",
+      "no_commits": "No commits found",
+      "no_issues": "No planned features"
+    },
+    "errors": {
+      "fetch_failed": "Failed to load roadmap",
+      "unauthorized": "Please log in to view this page"
+    },
+    "actions": {
+      "retry": "Retry",
+      "refresh": "Refresh"
+    },
+    "graph_view_coming_soon": "Graph view coming soon"
   }
 }
