@@ -1,5 +1,6 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useTranslation } from '@/lib/translation/useTranslation';
 import { RoadmapProvider, useRoadmap } from './RoadmapContext';
 import CategoryTree from './components/CategoryTree';
@@ -10,7 +11,19 @@ import { RefreshCw } from 'lucide-react';
 function RoadmapContent() {
   const { t } = useTranslation();
   const { categoryTree, stats, isLoading, error, refetch } = useRoadmap();
+  const searchParams = useSearchParams();
   const [view, setView] = useState('list');
+
+  // Extract URL parameters
+  const urlView = searchParams.get('view');
+  const selectedCommitHash = searchParams.get('commit');
+
+  // Initialize view from URL if present
+  useEffect(() => {
+    if (urlView && (urlView === 'list' || urlView === 'graph')) {
+      setView(urlView);
+    }
+  }, [urlView]);
 
   // Loading state
   if (isLoading) {
@@ -89,7 +102,7 @@ function RoadmapContent() {
         <h2 className="text-2xl font-semibold text-gray-900">
           {t('roadmap.sections.all_categories', 'All Categories')}
         </h2>
-        <ViewToggle onViewChange={setView} defaultView="list" />
+        <ViewToggle onViewChange={setView} defaultView={urlView || 'list'} />
       </div>
 
       {/* Content */}
@@ -98,7 +111,7 @@ function RoadmapContent() {
       )}
 
       {view === 'graph' && categoryTree && (
-        <RoadmapGraphView tree={categoryTree} />
+        <RoadmapGraphView tree={categoryTree} selectedCommitHash={selectedCommitHash} />
       )}
     </div>
   );

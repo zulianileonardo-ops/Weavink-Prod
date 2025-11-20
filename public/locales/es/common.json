@@ -203,109 +203,176 @@
     }
   },
   "contacts": {
-    "welcome": "Bienvenido de nuevo,",
-    "All": "Todos",
-    "team_sharing": "Compartir con equipo",
-    "fast_lookup": "Búsqueda rápida",
-    "team_sharing_avaible": "Compartir con equipo disponible",
-    "team_shearing": "Compartir con equipo",
-    "live_updates": "Actualizaciones en vivo",
-    "Clear": "Limpiar",
-    "team_contact": "Compartir contacto de equipo activado",
-    "Share": "Compartir",
-    "selected": "seleccionado(s)",
-    "fast_look": "Búsqueda rápida activada",
-    "sharing_enabled": "Compartir contacto de equipo activado",
+    "title": "Contactos",
+    "subtitle": "Gestiona tus contactos y conexiones profesionales",
+    "loading": "Cargando contactos...",
+    "feature_not_available": "Función de Contactos No Disponible",
+    "requires_upgrade": "Tu plan de suscripción actual no incluye funciones de gestión de contactos.",
+    "stats": {
+      "total": "Total de Contactos",
+      "new": "Nuevos",
+      "viewed": "Vistos",
+      "with_location": "Con Ubicación"
+    },
+    "filters": {
+      "all_status": "Todos los Estados",
+      "new": "Nuevos",
+      "viewed": "Vistos",
+      "archived": "Archivados"
+    },
+    "buttons": {
+      "map_view": "Vista de Mapa",
+      "import_export": "Importar / Exportar",
+      "scan_card": "Escanear Tarjeta",
+      "manage_groups": "Gestionar Grupos ({{count}})"
+    },
+    "search": {
+      "title": "Buscar Contactos",
+      "placeholder": "Busca contactos por nombre, correo electrónico, empresa...",
+      "semantic_placeholder": "Pregunta sobre tu red: '¿quién sabe React?' o 'expertos en marketing'",
+      "standard_mode": "Búsqueda Estándar",
+      "ai_mode": "Búsqueda con IA",
+      "searching": "Buscando...",
+      "enhanced_title": "Búsqueda con IA Mejorada",
+      "semantic_title": "Búsqueda Semántica",
+      "enhanced_description": "La IA analiza tus contactos semánticamente y proporciona información inteligente sobre por qué cada contacto coincide con tu consulta.",
+      "semantic_description": "La búsqueda semántica encuentra contactos según el significado, no solo por palabras clave. Mejora a Business para obtener información impulsada por IA.",
+      "try_examples": "Prueba estos ejemplos:",
+      "examples": [
+        "Desarrolladores React",
+        "fundadores de startups",
+        "profesionales de marketing",
+        "residentes en California"
+      ],
+      "consent_required": "La búsqueda semántica con IA requiere tu consentimiento",
+      "enable_consent": "Activar en Configuración"
+    },
+    "map": {
+      "title": "Mapa de contactos",
+      "search_placeholder": "Busca contactos...",
+      "search_unknown_location": "Ubicación desconocida",
+      "theme": {
+        "light": "Tema claro",
+        "dark": "Tema oscuro"
+      },
+      "map_type_toggle": "Cambiar tipo de mapa",
+      "map_type_satellite": "Satélite",
+      "map_type_roadmap": "Mapa de calles",
+      "close": "Cerrar mapa",
+      "loading": "Cargando mapa...",
+      "zoom_label": "Zoom",
+      "world_view": "🌍 Vista global",
+      "regional_view": "🗺️ Vista regional",
+      "street_view": "📍 Vista de calle",
+      "total_label": "Total",
+      "contacts_suffix": "contactos",
+      "with_location_label": "con datos de ubicación",
+      "controls": {
+        "fit_all": "Ajustar a todos los contactos",
+        "reset": "Restablecer vista global",
+        "zoom_in": "Acercar",
+        "zoom_out": "Alejar"
+      },
+      "error": {
+        "title": "Error del mapa",
+        "dismiss": "Cerrar"
+      },
+      "aria_label": "Mapa interactivo de contactos"
+    },
+    "groups": {
+      "title": "Grupos de Contactos",
+      "more": "+{{count}} más"
+    },
+    "modals": {
+      "review": {
+        "title": "Revisar y Refinar Contacto",
+        "subtitle": "{{fields}} campos detectados • {{categories}} categorías",
+        "phone_numbers": "Números de Teléfono",
+        "add_phone": "Agregar Teléfono",
+        "phone_tip": "Consejo: Incluye el código de país (ej: +33 para Francia, +1 para EE.UU./Canadá) para la detección automática de bandera",
+        "premium_country_detection": "Premium: Detección de País",
+        "add_custom_field": "Agregar Campo Personalizado",
+        "no_fields_in_category": "No se encontraron campos {{category}}.",
+        "no_fields_detected": "No se detectaron otros campos. Haz clic en 'Agregar Campo Personalizado' para agregar más.",
+        "field_label_placeholder": "Etiqueta del Campo (ej: Perfil de LinkedIn)",
+        "field_value_placeholder": "Valor del Campo",
+        "standard": "Estándar",
+        "ai_detected": "Detectado por IA",
+        "with_values": "Con Valores",
+        "save_contact_button": "Guardar Contacto ({{count}} campos)",
+        "error_no_name": "Por favor, asegúrate de que el contacto tenga un nombre.",
+        "save_success": "¡Contacto guardado!",
+        "save_error": "Error al guardar el contacto."
+      }
+    },
     "edit_contact": "Editar Contacto",
-    "edit": "Editar",
-    "modified": "Modificado",
-    "last_modified": "Última modificación",
-    "contact_updated_successfully": "Contacto actualizado con éxito",
-    "failed_to_update_contact": "Error al actualizar el contacto",
     "name": "Nombre",
-    "email": "Correo",
+    "email": "Correo Electrónico",
     "phone": "Teléfono",
     "company": "Empresa",
-    "message": "Mensaje",
     "status": "Estado",
-    "contact_info": "Información de contacto",
-    "submitted_at": "Enviado el",
-    "contact_id": "ID de Contacto",
-    "save_changes": "Guardar cambios",
+    "status_new": "Nuevo",
+    "status_viewed": "Visto",
+    "status_archived": "Archivado",
+    "message": "Mensaje",
     "saving": "Guardando...",
-    "location_for_contact": "Ubicación para {name}",
-    "all_contact_locations": "Ubicaciones de todos los contactos",
-    "title": "Lista de contactos",
-    "subtitle": "Gestiona los contactos que han compartido su información a través de tu perfil",
-    "loading": "Cargando contactos...",
-    "loading_map": "Cargando mapa...",
-    "live_updates_enabled": "Actualizaciones en vivo activadas",
-    "offline_updates_enabled": "Actualizaciones en vivo no activadas",
-    "contacts_with_location": "{count} contacto(s) con ubicación",
-    "new_contacts_notification": "¡Tienes {count} nuevo(s) contacto(s){location}!",
-    "failed_to_load": "Error al cargar los contactos",
-    "status_updated": "Estado del contacto actualizado",
-    "failed_to_update_status": "Error al actualizar el estado del contacto",
-    "bulk_update_success": "{count} contacto(s) actualizado(s)",
-    "failed_to_update_contacts": "Error al actualizar los contactos",
-    "filter_by_status": "Filtrar por estado",
-    "filter_all": "Todos",
-    "filter_new": "Nuevos",
-    "filter_viewed": "Vistos",
-    "filter_archived": "Archivados",
-    "search_placeholder": "Buscar contactos...",
-    "no_location_data": "No hay contactos con datos de ubicación",
-    "view_all_locations": "Ver todas las ubicaciones de los contactos",
-    "map_button": "Mapa",
-    "selected_contacts": "{count} contacto(s) seleccionado(s)",
+    "save_changes": "Guardar Cambios",
+    "deletion_warning_title": "Contacto programado para eliminación",
+    "deletion_warning_message": "La cuenta de {{name}} está programada para eliminación el {{date}}. Su información de contacto será anonimizada después de esta fecha.",
+    "job_title": "Cargo",
+    "website": "Sitio web",
+    "additional_information": "Información adicional",
+    "placeholder_field_label": "Etiqueta (ej: LinkedIn)",
+    "placeholder_field_value": "Valor (ej: https://...)",
+    "add_custom_field": "Agregar campo personalizado",
+    "section_notes": "Notas",
+    "section_message": "Mensaje",
+    "section_event_info": "Información del evento",
+    "section_location_data": "Datos de ubicación",
+    "section_phone_numbers": "Números de teléfono",
+    "section_all_details": "Todos los detalles",
+    "section_ai_detected": "Información detectada por IA",
+    "section_groups": "Grupos",
+    "section_match_quality": "Calidad de coincidencia",
+    "section_metadata": "Metadatos",
+    "event_name_label": "Nombre del evento:",
+    "event_type_label": "Tipo de evento:",
+    "venue_label": "Lugar:",
+    "event_dates_label": "Fechas del evento:",
+    "latitude_label": "Latitud:",
+    "longitude_label": "Longitud:",
+    "accuracy_label": "Precisión:",
+    "captured_label": "Capturado:",
+    "match_confidence_label": "Confianza de coincidencia:",
+    "vector_similarity_label": "Similitud vectorial:",
+    "hybrid_score_label": "Puntuación híbrida:",
+    "how_we_met_label": "Cómo nos conocimos:",
+    "source_label": "Fuente:",
+    "submitted_label": "Enviado:",
+    "modified_label": "Modificado:",
+    "generated_label": "Generado:",
+    "generated_by_label": "Generado por:",
+    "linkedin_profile": "Perfil de LinkedIn",
+    "premium_country_detection": "Premium: Detección de país",
+    "edit": "Editar",
     "mark_as_viewed": "Marcar como visto",
+    "viewed": "Visto",
     "archive": "Archivar",
     "restore": "Restaurar",
-    "no_contacts_found": "No se encontraron contactos",
-    "no_contacts_yet": "Aún no hay contactos",
-    "try_adjusting_filters": "Intenta ajustar tu búsqueda o filtros",
-    "contacts_will_appear_here": "Los contactos aparecerán aquí cuando los visitantes compartan su información a través de tu perfil",
-    "status_new": "nuevo",
-    "status_viewed": "visto",
-    "status_archived": "archivado",
-    "located": "Ubicado",
-    "send_email": "Enviar correo",
+    "delete": "Eliminar",
     "call": "Llamar",
-    "view_location_on_map": "Ver ubicación en el mapa",
-    "export_contacts": "Exportar contactos",
-    "export_headers": {
-      "name": "Nombre",
-      "email": "Correo",
-      "phone": "Teléfono",
-      "company": "Empresa",
-      "message": "Mensaje",
-      "status": "Estado",
-      "submitted_at": "Fecha de envío",
-      "has_location": "Tiene ubicación",
-      "latitude": "Latitud",
-      "longitude": "Longitud",
-      "location_accuracy": "Precisión de ubicación"
-    },
-    "contact_locations": "Ubicaciones de los contactos",
-    "viewing_location_for": "Viendo ubicación de {name}",
-    "showing_contacts_with_location": "Mostrando {count} contacto(s) con datos de ubicación",
-    "coordinates": "Coordenadas",
-    "accuracy": "Precisión",
-    "selected_contact": "{name} seleccionado(a)",
-    "contact_location": "Ubicación del contacto",
-    "show_all_contacts": "Mostrar todos los contactos",
-    "open_in_google_maps": "Abrir en Google Maps",
-    "copy_coordinates": "Copiar coordenadas",
-    "coordinates_copied": "¡Coordenadas copiadas al portapapeles!",
-    "share_with_team": "Compartir con el equipo",
-    "showing_contacts": "tienes {count} de {total} contactos",
-    "personal": "personal",
-    "from_team": "del equipo",
-    "with_location": "con ubicación",
-    "added": "Añadido:",
-    "mark_viewed": "Marcar como visto",
-    "filter_with_count": "Filtrar ({count})",
-    "map_with_count": "Mapa ({count})"
+    "map_button": "Mapa",
+    "show_groups": "Mostrar grupos ({{count}})",
+    "no_name": "Sin nombre",
+    "no_email": "Sin correo electrónico",
+    "country_unknown": "Desconocido",
+    "match_excellent": "Excelente coincidencia",
+    "match_good": "Buena coincidencia",
+    "match_fair": "Coincidencia aceptable",
+    "match_weak": "Coincidencia débil",
+    "deletion_tooltip": "La cuenta de {{name}} está programada para eliminación el {{date}}",
+    "match_confidence_tooltip": "Confianza de coincidencia: {{label}}",
+    "ai_fields_tooltip": "{{count}} campos detectados por IA"
   },
   "common": {
     "enabled": "Activado",
@@ -1053,22 +1120,394 @@
     }
   },
   "account": {
-    "contact_info_desc": "Esta información estará disponible cuando la gente guarde tu contacto.",
-    "settings_subtitle": "Gestiona la información de tu perfil y la configuración del equipo",
-    "settings_title": "Ajustes de la cuenta",
-    "contact_information": "Información de contacto",
-    "display_name": "Nombre a mostrar",
-    "email": "Correo electrónico",
-    "phone": "Teléfono",
-    "website": "Sitio web",
-    "company": "Empresa",
-    "bio": "Biografía",
-    "contact_info_updated": "¡Información de contacto actualizada con éxito!",
-    "update_failed": "Error al actualizar la información de contacto",
-    "contact_saveable": "La información de contacto está lista para ser guardada por los visitantes",
-    "save_contact_preview": "Los visitantes de tu perfil verán un botón de \"Guardar contacto\" cuando hayas rellenado tu información de contacto.",
-    "team_management": "Gestión de equipo",
-    "my_nfc_cards": "Mis tarjetas NFC"
+    "header": {
+      "title": "Cuenta y Privacidad",
+      "subtitle": "Gestiona tus datos personales y preferencias de privacidad",
+      "deletion_warning_title": "Eliminación de Cuenta Pendiente",
+      "deletion_warning_message": "Tu cuenta está programada para eliminación el {{date}}. Puedes cancelar esto en cualquier momento antes de esa fecha."
+    },
+    "tabs": {
+      "overview": "Resumen",
+      "export": "Exportar Datos",
+      "delete": "Eliminar Cuenta",
+      "consents": "Consentimientos",
+      "settings": "Configuración de Privacidad",
+      "contact_download": "Descarga de Contacto",
+      "website_config": "Configuración del Sitio Web"
+    },
+    "loading": {
+      "privacy_data": "Cargando datos de privacidad...",
+      "settings": "Cargando configuración de privacidad...",
+      "consent_data": "Cargando datos de consentimiento..."
+    },
+    "overview": {
+      "title": "Resumen de Privacidad",
+      "welcome": "Bienvenido a tu Centro de Cuenta y Privacidad. Aquí puedes gestionar todos los aspectos de tus datos personales, ejercer tus derechos bajo RGPD y controlar cómo se utiliza tu información.",
+      "export_card": {
+        "title": "Exportar Tus Datos",
+        "description": "Descarga todos tus datos personales en formatos legibles por máquina (JSON, CSV, vCard). Compatible con todos los gestores de contactos.",
+        "cta": "Exportar Datos →"
+      },
+      "consents_card": {
+        "title": "Gestionar Consentimientos",
+        "description": "Revisa y actualiza tus consentimientos de privacidad. Controla qué funciones pueden procesar tus datos.",
+        "cta": "Gestionar Consentimientos →"
+      },
+      "settings_card": {
+        "title": "Configuración de Privacidad",
+        "description": "Configura tus preferencias de privacidad, incluyendo visibilidad de perfil y compartir datos.",
+        "cta": "Actualizar Configuración →"
+      },
+      "delete_card": {
+        "title": "Eliminar Cuenta",
+        "description": "Elimina permanentemente tu cuenta y todos los datos asociados. Esta acción no se puede deshacer.",
+        "cta": "Eliminar Cuenta →"
+      },
+      "gdpr_info": {
+        "title": "Acerca del Cumplimiento RGPD",
+        "description": "Weavink cumple completamente con el Reglamento General de Protección de Datos (RGPD) y toma tu privacidad en serio. Todos tus datos se almacenan en centros de datos de la UE, cifrados y protegidos según los más altos estándares. Tienes control total sobre tu información personal en todo momento."
+      }
+    },
+    "export": {
+      "title": "Exportar Tus Datos",
+      "description": "Descarga todos tus datos personales en formatos legibles por máquina. Tu exportación incluirá:",
+      "includes": {
+        "profile": "Perfil de usuario e información de cuenta (JSON)",
+        "contacts_json": "Todos los contactos (formatos JSON, CSV, vCard)",
+        "groups": "Grupos de contactos y categorías (JSON)",
+        "analytics": "Datos de análisis - anonimizados (JSON)",
+        "consents": "Historial de consentimientos (JSON)",
+        "settings": "Configuración y preferencias (JSON)"
+      },
+      "button": {
+        "export": "Exportar Todos los Datos",
+        "exporting": "Preparando Exportación..."
+      },
+      "rateLimit": {
+        "title": "Límite de Frecuencia Alcanzado",
+        "message": "Has alcanzado el máximo de 3 exportaciones de datos por hora. Este límite ayuda a proteger nuestros servidores y tus datos.",
+        "countdown": "Disponible en:"
+      },
+      "success": {
+        "title": "¡Exportación Completada!",
+        "message": "Tus datos se han exportado correctamente. Descarga los archivos a continuación:",
+        "back": "← Exportar de Nuevo"
+      },
+      "download_all": {
+        "button": "Descargar todos los archivos"
+      },
+      "individual_files": "Archivos individuales",
+      "error": {
+        "message": "{{error}}"
+      }
+    },
+    "delete": {
+      "title": "Eliminar Tu Cuenta",
+      "description": "Elimina permanentemente tu cuenta y todos los datos asociados. Esta acción no se puede deshacer.",
+      "pending": {
+        "title": "Eliminación de Cuenta Pendiente",
+        "message": "Tu cuenta está programada para eliminación permanente el {{date}}.",
+        "warning": "Todos tus datos, incluyendo contactos, grupos y configuración, serán eliminados permanentemente. Esta acción no se puede deshacer después de la fecha de eliminación.",
+        "cancel_button": "Cancelar Eliminación"
+      },
+      "warning": {
+        "title": "Antes de eliminar:",
+        "export": "Considera exportar tus datos primero (no podrás acceder a ellos después de la eliminación)",
+        "all_data": "Esto eliminará todos tus contactos, grupos y configuración",
+        "notify": "Los usuarios que te tienen como contacto serán notificados",
+        "grace_period": "Tienes 30 días para cancelar la eliminación antes de que sea definitiva"
+      },
+      "confirmation": {
+        "title": "Confirmar Eliminación de Cuenta",
+        "instruction": "Escribe {{text}} para confirmar:",
+        "text": "ELIMINAR MI CUENTA",
+        "placeholder": "ELIMINAR MI CUENTA"
+      },
+      "button": {
+        "delete": "Eliminar Mi Cuenta",
+        "confirm": "Confirmar Eliminación",
+        "deleting": "Eliminando...",
+        "cancel": "Cancelar"
+      }
+    },
+    "consents": {
+      "title": "Gestionar Consentimientos",
+      "description": "Controla qué funciones pueden procesar tus datos. Puedes retirar el consentimiento en cualquier momento. Los cambios surten efecto inmediatamente.",
+      "status": {
+        "granted": "Otorgado",
+        "withdrawn": "Retirado"
+      },
+      "badge": {
+        "required": "Requerido"
+      },
+      "category": {
+        "essential": {
+          "name": "Esencial",
+          "description": "Requerido para que la aplicación funcione correctamente"
+        },
+        "ai_features": {
+          "name": "Funciones de IA",
+          "description": "Mejoras impulsadas por inteligencia artificial"
+        },
+        "analytics": {
+          "name": "Análisis",
+          "description": "Análisis de uso y seguimiento de rendimiento"
+        },
+        "communication": {
+          "name": "Comunicación",
+          "description": "Comunicaciones por correo electrónico y recomendaciones"
+        },
+        "personalization": {
+          "name": "Personalización",
+          "description": "Experiencia personalizada y configuración de perfil"
+        }
+      },
+      "type": {
+        "terms_of_service": {
+          "name": "Términos de Servicio",
+          "description": "Aceptación de nuestros términos y condiciones",
+          "gdpr": "Art. 6(1)(b) - Ejecución de contrato"
+        },
+        "privacy_policy": {
+          "name": "Política de Privacidad",
+          "description": "Aceptación de nuestras prácticas de privacidad",
+          "gdpr": "Art. 6(1)(b) - Ejecución de contrato"
+        },
+        "ai_business_card": {
+          "name": "Mejora de Tarjeta de Presentación con IA",
+          "description": "Usa IA (Google Gemini 2.0) para extraer información de imágenes de tarjetas de presentación con alta precisión",
+          "gdpr": "Art. 6(1)(a) - Consentimiento",
+          "tier": "Premium+"
+        },
+        "ai_semantic_search": {
+          "name": "Búsqueda Semántica con IA",
+          "description": "Habilita búsqueda impulsada por IA con mejora de consultas, embeddings, reordenación y análisis inteligente de resultados",
+          "gdpr": "Art. 6(1)(a) - Consentimiento",
+          "tier": "Business+"
+        },
+        "ai_auto_grouping": {
+          "name": "Agrupación Automática con IA",
+          "description": "Agrupa contactos automáticamente usando algoritmos inteligentes, enriquecimiento de ubicación y detección de eventos",
+          "gdpr": "Art. 6(1)(a) - Consentimiento",
+          "tier": "Premium+"
+        },
+        "analytics_basic": {
+          "name": "Análisis Básico",
+          "description": "Estadísticas de uso básicas (vistas de página, uso de funciones) - solo datos anonimizados",
+          "gdpr": "Art. 6(1)(f) - Interés legítimo"
+        },
+        "analytics_detailed": {
+          "name": "Análisis Detallado",
+          "description": "Patrones de uso detallados y análisis de comportamiento para mejorar la experiencia del usuario",
+          "gdpr": "Art. 6(1)(a) - Consentimiento"
+        },
+        "cookies_analytics": {
+          "name": "Cookies de Análisis",
+          "description": "Cookies utilizadas para rastrear patrones de uso y mejorar la aplicación",
+          "gdpr": "Art. 6(1)(a) - Consentimiento"
+        },
+        "marketing_emails": {
+          "name": "Correos de Marketing",
+          "description": "Recibe boletines, actualizaciones de productos y ofertas promocionales",
+          "gdpr": "Art. 6(1)(a) - Consentimiento"
+        },
+        "contact_recommendations": {
+          "name": "Recomendaciones de Contactos",
+          "description": "Recibe sugerencias de conexiones potenciales basadas en tu red",
+          "gdpr": "Art. 6(1)(a) - Consentimiento"
+        },
+        "cookies_personalization": {
+          "name": "Cookies de Personalización",
+          "description": "Recuerda tus preferencias y personaliza tu experiencia",
+          "gdpr": "Art. 6(1)(a) - Consentimiento"
+        },
+        "profile_public": {
+          "name": "Perfil Público",
+          "description": "Hace tu perfil visible para otros usuarios en la plataforma",
+          "gdpr": "Art. 6(1)(a) - Consentimiento"
+        }
+      },
+      "technologies_label": "Tecnologías:",
+      "last_updated": "Última actualización: {{date}}",
+      "info": {
+        "title": "Acerca de Tus Derechos de Consentimiento",
+        "withdraw": "Puedes retirar tu consentimiento en cualquier momento activando los interruptores arriba.",
+        "lawfulness": "Retirar el consentimiento no afectará la legalidad del procesamiento basado en el consentimiento antes de la retirada (RGPD Art. 7.3).",
+        "essential": "Los consentimientos esenciales son necesarios para que el servicio funcione y no pueden retirarse sin eliminar tu cuenta.",
+        "tiers": "Algunas funciones requieren niveles de suscripción específicos y pueden no estar disponibles si se retira el consentimiento.",
+        "audit": "Todos los cambios de consentimiento se registran y pueden auditarse. Contacta a nuestro Oficial de Protección de Datos si tienes preguntas."
+      },
+      "notification": {
+        "granted": "Consentimiento otorgado exitosamente",
+        "withdrawn": "Consentimiento retirado exitosamente"
+      }
+    },
+    "settings": {
+      "title": "Configuración de Privacidad",
+      "description": "Configura tus preferencias de privacidad y controla cómo se utilizan tus datos.",
+      "profile_visibility": {
+        "title": "Visibilidad del Perfil",
+        "description": "Controla quién puede ver tu perfil e información de contacto. Cuando tu perfil es público, cualquiera puede ver tu información. Cuando es privado, solo las conexiones aprobadas pueden ver tus detalles.",
+        "label": "Estado del Perfil:",
+        "public": "Público",
+        "private": "Privado"
+      },
+      "allow_messages": {
+        "title": "Permitir Mensajes",
+        "description": "Permite que otros usuarios te envíen mensajes a través de la plataforma. Puedes desactivar esto para evitar mensajes no solicitados mientras mantienes tus conexiones.",
+        "label": "Mensajes:",
+        "enabled": "Activado",
+        "disabled": "Desactivado"
+      },
+      "notifications": {
+        "title": "Preferencias de Notificación",
+        "description": "Controla cómo recibes notificaciones sobre la actividad de tu cuenta.",
+        "email": {
+          "title": "Notificaciones por Correo",
+          "description": "Recibe actualizaciones importantes y notificaciones por correo electrónico"
+        },
+        "push": {
+          "title": "Notificaciones Push",
+          "description": "Recibe notificaciones push en tiempo real en tus dispositivos"
+        }
+      },
+      "quick_actions": {
+        "title": "Controles Adicionales de Privacidad",
+        "consents": "Gestiona preferencias de consentimiento detalladas en la pestaña {{link}}",
+        "consents_link": "Consentimientos",
+        "export": "Exporta todos tus datos en la pestaña {{link}}",
+        "export_link": "Exportar Datos",
+        "delete": "Solicita eliminación de cuenta en la pestaña {{link}}",
+        "delete_link": "Eliminar Cuenta"
+      },
+      "gdpr_info": {
+        "title": "Tus Derechos de Privacidad",
+        "description": "Bajo RGPD, tienes derecho a controlar tus datos personales. Estas configuraciones te dan control granular sobre tus preferencias de privacidad. Todos los cambios se registran y son auditables. Para más información sobre cómo procesamos tus datos, revisa nuestra {{link}}.",
+        "privacy_policy_link": "Política de Privacidad"
+      },
+      "notification": {
+        "success": "Configuración actualizada exitosamente"
+      }
+    },
+    "contact_download": {
+      "title": "Configuración de Descarga de Contacto",
+      "description": "Controla quién puede descargar tu información de contacto y qué campos están disponibles"
+    },
+    "contact_download_settings": {
+      "title": "Configuración de Descarga de Contacto",
+      "description": "Controla quién puede descargar tu información de contacto y qué campos están disponibles",
+      "master_toggle": {
+        "title": "Habilitar Descargas de Contacto",
+        "description": "Permitir a los visitantes descargar tu información de contacto como archivo vCard. Cuando está deshabilitado, el botón de descarga no aparecerá en tu perfil público.",
+        "status_label": "Estado:",
+        "enabled": "Habilitado",
+        "disabled": "Deshabilitado"
+      },
+      "fields": {
+        "title": "Campos Disponibles",
+        "description": "Elige qué campos pueden incluir los visitantes al descargar tu contacto. Los campos obligatorios no se pueden deshabilitar.",
+        "categories": {
+          "basic": "Información Básica",
+          "additional": "Información Adicional",
+          "social": "Redes Sociales"
+        },
+        "field_labels": {
+          "displayName": "Nombre para Mostrar",
+          "email": "Correo Electrónico",
+          "photo": "Foto de Perfil",
+          "bio": "Biografía / Notas",
+          "location": "Ubicación",
+          "website": "URL del Perfil",
+          "linkedin": "LinkedIn",
+          "twitter": "Twitter",
+          "instagram": "Instagram",
+          "facebook": "Facebook"
+        },
+        "required_badge": "Obligatorio",
+        "count": "{{count}} campos seleccionados"
+      },
+      "quick_actions": {
+        "select_all": "Seleccionar Todo",
+        "deselect_all": "Deseleccionar Todo"
+      },
+      "info_card": {
+        "title": "Cómo Funciona",
+        "description": "Cuando los visitantes hacen clic en el botón Descargar Contacto en tu perfil, verán un modal donde pueden elegir cuáles de tus campos habilitados incluir en el archivo vCard. Los campos que deshabilites aquí no estarán disponibles para los visitantes."
+      },
+      "notifications": {
+        "saving": "Guardando...",
+        "success": "¡Configuración guardada exitosamente!",
+        "error": "Error al guardar la configuración"
+      }
+    },
+    "website_config": {
+      "title": "Configuración del Sitio Web",
+      "description": "Configura tus preferencias del sitio web y ajustes predeterminados.",
+      "language": {
+        "title": "Idioma Predeterminado",
+        "description": "Establece tu idioma preferido predeterminado para el sitio web. Se aplicará automáticamente cuando inicies sesión. Todavía puedes cambiar el idioma temporalmente usando el selector de idioma en la barra de navegación.",
+        "current_label": "Predeterminado Actual:",
+        "select_label": "Seleccionar Idioma Predeterminado",
+        "updating": "Actualizando idioma...",
+        "notification": {
+          "success": "Idioma predeterminado actualizado exitosamente",
+          "error": "Error al actualizar el idioma"
+        }
+      },
+      "info": {
+        "title": "Cómo Funcionan los Ajustes de Idioma",
+        "default": "Tu idioma predeterminado se guarda y aplica automáticamente cuando inicias sesión",
+        "navbar": "Puedes cambiar temporalmente el idioma usando el selector de idioma en la barra de navegación",
+        "session": "Los cambios temporales de idioma solo afectan tu sesión actual",
+        "persistent": "Para hacer un cambio de idioma permanente, actualiza tu idioma predeterminado aquí"
+      }
+    },
+    "tutorial_progression": {
+      "title": "Progreso del Tutorial",
+      "subtitle": "Sigue tu progreso de incorporación y vuelve a visitar cualquier paso",
+      "steps_completed": "{{completed}} de {{total}} pasos completados",
+      "status": {
+        "completed": "Completado",
+        "not_started": "No iniciado"
+      },
+      "actions": {
+        "jump_to_step": "Ir al Paso"
+      },
+      "skipped_message": "Omitiste el tutorial. Todavía puedes ir a cualquier paso para aprender más."
+    },
+    "footer": {
+      "title": "Tus Derechos Bajo RGPD",
+      "rights": {
+        "access": {
+          "title": "✓ Derecho de Acceso",
+          "description": "Ver y descargar todos tus datos personales"
+        },
+        "rectification": {
+          "title": "✓ Derecho de Rectificación",
+          "description": "Corregir o actualizar tu información"
+        },
+        "erasure": {
+          "title": "✓ Derecho al Olvido",
+          "description": "Eliminar tu cuenta y todos los datos"
+        },
+        "portability": {
+          "title": "✓ Derecho a la Portabilidad",
+          "description": "Exportar datos en formatos estándar"
+        },
+        "object": {
+          "title": "✓ Derecho de Oposición",
+          "description": "Optar por no participar en procesamientos específicos"
+        },
+        "restriction": {
+          "title": "✓ Derecho de Restricción",
+          "description": "Limitar cómo se procesan tus datos"
+        }
+      },
+      "dpo": {
+        "question": "¿Preguntas sobre tu privacidad?",
+        "link": "Contacta a nuestro Oficial de Protección de Datos"
+      }
+    }
   },
   "cards": {
     "loading": "Cargando tus tarjetas guardadas...",
@@ -1896,7 +2335,7 @@
     "Best_Day": "Mejor día:",
     "Avg_CTR": "CTR promedio:",
     "Top_Links": "Enlaces principales",
-    "clicks": "clics",
+    "clicks": "Clics",
     "Profile_views": "Vistas del perfil",
     "Link_clicks": "Clics en enlaces",
     "total_clicks_analytics": "del total de clics",
@@ -1911,10 +2350,16 @@
     "clicks_by_type": "Distribución de clics",
     "live_updates_enabled": "Actualizaciones en vivo activadas",
     "offline_updates_enabled": "Actualizaciones en vivo no activadas",
-    "title": "Panel de Analíticas",
-    "subtitle": "Sigue las vistas de tu perfil y los clics en los enlaces",
+    "title": "Panel de Estadísticas",
+    "subtitle": "Rastrea las vistas de tu perfil y los clics en los enlaces",
     "profile": "Perfil:",
-    "loading": "Cargando analíticas...",
+    "loading": {
+      "default": "Cargando...",
+      "session": "Cargando tu sesión...",
+      "analytics": "Cargando Estadísticas...",
+      "user_analytics": "Cargando estadísticas para {{displayName}}...",
+      "page": "Cargando página..."
+    },
     "not_authenticated": "No autenticado",
     "user_data_not_found": "Datos de usuario no encontrados",
     "failed_to_connect": "Fallo al conectar con las analíticas",
@@ -1923,8 +2368,8 @@
     "live_connection": "En vivo",
     "disconnected": "Desconectado",
     "real_time_updates": "Actualizaciones en tiempo real",
-    "profile_views": "Vistas del perfil",
-    "link_clicks": "Clics en enlaces",
+    "profile_views": "Vistas del Perfil",
+    "link_clicks": "Clics en Enlaces",
     "recent_activity": "Actividad reciente",
     "last_updated": "Última actualización",
     "total": "Total",
@@ -1985,18 +2430,6 @@
     "untitled_link": "Enlace sin título",
     "last_clicked": "Último clic",
     "total_interactions_description": "Interacciones totales con tus enlaces",
-    "title": "Panel de Estadísticas",
-    "subtitle": "Rastrea las vistas de tu perfil y los clics en los enlaces",
-    "profile": "Perfil:",
-    "live_connection": "En vivo",
-    "disconnected": "Desconectado",
-    "loading": {
-      "default": "Cargando...",
-      "session": "Cargando tu sesión...",
-      "analytics": "Cargando Estadísticas...",
-      "user_analytics": "Cargando estadísticas para {{displayName}}...",
-      "page": "Cargando página..."
-    },
     "upgrade": {
       "title": "Desbloquear Estadísticas",
       "description": "Las estadísticas avanzadas son una función premium. Por favor, actualiza tu plan para acceder a información detallada.",
@@ -2022,10 +2455,7 @@
       "old": "antiguo",
       "cached_data": "📊 Mostrando datos en caché - las actualizaciones en tiempo real aparecerán automáticamente"
     },
-    "profile_views": "Vistas del Perfil",
-    "link_clicks": "Clics en Enlaces",
     "views": "Vistas",
-    "clicks": "Clics",
     "overview": {
       "new": "¡Nuevo!"
     },
@@ -2052,11 +2482,7 @@
       "total_views": "Total de Vistas",
       "total_clicks": "Total de Clics"
     },
-    "real_time_updates": "Actualizaciones en tiempo real",
-    "created": "Creado",
-    "today": "Hoy",
     "this_week": "Esta Semana",
-    "total": "Total",
     "visit_link": "Visitar Enlace",
     "copy_link": "Copiar Enlace",
     "copied": "¡Copiado!",
@@ -2090,508 +2516,6 @@
       "cookies_analytics": "Cookies de Análisis",
       "yes": "sí",
       "no": "no"
-    }
-  },
-  "account": {
-    "header": {
-      "title": "Cuenta y Privacidad",
-      "subtitle": "Gestiona tus datos personales y preferencias de privacidad",
-      "deletion_warning_title": "Eliminación de Cuenta Pendiente",
-      "deletion_warning_message": "Tu cuenta está programada para eliminación el {{date}}. Puedes cancelar esto en cualquier momento antes de esa fecha."
-    },
-    "tabs": {
-      "overview": "Resumen",
-      "export": "Exportar Datos",
-      "delete": "Eliminar Cuenta",
-      "consents": "Consentimientos",
-      "settings": "Configuración de Privacidad",
-      "contact_download": "Descarga de Contacto",
-      "website_config": "Configuración del Sitio Web"
-    },
-    "loading": {
-      "privacy_data": "Cargando datos de privacidad...",
-      "settings": "Cargando configuración de privacidad...",
-      "consent_data": "Cargando datos de consentimiento..."
-    },
-    "overview": {
-      "title": "Resumen de Privacidad",
-      "welcome": "Bienvenido a tu Centro de Cuenta y Privacidad. Aquí puedes gestionar todos los aspectos de tus datos personales, ejercer tus derechos bajo RGPD y controlar cómo se utiliza tu información.",
-      "export_card": {
-        "title": "Exportar Tus Datos",
-        "description": "Descarga todos tus datos personales en formatos legibles por máquina (JSON, CSV, vCard). Compatible con todos los gestores de contactos.",
-        "cta": "Exportar Datos →"
-      },
-      "consents_card": {
-        "title": "Gestionar Consentimientos",
-        "description": "Revisa y actualiza tus consentimientos de privacidad. Controla qué funciones pueden procesar tus datos.",
-        "cta": "Gestionar Consentimientos →"
-      },
-      "settings_card": {
-        "title": "Configuración de Privacidad",
-        "description": "Configura tus preferencias de privacidad, incluyendo visibilidad de perfil y compartir datos.",
-        "cta": "Actualizar Configuración →"
-      },
-      "delete_card": {
-        "title": "Eliminar Cuenta",
-        "description": "Elimina permanentemente tu cuenta y todos los datos asociados. Esta acción no se puede deshacer.",
-        "cta": "Eliminar Cuenta →"
-      },
-      "gdpr_info": {
-        "title": "Acerca del Cumplimiento RGPD",
-        "description": "Weavink cumple completamente con el Reglamento General de Protección de Datos (RGPD) y toma tu privacidad en serio. Todos tus datos se almacenan en centros de datos de la UE, cifrados y protegidos según los más altos estándares. Tienes control total sobre tu información personal en todo momento."
-      }
-    },
-    "export": {
-      "title": "Exportar Tus Datos",
-      "description": "Descarga todos tus datos personales en formatos legibles por máquina. Tu exportación incluirá:",
-      "includes": {
-        "profile": "Perfil de usuario e información de cuenta (JSON)",
-        "contacts_json": "Todos los contactos (formatos JSON, CSV, vCard)",
-        "groups": "Grupos de contactos y categorías (JSON)",
-        "analytics": "Datos de análisis - anonimizados (JSON)",
-        "consents": "Historial de consentimientos (JSON)",
-        "settings": "Configuración y preferencias (JSON)"
-      },
-      "button": {
-        "export": "Exportar Todos los Datos",
-        "exporting": "Preparando Exportación..."
-      },
-      "rateLimit": {
-        "title": "Límite de Frecuencia Alcanzado",
-        "message": "Has alcanzado el máximo de 3 exportaciones de datos por hora. Este límite ayuda a proteger nuestros servidores y tus datos.",
-        "countdown": "Disponible en:"
-      },
-      "success": {
-        "title": "¡Exportación Completada!",
-        "message": "Tus datos se han exportado correctamente. Descarga los archivos a continuación:",
-        "back": "← Exportar de Nuevo"
-      },
-      "download_all": {
-        "button": "Descargar todos los archivos"
-      },
-      "individual_files": "Archivos individuales",
-      "error": {
-        "message": "{{error}}"
-      }
-    },
-    "delete": {
-      "title": "Eliminar Tu Cuenta",
-      "description": "Elimina permanentemente tu cuenta y todos los datos asociados. Esta acción no se puede deshacer.",
-      "pending": {
-        "title": "Eliminación de Cuenta Pendiente",
-        "message": "Tu cuenta está programada para eliminación permanente el {{date}}.",
-        "warning": "Todos tus datos, incluyendo contactos, grupos y configuración, serán eliminados permanentemente. Esta acción no se puede deshacer después de la fecha de eliminación.",
-        "cancel_button": "Cancelar Eliminación"
-      },
-      "warning": {
-        "title": "Antes de eliminar:",
-        "export": "Considera exportar tus datos primero (no podrás acceder a ellos después de la eliminación)",
-        "all_data": "Esto eliminará todos tus contactos, grupos y configuración",
-        "notify": "Los usuarios que te tienen como contacto serán notificados",
-        "grace_period": "Tienes 30 días para cancelar la eliminación antes de que sea definitiva"
-      },
-      "confirmation": {
-        "title": "Confirmar Eliminación de Cuenta",
-        "instruction": "Escribe {{text}} para confirmar:",
-        "text": "ELIMINAR MI CUENTA",
-        "placeholder": "ELIMINAR MI CUENTA"
-      },
-      "button": {
-        "delete": "Eliminar Mi Cuenta",
-        "confirm": "Confirmar Eliminación",
-        "deleting": "Eliminando...",
-        "cancel": "Cancelar"
-      }
-    },
-    "consents": {
-      "title": "Gestionar Consentimientos",
-      "description": "Controla qué funciones pueden procesar tus datos. Puedes retirar el consentimiento en cualquier momento. Los cambios surten efecto inmediatamente.",
-      "status": {
-        "granted": "Otorgado",
-        "withdrawn": "Retirado"
-      },
-      "badge": {
-        "required": "Requerido"
-      },
-      "category": {
-        "essential": {
-          "name": "Esencial",
-          "description": "Requerido para que la aplicación funcione correctamente"
-        },
-        "ai_features": {
-          "name": "Funciones de IA",
-          "description": "Mejoras impulsadas por inteligencia artificial"
-        },
-        "analytics": {
-          "name": "Análisis",
-          "description": "Análisis de uso y seguimiento de rendimiento"
-        },
-        "communication": {
-          "name": "Comunicación",
-          "description": "Comunicaciones por correo electrónico y recomendaciones"
-        },
-        "personalization": {
-          "name": "Personalización",
-          "description": "Experiencia personalizada y configuración de perfil"
-        }
-      },
-      "type": {
-        "terms_of_service": {
-          "name": "Términos de Servicio",
-          "description": "Aceptación de nuestros términos y condiciones",
-          "gdpr": "Art. 6(1)(b) - Ejecución de contrato"
-        },
-        "privacy_policy": {
-          "name": "Política de Privacidad",
-          "description": "Aceptación de nuestras prácticas de privacidad",
-          "gdpr": "Art. 6(1)(b) - Ejecución de contrato"
-        },
-        "ai_business_card": {
-          "name": "Mejora de Tarjeta de Presentación con IA",
-          "description": "Usa IA (Google Gemini 2.0) para extraer información de imágenes de tarjetas de presentación con alta precisión",
-          "gdpr": "Art. 6(1)(a) - Consentimiento",
-          "tier": "Premium+"
-        },
-        "ai_semantic_search": {
-          "name": "Búsqueda Semántica con IA",
-          "description": "Habilita búsqueda impulsada por IA con mejora de consultas, embeddings, reordenación y análisis inteligente de resultados",
-          "gdpr": "Art. 6(1)(a) - Consentimiento",
-          "tier": "Business+"
-        },
-        "ai_auto_grouping": {
-          "name": "Agrupación Automática con IA",
-          "description": "Agrupa contactos automáticamente usando algoritmos inteligentes, enriquecimiento de ubicación y detección de eventos",
-          "gdpr": "Art. 6(1)(a) - Consentimiento",
-          "tier": "Premium+"
-        },
-        "analytics_basic": {
-          "name": "Análisis Básico",
-          "description": "Estadísticas de uso básicas (vistas de página, uso de funciones) - solo datos anonimizados",
-          "gdpr": "Art. 6(1)(f) - Interés legítimo"
-        },
-        "analytics_detailed": {
-          "name": "Análisis Detallado",
-          "description": "Patrones de uso detallados y análisis de comportamiento para mejorar la experiencia del usuario",
-          "gdpr": "Art. 6(1)(a) - Consentimiento"
-        },
-        "cookies_analytics": {
-          "name": "Cookies de Análisis",
-          "description": "Cookies utilizadas para rastrear patrones de uso y mejorar la aplicación",
-          "gdpr": "Art. 6(1)(a) - Consentimiento"
-        },
-        "marketing_emails": {
-          "name": "Correos de Marketing",
-          "description": "Recibe boletines, actualizaciones de productos y ofertas promocionales",
-          "gdpr": "Art. 6(1)(a) - Consentimiento"
-        },
-        "contact_recommendations": {
-          "name": "Recomendaciones de Contactos",
-          "description": "Recibe sugerencias de conexiones potenciales basadas en tu red",
-          "gdpr": "Art. 6(1)(a) - Consentimiento"
-        },
-        "cookies_personalization": {
-          "name": "Cookies de Personalización",
-          "description": "Recuerda tus preferencias y personaliza tu experiencia",
-          "gdpr": "Art. 6(1)(a) - Consentimiento"
-        },
-        "profile_public": {
-          "name": "Perfil Público",
-          "description": "Hace tu perfil visible para otros usuarios en la plataforma",
-          "gdpr": "Art. 6(1)(a) - Consentimiento"
-        }
-      },
-      "technologies_label": "Tecnologías:",
-      "last_updated": "Última actualización: {{date}}",
-      "info": {
-        "title": "Acerca de Tus Derechos de Consentimiento",
-        "withdraw": "Puedes retirar tu consentimiento en cualquier momento activando los interruptores arriba.",
-        "lawfulness": "Retirar el consentimiento no afectará la legalidad del procesamiento basado en el consentimiento antes de la retirada (RGPD Art. 7.3).",
-        "essential": "Los consentimientos esenciales son necesarios para que el servicio funcione y no pueden retirarse sin eliminar tu cuenta.",
-        "tiers": "Algunas funciones requieren niveles de suscripción específicos y pueden no estar disponibles si se retira el consentimiento.",
-        "audit": "Todos los cambios de consentimiento se registran y pueden auditarse. Contacta a nuestro Oficial de Protección de Datos si tienes preguntas."
-      },
-      "notification": {
-        "granted": "Consentimiento otorgado exitosamente",
-        "withdrawn": "Consentimiento retirado exitosamente"
-      }
-    },
-    "settings": {
-      "title": "Configuración de Privacidad",
-      "description": "Configura tus preferencias de privacidad y controla cómo se utilizan tus datos.",
-      "profile_visibility": {
-        "title": "Visibilidad del Perfil",
-        "description": "Controla quién puede ver tu perfil e información de contacto. Cuando tu perfil es público, cualquiera puede ver tu información. Cuando es privado, solo las conexiones aprobadas pueden ver tus detalles.",
-        "label": "Estado del Perfil:",
-        "public": "Público",
-        "private": "Privado"
-      },
-      "allow_messages": {
-        "title": "Permitir Mensajes",
-        "description": "Permite que otros usuarios te envíen mensajes a través de la plataforma. Puedes desactivar esto para evitar mensajes no solicitados mientras mantienes tus conexiones.",
-        "label": "Mensajes:",
-        "enabled": "Activado",
-        "disabled": "Desactivado"
-      },
-      "notifications": {
-        "title": "Preferencias de Notificación",
-        "description": "Controla cómo recibes notificaciones sobre la actividad de tu cuenta.",
-        "email": {
-          "title": "Notificaciones por Correo",
-          "description": "Recibe actualizaciones importantes y notificaciones por correo electrónico"
-        },
-        "push": {
-          "title": "Notificaciones Push",
-          "description": "Recibe notificaciones push en tiempo real en tus dispositivos"
-        }
-      },
-      "quick_actions": {
-        "title": "Controles Adicionales de Privacidad",
-        "consents": "Gestiona preferencias de consentimiento detalladas en la pestaña {{link}}",
-        "consents_link": "Consentimientos",
-        "export": "Exporta todos tus datos en la pestaña {{link}}",
-        "export_link": "Exportar Datos",
-        "delete": "Solicita eliminación de cuenta en la pestaña {{link}}",
-        "delete_link": "Eliminar Cuenta"
-      },
-      "gdpr_info": {
-        "title": "Tus Derechos de Privacidad",
-        "description": "Bajo RGPD, tienes derecho a controlar tus datos personales. Estas configuraciones te dan control granular sobre tus preferencias de privacidad. Todos los cambios se registran y son auditables. Para más información sobre cómo procesamos tus datos, revisa nuestra {{link}}.",
-        "privacy_policy_link": "Política de Privacidad"
-      },
-      "notification": {
-        "success": "Configuración actualizada exitosamente"
-      }
-    },
-    "consents": {
-      "title": "Gestionar Consentimientos",
-      "description": "Controla qué funciones pueden procesar tus datos. Puedes retirar el consentimiento en cualquier momento. Los cambios surten efecto inmediatamente.",
-      "status": {
-        "granted": "Otorgado",
-        "withdrawn": "Retirado"
-      },
-      "badge": {
-        "required": "Requerido"
-      },
-      "category": {
-        "essential": {
-          "name": "Esencial",
-          "description": "Requerido para que la aplicación funcione correctamente"
-        },
-        "ai_features": {
-          "name": "Funciones de IA",
-          "description": "Mejoras impulsadas por inteligencia artificial"
-        },
-        "analytics": {
-          "name": "Análisis",
-          "description": "Análisis de uso y seguimiento de rendimiento"
-        },
-        "communication": {
-          "name": "Comunicación",
-          "description": "Comunicaciones por correo electrónico y recomendaciones"
-        },
-        "personalization": {
-          "name": "Personalización",
-          "description": "Experiencia personalizada y configuración de perfil"
-        }
-      },
-      "type": {
-        "terms_of_service": {
-          "name": "Términos de Servicio",
-          "description": "Aceptación de nuestros términos y condiciones",
-          "gdpr": "Art. 6(1)(b) - Ejecución de contrato"
-        },
-        "privacy_policy": {
-          "name": "Política de Privacidad",
-          "description": "Aceptación de nuestras prácticas de privacidad",
-          "gdpr": "Art. 6(1)(b) - Ejecución de contrato"
-        },
-        "ai_business_card": {
-          "name": "Mejora de Tarjeta de Presentación con IA",
-          "description": "Usa IA (Google Gemini 2.0) para extraer información de imágenes de tarjetas de presentación con alta precisión",
-          "gdpr": "Art. 6(1)(a) - Consentimiento",
-          "tier": "Premium+"
-        },
-        "ai_semantic_search": {
-          "name": "Búsqueda Semántica con IA",
-          "description": "Habilita búsqueda impulsada por IA con mejora de consultas, embeddings, reordenación y análisis inteligente de resultados",
-          "gdpr": "Art. 6(1)(a) - Consentimiento",
-          "tier": "Business+"
-        },
-        "ai_auto_grouping": {
-          "name": "Agrupación Automática con IA",
-          "description": "Agrupa contactos automáticamente usando algoritmos inteligentes, enriquecimiento de ubicación y detección de eventos",
-          "gdpr": "Art. 6(1)(a) - Consentimiento",
-          "tier": "Premium+"
-        },
-        "analytics_basic": {
-          "name": "Análisis Básico",
-          "description": "Estadísticas de uso básicas (vistas de página, uso de funciones) - solo datos anonimizados",
-          "gdpr": "Art. 6(1)(f) - Interés legítimo"
-        },
-        "analytics_detailed": {
-          "name": "Análisis Detallado",
-          "description": "Patrones de uso detallados y análisis de comportamiento para mejorar la experiencia del usuario",
-          "gdpr": "Art. 6(1)(a) - Consentimiento"
-        },
-        "cookies_analytics": {
-          "name": "Cookies de Análisis",
-          "description": "Cookies utilizadas para rastrear patrones de uso y mejorar la aplicación",
-          "gdpr": "Art. 6(1)(a) - Consentimiento"
-        },
-        "marketing_emails": {
-          "name": "Correos de Marketing",
-          "description": "Recibe boletines, actualizaciones de productos y ofertas promocionales",
-          "gdpr": "Art. 6(1)(a) - Consentimiento"
-        },
-        "contact_recommendations": {
-          "name": "Recomendaciones de Contactos",
-          "description": "Recibe sugerencias de conexiones potenciales basadas en tu red",
-          "gdpr": "Art. 6(1)(a) - Consentimiento"
-        },
-        "cookies_personalization": {
-          "name": "Cookies de Personalización",
-          "description": "Recuerda tus preferencias y personaliza tu experiencia",
-          "gdpr": "Art. 6(1)(a) - Consentimiento"
-        },
-        "profile_public": {
-          "name": "Perfil Público",
-          "description": "Hace tu perfil visible para otros usuarios en la plataforma",
-          "gdpr": "Art. 6(1)(a) - Consentimiento"
-        }
-      },
-      "technologies_label": "Tecnologías:",
-      "last_updated": "Última actualización: {{date}}",
-      "info": {
-        "title": "Acerca de Tus Derechos de Consentimiento",
-        "withdraw": "Puedes retirar tu consentimiento en cualquier momento activando los interruptores arriba.",
-        "lawfulness": "Retirar el consentimiento no afectará la legalidad del procesamiento basado en el consentimiento antes de la retirada (RGPD Art. 7.3).",
-        "essential": "Los consentimientos esenciales son necesarios para que el servicio funcione y no pueden retirarse sin eliminar tu cuenta.",
-        "tiers": "Algunas funciones requieren niveles de suscripción específicos y pueden no estar disponibles si se retira el consentimiento.",
-        "audit": "Todos los cambios de consentimiento se registran y pueden auditarse. Contacta a nuestro Oficial de Protección de Datos si tienes preguntas."
-      },
-      "notification": {
-        "granted": "Consentimiento otorgado exitosamente",
-        "withdrawn": "Consentimiento retirado exitosamente"
-      }
-    },
-    "contact_download": {
-      "title": "Configuración de Descarga de Contacto",
-      "description": "Controla quién puede descargar tu información de contacto y qué campos están disponibles"
-    },
-    "contact_download_settings": {
-      "title": "Configuración de Descarga de Contacto",
-      "description": "Controla quién puede descargar tu información de contacto y qué campos están disponibles",
-      "master_toggle": {
-        "title": "Habilitar Descargas de Contacto",
-        "description": "Permitir a los visitantes descargar tu información de contacto como archivo vCard. Cuando está deshabilitado, el botón de descarga no aparecerá en tu perfil público.",
-        "status_label": "Estado:",
-        "enabled": "Habilitado",
-        "disabled": "Deshabilitado"
-      },
-      "fields": {
-        "title": "Campos Disponibles",
-        "description": "Elige qué campos pueden incluir los visitantes al descargar tu contacto. Los campos obligatorios no se pueden deshabilitar.",
-        "categories": {
-          "basic": "Información Básica",
-          "additional": "Información Adicional",
-          "social": "Redes Sociales"
-        },
-        "field_labels": {
-          "displayName": "Nombre para Mostrar",
-          "email": "Correo Electrónico",
-          "photo": "Foto de Perfil",
-          "bio": "Biografía / Notas",
-          "location": "Ubicación",
-          "website": "URL del Perfil",
-          "linkedin": "LinkedIn",
-          "twitter": "Twitter",
-          "instagram": "Instagram",
-          "facebook": "Facebook"
-        },
-        "required_badge": "Obligatorio",
-        "count": "{{count}} campos seleccionados"
-      },
-      "quick_actions": {
-        "select_all": "Seleccionar Todo",
-        "deselect_all": "Deseleccionar Todo"
-      },
-      "info_card": {
-        "title": "Cómo Funciona",
-        "description": "Cuando los visitantes hacen clic en el botón Descargar Contacto en tu perfil, verán un modal donde pueden elegir cuáles de tus campos habilitados incluir en el archivo vCard. Los campos que deshabilites aquí no estarán disponibles para los visitantes."
-      },
-      "notifications": {
-        "saving": "Guardando...",
-        "success": "¡Configuración guardada exitosamente!",
-        "error": "Error al guardar la configuración"
-      }
-    },
-    "website_config": {
-      "title": "Configuración del Sitio Web",
-      "description": "Configura tus preferencias del sitio web y ajustes predeterminados.",
-      "language": {
-        "title": "Idioma Predeterminado",
-        "description": "Establece tu idioma preferido predeterminado para el sitio web. Se aplicará automáticamente cuando inicies sesión. Todavía puedes cambiar el idioma temporalmente usando el selector de idioma en la barra de navegación.",
-        "current_label": "Predeterminado Actual:",
-        "select_label": "Seleccionar Idioma Predeterminado",
-        "updating": "Actualizando idioma...",
-        "notification": {
-          "success": "Idioma predeterminado actualizado exitosamente",
-          "error": "Error al actualizar el idioma"
-        }
-      },
-      "info": {
-        "title": "Cómo Funcionan los Ajustes de Idioma",
-        "default": "Tu idioma predeterminado se guarda y aplica automáticamente cuando inicias sesión",
-        "navbar": "Puedes cambiar temporalmente el idioma usando el selector de idioma en la barra de navegación",
-        "session": "Los cambios temporales de idioma solo afectan tu sesión actual",
-        "persistent": "Para hacer un cambio de idioma permanente, actualiza tu idioma predeterminado aquí"
-      }
-    },
-    "tutorial_progression": {
-      "title": "Progreso del Tutorial",
-      "subtitle": "Sigue tu progreso de incorporación y vuelve a visitar cualquier paso",
-      "steps_completed": "{{completed}} de {{total}} pasos completados",
-      "status": {
-        "completed": "Completado",
-        "not_started": "No iniciado"
-      },
-      "actions": {
-        "jump_to_step": "Ir al Paso"
-      },
-      "skipped_message": "Omitiste el tutorial. Todavía puedes ir a cualquier paso para aprender más."
-    },
-    "footer": {
-      "title": "Tus Derechos Bajo RGPD",
-      "rights": {
-        "access": {
-          "title": "✓ Derecho de Acceso",
-          "description": "Ver y descargar todos tus datos personales"
-        },
-        "rectification": {
-          "title": "✓ Derecho de Rectificación",
-          "description": "Corregir o actualizar tu información"
-        },
-        "erasure": {
-          "title": "✓ Derecho al Olvido",
-          "description": "Eliminar tu cuenta y todos los datos"
-        },
-        "portability": {
-          "title": "✓ Derecho a la Portabilidad",
-          "description": "Exportar datos en formatos estándar"
-        },
-        "object": {
-          "title": "✓ Derecho de Oposición",
-          "description": "Optar por no participar en procesamientos específicos"
-        },
-        "restriction": {
-          "title": "✓ Derecho de Restricción",
-          "description": "Limitar cómo se procesan tus datos"
-        }
-      },
-      "dpo": {
-        "question": "¿Preguntas sobre tu privacidad?",
-        "link": "Contacta a nuestro Oficial de Protección de Datos"
-      }
     }
   },
   "onboarding": {
@@ -2800,178 +2724,6 @@
         "cta": "Ver Tutorial de Cuenta"
       }
     }
-  },
-  "contacts": {
-    "title": "Contactos",
-    "subtitle": "Gestiona tus contactos y conexiones profesionales",
-    "loading": "Cargando contactos...",
-    "feature_not_available": "Función de Contactos No Disponible",
-    "requires_upgrade": "Tu plan de suscripción actual no incluye funciones de gestión de contactos.",
-    "stats": {
-      "total": "Total de Contactos",
-      "new": "Nuevos",
-      "viewed": "Vistos",
-      "with_location": "Con Ubicación"
-    },
-    "filters": {
-      "all_status": "Todos los Estados",
-      "new": "Nuevos",
-      "viewed": "Vistos",
-      "archived": "Archivados"
-    },
-    "buttons": {
-      "map_view": "Vista de Mapa",
-      "import_export": "Importar / Exportar",
-      "scan_card": "Escanear Tarjeta",
-      "manage_groups": "Gestionar Grupos ({{count}})"
-    },
-    "search": {
-      "title": "Buscar Contactos",
-      "placeholder": "Busca contactos por nombre, correo electrónico, empresa...",
-      "semantic_placeholder": "Pregunta sobre tu red: '¿quién sabe React?' o 'expertos en marketing'",
-      "standard_mode": "Búsqueda Estándar",
-      "ai_mode": "Búsqueda con IA",
-      "searching": "Buscando...",
-      "enhanced_title": "Búsqueda con IA Mejorada",
-      "semantic_title": "Búsqueda Semántica",
-      "enhanced_description": "La IA analiza tus contactos semánticamente y proporciona información inteligente sobre por qué cada contacto coincide con tu consulta.",
-      "semantic_description": "La búsqueda semántica encuentra contactos según el significado, no solo por palabras clave. Mejora a Business para obtener información impulsada por IA.",
-      "try_examples": "Prueba estos ejemplos:",
-      "examples": [
-        "Desarrolladores React",
-        "fundadores de startups",
-        "profesionales de marketing",
-        "residentes en California"
-      ],
-      "consent_required": "La búsqueda semántica con IA requiere tu consentimiento",
-      "enable_consent": "Activar en Configuración"
-    },
-    "map": {
-      "title": "Mapa de contactos",
-      "search_placeholder": "Busca contactos...",
-      "search_unknown_location": "Ubicación desconocida",
-      "theme": {
-        "light": "Tema claro",
-        "dark": "Tema oscuro"
-      },
-      "map_type_toggle": "Cambiar tipo de mapa",
-      "map_type_satellite": "Satélite",
-      "map_type_roadmap": "Mapa de calles",
-      "close": "Cerrar mapa",
-      "loading": "Cargando mapa...",
-      "zoom_label": "Zoom",
-      "world_view": "🌍 Vista global",
-      "regional_view": "🗺️ Vista regional",
-      "street_view": "📍 Vista de calle",
-      "total_label": "Total",
-      "contacts_suffix": "contactos",
-      "with_location_label": "con datos de ubicación",
-      "controls": {
-        "fit_all": "Ajustar a todos los contactos",
-        "reset": "Restablecer vista global",
-        "zoom_in": "Acercar",
-        "zoom_out": "Alejar"
-      },
-      "error": {
-        "title": "Error del mapa",
-        "dismiss": "Cerrar"
-      },
-      "aria_label": "Mapa interactivo de contactos"
-    },
-    "groups": {
-      "title": "Grupos de Contactos",
-      "more": "+{{count}} más"
-    },
-    "modals": {
-      "review": {
-        "title": "Revisar y Refinar Contacto",
-        "subtitle": "{{fields}} campos detectados • {{categories}} categorías",
-        "phone_numbers": "Números de Teléfono",
-        "add_phone": "Agregar Teléfono",
-        "phone_tip": "Consejo: Incluye el código de país (ej: +33 para Francia, +1 para EE.UU./Canadá) para la detección automática de bandera",
-        "premium_country_detection": "Premium: Detección de País",
-        "add_custom_field": "Agregar Campo Personalizado",
-        "no_fields_in_category": "No se encontraron campos {{category}}.",
-        "no_fields_detected": "No se detectaron otros campos. Haz clic en 'Agregar Campo Personalizado' para agregar más.",
-        "field_label_placeholder": "Etiqueta del Campo (ej: Perfil de LinkedIn)",
-        "field_value_placeholder": "Valor del Campo",
-        "standard": "Estándar",
-        "ai_detected": "Detectado por IA",
-        "with_values": "Con Valores",
-        "save_contact_button": "Guardar Contacto ({{count}} campos)",
-        "error_no_name": "Por favor, asegúrate de que el contacto tenga un nombre.",
-        "save_success": "¡Contacto guardado!",
-        "save_error": "Error al guardar el contacto."
-      }
-    },
-    "edit_contact": "Editar Contacto",
-    "name": "Nombre",
-    "email": "Correo Electrónico",
-    "phone": "Teléfono",
-    "company": "Empresa",
-    "status": "Estado",
-    "status_new": "Nuevo",
-    "status_viewed": "Visto",
-    "status_archived": "Archivado",
-    "message": "Mensaje",
-    "saving": "Guardando...",
-    "save_changes": "Guardar Cambios",
-    "deletion_warning_title": "Contacto programado para eliminación",
-    "deletion_warning_message": "La cuenta de {{name}} está programada para eliminación el {{date}}. Su información de contacto será anonimizada después de esta fecha.",
-    "job_title": "Cargo",
-    "website": "Sitio web",
-    "additional_information": "Información adicional",
-    "placeholder_field_label": "Etiqueta (ej: LinkedIn)",
-    "placeholder_field_value": "Valor (ej: https://...)",
-    "add_custom_field": "Agregar campo personalizado",
-    "section_notes": "Notas",
-    "section_message": "Mensaje",
-    "section_event_info": "Información del evento",
-    "section_location_data": "Datos de ubicación",
-    "section_phone_numbers": "Números de teléfono",
-    "section_all_details": "Todos los detalles",
-    "section_ai_detected": "Información detectada por IA",
-    "section_groups": "Grupos",
-    "section_match_quality": "Calidad de coincidencia",
-    "section_metadata": "Metadatos",
-    "event_name_label": "Nombre del evento:",
-    "event_type_label": "Tipo de evento:",
-    "venue_label": "Lugar:",
-    "event_dates_label": "Fechas del evento:",
-    "latitude_label": "Latitud:",
-    "longitude_label": "Longitud:",
-    "accuracy_label": "Precisión:",
-    "captured_label": "Capturado:",
-    "match_confidence_label": "Confianza de coincidencia:",
-    "vector_similarity_label": "Similitud vectorial:",
-    "hybrid_score_label": "Puntuación híbrida:",
-    "how_we_met_label": "Cómo nos conocimos:",
-    "source_label": "Fuente:",
-    "submitted_label": "Enviado:",
-    "modified_label": "Modificado:",
-    "generated_label": "Generado:",
-    "generated_by_label": "Generado por:",
-    "linkedin_profile": "Perfil de LinkedIn",
-    "premium_country_detection": "Premium: Detección de país",
-    "edit": "Editar",
-    "mark_as_viewed": "Marcar como visto",
-    "viewed": "Visto",
-    "archive": "Archivar",
-    "restore": "Restaurar",
-    "delete": "Eliminar",
-    "call": "Llamar",
-    "map_button": "Mapa",
-    "show_groups": "Mostrar grupos ({{count}})",
-    "no_name": "Sin nombre",
-    "no_email": "Sin correo electrónico",
-    "country_unknown": "Desconocido",
-    "match_excellent": "Excelente coincidencia",
-    "match_good": "Buena coincidencia",
-    "match_fair": "Coincidencia aceptable",
-    "match_weak": "Coincidencia débil",
-    "deletion_tooltip": "La cuenta de {{name}} está programada para eliminación el {{date}}",
-    "match_confidence_tooltip": "Confianza de coincidencia: {{label}}",
-    "ai_fields_tooltip": "{{count}} campos detectados por IA"
   },
   "profileCard": {
     "myAccount": "Mi cuenta",
@@ -3202,7 +2954,9 @@
     },
     "actions": {
       "retry": "Reintentar",
-      "refresh": "Actualizar"
+      "refresh": "Actualizar",
+      "view_in_graph": "Ver en el gráfico",
+      "graph": "Gráfico"
     },
     "graph_view_coming_soon": "Vista de gráfico próximamente"
   }

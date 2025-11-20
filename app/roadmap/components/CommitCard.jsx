@@ -1,7 +1,10 @@
 "use client";
 import React from 'react';
-import { GitCommit, User, Calendar } from 'lucide-react';
+import { GitCommit, User, Calendar, GitGraph } from 'lucide-react';
 import { useTranslation } from '@/lib/translation/useTranslation';
+import { useRouter } from 'next/navigation';
+import NewBadge from './NewBadge';
+import { ROADMAP_LIMITS } from '@/lib/services/serviceRoadmap/constants/roadmapConstants';
 
 /**
  * CommitCard - Display individual commit with metadata
@@ -10,6 +13,7 @@ import { useTranslation } from '@/lib/translation/useTranslation';
  */
 export default function CommitCard({ commit }) {
   const { t } = useTranslation();
+  const router = useRouter();
 
   // Format date
   const formattedDate = new Date(commit.date).toLocaleDateString('en-US', {
@@ -17,6 +21,11 @@ export default function CommitCard({ commit }) {
     month: 'short',
     day: 'numeric',
   });
+
+  // Handle navigation to graph view with this commit selected
+  const handleViewInGraph = () => {
+    router.push(`/roadmap?view=graph&commit=${commit.hash}`);
+  };
 
   // Generate GitHub commit URL (if GITHUB_REPO_OWNER and GITHUB_REPO_NAME are available)
   const githubUrl = process.env.NEXT_PUBLIC_GITHUB_REPO_OWNER && process.env.NEXT_PUBLIC_GITHUB_REPO_NAME
@@ -44,10 +53,16 @@ export default function CommitCard({ commit }) {
             </p>
           </div>
 
-          <span className="text-xs text-gray-500 whitespace-nowrap flex items-center gap-1">
-            <Calendar className="w-3 h-3" />
-            {formattedDate}
-          </span>
+          <div className="flex items-center gap-2">
+            <NewBadge
+              date={commit.date}
+              thresholdDays={ROADMAP_LIMITS.NEW_BADGE_THRESHOLD_DAYS}
+            />
+            <span className="text-xs text-gray-500 whitespace-nowrap flex items-center gap-1">
+              <Calendar className="w-3 h-3" />
+              {formattedDate}
+            </span>
+          </div>
         </div>
 
         {/* Metadata */}
@@ -71,6 +86,17 @@ export default function CommitCard({ commit }) {
               {commit.hash.substring(0, 7)}
             </code>
           )}
+
+          {/* Graph navigation button */}
+          <button
+            onClick={handleViewInGraph}
+            className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded transition-colors"
+            aria-label={t('roadmap.actions.view_in_graph', 'View in graph')}
+            title={t('roadmap.actions.view_in_graph', 'View in graph')}
+          >
+            <GitGraph className="w-3 h-3" />
+            {t('roadmap.actions.graph', 'Graph')}
+          </button>
 
           {commit.subcategory && (
             <span className="text-gray-400">

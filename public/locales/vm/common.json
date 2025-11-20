@@ -203,109 +203,176 @@
     }
   },
   "contacts": {
-    "welcome": "Chào mừng trở lại,",
-    "All": "Tất cả",
-    "team_sharing": "Chia sẻ nhóm",
-    "fast_lookup": "Tra cứu nhanh",
-    "team_sharing_avaible": "Có sẵn chia sẻ nhóm",
-    "team_shearing": "Chia sẻ nhóm",
-    "live_updates": "Cập nhật trực tiếp",
-    "Clear": "Xóa",
-    "team_contact": "Đã bật chia sẻ liên hệ nhóm",
-    "Share": "Chia sẻ",
-    "selected": "đã chọn",
-    "fast_look": "Đã bật tra cứu nhanh",
-    "sharing_enabled": "Đã bật chia sẻ liên hệ nhóm",
+    "title": "Danh bạ",
+    "subtitle": "Quản lý danh bạ và kết nối chuyên nghiệp của bạn",
+    "loading": "Đang tải danh bạ...",
+    "feature_not_available": "Tính năng Danh bạ Không Khả dụng",
+    "requires_upgrade": "Gói đăng ký hiện tại của bạn không bao gồm tính năng quản lý danh bạ.",
+    "stats": {
+      "total": "Tổng số Liên hệ",
+      "new": "Mới",
+      "viewed": "Đã xem",
+      "with_location": "Có Vị trí"
+    },
+    "filters": {
+      "all_status": "Tất cả Trạng thái",
+      "new": "Mới",
+      "viewed": "Đã xem",
+      "archived": "Đã lưu trữ"
+    },
+    "buttons": {
+      "map_view": "Xem Bản đồ",
+      "import_export": "Nhập / Xuất",
+      "scan_card": "Quét Thẻ",
+      "manage_groups": "Quản lý Nhóm ({{count}})"
+    },
+    "search": {
+      "title": "Tìm kiếm Liên hệ",
+      "placeholder": "Tìm kiếm liên hệ theo tên, email, công ty...",
+      "semantic_placeholder": "Hỏi về mạng lưới của bạn: 'ai biết React?' hoặc 'chuyên gia marketing'",
+      "standard_mode": "Tìm kiếm tiêu chuẩn",
+      "ai_mode": "Tìm kiếm bằng AI",
+      "searching": "Đang tìm kiếm...",
+      "enhanced_title": "Tìm kiếm AI nâng cao",
+      "semantic_title": "Tìm kiếm ngữ nghĩa",
+      "enhanced_description": "AI phân tích danh bạ của bạn theo ngữ nghĩa và cung cấp thông tin thông minh về lý do mỗi liên hệ khớp với truy vấn.",
+      "semantic_description": "Tìm kiếm ngữ nghĩa tìm liên hệ dựa trên ý nghĩa, không chỉ từ khóa. Nâng cấp lên Business để có thông tin do AI cung cấp.",
+      "try_examples": "Hãy thử các ví dụ sau:",
+      "examples": [
+        "Lập trình viên React",
+        "nhà sáng lập startup",
+        "chuyên gia marketing",
+        "ở California"
+      ],
+      "consent_required": "Tìm kiếm ngữ nghĩa AI cần sự đồng ý của bạn",
+      "enable_consent": "Bật trong Cài đặt"
+    },
+    "map": {
+      "title": "Bản đồ Danh bạ",
+      "search_placeholder": "Tìm kiếm liên hệ...",
+      "search_unknown_location": "Vị trí chưa xác định",
+      "theme": {
+        "light": "Chủ đề sáng",
+        "dark": "Chủ đề tối"
+      },
+      "map_type_toggle": "Chuyển đổi loại bản đồ",
+      "map_type_satellite": "Vệ tinh",
+      "map_type_roadmap": "Đường đi",
+      "close": "Đóng bản đồ",
+      "loading": "Đang tải bản đồ...",
+      "zoom_label": "Thu phóng",
+      "world_view": "🌍 Chế độ toàn cầu",
+      "regional_view": "🗺️ Chế độ khu vực",
+      "street_view": "📍 Chế độ đường phố",
+      "total_label": "Tổng",
+      "contacts_suffix": "liên hệ",
+      "with_location_label": "có dữ liệu vị trí",
+      "controls": {
+        "fit_all": "Hiển thị mọi liên hệ",
+        "reset": "Đặt lại về chế độ toàn cầu",
+        "zoom_in": "Phóng to",
+        "zoom_out": "Thu nhỏ"
+      },
+      "error": {
+        "title": "Lỗi bản đồ",
+        "dismiss": "Đóng"
+      },
+      "aria_label": "Bản đồ danh bạ tương tác"
+    },
+    "groups": {
+      "title": "Nhóm Liên hệ",
+      "more": "+{{count}} thêm"
+    },
+    "modals": {
+      "review": {
+        "title": "Xem xét và Tinh chỉnh Liên hệ",
+        "subtitle": "{{fields}} trường được phát hiện • {{categories}} danh mục",
+        "phone_numbers": "Số Điện thoại",
+        "add_phone": "Thêm Điện thoại",
+        "phone_tip": "Mẹo: Bao gồm mã quốc gia (ví dụ: +33 cho Pháp, +1 cho Mỹ/Canada) để tự động phát hiện cờ",
+        "premium_country_detection": "Premium: Phát hiện Quốc gia",
+        "add_custom_field": "Thêm Trường Tùy chỉnh",
+        "no_fields_in_category": "Không tìm thấy trường {{category}}.",
+        "no_fields_detected": "Không phát hiện trường nào khác. Nhấp 'Thêm Trường Tùy chỉnh' để thêm.",
+        "field_label_placeholder": "Nhãn Trường (ví dụ: Hồ sơ LinkedIn)",
+        "field_value_placeholder": "Giá trị Trường",
+        "standard": "Tiêu chuẩn",
+        "ai_detected": "Phát hiện bởi AI",
+        "with_values": "Có Giá trị",
+        "save_contact_button": "Lưu Liên hệ ({{count}} trường)",
+        "error_no_name": "Vui lòng đảm bảo liên hệ có Tên.",
+        "save_success": "Liên hệ đã được lưu!",
+        "save_error": "Lưu liên hệ thất bại."
+      }
+    },
     "edit_contact": "Chỉnh sửa Liên hệ",
-    "edit": "Chỉnh sửa",
-    "modified": "Đã sửa đổi",
-    "last_modified": "Sửa đổi lần cuối",
-    "contact_updated_successfully": "Liên hệ đã được cập nhật thành công",
-    "failed_to_update_contact": "Cập nhật liên hệ thất bại",
     "name": "Tên",
     "email": "Email",
     "phone": "Điện thoại",
     "company": "Công ty",
-    "message": "Tin nhắn",
     "status": "Trạng thái",
-    "contact_info": "Thông tin liên hệ",
-    "submitted_at": "Gửi lúc",
-    "contact_id": "ID Liên hệ",
-    "save_changes": "Lưu thay đổi",
+    "status_new": "Mới",
+    "status_viewed": "Đã xem",
+    "status_archived": "Đã lưu trữ",
+    "message": "Tin nhắn",
     "saving": "Đang lưu...",
-    "location_for_contact": "Vị trí của {name}",
-    "all_contact_locations": "Tất cả vị trí liên hệ",
-    "title": "Danh sách liên hệ",
-    "subtitle": "Quản lý các liên hệ đã chia sẻ thông tin của họ qua hồ sơ của bạn",
-    "loading": "Đang tải liên hệ...",
-    "loading_map": "Đang tải bản đồ...",
-    "live_updates_enabled": "Đã bật cập nhật trực tiếp",
-    "offline_updates_enabled": "Chưa bật cập nhật trực tiếp",
-    "contacts_with_location": "{count} liên hệ có vị trí",
-    "new_contacts_notification": "Bạn có {count} liên hệ mới{plural}{location}!",
-    "failed_to_load": "Tải liên hệ thất bại",
-    "status_updated": "Trạng thái liên hệ đã được cập nhật",
-    "failed_to_update_status": "Cập nhật trạng thái liên hệ thất bại",
-    "bulk_update_success": "{count} liên hệ đã được cập nhật",
-    "failed_to_update_contacts": "Cập nhật liên hệ thất bại",
-    "filter_by_status": "Lọc theo trạng thái",
-    "filter_all": "Tất cả",
-    "filter_new": "Mới",
-    "filter_viewed": "Đã xem",
-    "filter_archived": "Lưu trữ",
-    "search_placeholder": "Tìm kiếm liên hệ...",
-    "no_location_data": "Không có liên hệ nào có dữ liệu vị trí",
-    "view_all_locations": "Xem tất cả vị trí liên hệ",
-    "map_button": "Bản đồ",
-    "selected_contacts": "{count} liên hệ được chọn",
-    "mark_as_viewed": "Đánh dấu là đã xem",
+    "save_changes": "Lưu Thay đổi",
+    "deletion_warning_title": "Liên hệ được lên lịch xóa",
+    "deletion_warning_message": "Tài khoản của {{name}} được lên lịch xóa vào {{date}}. Thông tin liên hệ của họ sẽ được ẩn danh sau ngày này.",
+    "job_title": "Chức danh",
+    "website": "Trang web",
+    "additional_information": "Thông tin bổ sung",
+    "placeholder_field_label": "Nhãn (ví dụ: LinkedIn)",
+    "placeholder_field_value": "Giá trị (ví dụ: https://...)",
+    "add_custom_field": "Thêm trường tùy chỉnh",
+    "section_notes": "Ghi chú",
+    "section_message": "Tin nhắn",
+    "section_event_info": "Thông tin sự kiện",
+    "section_location_data": "Dữ liệu vị trí",
+    "section_phone_numbers": "Số điện thoại",
+    "section_all_details": "Tất cả chi tiết",
+    "section_ai_detected": "Thông tin được AI phát hiện",
+    "section_groups": "Nhóm",
+    "section_match_quality": "Chất lượng khớp tìm kiếm",
+    "section_metadata": "Siêu dữ liệu",
+    "event_name_label": "Tên sự kiện:",
+    "event_type_label": "Loại sự kiện:",
+    "venue_label": "Địa điểm:",
+    "event_dates_label": "Ngày sự kiện:",
+    "latitude_label": "Vĩ độ:",
+    "longitude_label": "Kinh độ:",
+    "accuracy_label": "Độ chính xác:",
+    "captured_label": "Đã chụp:",
+    "match_confidence_label": "Độ tin cậy khớp:",
+    "vector_similarity_label": "Độ tương đồng vector:",
+    "hybrid_score_label": "Điểm số hỗn hợp:",
+    "how_we_met_label": "Cách chúng tôi gặp nhau:",
+    "source_label": "Nguồn:",
+    "submitted_label": "Đã gửi:",
+    "modified_label": "Đã sửa đổi:",
+    "generated_label": "Đã tạo:",
+    "generated_by_label": "Tạo bởi:",
+    "linkedin_profile": "Hồ sơ LinkedIn",
+    "premium_country_detection": "Premium: Phát hiện quốc gia",
+    "edit": "Chỉnh sửa",
+    "mark_as_viewed": "Đánh dấu đã xem",
+    "viewed": "Đã xem",
     "archive": "Lưu trữ",
     "restore": "Khôi phục",
-    "no_contacts_found": "Không tìm thấy liên hệ nào",
-    "no_contacts_yet": "Chưa có liên hệ nào",
-    "try_adjusting_filters": "Thử điều chỉnh tìm kiếm hoặc bộ lọc của bạn",
-    "contacts_will_appear_here": "Các liên hệ sẽ xuất hiện ở đây khi khách truy cập chia sẻ thông tin của họ qua hồ sơ của bạn",
-    "status_new": "mới",
-    "status_viewed": "đã xem",
-    "status_archived": "lưu trữ",
-    "located": "Đã định vị",
-    "send_email": "Gửi Email",
+    "delete": "Xóa",
     "call": "Gọi",
-    "view_location_on_map": "Xem vị trí trên bản đồ",
-    "export_contacts": "Xuất danh bạ",
-    "export_headers": {
-      "name": "Tên",
-      "email": "Email",
-      "phone": "Điện thoại",
-      "company": "Công ty",
-      "message": "Tin nhắn",
-      "status": "Trạng thái",
-      "submitted_at": "Ngày gửi",
-      "has_location": "Có vị trí",
-      "latitude": "Vĩ độ",
-      "longitude": "Kinh độ",
-      "location_accuracy": "Độ chính xác vị trí"
-    },
-    "contact_locations": "Vị trí liên hệ",
-    "viewing_location_for": "Đang xem vị trí của {name}",
-    "showing_contacts_with_location": "Hiển thị {count} liên hệ có dữ liệu vị trí",
-    "coordinates": "Tọa độ",
-    "accuracy": "Độ chính xác",
-    "selected_contact": "Đã chọn {name}",
-    "contact_location": "Vị trí liên hệ",
-    "show_all_contacts": "Hiển thị tất cả liên hệ",
-    "open_in_google_maps": "Mở trong Google Maps",
-    "copy_coordinates": "Sao chép Tọa độ",
-    "coordinates_copied": "Tọa độ đã được sao chép vào bộ nhớ tạm!",
-    "share_with_team": "Chia sẻ với Nhóm",
-    "showing_contacts": "bạn có {count} trên {total} liên hệ",
-    "personal": "cá nhân",
-    "from_team": "từ nhóm",
-    "with_location": "có vị trí",
-    "added": "Đã thêm:",
-    "mark_viewed": "Đánh dấu đã xem",
-    "filter_with_count": "Lọc ({count})",
-    "map_with_count": "Bản đồ ({count})"
+    "map_button": "Bản đồ",
+    "show_groups": "Hiển thị nhóm ({{count}})",
+    "no_name": "Không có tên",
+    "no_email": "Không có email",
+    "country_unknown": "Không rõ",
+    "match_excellent": "Khớp xuất sắc",
+    "match_good": "Khớp tốt",
+    "match_fair": "Khớp khá",
+    "match_weak": "Khớp yếu",
+    "deletion_tooltip": "Tài khoản của {{name}} được lên lịch xóa vào {{date}}",
+    "match_confidence_tooltip": "Độ tin cậy khớp: {{label}}",
+    "ai_fields_tooltip": "{{count}} trường được AI phát hiện"
   },
   "common": {
     "enabled": "Đã bật",
@@ -1035,22 +1102,394 @@
     "invalid_email_format": "Định dạng Email không hợp lệ!"
   },
   "account": {
-    "contact_info_desc": "Thông tin này sẽ có sẵn khi mọi người lưu liên hệ của bạn.",
-    "settings_subtitle": "Quản lý thông tin hồ sơ và cài đặt nhóm của bạn",
-    "settings_title": "Cài đặt tài khoản",
-    "contact_information": "Thông tin liên hệ",
-    "display_name": "Tên hiển thị",
-    "email": "Email",
-    "phone": "Điện thoại",
-    "website": "Trang web",
-    "company": "Công ty",
-    "bio": "Tiểu sử",
-    "contact_info_updated": "Thông tin liên hệ đã được cập nhật thành công!",
-    "update_failed": "Cập nhật thông tin liên hệ thất bại",
-    "contact_saveable": "Thông tin liên hệ sẵn sàng để khách truy cập lưu",
-    "save_contact_preview": "Khách truy cập vào hồ sơ của bạn sẽ thấy nút \"Lưu Liên hệ\" khi bạn đã điền thông tin liên hệ.",
-    "team_management": "Quản lý nhóm",
-    "my_nfc_cards": "Thẻ NFC của tôi"
+    "header": {
+      "title": "Tài Khoản & Quyền Riêng Tư",
+      "subtitle": "Quản lý dữ liệu cá nhân và tùy chọn quyền riêng tư của bạn",
+      "deletion_warning_title": "Đang Chờ Xóa Tài Khoản",
+      "deletion_warning_message": "Tài khoản của bạn được lên lịch xóa vào ngày {{date}}. Bạn có thể hủy bất cứ lúc nào trước ngày đó."
+    },
+    "tabs": {
+      "overview": "Tổng Quan",
+      "export": "Xuất Dữ Liệu",
+      "delete": "Xóa Tài Khoản",
+      "consents": "Đồng Ý",
+      "settings": "Cài Đặt Quyền Riêng Tư",
+      "contact_download": "Tải Liên Hệ",
+      "website_config": "Cấu Hình Trang Web"
+    },
+    "loading": {
+      "privacy_data": "Đang tải dữ liệu quyền riêng tư...",
+      "settings": "Đang tải cài đặt quyền riêng tư...",
+      "consent_data": "Đang tải dữ liệu đồng ý..."
+    },
+    "overview": {
+      "title": "Tổng Quan Quyền Riêng Tư",
+      "welcome": "Chào mừng đến với Trung Tâm Tài Khoản & Quyền Riêng Tư của bạn. Tại đây, bạn có thể quản lý tất cả các khía cạnh của dữ liệu cá nhân, thực hiện quyền của bạn theo GDPR, và kiểm soát cách thông tin của bạn được sử dụng.",
+      "export_card": {
+        "title": "Xuất Dữ Liệu Của Bạn",
+        "description": "Tải xuống tất cả dữ liệu cá nhân của bạn ở định dạng có thể đọc được bằng máy (JSON, CSV, vCard). Tương thích với tất cả trình quản lý liên hệ.",
+        "cta": "Xuất Dữ Liệu →"
+      },
+      "consents_card": {
+        "title": "Quản Lý Đồng Ý",
+        "description": "Xem xét và cập nhật các đồng ý quyền riêng tư của bạn. Kiểm soát tính năng nào có thể xử lý dữ liệu của bạn.",
+        "cta": "Quản Lý Đồng Ý →"
+      },
+      "settings_card": {
+        "title": "Cài Đặt Quyền Riêng Tư",
+        "description": "Cấu hình tùy chọn quyền riêng tư của bạn, bao gồm khả năng hiển thị hồ sơ và chia sẻ dữ liệu.",
+        "cta": "Cập Nhật Cài Đặt →"
+      },
+      "delete_card": {
+        "title": "Xóa Tài Khoản",
+        "description": "Xóa vĩnh viễn tài khoản của bạn và tất cả dữ liệu liên quan. Hành động này không thể hoàn tác.",
+        "cta": "Xóa Tài Khoản →"
+      },
+      "gdpr_info": {
+        "title": "Về Tuân Thủ GDPR",
+        "description": "Weavink tuân thủ đầy đủ Quy Định Bảo Vệ Dữ Liệu Chung (GDPR) và coi trọng quyền riêng tư của bạn. Tất cả dữ liệu của bạn được lưu trữ trong các trung tâm dữ liệu EU, được mã hóa và bảo vệ theo các tiêu chuẩn cao nhất. Bạn có toàn quyền kiểm soát thông tin cá nhân của mình mọi lúc."
+      }
+    },
+    "export": {
+      "title": "Xuất Dữ Liệu Của Bạn",
+      "description": "Tải xuống tất cả dữ liệu cá nhân của bạn ở định dạng có thể đọc được bằng máy. Bản xuất của bạn sẽ bao gồm:",
+      "includes": {
+        "profile": "Hồ sơ người dùng và thông tin tài khoản (JSON)",
+        "contacts_json": "Tất cả danh bạ (định dạng JSON, CSV, vCard)",
+        "groups": "Nhóm liên hệ và danh mục (JSON)",
+        "analytics": "Dữ liệu phân tích - ẩn danh (JSON)",
+        "consents": "Lịch sử đồng ý (JSON)",
+        "settings": "Cài đặt và tùy chọn (JSON)"
+      },
+      "button": {
+        "export": "Xuất Tất Cả Dữ Liệu",
+        "exporting": "Đang Chuẩn Bị Xuất..."
+      },
+      "rateLimit": {
+        "title": "Đã Đạt Giới Hạn Tốc Độ",
+        "message": "Bạn đã đạt tối đa 3 lần xuất dữ liệu mỗi giờ. Giới hạn này giúp bảo vệ máy chủ của chúng tôi và dữ liệu của bạn.",
+        "countdown": "Khả dụng sau:"
+      },
+      "success": {
+        "title": "Xuất Hoàn Tất!",
+        "message": "Dữ liệu của bạn đã được xuất thành công. Tải xuống các tệp bên dưới:",
+        "back": "← Xuất Lại"
+      },
+      "download_all": {
+        "button": "Tải xuống tất cả các tệp"
+      },
+      "individual_files": "Tệp riêng lẻ",
+      "error": {
+        "message": "{{error}}"
+      }
+    },
+    "delete": {
+      "title": "Xóa Tài Khoản Của Bạn",
+      "description": "Xóa vĩnh viễn tài khoản của bạn và tất cả dữ liệu liên quan. Hành động này không thể hoàn tác.",
+      "pending": {
+        "title": "Đang Chờ Xóa Tài Khoản",
+        "message": "Tài khoản của bạn được lên lịch xóa vĩnh viễn vào ngày {{date}}.",
+        "warning": "Tất cả dữ liệu của bạn, bao gồm danh bạ, nhóm và cài đặt, sẽ bị xóa vĩnh viễn. Hành động này không thể hoàn tác sau ngày xóa.",
+        "cancel_button": "Hủy Xóa"
+      },
+      "warning": {
+        "title": "Trước khi bạn xóa:",
+        "export": "Hãy cân nhắc xuất dữ liệu của bạn trước (bạn sẽ không thể truy cập sau khi xóa)",
+        "all_data": "Điều này sẽ xóa tất cả danh bạ, nhóm và cài đặt của bạn",
+        "notify": "Người dùng có bạn làm liên hệ sẽ được thông báo",
+        "grace_period": "Bạn có 30 ngày để hủy xóa trước khi nó hoàn tất"
+      },
+      "confirmation": {
+        "title": "Xác Nhận Xóa Tài Khoản",
+        "instruction": "Nhập {{text}} để xác nhận:",
+        "text": "DELETE MY ACCOUNT",
+        "placeholder": "DELETE MY ACCOUNT"
+      },
+      "button": {
+        "delete": "Xóa Tài Khoản Của Tôi",
+        "confirm": "Xác Nhận Xóa",
+        "deleting": "Đang Xóa...",
+        "cancel": "Hủy"
+      }
+    },
+    "consents": {
+      "title": "Quản Lý Đồng Ý",
+      "description": "Kiểm soát tính năng nào có thể xử lý dữ liệu của bạn. Bạn có thể rút lại đồng ý bất cứ lúc nào. Thay đổi có hiệu lực ngay lập tức.",
+      "status": {
+        "granted": "Đã Cho Phép",
+        "withdrawn": "Đã Rút Lại"
+      },
+      "badge": {
+        "required": "Bắt Buộc"
+      },
+      "category": {
+        "essential": {
+          "name": "Thiết Yếu",
+          "description": "Bắt buộc để ứng dụng hoạt động đúng cách"
+        },
+        "ai_features": {
+          "name": "Tính Năng AI",
+          "description": "Cải tiến được hỗ trợ bởi trí tuệ nhân tạo"
+        },
+        "analytics": {
+          "name": "Phân Tích",
+          "description": "Phân tích sử dụng và theo dõi hiệu suất"
+        },
+        "communication": {
+          "name": "Giao Tiếp",
+          "description": "Giao tiếp qua email và khuyến nghị"
+        },
+        "personalization": {
+          "name": "Cá Nhân Hóa",
+          "description": "Trải nghiệm cá nhân hóa và cài đặt hồ sơ"
+        }
+      },
+      "type": {
+        "terms_of_service": {
+          "name": "Điều Khoản Dịch Vụ",
+          "description": "Chấp nhận các điều khoản và điều kiện của chúng tôi",
+          "gdpr": "Điều 6(1)(b) - Thực hiện hợp đồng"
+        },
+        "privacy_policy": {
+          "name": "Chính Sách Bảo Mật",
+          "description": "Chấp nhận các thực hành bảo mật của chúng tôi",
+          "gdpr": "Điều 6(1)(b) - Thực hiện hợp đồng"
+        },
+        "ai_business_card": {
+          "name": "Cải Tiến Danh Thiếp Bằng AI",
+          "description": "Sử dụng AI (Google Gemini 2.0) để trích xuất thông tin từ hình ảnh danh thiếp với độ chính xác cao",
+          "gdpr": "Điều 6(1)(a) - Đồng ý",
+          "tier": "Premium+"
+        },
+        "ai_semantic_search": {
+          "name": "Tìm Kiếm Ngữ Nghĩa AI",
+          "description": "Bật tìm kiếm được hỗ trợ bởi AI với cải tiến truy vấn, nhúng, xếp hạng lại và phân tích kết quả thông minh",
+          "gdpr": "Điều 6(1)(a) - Đồng ý",
+          "tier": "Business+"
+        },
+        "ai_auto_grouping": {
+          "name": "Nhóm Tự Động Bằng AI",
+          "description": "Tự động nhóm danh bạ bằng thuật toán thông minh, làm phong phú địa điểm và phát hiện sự kiện",
+          "gdpr": "Điều 6(1)(a) - Đồng ý",
+          "tier": "Premium+"
+        },
+        "analytics_basic": {
+          "name": "Phân Tích Cơ Bản",
+          "description": "Thống kê sử dụng cơ bản (lượt xem trang, sử dụng tính năng) - chỉ dữ liệu ẩn danh",
+          "gdpr": "Điều 6(1)(f) - Lợi ích chính đáng"
+        },
+        "analytics_detailed": {
+          "name": "Phân Tích Chi Tiết",
+          "description": "Mẫu sử dụng chi tiết và phân tích hành vi để cải thiện trải nghiệm người dùng",
+          "gdpr": "Điều 6(1)(a) - Đồng ý"
+        },
+        "cookies_analytics": {
+          "name": "Cookies Phân Tích",
+          "description": "Cookies được sử dụng để theo dõi mẫu sử dụng và cải thiện ứng dụng",
+          "gdpr": "Điều 6(1)(a) - Đồng ý"
+        },
+        "marketing_emails": {
+          "name": "Email Tiếp Thị",
+          "description": "Nhận bản tin, cập nhật sản phẩm và ưu đãi khuyến mãi",
+          "gdpr": "Điều 6(1)(a) - Đồng ý"
+        },
+        "contact_recommendations": {
+          "name": "Khuyến Nghị Liên Hệ",
+          "description": "Nhận gợi ý về các kết nối tiềm năng dựa trên mạng của bạn",
+          "gdpr": "Điều 6(1)(a) - Đồng ý"
+        },
+        "cookies_personalization": {
+          "name": "Cookies Cá Nhân Hóa",
+          "description": "Ghi nhớ tùy chọn của bạn và tùy chỉnh trải nghiệm của bạn",
+          "gdpr": "Điều 6(1)(a) - Đồng ý"
+        },
+        "profile_public": {
+          "name": "Hồ Sơ Công Khai",
+          "description": "Làm cho hồ sơ của bạn hiển thị với người dùng khác trên nền tảng",
+          "gdpr": "Điều 6(1)(a) - Đồng ý"
+        }
+      },
+      "technologies_label": "Công Nghệ:",
+      "last_updated": "Cập nhật lần cuối: {{date}}",
+      "info": {
+        "title": "Về Quyền Đồng Ý Của Bạn",
+        "withdraw": "Bạn có thể rút lại đồng ý của mình bất cứ lúc nào bằng cách chuyển đổi các công tắc ở trên.",
+        "lawfulness": "Việc rút lại đồng ý sẽ không ảnh hưởng đến tính hợp pháp của việc xử lý dựa trên đồng ý trước khi rút lại (GDPR Điều 7.3).",
+        "essential": "Các đồng ý thiết yếu là bắt buộc để dịch vụ hoạt động và không thể rút lại mà không xóa tài khoản của bạn.",
+        "tiers": "Một số tính năng yêu cầu các cấp đăng ký cụ thể và có thể không khả dụng nếu đồng ý bị rút lại.",
+        "audit": "Tất cả các thay đổi đồng ý được ghi lại và có thể kiểm toán. Liên hệ với Cán Bộ Bảo Vệ Dữ Liệu của chúng tôi nếu bạn có câu hỏi."
+      },
+      "notification": {
+        "granted": "Đã cho phép đồng ý thành công",
+        "withdrawn": "Đã rút lại đồng ý thành công"
+      }
+    },
+    "settings": {
+      "title": "Cài Đặt Quyền Riêng Tư",
+      "description": "Cấu hình tùy chọn quyền riêng tư của bạn và kiểm soát cách dữ liệu của bạn được sử dụng.",
+      "profile_visibility": {
+        "title": "Khả Năng Hiển Thị Hồ Sơ",
+        "description": "Kiểm soát ai có thể xem hồ sơ và thông tin liên hệ của bạn. Khi hồ sơ của bạn công khai, bất kỳ ai cũng có thể xem thông tin của bạn. Khi riêng tư, chỉ các kết nối được phê duyệt mới có thể xem chi tiết của bạn.",
+        "label": "Trạng Thái Hồ Sơ:",
+        "public": "Công Khai",
+        "private": "Riêng Tư"
+      },
+      "allow_messages": {
+        "title": "Cho Phép Tin Nhắn",
+        "description": "Cho phép người dùng khác gửi tin nhắn cho bạn qua nền tảng. Bạn có thể tắt điều này để ngăn tin nhắn không mong muốn trong khi vẫn duy trì kết nối của bạn.",
+        "label": "Tin Nhắn:",
+        "enabled": "Đã Bật",
+        "disabled": "Đã Tắt"
+      },
+      "notifications": {
+        "title": "Tùy Chọn Thông Báo",
+        "description": "Kiểm soát cách bạn nhận thông báo về hoạt động tài khoản của bạn.",
+        "email": {
+          "title": "Thông Báo Qua Email",
+          "description": "Nhận cập nhật quan trọng và thông báo qua email"
+        },
+        "push": {
+          "title": "Thông Báo Đẩy",
+          "description": "Nhận thông báo đẩy theo thời gian thực trên thiết bị của bạn"
+        }
+      },
+      "quick_actions": {
+        "title": "Kiểm Soát Quyền Riêng Tư Bổ Sung",
+        "consents": "Quản lý tùy chọn đồng ý chi tiết trong tab {{link}}",
+        "consents_link": "Đồng Ý",
+        "export": "Xuất tất cả dữ liệu của bạn trong tab {{link}}",
+        "export_link": "Xuất Dữ Liệu",
+        "delete": "Yêu cầu xóa tài khoản trong tab {{link}}",
+        "delete_link": "Xóa Tài Khoản"
+      },
+      "gdpr_info": {
+        "title": "Quyền Quyền Riêng Tư Của Bạn",
+        "description": "Theo GDPR, bạn có quyền kiểm soát dữ liệu cá nhân của mình. Các cài đặt này cho bạn kiểm soát chi tiết về tùy chọn quyền riêng tư của bạn. Tất cả các thay đổi được ghi lại và có thể kiểm toán. Để biết thêm thông tin về cách chúng tôi xử lý dữ liệu của bạn, vui lòng xem {{link}} của chúng tôi.",
+        "privacy_policy_link": "Chính Sách Bảo Mật"
+      },
+      "notification": {
+        "success": "Đã cập nhật cài đặt thành công"
+      }
+    },
+    "contact_download": {
+      "title": "Cài Đặt Tải Liên Hệ",
+      "description": "Kiểm soát ai có thể tải thông tin liên hệ của bạn và trường nào có sẵn"
+    },
+    "contact_download_settings": {
+      "title": "Cài Đặt Tải Liên Hệ",
+      "description": "Kiểm soát ai có thể tải thông tin liên hệ của bạn và trường nào có sẵn",
+      "master_toggle": {
+        "title": "Bật Tải Liên Hệ",
+        "description": "Cho phép khách truy cập tải thông tin liên hệ của bạn dưới dạng tệp vCard. Khi tắt, nút tải xuống sẽ không xuất hiện trên hồ sơ công khai của bạn.",
+        "status_label": "Trạng thái:",
+        "enabled": "Đã Bật",
+        "disabled": "Đã Tắt"
+      },
+      "fields": {
+        "title": "Trường Có Sẵn",
+        "description": "Chọn trường khách truy cập có thể bao gồm khi tải liên hệ của bạn. Trường bắt buộc không thể tắt.",
+        "categories": {
+          "basic": "Thông Tin Cơ Bản",
+          "additional": "Thông Tin Bổ Sung",
+          "social": "Mạng Xã Hội"
+        },
+        "field_labels": {
+          "displayName": "Tên Hiển Thị",
+          "email": "Email",
+          "photo": "Ảnh Hồ Sơ",
+          "bio": "Tiểu Sử / Ghi Chú",
+          "location": "Vị Trí",
+          "website": "URL Hồ Sơ",
+          "linkedin": "LinkedIn",
+          "twitter": "Twitter",
+          "instagram": "Instagram",
+          "facebook": "Facebook"
+        },
+        "required_badge": "Bắt Buộc",
+        "count": "{{count}} trường đã chọn"
+      },
+      "quick_actions": {
+        "select_all": "Chọn Tất Cả",
+        "deselect_all": "Bỏ Chọn Tất Cả"
+      },
+      "info_card": {
+        "title": "Cách Hoạt Động",
+        "description": "Khi khách truy cập nhấp vào nút Tải Liên Hệ trên hồ sơ của bạn, họ sẽ thấy một cửa sổ bật lên nơi họ có thể chọn trường đã bật của bạn để đưa vào tệp vCard. Các trường bạn tắt ở đây sẽ không có sẵn cho khách truy cập."
+      },
+      "notifications": {
+        "saving": "Đang lưu...",
+        "success": "Đã lưu cài đặt thành công!",
+        "error": "Lưu cài đặt thất bại"
+      }
+    },
+    "website_config": {
+      "title": "Cấu Hình Trang Web",
+      "description": "Cấu hình tùy chọn trang web và cài đặt mặc định của bạn.",
+      "language": {
+        "title": "Ngôn Ngữ Mặc Định",
+        "description": "Đặt ngôn ngữ mặc định ưa thích của bạn cho trang web. Nó sẽ được áp dụng tự động khi bạn đăng nhập. Bạn vẫn có thể thay đổi ngôn ngữ tạm thời bằng cách sử dụng bộ chọn ngôn ngữ trong thanh điều hướng.",
+        "current_label": "Mặc Định Hiện Tại:",
+        "select_label": "Chọn Ngôn Ngữ Mặc Định",
+        "updating": "Đang cập nhật ngôn ngữ...",
+        "notification": {
+          "success": "Đã cập nhật ngôn ngữ mặc định thành công",
+          "error": "Cập nhật ngôn ngữ thất bại"
+        }
+      },
+      "info": {
+        "title": "Cách Hoạt Động Của Cài Đặt Ngôn Ngữ",
+        "default": "Ngôn ngữ mặc định của bạn được lưu và áp dụng tự động khi bạn đăng nhập",
+        "navbar": "Bạn có thể thay đổi ngôn ngữ tạm thời bằng cách sử dụng bộ chọn ngôn ngữ trong thanh điều hướng",
+        "session": "Thay đổi ngôn ngữ tạm thời chỉ ảnh hưởng đến phiên hiện tại của bạn",
+        "persistent": "Để thay đổi ngôn ngữ vĩnh viễn, hãy cập nhật ngôn ngữ mặc định của bạn tại đây"
+      }
+    },
+    "tutorial_progression": {
+      "title": "Tiến Trình Hướng Dẫn",
+      "subtitle": "Theo dõi tiến trình hòa nhập của bạn và xem lại bất kỳ bước nào",
+      "steps_completed": "{{completed}} trên {{total}} bước đã hoàn thành",
+      "status": {
+        "completed": "Đã hoàn thành",
+        "not_started": "Chưa bắt đầu"
+      },
+      "actions": {
+        "jump_to_step": "Đi đến Bước"
+      },
+      "skipped_message": "Bạn đã bỏ qua hướng dẫn. Bạn vẫn có thể đi đến bất kỳ bước nào để tìm hiểu thêm."
+    },
+    "footer": {
+      "title": "Quyền Của Bạn Theo GDPR",
+      "rights": {
+        "access": {
+          "title": "✓ Quyền Truy Cập",
+          "description": "Xem và tải xuống tất cả dữ liệu cá nhân của bạn"
+        },
+        "rectification": {
+          "title": "✓ Quyền Sửa Chữa",
+          "description": "Sửa hoặc cập nhật thông tin của bạn"
+        },
+        "erasure": {
+          "title": "✓ Quyền Xóa",
+          "description": "Xóa tài khoản của bạn và tất cả dữ liệu"
+        },
+        "portability": {
+          "title": "✓ Quyền Di Chuyển",
+          "description": "Xuất dữ liệu ở định dạng tiêu chuẩn"
+        },
+        "object": {
+          "title": "✓ Quyền Phản Đối",
+          "description": "Từ chối xử lý dữ liệu cụ thể"
+        },
+        "restriction": {
+          "title": "✓ Quyền Hạn Chế",
+          "description": "Giới hạn cách dữ liệu của bạn được xử lý"
+        }
+      },
+      "dpo": {
+        "question": "Có câu hỏi về quyền riêng tư của bạn?",
+        "link": "Liên hệ với Cán Bộ Bảo Vệ Dữ Liệu của chúng tôi"
+      }
+    }
   },
   "cards": {
     "loading": "Đang tải các thẻ đã lưu của bạn...",
@@ -1878,7 +2317,7 @@
     "Best_Day": "Ngày tốt nhất:",
     "Avg_CTR": "CTR trung bình:",
     "Top_Links": "Liên kết hàng đầu",
-    "clicks": "lượt nhấp",
+    "clicks": "Lượt nhấp",
     "Profile_views": "Lượt xem hồ sơ",
     "Link_clicks": "Lượt nhấp vào liên kết",
     "total_clicks_analytics": "trên tổng số lượt nhấp",
@@ -1893,10 +2332,16 @@
     "clicks_by_type": "Phân phối lượt nhấp",
     "live_updates_enabled": "Đã bật cập nhật trực tiếp",
     "offline_updates_enabled": "Chưa bật cập nhật trực tiếp",
-    "title": "Bảng điều khiển Phân tích",
-    "subtitle": "Theo dõi lượt xem hồ sơ và lượt nhấp vào liên kết của bạn",
+    "title": "Bảng điều khiển phân tích",
+    "subtitle": "Theo dõi lượt xem hồ sơ và lượt nhấp vào liên kết",
     "profile": "Hồ sơ:",
-    "loading": "Đang tải phân tích...",
+    "loading": {
+      "default": "Đang tải...",
+      "session": "Đang tải phiên của bạn...",
+      "analytics": "Đang tải Phân tích...",
+      "user_analytics": "Đang tải phân tích cho {{displayName}}...",
+      "page": "Đang tải trang..."
+    },
     "not_authenticated": "Chưa xác thực",
     "user_data_not_found": "Không tìm thấy dữ liệu người dùng",
     "failed_to_connect": "Kết nối đến phân tích thất bại",
@@ -1905,8 +2350,8 @@
     "live_connection": "Trực tiếp",
     "disconnected": "Đã ngắt kết nối",
     "real_time_updates": "Cập nhật thời gian thực",
-    "profile_views": "Lượt xem hồ sơ",
-    "link_clicks": "Lượt nhấp vào liên kết",
+    "profile_views": "Lượt xem Hồ sơ",
+    "link_clicks": "Lượt nhấp Liên kết",
     "recent_activity": "Hoạt động gần đây",
     "last_updated": "Cập nhật lần cuối",
     "total": "Tổng",
@@ -1967,18 +2412,6 @@
     "untitled_link": "Liên kết không có tiêu đề",
     "last_clicked": "Lần nhấp cuối",
     "total_interactions_description": "Tổng tương tác với các liên kết của bạn",
-    "title": "Bảng điều khiển phân tích",
-    "subtitle": "Theo dõi lượt xem hồ sơ và lượt nhấp vào liên kết",
-    "profile": "Hồ sơ:",
-    "live_connection": "Trực tiếp",
-    "disconnected": "Đã ngắt kết nối",
-    "loading": {
-      "default": "Đang tải...",
-      "session": "Đang tải phiên của bạn...",
-      "analytics": "Đang tải Phân tích...",
-      "user_analytics": "Đang tải phân tích cho {{displayName}}...",
-      "page": "Đang tải trang..."
-    },
     "upgrade": {
       "title": "Mở khóa Phân tích",
       "description": "Phân tích nâng cao là một tính năng cao cấp. Vui lòng nâng cấp gói của bạn để truy cập thông tin chi tiết.",
@@ -2004,10 +2437,7 @@
       "old": "cũ",
       "cached_data": "📊 Hiển thị dữ liệu được lưu trong cache - cập nhật thời gian thực sẽ tự động xuất hiện"
     },
-    "profile_views": "Lượt xem Hồ sơ",
-    "link_clicks": "Lượt nhấp Liên kết",
     "views": "Lượt xem",
-    "clicks": "Lượt nhấp",
     "overview": {
       "new": "Mới!"
     },
@@ -2034,11 +2464,7 @@
       "total_views": "Tổng Lượt xem",
       "total_clicks": "Tổng Lượt nhấp"
     },
-    "real_time_updates": "Cập nhật thời gian thực",
-    "created": "Đã tạo",
-    "today": "Hôm nay",
     "this_week": "Tuần này",
-    "total": "Tổng",
     "visit_link": "Truy cập Liên kết",
     "copy_link": "Sao chép Liên kết",
     "copied": "Đã sao chép!",
@@ -2072,508 +2498,6 @@
       "cookies_analytics": "Cookies Phân Tích",
       "yes": "có",
       "no": "không"
-    }
-  },
-  "account": {
-    "header": {
-      "title": "Tài Khoản & Quyền Riêng Tư",
-      "subtitle": "Quản lý dữ liệu cá nhân và tùy chọn quyền riêng tư của bạn",
-      "deletion_warning_title": "Đang Chờ Xóa Tài Khoản",
-      "deletion_warning_message": "Tài khoản của bạn được lên lịch xóa vào ngày {{date}}. Bạn có thể hủy bất cứ lúc nào trước ngày đó."
-    },
-    "tabs": {
-      "overview": "Tổng Quan",
-      "export": "Xuất Dữ Liệu",
-      "delete": "Xóa Tài Khoản",
-      "consents": "Đồng Ý",
-      "settings": "Cài Đặt Quyền Riêng Tư",
-      "contact_download": "Tải Liên Hệ",
-      "website_config": "Cấu Hình Trang Web"
-    },
-    "loading": {
-      "privacy_data": "Đang tải dữ liệu quyền riêng tư...",
-      "settings": "Đang tải cài đặt quyền riêng tư...",
-      "consent_data": "Đang tải dữ liệu đồng ý..."
-    },
-    "overview": {
-      "title": "Tổng Quan Quyền Riêng Tư",
-      "welcome": "Chào mừng đến với Trung Tâm Tài Khoản & Quyền Riêng Tư của bạn. Tại đây, bạn có thể quản lý tất cả các khía cạnh của dữ liệu cá nhân, thực hiện quyền của bạn theo GDPR, và kiểm soát cách thông tin của bạn được sử dụng.",
-      "export_card": {
-        "title": "Xuất Dữ Liệu Của Bạn",
-        "description": "Tải xuống tất cả dữ liệu cá nhân của bạn ở định dạng có thể đọc được bằng máy (JSON, CSV, vCard). Tương thích với tất cả trình quản lý liên hệ.",
-        "cta": "Xuất Dữ Liệu →"
-      },
-      "consents_card": {
-        "title": "Quản Lý Đồng Ý",
-        "description": "Xem xét và cập nhật các đồng ý quyền riêng tư của bạn. Kiểm soát tính năng nào có thể xử lý dữ liệu của bạn.",
-        "cta": "Quản Lý Đồng Ý →"
-      },
-      "settings_card": {
-        "title": "Cài Đặt Quyền Riêng Tư",
-        "description": "Cấu hình tùy chọn quyền riêng tư của bạn, bao gồm khả năng hiển thị hồ sơ và chia sẻ dữ liệu.",
-        "cta": "Cập Nhật Cài Đặt →"
-      },
-      "delete_card": {
-        "title": "Xóa Tài Khoản",
-        "description": "Xóa vĩnh viễn tài khoản của bạn và tất cả dữ liệu liên quan. Hành động này không thể hoàn tác.",
-        "cta": "Xóa Tài Khoản →"
-      },
-      "gdpr_info": {
-        "title": "Về Tuân Thủ GDPR",
-        "description": "Weavink tuân thủ đầy đủ Quy Định Bảo Vệ Dữ Liệu Chung (GDPR) và coi trọng quyền riêng tư của bạn. Tất cả dữ liệu của bạn được lưu trữ trong các trung tâm dữ liệu EU, được mã hóa và bảo vệ theo các tiêu chuẩn cao nhất. Bạn có toàn quyền kiểm soát thông tin cá nhân của mình mọi lúc."
-      }
-    },
-    "export": {
-      "title": "Xuất Dữ Liệu Của Bạn",
-      "description": "Tải xuống tất cả dữ liệu cá nhân của bạn ở định dạng có thể đọc được bằng máy. Bản xuất của bạn sẽ bao gồm:",
-      "includes": {
-        "profile": "Hồ sơ người dùng và thông tin tài khoản (JSON)",
-        "contacts_json": "Tất cả danh bạ (định dạng JSON, CSV, vCard)",
-        "groups": "Nhóm liên hệ và danh mục (JSON)",
-        "analytics": "Dữ liệu phân tích - ẩn danh (JSON)",
-        "consents": "Lịch sử đồng ý (JSON)",
-        "settings": "Cài đặt và tùy chọn (JSON)"
-      },
-      "button": {
-        "export": "Xuất Tất Cả Dữ Liệu",
-        "exporting": "Đang Chuẩn Bị Xuất..."
-      },
-      "rateLimit": {
-        "title": "Đã Đạt Giới Hạn Tốc Độ",
-        "message": "Bạn đã đạt tối đa 3 lần xuất dữ liệu mỗi giờ. Giới hạn này giúp bảo vệ máy chủ của chúng tôi và dữ liệu của bạn.",
-        "countdown": "Khả dụng sau:"
-      },
-      "success": {
-        "title": "Xuất Hoàn Tất!",
-        "message": "Dữ liệu của bạn đã được xuất thành công. Tải xuống các tệp bên dưới:",
-        "back": "← Xuất Lại"
-      },
-      "download_all": {
-        "button": "Tải xuống tất cả các tệp"
-      },
-      "individual_files": "Tệp riêng lẻ",
-      "error": {
-        "message": "{{error}}"
-      }
-    },
-    "delete": {
-      "title": "Xóa Tài Khoản Của Bạn",
-      "description": "Xóa vĩnh viễn tài khoản của bạn và tất cả dữ liệu liên quan. Hành động này không thể hoàn tác.",
-      "pending": {
-        "title": "Đang Chờ Xóa Tài Khoản",
-        "message": "Tài khoản của bạn được lên lịch xóa vĩnh viễn vào ngày {{date}}.",
-        "warning": "Tất cả dữ liệu của bạn, bao gồm danh bạ, nhóm và cài đặt, sẽ bị xóa vĩnh viễn. Hành động này không thể hoàn tác sau ngày xóa.",
-        "cancel_button": "Hủy Xóa"
-      },
-      "warning": {
-        "title": "Trước khi bạn xóa:",
-        "export": "Hãy cân nhắc xuất dữ liệu của bạn trước (bạn sẽ không thể truy cập sau khi xóa)",
-        "all_data": "Điều này sẽ xóa tất cả danh bạ, nhóm và cài đặt của bạn",
-        "notify": "Người dùng có bạn làm liên hệ sẽ được thông báo",
-        "grace_period": "Bạn có 30 ngày để hủy xóa trước khi nó hoàn tất"
-      },
-      "confirmation": {
-        "title": "Xác Nhận Xóa Tài Khoản",
-        "instruction": "Nhập {{text}} để xác nhận:",
-        "text": "DELETE MY ACCOUNT",
-        "placeholder": "DELETE MY ACCOUNT"
-      },
-      "button": {
-        "delete": "Xóa Tài Khoản Của Tôi",
-        "confirm": "Xác Nhận Xóa",
-        "deleting": "Đang Xóa...",
-        "cancel": "Hủy"
-      }
-    },
-    "consents": {
-      "title": "Quản Lý Đồng Ý",
-      "description": "Kiểm soát tính năng nào có thể xử lý dữ liệu của bạn. Bạn có thể rút lại đồng ý bất cứ lúc nào. Thay đổi có hiệu lực ngay lập tức.",
-      "status": {
-        "granted": "Đã Cho Phép",
-        "withdrawn": "Đã Rút Lại"
-      },
-      "badge": {
-        "required": "Bắt Buộc"
-      },
-      "category": {
-        "essential": {
-          "name": "Thiết Yếu",
-          "description": "Bắt buộc để ứng dụng hoạt động đúng cách"
-        },
-        "ai_features": {
-          "name": "Tính Năng AI",
-          "description": "Cải tiến được hỗ trợ bởi trí tuệ nhân tạo"
-        },
-        "analytics": {
-          "name": "Phân Tích",
-          "description": "Phân tích sử dụng và theo dõi hiệu suất"
-        },
-        "communication": {
-          "name": "Giao Tiếp",
-          "description": "Giao tiếp qua email và khuyến nghị"
-        },
-        "personalization": {
-          "name": "Cá Nhân Hóa",
-          "description": "Trải nghiệm cá nhân hóa và cài đặt hồ sơ"
-        }
-      },
-      "type": {
-        "terms_of_service": {
-          "name": "Điều Khoản Dịch Vụ",
-          "description": "Chấp nhận các điều khoản và điều kiện của chúng tôi",
-          "gdpr": "Điều 6(1)(b) - Thực hiện hợp đồng"
-        },
-        "privacy_policy": {
-          "name": "Chính Sách Bảo Mật",
-          "description": "Chấp nhận các thực hành bảo mật của chúng tôi",
-          "gdpr": "Điều 6(1)(b) - Thực hiện hợp đồng"
-        },
-        "ai_business_card": {
-          "name": "Cải Tiến Danh Thiếp Bằng AI",
-          "description": "Sử dụng AI (Google Gemini 2.0) để trích xuất thông tin từ hình ảnh danh thiếp với độ chính xác cao",
-          "gdpr": "Điều 6(1)(a) - Đồng ý",
-          "tier": "Premium+"
-        },
-        "ai_semantic_search": {
-          "name": "Tìm Kiếm Ngữ Nghĩa AI",
-          "description": "Bật tìm kiếm được hỗ trợ bởi AI với cải tiến truy vấn, nhúng, xếp hạng lại và phân tích kết quả thông minh",
-          "gdpr": "Điều 6(1)(a) - Đồng ý",
-          "tier": "Business+"
-        },
-        "ai_auto_grouping": {
-          "name": "Nhóm Tự Động Bằng AI",
-          "description": "Tự động nhóm danh bạ bằng thuật toán thông minh, làm phong phú địa điểm và phát hiện sự kiện",
-          "gdpr": "Điều 6(1)(a) - Đồng ý",
-          "tier": "Premium+"
-        },
-        "analytics_basic": {
-          "name": "Phân Tích Cơ Bản",
-          "description": "Thống kê sử dụng cơ bản (lượt xem trang, sử dụng tính năng) - chỉ dữ liệu ẩn danh",
-          "gdpr": "Điều 6(1)(f) - Lợi ích chính đáng"
-        },
-        "analytics_detailed": {
-          "name": "Phân Tích Chi Tiết",
-          "description": "Mẫu sử dụng chi tiết và phân tích hành vi để cải thiện trải nghiệm người dùng",
-          "gdpr": "Điều 6(1)(a) - Đồng ý"
-        },
-        "cookies_analytics": {
-          "name": "Cookies Phân Tích",
-          "description": "Cookies được sử dụng để theo dõi mẫu sử dụng và cải thiện ứng dụng",
-          "gdpr": "Điều 6(1)(a) - Đồng ý"
-        },
-        "marketing_emails": {
-          "name": "Email Tiếp Thị",
-          "description": "Nhận bản tin, cập nhật sản phẩm và ưu đãi khuyến mãi",
-          "gdpr": "Điều 6(1)(a) - Đồng ý"
-        },
-        "contact_recommendations": {
-          "name": "Khuyến Nghị Liên Hệ",
-          "description": "Nhận gợi ý về các kết nối tiềm năng dựa trên mạng của bạn",
-          "gdpr": "Điều 6(1)(a) - Đồng ý"
-        },
-        "cookies_personalization": {
-          "name": "Cookies Cá Nhân Hóa",
-          "description": "Ghi nhớ tùy chọn của bạn và tùy chỉnh trải nghiệm của bạn",
-          "gdpr": "Điều 6(1)(a) - Đồng ý"
-        },
-        "profile_public": {
-          "name": "Hồ Sơ Công Khai",
-          "description": "Làm cho hồ sơ của bạn hiển thị với người dùng khác trên nền tảng",
-          "gdpr": "Điều 6(1)(a) - Đồng ý"
-        }
-      },
-      "technologies_label": "Công Nghệ:",
-      "last_updated": "Cập nhật lần cuối: {{date}}",
-      "info": {
-        "title": "Về Quyền Đồng Ý Của Bạn",
-        "withdraw": "Bạn có thể rút lại đồng ý của mình bất cứ lúc nào bằng cách chuyển đổi các công tắc ở trên.",
-        "lawfulness": "Việc rút lại đồng ý sẽ không ảnh hưởng đến tính hợp pháp của việc xử lý dựa trên đồng ý trước khi rút lại (GDPR Điều 7.3).",
-        "essential": "Các đồng ý thiết yếu là bắt buộc để dịch vụ hoạt động và không thể rút lại mà không xóa tài khoản của bạn.",
-        "tiers": "Một số tính năng yêu cầu các cấp đăng ký cụ thể và có thể không khả dụng nếu đồng ý bị rút lại.",
-        "audit": "Tất cả các thay đổi đồng ý được ghi lại và có thể kiểm toán. Liên hệ với Cán Bộ Bảo Vệ Dữ Liệu của chúng tôi nếu bạn có câu hỏi."
-      },
-      "notification": {
-        "granted": "Đã cho phép đồng ý thành công",
-        "withdrawn": "Đã rút lại đồng ý thành công"
-      }
-    },
-    "settings": {
-      "title": "Cài Đặt Quyền Riêng Tư",
-      "description": "Cấu hình tùy chọn quyền riêng tư của bạn và kiểm soát cách dữ liệu của bạn được sử dụng.",
-      "profile_visibility": {
-        "title": "Khả Năng Hiển Thị Hồ Sơ",
-        "description": "Kiểm soát ai có thể xem hồ sơ và thông tin liên hệ của bạn. Khi hồ sơ của bạn công khai, bất kỳ ai cũng có thể xem thông tin của bạn. Khi riêng tư, chỉ các kết nối được phê duyệt mới có thể xem chi tiết của bạn.",
-        "label": "Trạng Thái Hồ Sơ:",
-        "public": "Công Khai",
-        "private": "Riêng Tư"
-      },
-      "allow_messages": {
-        "title": "Cho Phép Tin Nhắn",
-        "description": "Cho phép người dùng khác gửi tin nhắn cho bạn qua nền tảng. Bạn có thể tắt điều này để ngăn tin nhắn không mong muốn trong khi vẫn duy trì kết nối của bạn.",
-        "label": "Tin Nhắn:",
-        "enabled": "Đã Bật",
-        "disabled": "Đã Tắt"
-      },
-      "notifications": {
-        "title": "Tùy Chọn Thông Báo",
-        "description": "Kiểm soát cách bạn nhận thông báo về hoạt động tài khoản của bạn.",
-        "email": {
-          "title": "Thông Báo Qua Email",
-          "description": "Nhận cập nhật quan trọng và thông báo qua email"
-        },
-        "push": {
-          "title": "Thông Báo Đẩy",
-          "description": "Nhận thông báo đẩy theo thời gian thực trên thiết bị của bạn"
-        }
-      },
-      "quick_actions": {
-        "title": "Kiểm Soát Quyền Riêng Tư Bổ Sung",
-        "consents": "Quản lý tùy chọn đồng ý chi tiết trong tab {{link}}",
-        "consents_link": "Đồng Ý",
-        "export": "Xuất tất cả dữ liệu của bạn trong tab {{link}}",
-        "export_link": "Xuất Dữ Liệu",
-        "delete": "Yêu cầu xóa tài khoản trong tab {{link}}",
-        "delete_link": "Xóa Tài Khoản"
-      },
-      "gdpr_info": {
-        "title": "Quyền Quyền Riêng Tư Của Bạn",
-        "description": "Theo GDPR, bạn có quyền kiểm soát dữ liệu cá nhân của mình. Các cài đặt này cho bạn kiểm soát chi tiết về tùy chọn quyền riêng tư của bạn. Tất cả các thay đổi được ghi lại và có thể kiểm toán. Để biết thêm thông tin về cách chúng tôi xử lý dữ liệu của bạn, vui lòng xem {{link}} của chúng tôi.",
-        "privacy_policy_link": "Chính Sách Bảo Mật"
-      },
-      "notification": {
-        "success": "Đã cập nhật cài đặt thành công"
-      }
-    },
-    "consents": {
-      "title": "Quản Lý Đồng Ý",
-      "description": "Kiểm soát tính năng nào có thể xử lý dữ liệu của bạn. Bạn có thể rút lại đồng ý bất cứ lúc nào. Thay đổi có hiệu lực ngay lập tức.",
-      "status": {
-        "granted": "Đã Cho Phép",
-        "withdrawn": "Đã Rút Lại"
-      },
-      "badge": {
-        "required": "Bắt Buộc"
-      },
-      "category": {
-        "essential": {
-          "name": "Thiết Yếu",
-          "description": "Bắt buộc để ứng dụng hoạt động đúng cách"
-        },
-        "ai_features": {
-          "name": "Tính Năng AI",
-          "description": "Cải tiến được hỗ trợ bởi trí tuệ nhân tạo"
-        },
-        "analytics": {
-          "name": "Phân Tích",
-          "description": "Phân tích sử dụng và theo dõi hiệu suất"
-        },
-        "communication": {
-          "name": "Giao Tiếp",
-          "description": "Giao tiếp qua email và khuyến nghị"
-        },
-        "personalization": {
-          "name": "Cá Nhân Hóa",
-          "description": "Trải nghiệm cá nhân hóa và cài đặt hồ sơ"
-        }
-      },
-      "type": {
-        "terms_of_service": {
-          "name": "Điều Khoản Dịch Vụ",
-          "description": "Chấp nhận các điều khoản và điều kiện của chúng tôi",
-          "gdpr": "Điều 6(1)(b) - Thực hiện hợp đồng"
-        },
-        "privacy_policy": {
-          "name": "Chính Sách Bảo Mật",
-          "description": "Chấp nhận các thực hành bảo mật của chúng tôi",
-          "gdpr": "Điều 6(1)(b) - Thực hiện hợp đồng"
-        },
-        "ai_business_card": {
-          "name": "Cải Tiến Danh Thiếp Bằng AI",
-          "description": "Sử dụng AI (Google Gemini 2.0) để trích xuất thông tin từ hình ảnh danh thiếp với độ chính xác cao",
-          "gdpr": "Điều 6(1)(a) - Đồng ý",
-          "tier": "Premium+"
-        },
-        "ai_semantic_search": {
-          "name": "Tìm Kiếm Ngữ Nghĩa AI",
-          "description": "Bật tìm kiếm được hỗ trợ bởi AI với cải tiến truy vấn, nhúng, xếp hạng lại và phân tích kết quả thông minh",
-          "gdpr": "Điều 6(1)(a) - Đồng ý",
-          "tier": "Business+"
-        },
-        "ai_auto_grouping": {
-          "name": "Nhóm Tự Động Bằng AI",
-          "description": "Tự động nhóm danh bạ bằng thuật toán thông minh, làm phong phú địa điểm và phát hiện sự kiện",
-          "gdpr": "Điều 6(1)(a) - Đồng ý",
-          "tier": "Premium+"
-        },
-        "analytics_basic": {
-          "name": "Phân Tích Cơ Bản",
-          "description": "Thống kê sử dụng cơ bản (lượt xem trang, sử dụng tính năng) - chỉ dữ liệu ẩn danh",
-          "gdpr": "Điều 6(1)(f) - Lợi ích chính đáng"
-        },
-        "analytics_detailed": {
-          "name": "Phân Tích Chi Tiết",
-          "description": "Mẫu sử dụng chi tiết và phân tích hành vi để cải thiện trải nghiệm người dùng",
-          "gdpr": "Điều 6(1)(a) - Đồng ý"
-        },
-        "cookies_analytics": {
-          "name": "Cookies Phân Tích",
-          "description": "Cookies được sử dụng để theo dõi mẫu sử dụng và cải thiện ứng dụng",
-          "gdpr": "Điều 6(1)(a) - Đồng ý"
-        },
-        "marketing_emails": {
-          "name": "Email Tiếp Thị",
-          "description": "Nhận bản tin, cập nhật sản phẩm và ưu đãi khuyến mãi",
-          "gdpr": "Điều 6(1)(a) - Đồng ý"
-        },
-        "contact_recommendations": {
-          "name": "Khuyến Nghị Liên Hệ",
-          "description": "Nhận gợi ý về các kết nối tiềm năng dựa trên mạng của bạn",
-          "gdpr": "Điều 6(1)(a) - Đồng ý"
-        },
-        "cookies_personalization": {
-          "name": "Cookies Cá Nhân Hóa",
-          "description": "Ghi nhớ tùy chọn của bạn và tùy chỉnh trải nghiệm của bạn",
-          "gdpr": "Điều 6(1)(a) - Đồng ý"
-        },
-        "profile_public": {
-          "name": "Hồ Sơ Công Khai",
-          "description": "Làm cho hồ sơ của bạn hiển thị với người dùng khác trên nền tảng",
-          "gdpr": "Điều 6(1)(a) - Đồng ý"
-        }
-      },
-      "technologies_label": "Công Nghệ:",
-      "last_updated": "Cập nhật lần cuối: {{date}}",
-      "info": {
-        "title": "Về Quyền Đồng Ý Của Bạn",
-        "withdraw": "Bạn có thể rút lại đồng ý của mình bất cứ lúc nào bằng cách chuyển đổi các công tắc ở trên.",
-        "lawfulness": "Việc rút lại đồng ý sẽ không ảnh hưởng đến tính hợp pháp của việc xử lý dựa trên đồng ý trước khi rút lại (GDPR Điều 7.3).",
-        "essential": "Các đồng ý thiết yếu là bắt buộc để dịch vụ hoạt động và không thể rút lại mà không xóa tài khoản của bạn.",
-        "tiers": "Một số tính năng yêu cầu các cấp đăng ký cụ thể và có thể không khả dụng nếu đồng ý bị rút lại.",
-        "audit": "Tất cả các thay đổi đồng ý được ghi lại và có thể kiểm toán. Liên hệ với Cán Bộ Bảo Vệ Dữ Liệu của chúng tôi nếu bạn có câu hỏi."
-      },
-      "notification": {
-        "granted": "Đã cho phép đồng ý thành công",
-        "withdrawn": "Đã rút lại đồng ý thành công"
-      }
-    },
-    "contact_download": {
-      "title": "Cài Đặt Tải Liên Hệ",
-      "description": "Kiểm soát ai có thể tải thông tin liên hệ của bạn và trường nào có sẵn"
-    },
-    "contact_download_settings": {
-      "title": "Cài Đặt Tải Liên Hệ",
-      "description": "Kiểm soát ai có thể tải thông tin liên hệ của bạn và trường nào có sẵn",
-      "master_toggle": {
-        "title": "Bật Tải Liên Hệ",
-        "description": "Cho phép khách truy cập tải thông tin liên hệ của bạn dưới dạng tệp vCard. Khi tắt, nút tải xuống sẽ không xuất hiện trên hồ sơ công khai của bạn.",
-        "status_label": "Trạng thái:",
-        "enabled": "Đã Bật",
-        "disabled": "Đã Tắt"
-      },
-      "fields": {
-        "title": "Trường Có Sẵn",
-        "description": "Chọn trường khách truy cập có thể bao gồm khi tải liên hệ của bạn. Trường bắt buộc không thể tắt.",
-        "categories": {
-          "basic": "Thông Tin Cơ Bản",
-          "additional": "Thông Tin Bổ Sung",
-          "social": "Mạng Xã Hội"
-        },
-        "field_labels": {
-          "displayName": "Tên Hiển Thị",
-          "email": "Email",
-          "photo": "Ảnh Hồ Sơ",
-          "bio": "Tiểu Sử / Ghi Chú",
-          "location": "Vị Trí",
-          "website": "URL Hồ Sơ",
-          "linkedin": "LinkedIn",
-          "twitter": "Twitter",
-          "instagram": "Instagram",
-          "facebook": "Facebook"
-        },
-        "required_badge": "Bắt Buộc",
-        "count": "{{count}} trường đã chọn"
-      },
-      "quick_actions": {
-        "select_all": "Chọn Tất Cả",
-        "deselect_all": "Bỏ Chọn Tất Cả"
-      },
-      "info_card": {
-        "title": "Cách Hoạt Động",
-        "description": "Khi khách truy cập nhấp vào nút Tải Liên Hệ trên hồ sơ của bạn, họ sẽ thấy một cửa sổ bật lên nơi họ có thể chọn trường đã bật của bạn để đưa vào tệp vCard. Các trường bạn tắt ở đây sẽ không có sẵn cho khách truy cập."
-      },
-      "notifications": {
-        "saving": "Đang lưu...",
-        "success": "Đã lưu cài đặt thành công!",
-        "error": "Lưu cài đặt thất bại"
-      }
-    },
-    "website_config": {
-      "title": "Cấu Hình Trang Web",
-      "description": "Cấu hình tùy chọn trang web và cài đặt mặc định của bạn.",
-      "language": {
-        "title": "Ngôn Ngữ Mặc Định",
-        "description": "Đặt ngôn ngữ mặc định ưa thích của bạn cho trang web. Nó sẽ được áp dụng tự động khi bạn đăng nhập. Bạn vẫn có thể thay đổi ngôn ngữ tạm thời bằng cách sử dụng bộ chọn ngôn ngữ trong thanh điều hướng.",
-        "current_label": "Mặc Định Hiện Tại:",
-        "select_label": "Chọn Ngôn Ngữ Mặc Định",
-        "updating": "Đang cập nhật ngôn ngữ...",
-        "notification": {
-          "success": "Đã cập nhật ngôn ngữ mặc định thành công",
-          "error": "Cập nhật ngôn ngữ thất bại"
-        }
-      },
-      "info": {
-        "title": "Cách Hoạt Động Của Cài Đặt Ngôn Ngữ",
-        "default": "Ngôn ngữ mặc định của bạn được lưu và áp dụng tự động khi bạn đăng nhập",
-        "navbar": "Bạn có thể thay đổi ngôn ngữ tạm thời bằng cách sử dụng bộ chọn ngôn ngữ trong thanh điều hướng",
-        "session": "Thay đổi ngôn ngữ tạm thời chỉ ảnh hưởng đến phiên hiện tại của bạn",
-        "persistent": "Để thay đổi ngôn ngữ vĩnh viễn, hãy cập nhật ngôn ngữ mặc định của bạn tại đây"
-      }
-    },
-    "tutorial_progression": {
-      "title": "Tiến Trình Hướng Dẫn",
-      "subtitle": "Theo dõi tiến trình hòa nhập của bạn và xem lại bất kỳ bước nào",
-      "steps_completed": "{{completed}} trên {{total}} bước đã hoàn thành",
-      "status": {
-        "completed": "Đã hoàn thành",
-        "not_started": "Chưa bắt đầu"
-      },
-      "actions": {
-        "jump_to_step": "Đi đến Bước"
-      },
-      "skipped_message": "Bạn đã bỏ qua hướng dẫn. Bạn vẫn có thể đi đến bất kỳ bước nào để tìm hiểu thêm."
-    },
-    "footer": {
-      "title": "Quyền Của Bạn Theo GDPR",
-      "rights": {
-        "access": {
-          "title": "✓ Quyền Truy Cập",
-          "description": "Xem và tải xuống tất cả dữ liệu cá nhân của bạn"
-        },
-        "rectification": {
-          "title": "✓ Quyền Sửa Chữa",
-          "description": "Sửa hoặc cập nhật thông tin của bạn"
-        },
-        "erasure": {
-          "title": "✓ Quyền Xóa",
-          "description": "Xóa tài khoản của bạn và tất cả dữ liệu"
-        },
-        "portability": {
-          "title": "✓ Quyền Di Chuyển",
-          "description": "Xuất dữ liệu ở định dạng tiêu chuẩn"
-        },
-        "object": {
-          "title": "✓ Quyền Phản Đối",
-          "description": "Từ chối xử lý dữ liệu cụ thể"
-        },
-        "restriction": {
-          "title": "✓ Quyền Hạn Chế",
-          "description": "Giới hạn cách dữ liệu của bạn được xử lý"
-        }
-      },
-      "dpo": {
-        "question": "Có câu hỏi về quyền riêng tư của bạn?",
-        "link": "Liên hệ với Cán Bộ Bảo Vệ Dữ Liệu của chúng tôi"
-      }
     }
   },
   "onboarding": {
@@ -2782,178 +2706,6 @@
         "cta": "Xem Hướng Dẫn Tài Khoản"
       }
     }
-  },
-  "contacts": {
-    "title": "Danh bạ",
-    "subtitle": "Quản lý danh bạ và kết nối chuyên nghiệp của bạn",
-    "loading": "Đang tải danh bạ...",
-    "feature_not_available": "Tính năng Danh bạ Không Khả dụng",
-    "requires_upgrade": "Gói đăng ký hiện tại của bạn không bao gồm tính năng quản lý danh bạ.",
-    "stats": {
-      "total": "Tổng số Liên hệ",
-      "new": "Mới",
-      "viewed": "Đã xem",
-      "with_location": "Có Vị trí"
-    },
-    "filters": {
-      "all_status": "Tất cả Trạng thái",
-      "new": "Mới",
-      "viewed": "Đã xem",
-      "archived": "Đã lưu trữ"
-    },
-    "buttons": {
-      "map_view": "Xem Bản đồ",
-      "import_export": "Nhập / Xuất",
-      "scan_card": "Quét Thẻ",
-      "manage_groups": "Quản lý Nhóm ({{count}})"
-    },
-    "search": {
-      "title": "Tìm kiếm Liên hệ",
-      "placeholder": "Tìm kiếm liên hệ theo tên, email, công ty...",
-      "semantic_placeholder": "Hỏi về mạng lưới của bạn: 'ai biết React?' hoặc 'chuyên gia marketing'",
-      "standard_mode": "Tìm kiếm tiêu chuẩn",
-      "ai_mode": "Tìm kiếm bằng AI",
-      "searching": "Đang tìm kiếm...",
-      "enhanced_title": "Tìm kiếm AI nâng cao",
-      "semantic_title": "Tìm kiếm ngữ nghĩa",
-      "enhanced_description": "AI phân tích danh bạ của bạn theo ngữ nghĩa và cung cấp thông tin thông minh về lý do mỗi liên hệ khớp với truy vấn.",
-      "semantic_description": "Tìm kiếm ngữ nghĩa tìm liên hệ dựa trên ý nghĩa, không chỉ từ khóa. Nâng cấp lên Business để có thông tin do AI cung cấp.",
-      "try_examples": "Hãy thử các ví dụ sau:",
-      "examples": [
-        "Lập trình viên React",
-        "nhà sáng lập startup",
-        "chuyên gia marketing",
-        "ở California"
-      ],
-      "consent_required": "Tìm kiếm ngữ nghĩa AI cần sự đồng ý của bạn",
-      "enable_consent": "Bật trong Cài đặt"
-    },
-    "map": {
-      "title": "Bản đồ Danh bạ",
-      "search_placeholder": "Tìm kiếm liên hệ...",
-      "search_unknown_location": "Vị trí chưa xác định",
-      "theme": {
-        "light": "Chủ đề sáng",
-        "dark": "Chủ đề tối"
-      },
-      "map_type_toggle": "Chuyển đổi loại bản đồ",
-      "map_type_satellite": "Vệ tinh",
-      "map_type_roadmap": "Đường đi",
-      "close": "Đóng bản đồ",
-      "loading": "Đang tải bản đồ...",
-      "zoom_label": "Thu phóng",
-      "world_view": "🌍 Chế độ toàn cầu",
-      "regional_view": "🗺️ Chế độ khu vực",
-      "street_view": "📍 Chế độ đường phố",
-      "total_label": "Tổng",
-      "contacts_suffix": "liên hệ",
-      "with_location_label": "có dữ liệu vị trí",
-      "controls": {
-        "fit_all": "Hiển thị mọi liên hệ",
-        "reset": "Đặt lại về chế độ toàn cầu",
-        "zoom_in": "Phóng to",
-        "zoom_out": "Thu nhỏ"
-      },
-      "error": {
-        "title": "Lỗi bản đồ",
-        "dismiss": "Đóng"
-      },
-      "aria_label": "Bản đồ danh bạ tương tác"
-    },
-    "groups": {
-      "title": "Nhóm Liên hệ",
-      "more": "+{{count}} thêm"
-    },
-    "modals": {
-      "review": {
-        "title": "Xem xét và Tinh chỉnh Liên hệ",
-        "subtitle": "{{fields}} trường được phát hiện • {{categories}} danh mục",
-        "phone_numbers": "Số Điện thoại",
-        "add_phone": "Thêm Điện thoại",
-        "phone_tip": "Mẹo: Bao gồm mã quốc gia (ví dụ: +33 cho Pháp, +1 cho Mỹ/Canada) để tự động phát hiện cờ",
-        "premium_country_detection": "Premium: Phát hiện Quốc gia",
-        "add_custom_field": "Thêm Trường Tùy chỉnh",
-        "no_fields_in_category": "Không tìm thấy trường {{category}}.",
-        "no_fields_detected": "Không phát hiện trường nào khác. Nhấp 'Thêm Trường Tùy chỉnh' để thêm.",
-        "field_label_placeholder": "Nhãn Trường (ví dụ: Hồ sơ LinkedIn)",
-        "field_value_placeholder": "Giá trị Trường",
-        "standard": "Tiêu chuẩn",
-        "ai_detected": "Phát hiện bởi AI",
-        "with_values": "Có Giá trị",
-        "save_contact_button": "Lưu Liên hệ ({{count}} trường)",
-        "error_no_name": "Vui lòng đảm bảo liên hệ có Tên.",
-        "save_success": "Liên hệ đã được lưu!",
-        "save_error": "Lưu liên hệ thất bại."
-      }
-    },
-    "edit_contact": "Chỉnh sửa Liên hệ",
-    "name": "Tên",
-    "email": "Email",
-    "phone": "Điện thoại",
-    "company": "Công ty",
-    "status": "Trạng thái",
-    "status_new": "Mới",
-    "status_viewed": "Đã xem",
-    "status_archived": "Đã lưu trữ",
-    "message": "Tin nhắn",
-    "saving": "Đang lưu...",
-    "save_changes": "Lưu Thay đổi",
-    "deletion_warning_title": "Liên hệ được lên lịch xóa",
-    "deletion_warning_message": "Tài khoản của {{name}} được lên lịch xóa vào {{date}}. Thông tin liên hệ của họ sẽ được ẩn danh sau ngày này.",
-    "job_title": "Chức danh",
-    "website": "Trang web",
-    "additional_information": "Thông tin bổ sung",
-    "placeholder_field_label": "Nhãn (ví dụ: LinkedIn)",
-    "placeholder_field_value": "Giá trị (ví dụ: https://...)",
-    "add_custom_field": "Thêm trường tùy chỉnh",
-    "section_notes": "Ghi chú",
-    "section_message": "Tin nhắn",
-    "section_event_info": "Thông tin sự kiện",
-    "section_location_data": "Dữ liệu vị trí",
-    "section_phone_numbers": "Số điện thoại",
-    "section_all_details": "Tất cả chi tiết",
-    "section_ai_detected": "Thông tin được AI phát hiện",
-    "section_groups": "Nhóm",
-    "section_match_quality": "Chất lượng khớp tìm kiếm",
-    "section_metadata": "Siêu dữ liệu",
-    "event_name_label": "Tên sự kiện:",
-    "event_type_label": "Loại sự kiện:",
-    "venue_label": "Địa điểm:",
-    "event_dates_label": "Ngày sự kiện:",
-    "latitude_label": "Vĩ độ:",
-    "longitude_label": "Kinh độ:",
-    "accuracy_label": "Độ chính xác:",
-    "captured_label": "Đã chụp:",
-    "match_confidence_label": "Độ tin cậy khớp:",
-    "vector_similarity_label": "Độ tương đồng vector:",
-    "hybrid_score_label": "Điểm số hỗn hợp:",
-    "how_we_met_label": "Cách chúng tôi gặp nhau:",
-    "source_label": "Nguồn:",
-    "submitted_label": "Đã gửi:",
-    "modified_label": "Đã sửa đổi:",
-    "generated_label": "Đã tạo:",
-    "generated_by_label": "Tạo bởi:",
-    "linkedin_profile": "Hồ sơ LinkedIn",
-    "premium_country_detection": "Premium: Phát hiện quốc gia",
-    "edit": "Chỉnh sửa",
-    "mark_as_viewed": "Đánh dấu đã xem",
-    "viewed": "Đã xem",
-    "archive": "Lưu trữ",
-    "restore": "Khôi phục",
-    "delete": "Xóa",
-    "call": "Gọi",
-    "map_button": "Bản đồ",
-    "show_groups": "Hiển thị nhóm ({{count}})",
-    "no_name": "Không có tên",
-    "no_email": "Không có email",
-    "country_unknown": "Không rõ",
-    "match_excellent": "Khớp xuất sắc",
-    "match_good": "Khớp tốt",
-    "match_fair": "Khớp khá",
-    "match_weak": "Khớp yếu",
-    "deletion_tooltip": "Tài khoản của {{name}} được lên lịch xóa vào {{date}}",
-    "match_confidence_tooltip": "Độ tin cậy khớp: {{label}}",
-    "ai_fields_tooltip": "{{count}} trường được AI phát hiện"
   },
   "profileCard": {
     "myAccount": "Tài khoản của tôi",
@@ -3193,7 +2945,9 @@
     },
     "actions": {
       "retry": "Thử lại",
-      "refresh": "Làm mới"
+      "refresh": "Làm mới",
+      "view_in_graph": "Xem trong biểu đồ",
+      "graph": "Biểu đồ"
     },
     "graph_view_coming_soon": "Chế độ xem đồ thị sắp ra mắt"
   }

@@ -1946,7 +1946,9 @@
     },
     "actions": {
       "retry": "Retry",
-      "refresh": "Refresh"
+      "refresh": "Refresh",
+      "view_in_graph": "View in graph",
+      "graph": "Graph"
     },
     "graph_view_coming_soon": "Graph view coming soon"
   }

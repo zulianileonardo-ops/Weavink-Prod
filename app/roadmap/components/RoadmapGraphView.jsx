@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef, useEffect } from 'react';
 import { CATEGORY_CONFIG } from '@/lib/services/constants';
 
 // Layout Configuration
@@ -10,7 +10,9 @@ const CONFIG = {
   textOffset: 12,
 };
 
-export default function RoadmapGraphView({ tree }) {
+export default function RoadmapGraphView({ tree, selectedCommitHash }) {
+  const containerRef = useRef(null);
+  const svgRef = useRef(null);
   // Transform tree data into graph nodes and links with layout coordinates
   const { nodes, links, width, height } = useMemo(() => {
     if (!tree || Object.keys(tree).length === 0) {
@@ -175,9 +177,30 @@ export default function RoadmapGraphView({ tree }) {
 
   }, [tree]);
 
+  // Auto-scroll to selected commit
+  useEffect(() => {
+    if (selectedCommitHash && containerRef.current && nodes.length > 0) {
+      const selectedNode = nodes.find(
+        node => node.type === 'commit' && node.data.hash === selectedCommitHash
+      );
+
+      if (selectedNode) {
+        const container = containerRef.current;
+        const scrollX = selectedNode.x - container.clientWidth / 2;
+        const scrollY = selectedNode.y - container.clientHeight / 2;
+
+        container.scrollTo({
+          left: Math.max(0, scrollX),
+          top: Math.max(0, scrollY),
+          behavior: 'smooth'
+        });
+      }
+    }
+  }, [selectedCommitHash, nodes]);
+
   return (
-    <div className="overflow-auto border border-gray-200 rounded-xl bg-white relative" style={{ height: '600px' }}>
-      <svg width={width} height={height} className="block">
+    <div ref={containerRef} className="overflow-auto border border-gray-200 rounded-xl bg-white relative" style={{ height: '600px' }}>
+      <svg ref={svgRef} width={width} height={height} className="block">
          <defs>
             <marker id="arrow" viewBox="0 0 10 10" refX="18" refY="5"
                 markerWidth="6" markerHeight="6" orient="auto">
@@ -197,38 +220,57 @@ export default function RoadmapGraphView({ tree }) {
          ))}
 
          {/* Nodes */}
-         {nodes.map(node => (
-             <g key={node.id} transform={`translate(${node.x}, ${node.y})`} className="cursor-pointer hover:opacity-80 transition-opacity">
-                <circle
-                    r={CONFIG.nodeRadius}
-                    fill={node.color}
-                    stroke="white"
-                    strokeWidth="2"
-                />
-                <text
-                    x={CONFIG.textOffset}
-                    y={4}
-                    fontSize="12"
-                    fill="#1e293b"
-                    className="font-medium select-none"
-                    style={{ textShadow: '0 0 3px white' }}
-                >
-                    {node.label.length > 40 ? node.label.substring(0, 40) + '...' : node.label}
-                </text>
+         {nodes.map(node => {
+             const isSelected = node.type === 'commit' && node.data.hash === selectedCommitHash;
+             const nodeRadius = isSelected ? CONFIG.nodeRadius * 1.8 : CONFIG.nodeRadius;
+             const nodeColor = isSelected ? '#3b82f6' : node.color;
 
-                {/* Subtitle for leaf nodes */}
-                {node.type === 'commit' && (
-                    <text x={CONFIG.textOffset} y={18} fontSize="10" fill="#94a3b8" fontFamily="monospace" className="select-none">
-                        {node.data.hash?.substring(0, 7)}
+             return (
+                 <g key={node.id} transform={`translate(${node.x}, ${node.y})`} className="cursor-pointer hover:opacity-80 transition-opacity">
+                    {/* Pulsing ring for selected node */}
+                    {isSelected && (
+                        <circle
+                            r={nodeRadius * 2}
+                            fill="none"
+                            stroke="#3b82f6"
+                            strokeWidth="2"
+                            opacity="0.5"
+                            className="animate-ping"
+                        />
+                    )}
+
+                    <circle
+                        r={nodeRadius}
+                        fill={nodeColor}
+                        stroke={isSelected ? '#3b82f6' : 'white'}
+                        strokeWidth={isSelected ? 3 : 2}
+                    />
+                    <text
+                        x={CONFIG.textOffset}
+                        y={4}
+                        fontSize="12"
+                        fill={isSelected ? '#1e40af' : '#1e293b'}
+                        className="font-medium select-none"
+                        fontWeight={isSelected ? 'bold' : 'normal'}
+                        style={{ textShadow: '0 0 3px white' }}
+                    >
+                        {node.label.length > 40 ? node.label.substring(0, 40) + '...' : node.label}
                     </text>
-                )}
-                {node.type === 'issue' && (
-                    <text x={CONFIG.textOffset} y={18} fontSize="10" fill="#94a3b8" fontFamily="monospace" className="select-none">
-                        #{node.data.number}
-                    </text>
-                )}
-             </g>
-         ))}
+
+                    {/* Subtitle for leaf nodes */}
+                    {node.type === 'commit' && (
+                        <text x={CONFIG.textOffset} y={18} fontSize="10" fill={isSelected ? '#3b82f6' : '#94a3b8'} fontFamily="monospace" fontWeight={isSelected ? 'bold' : 'normal'} className="select-none">
+                            {node.data.hash?.substring(0, 7)}
+                        </text>
+                    )}
+                    {node.type === 'issue' && (
+                        <text x={CONFIG.textOffset} y={18} fontSize="10" fill="#94a3b8" fontFamily="monospace" className="select-none">
+                            #{node.data.number}
+                        </text>
+                    )}
+                 </g>
+             );
+         })}
       </svg>
     </div>
   );

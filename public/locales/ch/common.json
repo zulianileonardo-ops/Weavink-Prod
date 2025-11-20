@@ -170,109 +170,176 @@
     }
   },
   "contacts": {
-    "welcome": "欢迎回来，",
-    "All": "全部",
-    "team_sharing": "团队共享",
-    "fast_lookup": "快速查找",
-    "team_sharing_avaible": "团队共享可用",
-    "team_shearing": "团队共享",
-    "live_updates": "实时更新",
-    "Clear": "清除",
-    "team_contact": "团队联系人共享已启用",
-    "Share": "分享",
-    "selected": "已选择",
-    "fast_look": "快速查找已启用",
-    "sharing_enabled": "团队联系人共享已启用",
+    "title": "联系人",
+    "subtitle": "管理您的联系人和专业人脉",
+    "loading": "加载联系人中...",
+    "feature_not_available": "联系人功能不可用",
+    "requires_upgrade": "您当前的订阅计划不包括联系人管理功能。",
+    "stats": {
+      "total": "总联系人数",
+      "new": "新增",
+      "viewed": "已查看",
+      "with_location": "有位置"
+    },
+    "filters": {
+      "all_status": "所有状态",
+      "new": "新增",
+      "viewed": "已查看",
+      "archived": "已归档"
+    },
+    "buttons": {
+      "map_view": "地图视图",
+      "import_export": "导入/导出",
+      "scan_card": "扫描名片",
+      "manage_groups": "管理群组 ({{count}})"
+    },
+    "search": {
+      "title": "搜索联系人",
+      "placeholder": "按姓名、邮箱或公司搜索联系人...",
+      "semantic_placeholder": "询问您的网络：'谁会 React？' 或 '营销专家'",
+      "standard_mode": "标准搜索",
+      "ai_mode": "AI 搜索",
+      "searching": "正在搜索...",
+      "enhanced_title": "增强型 AI 搜索",
+      "semantic_title": "语义搜索",
+      "enhanced_description": "AI 会以语义方式分析您的联系人，并提供每个联系人匹配您查询的智能见解。",
+      "semantic_description": "语义搜索基于含义而非关键词查找联系人。升级到 Business 以获得 AI 驱动的洞察。",
+      "try_examples": "试试这些示例：",
+      "examples": [
+        "React 开发者",
+        "初创公司创始人",
+        "市场营销专业人士",
+        "位于加利福尼亚"
+      ],
+      "consent_required": "AI 语义搜索需要您的同意",
+      "enable_consent": "在设置中启用"
+    },
+    "map": {
+      "title": "联系人地图",
+      "search_placeholder": "搜索联系人...",
+      "search_unknown_location": "未知位置",
+      "theme": {
+        "light": "浅色主题",
+        "dark": "深色主题"
+      },
+      "map_type_toggle": "切换地图类型",
+      "map_type_satellite": "卫星",
+      "map_type_roadmap": "普通地图",
+      "close": "关闭地图",
+      "loading": "正在加载地图...",
+      "zoom_label": "缩放",
+      "world_view": "🌍 世界视图",
+      "regional_view": "🗺️ 区域视图",
+      "street_view": "📍 街景",
+      "total_label": "总计",
+      "contacts_suffix": "联系人",
+      "with_location_label": "具有位置数据",
+      "controls": {
+        "fit_all": "适配所有联系人",
+        "reset": "重置为世界视图",
+        "zoom_in": "放大",
+        "zoom_out": "缩小"
+      },
+      "error": {
+        "title": "地图错误",
+        "dismiss": "关闭"
+      },
+      "aria_label": "交互式联系人地图"
+    },
+    "groups": {
+      "title": "联系人群组",
+      "more": "+{{count}} 更多"
+    },
+    "modals": {
+      "review": {
+        "title": "审查和完善联系人",
+        "subtitle": "检测到 {{fields}} 个字段 • {{categories}} 个类别",
+        "phone_numbers": "电话号码",
+        "add_phone": "添加电话",
+        "phone_tip": "提示：包含国家代码（例如，法国为 +33，美国/加拿大为 +1）以自动检测国旗",
+        "premium_country_detection": "高级版：国家检测",
+        "add_custom_field": "添加自定义字段",
+        "no_fields_in_category": "未找到 {{category}} 字段。",
+        "no_fields_detected": "未检测到其他字段。单击'添加自定义字段'以添加更多。",
+        "field_label_placeholder": "字段标签（例如：领英个人资料）",
+        "field_value_placeholder": "字段值",
+        "standard": "标准",
+        "ai_detected": "AI 检测",
+        "with_values": "有值",
+        "save_contact_button": "保存联系人（{{count}} 个字段）",
+        "error_no_name": "请确保联系人有姓名。",
+        "save_success": "联系人已保存！",
+        "save_error": "保存联系人失败。"
+      }
+    },
     "edit_contact": "编辑联系人",
-    "edit": "编辑",
-    "modified": "已修改",
-    "last_modified": "最后修改",
-    "contact_updated_successfully": "联系人更新成功",
-    "failed_to_update_contact": "更新联系人失败",
     "name": "姓名",
     "email": "电子邮件",
     "phone": "电话",
     "company": "公司",
-    "message": "留言",
     "status": "状态",
-    "contact_info": "联系信息",
-    "submitted_at": "提交于",
-    "contact_id": "联系人ID",
-    "save_changes": "保存更改",
-    "saving": "保存中...",
-    "location_for_contact": "{name} 的位置",
-    "all_contact_locations": "所有联系人位置",
-    "title": "联系人列表",
-    "subtitle": "管理通过您的个人资料分享信息的联系人",
-    "loading": "正在加载联系人...",
-    "loading_map": "正在加载地图...",
-    "live_updates_enabled": "实时更新已启用",
-    "offline_updates_enabled": "实时更新未启用",
-    "contacts_with_location": "{count} 位有位置的联系人",
-    "new_contacts_notification": "您有 {count} 位新联系人{location}！",
-    "failed_to_load": "加载联系人失败",
-    "status_updated": "联系人状态已更新",
-    "failed_to_update_status": "更新联系人状态失败",
-    "bulk_update_success": "{count} 位联系人已更新",
-    "failed_to_update_contacts": "更新联系人失败",
-    "filter_by_status": "按状态筛选",
-    "filter_all": "全部",
-    "filter_new": "新的",
-    "filter_viewed": "已查看",
-    "filter_archived": "已存档",
-    "search_placeholder": "搜索联系人...",
-    "no_location_data": "没有带位置数据的联系人",
-    "view_all_locations": "查看所有联系人位置",
-    "map_button": "地图",
-    "selected_contacts": "已选择 {count} 位联系人",
-    "mark_as_viewed": "标记为已读",
-    "archive": "存档",
-    "restore": "恢复",
-    "no_contacts_found": "未找到联系人",
-    "no_contacts_yet": "暂无联系人",
-    "try_adjusting_filters": "尝试调整您的搜索或筛选条件",
-    "contacts_will_appear_here": "当访客通过您的个人资料分享信息时，联系人将显示在此处",
     "status_new": "新的",
     "status_viewed": "已查看",
     "status_archived": "已存档",
-    "located": "已定位",
-    "send_email": "发送电子邮件",
+    "message": "留言",
+    "saving": "保存中...",
+    "save_changes": "保存更改",
+    "deletion_warning_title": "联系人计划删除",
+    "deletion_warning_message": "{{name}}的账户计划于{{date}}删除。此日期后其联系信息将被匿名化。",
+    "job_title": "职位",
+    "website": "网站",
+    "additional_information": "附加信息",
+    "placeholder_field_label": "标签（例如：LinkedIn）",
+    "placeholder_field_value": "值（例如：https://...）",
+    "add_custom_field": "添加自定义字段",
+    "section_notes": "备注",
+    "section_message": "留言",
+    "section_event_info": "活动信息",
+    "section_location_data": "位置数据",
+    "section_phone_numbers": "电话号码",
+    "section_all_details": "所有详细信息",
+    "section_ai_detected": "AI检测到的信息",
+    "section_groups": "群组",
+    "section_match_quality": "搜索匹配质量",
+    "section_metadata": "元数据",
+    "event_name_label": "活动名称：",
+    "event_type_label": "活动类型：",
+    "venue_label": "地点：",
+    "event_dates_label": "活动日期：",
+    "latitude_label": "纬度：",
+    "longitude_label": "经度：",
+    "accuracy_label": "精度：",
+    "captured_label": "捕获时间：",
+    "match_confidence_label": "匹配置信度：",
+    "vector_similarity_label": "向量相似度：",
+    "hybrid_score_label": "混合得分：",
+    "how_we_met_label": "认识方式：",
+    "source_label": "来源：",
+    "submitted_label": "提交时间：",
+    "modified_label": "修改时间：",
+    "generated_label": "生成时间：",
+    "generated_by_label": "生成者：",
+    "linkedin_profile": "领英个人资料",
+    "premium_country_detection": "高级版：国家检测",
+    "edit": "编辑",
+    "mark_as_viewed": "标记为已查看",
+    "viewed": "已查看",
+    "archive": "存档",
+    "restore": "恢复",
+    "delete": "删除",
     "call": "呼叫",
-    "view_location_on_map": "在地图上查看位置",
-    "export_contacts": "导出联系人",
-    "export_headers": {
-      "name": "姓名",
-      "email": "电子邮件",
-      "phone": "电话",
-      "company": "公司",
-      "message": "留言",
-      "status": "状态",
-      "submitted_at": "提交于",
-      "has_location": "有位置",
-      "latitude": "纬度",
-      "longitude": "经度",
-      "location_accuracy": "位置精度"
-    },
-    "contact_locations": "联系人位置",
-    "viewing_location_for": "正在查看 {name} 的位置",
-    "showing_contacts_with_location": "显示 {count} 位有位置数据的联系人",
-    "coordinates": "坐标",
-    "accuracy": "精度",
-    "selected_contact": "已选择 {name}",
-    "contact_location": "联系人位置",
-    "show_all_contacts": "显示所有联系人",
-    "open_in_google_maps": "在谷歌地图中打开",
-    "copy_coordinates": "复制坐标",
-    "coordinates_copied": "坐标已复制到剪贴板！",
-    "share_with_team": "与团队共享",
-    "showing_contacts": "您有 {total} 位联系人中的 {count} 位",
-    "personal": "个人",
-    "from_team": "来自团队",
-    "with_location": "有位置",
-    "added": "添加于：",
-    "mark_viewed": "标记为已读",
-    "filter_with_count": "筛选 ({count})",
-    "map_with_count": "地图 ({count})"
+    "map_button": "地图",
+    "show_groups": "显示群组 ({{count}})",
+    "no_name": "无姓名",
+    "no_email": "无电子邮件",
+    "country_unknown": "未知",
+    "match_excellent": "极佳匹配",
+    "match_good": "良好匹配",
+    "match_fair": "一般匹配",
+    "match_weak": "弱匹配",
+    "deletion_tooltip": "{{name}}的账户计划于{{date}}删除",
+    "match_confidence_tooltip": "匹配置信度：{{label}}",
+    "ai_fields_tooltip": "{{count}}个AI检测到的字段"
   },
   "common": {
     "login": "登录",
@@ -1891,118 +1958,6 @@
         "success": "设置更新成功"
       }
     },
-    "consents": {
-      "title": "管理同意",
-      "description": "控制哪些功能可以处理您的数据。您可以随时撤回同意。更改立即生效。",
-      "status": {
-        "granted": "已授予",
-        "withdrawn": "已撤回"
-      },
-      "badge": {
-        "required": "必需"
-      },
-      "category": {
-        "essential": {
-          "name": "基本",
-          "description": "应用程序正常运行所需"
-        },
-        "ai_features": {
-          "name": "AI 功能",
-          "description": "人工智能驱动的增强功能"
-        },
-        "analytics": {
-          "name": "分析",
-          "description": "使用分析和性能跟踪"
-        },
-        "communication": {
-          "name": "通信",
-          "description": "电子邮件通信和推荐"
-        },
-        "personalization": {
-          "name": "个性化",
-          "description": "个性化体验和个人资料设置"
-        }
-      },
-      "type": {
-        "terms_of_service": {
-          "name": "服务条款",
-          "description": "接受我们的条款和条件",
-          "gdpr": "第 6(1)(b) 条 - 合同履行"
-        },
-        "privacy_policy": {
-          "name": "隐私政策",
-          "description": "接受我们的隐私做法",
-          "gdpr": "第 6(1)(b) 条 - 合同履行"
-        },
-        "ai_business_card": {
-          "name": "AI 名片增强",
-          "description": "使用 AI（Google Gemini 2.0）以高精度从名片图像中提取信息",
-          "gdpr": "第 6(1)(a) 条 - 同意",
-          "tier": "Premium+"
-        },
-        "ai_semantic_search": {
-          "name": "AI 语义搜索",
-          "description": "启用 AI 驱动的搜索，包括查询增强、嵌入、重新排序和智能结果分析",
-          "gdpr": "第 6(1)(a) 条 - 同意",
-          "tier": "Business+"
-        },
-        "ai_auto_grouping": {
-          "name": "AI 自动分组",
-          "description": "使用智能算法、地点丰富和事件检测自动对联系人进行分组",
-          "gdpr": "第 6(1)(a) 条 - 同意",
-          "tier": "Premium+"
-        },
-        "analytics_basic": {
-          "name": "基本分析",
-          "description": "基本使用统计（页面浏览量、功能使用）- 仅匿名数据",
-          "gdpr": "第 6(1)(f) 条 - 合法利益"
-        },
-        "analytics_detailed": {
-          "name": "详细分析",
-          "description": "详细使用模式和行为分析，用于改善用户体验",
-          "gdpr": "第 6(1)(a) 条 - 同意"
-        },
-        "cookies_analytics": {
-          "name": "分析 Cookies",
-          "description": "用于跟踪使用模式和改进应用程序的 Cookies",
-          "gdpr": "第 6(1)(a) 条 - 同意"
-        },
-        "marketing_emails": {
-          "name": "营销邮件",
-          "description": "接收新闻通讯、产品更新和促销优惠",
-          "gdpr": "第 6(1)(a) 条 - 同意"
-        },
-        "contact_recommendations": {
-          "name": "联系人推荐",
-          "description": "根据您的网络接收潜在连接建议",
-          "gdpr": "第 6(1)(a) 条 - 同意"
-        },
-        "cookies_personalization": {
-          "name": "个性化 Cookies",
-          "description": "记住您的偏好并自定义您的体验",
-          "gdpr": "第 6(1)(a) 条 - 同意"
-        },
-        "profile_public": {
-          "name": "公开资料",
-          "description": "使您的个人资料对平台上的其他用户可见",
-          "gdpr": "第 6(1)(a) 条 - 同意"
-        }
-      },
-      "technologies_label": "技术：",
-      "last_updated": "最后更新：{{date}}",
-      "info": {
-        "title": "关于您的同意权利",
-        "withdraw": "您可以随时通过切换上面的开关来撤回同意。",
-        "lawfulness": "撤回同意不会影响撤回前基于同意的处理的合法性（GDPR 第 7.3 条）。",
-        "essential": "基本同意是服务运行所必需的，未删除账户前无法撤回。",
-        "tiers": "某些功能需要特定订阅级别，如果撤回同意可能不可用。",
-        "audit": "所有同意更改都会被记录并可以审核。如有问题，请联系我们的数据保护官。"
-      },
-      "notification": {
-        "granted": "同意授予成功",
-        "withdrawn": "同意撤回成功"
-      }
-    },
     "contact_download": {
       "title": "联系人下载设置",
       "description": "控制谁可以下载您的联系信息以及哪些字段可用"
@@ -2330,178 +2285,6 @@
       }
     }
   },
-  "contacts": {
-    "title": "联系人",
-    "subtitle": "管理您的联系人和专业人脉",
-    "loading": "加载联系人中...",
-    "feature_not_available": "联系人功能不可用",
-    "requires_upgrade": "您当前的订阅计划不包括联系人管理功能。",
-    "stats": {
-      "total": "总联系人数",
-      "new": "新增",
-      "viewed": "已查看",
-      "with_location": "有位置"
-    },
-    "filters": {
-      "all_status": "所有状态",
-      "new": "新增",
-      "viewed": "已查看",
-      "archived": "已归档"
-    },
-    "buttons": {
-      "map_view": "地图视图",
-      "import_export": "导入/导出",
-      "scan_card": "扫描名片",
-      "manage_groups": "管理群组 ({{count}})"
-    },
-    "search": {
-      "title": "搜索联系人",
-      "placeholder": "按姓名、邮箱或公司搜索联系人...",
-      "semantic_placeholder": "询问您的网络：'谁会 React？' 或 '营销专家'",
-      "standard_mode": "标准搜索",
-      "ai_mode": "AI 搜索",
-      "searching": "正在搜索...",
-      "enhanced_title": "增强型 AI 搜索",
-      "semantic_title": "语义搜索",
-      "enhanced_description": "AI 会以语义方式分析您的联系人，并提供每个联系人匹配您查询的智能见解。",
-      "semantic_description": "语义搜索基于含义而非关键词查找联系人。升级到 Business 以获得 AI 驱动的洞察。",
-      "try_examples": "试试这些示例：",
-      "examples": [
-        "React 开发者",
-        "初创公司创始人",
-        "市场营销专业人士",
-        "位于加利福尼亚"
-      ],
-      "consent_required": "AI 语义搜索需要您的同意",
-      "enable_consent": "在设置中启用"
-    },
-    "map": {
-      "title": "联系人地图",
-      "search_placeholder": "搜索联系人...",
-      "search_unknown_location": "未知位置",
-      "theme": {
-        "light": "浅色主题",
-        "dark": "深色主题"
-      },
-      "map_type_toggle": "切换地图类型",
-      "map_type_satellite": "卫星",
-      "map_type_roadmap": "普通地图",
-      "close": "关闭地图",
-      "loading": "正在加载地图...",
-      "zoom_label": "缩放",
-      "world_view": "🌍 世界视图",
-      "regional_view": "🗺️ 区域视图",
-      "street_view": "📍 街景",
-      "total_label": "总计",
-      "contacts_suffix": "联系人",
-      "with_location_label": "具有位置数据",
-      "controls": {
-        "fit_all": "适配所有联系人",
-        "reset": "重置为世界视图",
-        "zoom_in": "放大",
-        "zoom_out": "缩小"
-      },
-      "error": {
-        "title": "地图错误",
-        "dismiss": "关闭"
-      },
-      "aria_label": "交互式联系人地图"
-    },
-    "groups": {
-      "title": "联系人群组",
-      "more": "+{{count}} 更多"
-    },
-    "modals": {
-      "review": {
-        "title": "审查和完善联系人",
-        "subtitle": "检测到 {{fields}} 个字段 • {{categories}} 个类别",
-        "phone_numbers": "电话号码",
-        "add_phone": "添加电话",
-        "phone_tip": "提示：包含国家代码（例如，法国为 +33，美国/加拿大为 +1）以自动检测国旗",
-        "premium_country_detection": "高级版：国家检测",
-        "add_custom_field": "添加自定义字段",
-        "no_fields_in_category": "未找到 {{category}} 字段。",
-        "no_fields_detected": "未检测到其他字段。单击'添加自定义字段'以添加更多。",
-        "field_label_placeholder": "字段标签（例如：领英个人资料）",
-        "field_value_placeholder": "字段值",
-        "standard": "标准",
-        "ai_detected": "AI 检测",
-        "with_values": "有值",
-        "save_contact_button": "保存联系人（{{count}} 个字段）",
-        "error_no_name": "请确保联系人有姓名。",
-        "save_success": "联系人已保存！",
-        "save_error": "保存联系人失败。"
-      }
-    },
-    "edit_contact": "编辑联系人",
-    "name": "姓名",
-    "email": "电子邮件",
-    "phone": "电话",
-    "company": "公司",
-    "status": "状态",
-    "status_new": "新的",
-    "status_viewed": "已查看",
-    "status_archived": "已存档",
-    "message": "留言",
-    "saving": "保存中...",
-    "save_changes": "保存更改",
-    "deletion_warning_title": "联系人计划删除",
-    "deletion_warning_message": "{{name}}的账户计划于{{date}}删除。此日期后其联系信息将被匿名化。",
-    "job_title": "职位",
-    "website": "网站",
-    "additional_information": "附加信息",
-    "placeholder_field_label": "标签（例如：LinkedIn）",
-    "placeholder_field_value": "值（例如：https://...）",
-    "add_custom_field": "添加自定义字段",
-    "section_notes": "备注",
-    "section_message": "留言",
-    "section_event_info": "活动信息",
-    "section_location_data": "位置数据",
-    "section_phone_numbers": "电话号码",
-    "section_all_details": "所有详细信息",
-    "section_ai_detected": "AI检测到的信息",
-    "section_groups": "群组",
-    "section_match_quality": "搜索匹配质量",
-    "section_metadata": "元数据",
-    "event_name_label": "活动名称：",
-    "event_type_label": "活动类型：",
-    "venue_label": "地点：",
-    "event_dates_label": "活动日期：",
-    "latitude_label": "纬度：",
-    "longitude_label": "经度：",
-    "accuracy_label": "精度：",
-    "captured_label": "捕获时间：",
-    "match_confidence_label": "匹配置信度：",
-    "vector_similarity_label": "向量相似度：",
-    "hybrid_score_label": "混合得分：",
-    "how_we_met_label": "认识方式：",
-    "source_label": "来源：",
-    "submitted_label": "提交时间：",
-    "modified_label": "修改时间：",
-    "generated_label": "生成时间：",
-    "generated_by_label": "生成者：",
-    "linkedin_profile": "领英个人资料",
-    "premium_country_detection": "高级版：国家检测",
-    "edit": "编辑",
-    "mark_as_viewed": "标记为已查看",
-    "viewed": "已查看",
-    "archive": "存档",
-    "restore": "恢复",
-    "delete": "删除",
-    "call": "呼叫",
-    "map_button": "地图",
-    "show_groups": "显示群组 ({{count}})",
-    "no_name": "无姓名",
-    "no_email": "无电子邮件",
-    "country_unknown": "未知",
-    "match_excellent": "极佳匹配",
-    "match_good": "良好匹配",
-    "match_fair": "一般匹配",
-    "match_weak": "弱匹配",
-    "deletion_tooltip": "{{name}}的账户计划于{{date}}删除",
-    "match_confidence_tooltip": "匹配置信度：{{label}}",
-    "ai_fields_tooltip": "{{count}}个AI检测到的字段"
-  },
   "profileCard": {
     "myAccount": "我的账户",
     "roadmap": "路线图",
@@ -2731,7 +2514,9 @@
     },
     "actions": {
       "retry": "重试",
-      "refresh": "刷新"
+      "refresh": "刷新",
+      "view_in_graph": "在图表中查看",
+      "graph": "图表"
     },
     "graph_view_coming_soon": "图表视图即将推出"
   }
