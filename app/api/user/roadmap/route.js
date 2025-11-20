@@ -32,19 +32,23 @@ export async function GET(request) {
 
         console.log(`✅ [/api/user/roadmap:${requestId}] Authenticated user: ${uid}`);
 
-        // 2. Fetch data (same as public for now, but can add user-specific features later)
-        const [commits, issues] = await Promise.all([
-            GitService.getCommitHistory({ limit: 500 }),
-            GitHubService.getPlannedFeatures(),
-        ]);
+        // 2. Fetch commits with fallback: Try local git first, then GitHub API
+        let commits = await GitService.getCommitHistory({ limit: 500 });
+        if (commits.length === 0) {
+            console.warn(`⚠️ [/api/user/roadmap:${requestId}] Local git returned no commits, trying GitHub API fallback...`);
+            commits = await GitHubService.getCommitHistoryFromGitHub({ limit: 500 });
+        }
+
+        // 3. Fetch issues
+        const issues = await GitHubService.getPlannedFeatures();
 
         console.log(`🔍 [/api/user/roadmap:${requestId}] Fetched ${commits.length} commits, ${issues.length} issues`);
 
-        // 3. Build tree
+        // 4. Build tree
         const tree = CategoryService.buildCategoryTree(commits, issues);
         const stats = CategoryService.getOverallStats(tree);
 
-        // 4. Return response
+        // 5. Return response
         console.log(`✅ [/api/user/roadmap:${requestId}] Success - ${stats.total} total items`);
 
         return NextResponse.json({

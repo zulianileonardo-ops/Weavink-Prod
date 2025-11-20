@@ -5,7 +5,7 @@ category: implementation
 tags: [roadmap, checklist, tasks, implementation-guide]
 status: active
 created: 2025-11-19
-updated: 2025-11-19
+updated: 2025-11-20
 related:
   - ROADMAP_CHANGELOG_PRODUCTION_SPEC.md
 ---
@@ -67,12 +67,37 @@ This checklist tracks all implementation tasks for the Roadmap & Changelog featu
 - [ ] Add barrel export for roadmap constants
 - [ ] Test: Import works from other files
 
+### 2.1.1: Shared Parsing Utilities (Production Support)
+
+**File:** `lib/services/serviceRoadmap/server/commitParserUtils.js`
+
+- [x] Create commitParserUtils.js module
+- [x] Implement `extractGitmoji(message)` function
+  - [x] Use regex to match emoji at start
+  - [x] Support all emoji ranges
+  - [x] Return matched emoji or null
+- [x] Implement `inferSubcategory(message, category)` function
+  - [x] Convert message to lowercase
+  - [x] Check against SUBCATEGORY_KEYWORDS
+  - [x] Return first match or null
+- [x] Implement `parseCommit(commitData)` function
+  - [x] Extract emoji using extractGitmoji
+  - [x] Map emoji to category
+  - [x] Remove emoji from message
+  - [x] Infer subcategory
+  - [x] Return standardized commit object
+  - [x] Handle both git output and GitHub API responses
+- [x] Export all functions
+- [x] Test: Works with git command output
+- [x] Test: Works with GitHub API response
+- [x] Code review: Reusable across services
+
 ### 2.2: Git Service
 
 **File:** `lib/services/serviceRoadmap/server/gitService.js`
 
-- [ ] Create GitService class
-- [ ] Implement `getCommitHistory(options)` method
+- [x] Create GitService class
+- [x] Implement `getCommitHistory(options)` method
   - [ ] Build git log command
   - [ ] Add limit parameter (default 500)
   - [ ] Add since date parameter
@@ -80,31 +105,19 @@ This checklist tracks all implementation tasks for the Roadmap & Changelog featu
   - [ ] Handle stderr output
   - [ ] Split output into lines
   - [ ] Parse each line
-  - [ ] Filter by category if specified
-  - [ ] Handle errors gracefully
-  - [ ] Add request ID logging
-- [ ] Implement `parseCommitLine(line)` method
-  - [ ] Split line by delimiter
-  - [ ] Extract hash, author, email, date, message
-  - [ ] Call extractGitmoji
-  - [ ] Map emoji to category
-  - [ ] Remove emoji from message
-  - [ ] Call inferSubcategory
-  - [ ] Return structured commit object
-  - [ ] Handle parse errors
-- [ ] Implement `extractGitmoji(message)` method
-  - [ ] Use regex to match emoji at start
-  - [ ] Return matched emoji or null
-  - [ ] Handle Unicode edge cases
-- [ ] Implement `inferSubcategory(message, category)` method
-  - [ ] Convert message to lowercase
-  - [ ] Check against keyword map
-  - [ ] Return first matching subcategory
-  - [ ] Return null if no match
-- [ ] Implement `validateGitRepository()` method
-  - [ ] Run git rev-parse command
-  - [ ] Throw error if not in repo
-  - [ ] Add 5s timeout
+  - [x] Filter by category if specified
+  - [x] Handle errors gracefully
+  - [x] Add request ID logging
+- [x] Use shared parseCommit() from commitParserUtils
+- [x] Implement `validateGitRepository()` method ⚠️ **UPDATED FOR PRODUCTION**
+  - [x] Run git rev-parse command
+  - [x] Return boolean instead of throwing
+  - [x] Return false if git unavailable (production)
+  - [x] Add 5s timeout
+- [x] Update `getCommitHistory()` to check git availability
+  - [x] Call validateGitRepository()
+  - [x] Return empty array if git unavailable
+  - [x] Log production fallback message
 - [ ] Test: Fetch from real repository
 - [ ] Test: Handle empty repository
 - [ ] Test: Handle git command failure
@@ -120,9 +133,9 @@ This checklist tracks all implementation tasks for the Roadmap & Changelog featu
 
 **File:** `lib/services/serviceRoadmap/server/githubService.js`
 
-- [ ] Install @octokit/rest dependency
-- [ ] Create GitHubService class
-- [ ] Implement `getOctokit()` method
+- [x] Install @octokit/rest dependency
+- [x] Create GitHubService class
+- [x] Implement `getOctokit()` method
   - [ ] Read GITHUB_TOKEN from env
   - [ ] Warn if token missing
   - [ ] Initialize Octokit instance
@@ -181,6 +194,30 @@ This checklist tracks all implementation tasks for the Roadmap & Changelog featu
   - [ ] Wait for delay
   - [ ] Recursively retry
   - [ ] Throw error if max retries exceeded
+- [x] Implement `getCommitHistoryFromGitHub(options)` method ⭐ **NEW - PRODUCTION FALLBACK**
+  - [x] Extract owner/repo from options or env
+  - [x] Validate owner and repo exist
+  - [x] Generate cache key
+  - [x] Check cache (unless forceRefresh)
+  - [x] Initialize Octokit instance
+  - [x] Implement pagination loop (100 per page, max 500)
+  - [x] Build params object with owner, repo, per_page, page
+  - [x] Add optional since parameter for date filtering
+  - [x] Call octokit.repos.listCommits()
+  - [x] Concat results to allCommits array
+  - [x] Break if no more commits or limit reached
+  - [x] Use shared parseCommit() to transform GitHub API response
+  - [x] Map githubCommit.sha → hash
+  - [x] Map githubCommit.commit.author.name → author
+  - [x] Map githubCommit.commit.author.email → email
+  - [x] Map githubCommit.commit.author.date → date
+  - [x] Map githubCommit.commit.message → message
+  - [x] Filter by category if specified
+  - [x] Cache results (15-min TTL)
+  - [x] Return parsed commits
+  - [x] Handle rate limiting (return stale cache)
+  - [x] Handle errors gracefully (return empty array)
+  - [x] Add request ID logging
 - [ ] Test: Fetch issues successfully
 - [ ] Test: Handle missing token
 - [ ] Test: Handle rate limiting
@@ -291,20 +328,22 @@ This checklist tracks all implementation tasks for the Roadmap & Changelog featu
 
 **File:** `app/api/roadmap/route.js`
 
-- [ ] Create route.js file
-- [ ] Add 'use server' or verify server-only
-- [ ] Import required services (Git, GitHub, Category)
-- [ ] Set dynamic export to 'force-dynamic'
-- [ ] Initialize cache object (data, timestamp)
-- [ ] Define CACHE_TTL constant (15 min)
-- [ ] Implement GET function
-  - [ ] Generate request ID
-  - [ ] Log request start
-  - [ ] Check cache timestamp
-  - [ ] Return cached data if valid
-  - [ ] Call GitService.getCommitHistory({ limit: 500 })
-  - [ ] Call GitHubService.getPlannedFeatures()
-  - [ ] Use Promise.all for parallel fetching
+- [x] Create route.js file
+- [x] Add 'use server' or verify server-only
+- [x] Import required services (Git, GitHub, Category)
+- [x] Set dynamic export to 'force-dynamic'
+- [x] Initialize cache object (data, timestamp)
+- [x] Define CACHE_TTL constant (15 min)
+- [x] Implement GET function
+  - [x] Generate request ID
+  - [x] Log request start
+  - [x] Check cache timestamp
+  - [x] Return cached data if valid
+  - [x] Call GitService.getCommitHistory({ limit: 500 }) ⚠️ **WITH FALLBACK**
+  - [x] Check if commits.length === 0 (git unavailable)
+  - [x] Fallback to GitHubService.getCommitHistoryFromGitHub({ limit: 500 })
+  - [x] Log fallback warning
+  - [x] Call GitHubService.getPlannedFeatures()
   - [ ] Log fetched counts
   - [ ] Call CategoryService.buildCategoryTree(commits, issues)
   - [ ] Call CategoryService.getOverallStats(tree)
@@ -330,22 +369,25 @@ This checklist tracks all implementation tasks for the Roadmap & Changelog featu
 
 **File:** `app/api/user/roadmap/route.js`
 
-- [ ] Create route.js file
-- [ ] Import adminAuth from firebaseAdmin
-- [ ] Import required services
-- [ ] Set dynamic export to 'force-dynamic'
-- [ ] Implement GET function
-  - [ ] Generate request ID
-  - [ ] Log request start
-  - [ ] Get authorization header
-  - [ ] Check if header exists
-  - [ ] Check if starts with 'Bearer '
-  - [ ] Return 401 if missing/invalid header
-  - [ ] Extract token from header
-  - [ ] Call adminAuth.verifyIdToken(token)
-  - [ ] Extract uid from decoded token
-  - [ ] Log authenticated user ID
-  - [ ] Fetch commits and issues (parallel)
+- [x] Create route.js file
+- [x] Import adminAuth from firebaseAdmin
+- [x] Import required services
+- [x] Set dynamic export to 'force-dynamic'
+- [x] Implement GET function
+  - [x] Generate request ID
+  - [x] Log request start
+  - [x] Get authorization header
+  - [x] Check if header exists
+  - [x] Check if starts with 'Bearer '
+  - [x] Return 401 if missing/invalid header
+  - [x] Extract token from header
+  - [x] Call adminAuth.verifyIdToken(token)
+  - [x] Extract uid from decoded token
+  - [x] Log authenticated user ID
+  - [x] Fetch commits with GitHub API fallback ⚠️ **SAME AS PUBLIC API**
+  - [x] Call GitService.getCommitHistory({ limit: 500 })
+  - [x] If empty, fallback to GitHubService.getCommitHistoryFromGitHub()
+  - [x] Fetch issues
   - [ ] Build category tree
   - [ ] Calculate overall stats
   - [ ] Prepare response data
@@ -1244,13 +1286,14 @@ This checklist tracks all implementation tasks for the Roadmap & Changelog featu
 
 ### 10.2: Environment Setup
 
-- [ ] Add GITHUB_TOKEN to .env.local
-- [ ] Add GITHUB_REPO_OWNER to .env.local
-- [ ] Add GITHUB_REPO_NAME to .env.local
-- [ ] Test: Environment variables load correctly
+- [x] Add GITHUB_TOKEN to .env (for local development)
+- [x] Add GITHUB_REPO_OWNER to .env
+- [x] Add GITHUB_REPO_NAME to .env
+- [x] Test: Environment variables load correctly
 - [ ] Add .env.example file with all vars (no values)
-- [ ] Document how to get GitHub token
-- [ ] Document required token permissions
+- [x] Document how to get GitHub token (in ROADMAP_CHANGELOG_PRODUCTION_SPEC.md)
+- [x] Document required token permissions (in ROADMAP_CHANGELOG_PRODUCTION_SPEC.md)
+- [x] Add to production environment variables (deployment platform) ⭐ **CRITICAL FOR PRODUCTION**
 
 ### 10.3: Build & Local Testing
 

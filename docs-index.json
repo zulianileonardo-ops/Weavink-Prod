@@ -2184,12 +2184,13 @@
       "title": "Roadmap & Changelog Feature - Complete Implementation",
       "filename": "documentation/features/ROADMAP_CHANGELOG_FEATURE_GUIDE.md",
       "category": "features",
-      "summary": "Complete roadmap/changelog system with git commit parsing, GitHub Issues integration, interactive SVG graph visualization, public page (/roadmap), dashboard integration, category tree structure, and multilingual support.",
+      "summary": "Complete roadmap/changelog system with hybrid data source (local git + GitHub API fallback), GitHub Issues integration, interactive SVG graph visualization, production-ready deployment, public page (/roadmap), dashboard integration, category tree structure, and multilingual support. Includes automatic serverless environment detection.",
       "tags": [
         "roadmap",
         "changelog",
         "git-commits",
         "github-issues",
+        "github-api",
         "graph-visualization",
         "svg",
         "interactive-ui",
@@ -2197,7 +2198,9 @@
         "public-page",
         "dashboard",
         "caching",
-        "redis"
+        "redis",
+        "production-fallback",
+        "serverless"
       ],
       "related_guides": [
         "features-roadmap-production-spec-071",
@@ -2206,12 +2209,17 @@
         "features-roadmap-summary-074"
       ],
       "functions": [
-        "GitService.parseCommits",
+        "GitService.getCommitHistory",
+        "GitService.validateGitRepository",
+        "GitHubService.getCommitHistoryFromGitHub",
         "GitHubService.fetchIssues",
         "CategoryService.buildTree",
         "CacheManager.get",
         "CacheManager.set",
-        "RoadmapService.getRoadmap"
+        "RoadmapService.getRoadmap",
+        "parseCommit",
+        "extractGitmoji",
+        "inferSubcategory"
       ],
       "components": [
         "RoadmapGraphView",
@@ -2232,7 +2240,7 @@
       "title": "Roadmap & Changelog - Production Specification",
       "filename": "documentation/features/ROADMAP_CHANGELOG_PRODUCTION_SPEC.md",
       "category": "features",
-      "summary": "Detailed production specification for roadmap system including security considerations, performance optimizations, error handling strategies, and deployment requirements.",
+      "summary": "Detailed production specification for roadmap system including GitHub API configuration, environment variables setup, serverless deployment support, security considerations, performance optimizations, error handling strategies, and production deployment checklist. Updated 2025-11-20 with GitHub API fallback solution.",
       "tags": [
         "roadmap",
         "production",
@@ -2241,7 +2249,10 @@
         "performance",
         "deployment",
         "error-handling",
-        "monitoring"
+        "monitoring",
+        "github-api",
+        "serverless",
+        "environment-variables"
       ],
       "related_guides": [
         "features-roadmap-changelog-070",
@@ -2258,14 +2269,15 @@
       "title": "Roadmap Implementation Checklist",
       "filename": "documentation/features/ROADMAP_IMPLEMENTATION_CHECKLIST.md",
       "category": "features",
-      "summary": "Comprehensive implementation checklist covering all aspects of roadmap feature development, testing, and deployment.",
+      "summary": "Comprehensive implementation checklist covering all aspects of roadmap feature development, testing, and deployment. Updated 2025-11-20 with completed production deployment tasks including shared parsing utilities and GitHub API fallback implementation.",
       "tags": [
         "roadmap",
         "checklist",
         "implementation",
         "testing",
         "deployment",
-        "project-management"
+        "project-management",
+        "production-ready"
       ],
       "related_guides": [
         "features-roadmap-changelog-070",
@@ -2282,14 +2294,15 @@
       "title": "Roadmap Gaps and Risks Analysis",
       "filename": "documentation/features/ROADMAP_GAPS_AND_RISKS.md",
       "category": "features",
-      "summary": "Analysis of implementation gaps, known risks, and areas requiring future attention in the roadmap feature.",
+      "summary": "Analysis of implementation gaps, known risks, and areas requiring future attention in the roadmap feature. Updated 2025-11-20: Risk 2 (Git unavailability in production) marked as RESOLVED with GitHub API fallback solution.",
       "tags": [
         "roadmap",
         "risks",
         "gaps",
         "analysis",
         "future-work",
-        "technical-debt"
+        "technical-debt",
+        "mitigations"
       ],
       "related_guides": [
         "features-roadmap-changelog-070",
@@ -2306,13 +2319,15 @@
       "title": "Roadmap Implementation Summary",
       "filename": "documentation/features/ROADMAP_IMPLEMENTATION_SUMMARY.md",
       "category": "features",
-      "summary": "Executive summary of roadmap feature implementation, key decisions, and final architecture.",
+      "summary": "Executive summary of roadmap feature implementation, key decisions, and final architecture. Updated 2025-11-20 with Production Deployment Fix section documenting GitHub API fallback solution for serverless environments.",
       "tags": [
         "roadmap",
         "summary",
         "implementation",
         "architecture",
-        "decisions"
+        "decisions",
+        "production-fix",
+        "github-api-fallback"
       ],
       "related_guides": [
         "features-roadmap-changelog-070",

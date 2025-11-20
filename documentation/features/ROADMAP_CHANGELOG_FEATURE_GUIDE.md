@@ -1,17 +1,18 @@
 ---
 id: features-roadmap-changelog-070
-title: Roadmap & Changelog Feature - Git-Based Progress Tracking
+title: Roadmap & Changelog Feature - Complete Implementation
 category: features
-tags: [roadmap, changelog, git-commits, github-issues, feature-tree, gitmoji, visualization, public-page, dashboard]
+tags: [roadmap, changelog, git-commits, github-issues, github-api, feature-tree, gitmoji, visualization, public-page, dashboard, production-fallback]
 status: active
 created: 2025-11-19
-updated: 2025-11-19
+updated: 2025-11-20
 related:
   - analytics-service-summary-011.md
   - admin-analytics-integration-001.md
+  - features-roadmap-production-spec-071.md
 ---
 
-# Roadmap & Changelog Feature - Git-Based Progress Tracking
+# Roadmap & Changelog Feature - Complete Implementation
 
 ## Overview
 
@@ -281,6 +282,177 @@ function calculateCategoryStats(category) {
   };
 }
 ```
+
+#### 1.4 Data Sources & Production Fallback
+
+**Challenge**: Serverless environments (Vercel, AWS Lambda, Firebase) don't include `.git/` directory, making `git` commands unavailable in production.
+
+**Solution**: Hybrid approach using local git in development and GitHub API in production.
+
+##### Shared Parsing Utilities (`lib/services/roadmap/server/commitParserUtils.js`)
+
+To avoid code duplication between GitService (local git) and GitHubService (GitHub API), shared parsing logic is extracted:
+
+```javascript
+import {
+  EMOJI_CATEGORY_MAP,
+  SUBCATEGORY_KEYWORDS,
+  CATEGORY_KEYS,
+} from '../constants/roadmapConstants';
+
+/**
+ * Extract gitmoji from commit message
+ * Supports all emoji ranges used in git conventions
+ */
+export function extractGitmoji(message) {
+  const emojiRegex = /^([\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]|[\u{1F000}-\u{1F6FF}]|[\u{1F900}-\u{1F9FF}])/u;
+  const match = message.match(emojiRegex);
+  return match ? match[1] : null;
+}
+
+/**
+ * Infer subcategory from message keywords
+ * Examples: "auth" → "authentication", "modal" → "modals"
+ */
+export function inferSubcategory(message, category) {
+  const lowerMessage = message.toLowerCase();
+
+  for (const [keyword, subcategory] of Object.entries(SUBCATEGORY_KEYWORDS)) {
+    if (lowerMessage.includes(keyword)) {
+      return subcategory;
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Parse commit data into standardized format
+ * Works with both git command output and GitHub API responses
+ */
+export function parseCommit(commitData) {
+  const { hash, author, email, date, message } = commitData;
+
+  const emoji = extractGitmoji(message);
+  const category = EMOJI_CATEGORY_MAP[emoji] || CATEGORY_KEYS.OTHER;
+  const cleanMessage = message.replace(emoji, '').trim();
+  const subcategory = inferSubcategory(cleanMessage, category);
+
+  return {
+    hash,
+    author,
+    email,
+    date: date instanceof Date ? date : new Date(date),
+    message: cleanMessage,
+    emoji,
+    category,
+    subcategory,
+    type: 'commit',
+  };
+}
+```
+
+##### GitHub API Commit Fetching
+
+Added to GitHubService:
+
+```javascript
+/**
+ * Get commit history from GitHub API (production fallback)
+ * Fetches commits via GitHub REST API with pagination support
+ */
+static async getCommitHistoryFromGitHub(options = {}) {
+  const owner = options.owner || process.env.GITHUB_REPO_OWNER;
+  const repo = options.repo || process.env.GITHUB_REPO_NAME;
+
+  if (!owner || !repo) {
+    console.warn('Missing GITHUB_REPO_OWNER or GITHUB_REPO_NAME');
+    return [];
+  }
+
+  const octokit = this.getOctokit();
+  const maxCommits = Math.min(options.limit || 500, 500);
+  const perPage = 100; // GitHub API max per page
+
+  let allCommits = [];
+  let page = 1;
+
+  // Fetch commits with pagination
+  while (allCommits.length < maxCommits) {
+    const params = {
+      owner,
+      repo,
+      per_page: Math.min(perPage, maxCommits - allCommits.length),
+      page,
+    };
+
+    // Optional date filtering
+    if (options.since) {
+      const sinceDate = new Date(options.since);
+      if (!isNaN(sinceDate.getTime())) {
+        params.since = sinceDate.toISOString();
+      }
+    }
+
+    const response = await octokit.repos.listCommits(params);
+
+    if (response.data.length === 0) break;
+
+    allCommits = allCommits.concat(response.data);
+    page++;
+
+    if (response.data.length < perPage || allCommits.length >= maxCommits) {
+      break;
+    }
+  }
+
+  // Parse GitHub API response using shared utility
+  const parsedCommits = allCommits.slice(0, maxCommits).map(githubCommit => {
+    const commit = githubCommit.commit;
+    return parseCommit({
+      hash: githubCommit.sha,
+      author: commit.author.name,
+      email: commit.author.email,
+      date: commit.author.date,
+      message: commit.message,
+    });
+  });
+
+  // Optional category filtering
+  return options.category
+    ? parsedCommits.filter(c => c.category === options.category)
+    : parsedCommits;
+}
+```
+
+##### Automatic Fallback in API Routes
+
+Both `/api/roadmap` and `/api/user/roadmap` implement graceful fallback:
+
+```javascript
+// Try local git first (fast in development)
+let commits = await GitService.getCommitHistory({ limit: 500 });
+
+// Fallback to GitHub API if git unavailable (production)
+if (commits.length === 0) {
+  console.warn('Local git returned no commits, trying GitHub API fallback...');
+  commits = await GitHubService.getCommitHistoryFromGitHub({ limit: 500 });
+}
+
+// Fetch issues
+const issues = await GitHubService.getPlannedFeatures();
+```
+
+**Benefits**:
+- ✅ **Development**: Fast local git (no API limits)
+- ✅ **Production**: Reliable GitHub API access
+- ✅ **Seamless**: Same data structure and behavior
+- ✅ **Cached**: 15-minute TTL prevents rate limiting
+
+**Rate Limits**:
+- Unauthenticated: 60 requests/hour
+- Authenticated (with GITHUB_TOKEN): 5,000 requests/hour
+- Caching reduces actual API calls to ~4/hour
 
 ### 2. API Routes
 

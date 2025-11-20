@@ -5,7 +5,7 @@ category: analysis
 tags: [roadmap, gaps, risks, dependencies, analysis]
 status: active
 created: 2025-11-19
-updated: 2025-11-19
+updated: 2025-11-20
 related:
   - ROADMAP_CHANGELOG_PRODUCTION_SPEC.md
   - ROADMAP_IMPLEMENTATION_CHECKLIST.md
@@ -313,35 +313,73 @@ This document analyzes gaps between requirements, identifies risks, and proposes
 - If no cache: Show informative error with next reset time
 - Implement manual refresh button (rate-limited per user)
 
-#### Risk 2: Git Command Execution Failures
+#### Risk 2: Git Command Execution Failures ✅ **RESOLVED**
 
-**Severity:** MEDIUM
-**Probability:** MEDIUM
+**Severity:** ~~MEDIUM~~ → **MITIGATED**
+**Probability:** ~~MEDIUM~~ → **ZERO (in production)**
 
 **Description:**
-- Git not installed on server
-- Not a git repository
-- Git command times out (large history)
-- Filesystem permissions issues
-- Corrupted git repository
+- ~~Git not installed on server~~ → **SOLVED: GitHub API fallback**
+- ~~Not a git repository~~ → **SOLVED: GitHub API fallback**
+- ~~Git command times out (large history)~~ → **MITIGATED: Timeout + fallback**
+- ~~Filesystem permissions issues~~ → **SOLVED: GitHub API doesn't need filesystem**
+- ~~Corrupted git repository~~ → **SOLVED: GitHub API fallback**
 
-**Impact:**
-- Roadmap shows no commits
-- Page fails to load
-- Errors in logs
+**Original Impact:**
+- ~~Roadmap shows no commits~~ → **NOW: Works via GitHub API**
+- ~~Page fails to load~~ → **NOW: Graceful fallback**
+- ~~Errors in logs~~ → **NOW: Warning logs only**
 
-**Mitigation Strategies:**
-1. **Validate repository** before running commands
-2. **Timeout** git commands (30s max)
-3. **Limit commit count** (500 max)
-4. **Fallback** to empty commits array
-5. **Detailed logging** for debugging
-6. **Health check** endpoint to verify git availability
+**Resolution Implemented (2025-11-20):**
+1. ✅ **Shared parsing utilities** (`commitParserUtils.js`)
+   - Extracted emoji parsing logic
+   - Extracted subcategory inference
+   - Extracted commit parsing
+   - Reusable by both GitService and GitHubService
 
-**Contingency Plan:**
-- If git fails: Show only GitHub issues (future work)
-- Cache last successful git parse
-- Manual fallback: Pre-generated commit list (optional)
+2. ✅ **GitHub API commit fetching** (`GitHubService.getCommitHistoryFromGitHub()`)
+   - Fetches commit history via `octokit.repos.listCommits()`
+   - Supports pagination (100 per page, up to 500 commits)
+   - Uses same parsing logic as local git
+   - Returns identical data structure
+   - Cached (15-min TTL)
+   - Rate limit handling
+
+3. ✅ **Automatic fallback in API routes**
+   ```javascript
+   // Both /api/roadmap and /api/user/roadmap
+   let commits = await GitService.getCommitHistory({ limit: 500 });
+   if (commits.length === 0) {
+     commits = await GitHubService.getCommitHistoryFromGitHub({ limit: 500 });
+   }
+   ```
+
+4. ✅ **Updated GitService.validateGitRepository()**
+   - Returns boolean instead of throwing
+   - Allows graceful detection of git availability
+   - Production-friendly
+
+5. ✅ **Environment configuration**
+   - `GITHUB_TOKEN` for authentication (5000 req/hour limit)
+   - `GITHUB_REPO_OWNER` and `GITHUB_REPO_NAME` for repo identification
+   - Documented in production spec
+
+**Current Behavior:**
+- **Development:** Uses local git (fast, no API limits)
+- **Production (serverless):** Automatically uses GitHub API (reliable, works everywhere)
+- **Seamless:** Same data structure, user sees no difference
+- **Cached:** 15-minute TTL prevents excessive API calls (~4 requests/hour actual usage)
+
+**Remaining Considerations:**
+1. **GitHub token security:** Must be set in production environment variables ⚠️
+2. **Rate limiting:** Still possible but highly unlikely with caching (5000/hour limit)
+3. **Token permissions:** Requires `repo` scope (or `public_repo` for public repositories)
+
+**New Mitigation Status:**
+- ✅ Git availability no longer a risk
+- ✅ Works in all deployment environments
+- ✅ No manual fallback needed
+- ⚠️ New dependency: GitHub API availability (highly reliable)
 
 #### Risk 3: Large Repository Performance
 

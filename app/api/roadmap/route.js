@@ -36,11 +36,15 @@ export async function GET(request) {
 
         console.log(`🔍 [/api/roadmap:${requestId}] Cache miss, fetching fresh data...`);
 
-        // Fetch data in parallel
-        const [commits, issues] = await Promise.all([
-            GitService.getCommitHistory({ limit: 500 }),
-            GitHubService.getPlannedFeatures(),
-        ]);
+        // Fetch commits with fallback: Try local git first, then GitHub API
+        let commits = await GitService.getCommitHistory({ limit: 500 });
+        if (commits.length === 0) {
+            console.warn(`⚠️ [/api/roadmap:${requestId}] Local git returned no commits, trying GitHub API fallback...`);
+            commits = await GitHubService.getCommitHistoryFromGitHub({ limit: 500 });
+        }
+
+        // Fetch issues
+        const issues = await GitHubService.getPlannedFeatures();
 
         console.log(`🔍 [/api/roadmap:${requestId}] Fetched ${commits.length} commits, ${issues.length} issues`);
 

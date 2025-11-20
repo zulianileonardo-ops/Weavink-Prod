@@ -206,28 +206,28 @@
 **Related:** [technical-subscription-revalidation-031](#technical-subscription-revalidation-031)
 
 ### ROADMAP_CHANGELOG_FEATURE_GUIDE.md
-**Summary:** Complete roadmap/changelog system with git commit parsing, GitHub Issues integration, interactive SVG graph visualization, public page (/roadmap), dashboard integration, category tree structure, and multilingual support.
-**Tags:** roadmap, changelog, git-commits, github-issues, graph-visualization, svg, interactive-ui, category-tree, public-page, dashboard, caching, redis
+**Summary:** Complete roadmap/changelog system with hybrid data source (local git + GitHub API fallback), GitHub Issues integration, interactive SVG graph visualization, production-ready deployment, public page (/roadmap), dashboard integration, category tree structure, and multilingual support. Includes automatic serverless environment detection.
+**Tags:** roadmap, changelog, git-commits, github-issues, github-api, graph-visualization, svg, interactive-ui, category-tree, public-page, dashboard, caching, redis, production-fallback, serverless
 **Related:** [features-roadmap-production-spec-071](#features-roadmap-production-spec-071), [features-roadmap-checklist-072](#features-roadmap-checklist-072), [features-roadmap-gaps-073](#features-roadmap-gaps-073), [features-roadmap-summary-074](#features-roadmap-summary-074)
 
 ### ROADMAP_IMPLEMENTATION_CHECKLIST.md
-**Summary:** Comprehensive implementation checklist covering all aspects of roadmap feature development, testing, and deployment.
-**Tags:** roadmap, checklist, implementation, testing, deployment, project-management
+**Summary:** Comprehensive implementation checklist covering all aspects of roadmap feature development, testing, and deployment. Updated 2025-11-20 with completed production deployment tasks including shared parsing utilities and GitHub API fallback implementation.
+**Tags:** roadmap, checklist, implementation, testing, deployment, project-management, production-ready
 **Related:** [features-roadmap-changelog-070](#features-roadmap-changelog-070), [features-roadmap-production-spec-071](#features-roadmap-production-spec-071)
 
 ### ROADMAP_GAPS_AND_RISKS.md
-**Summary:** Analysis of implementation gaps, known risks, and areas requiring future attention in the roadmap feature.
-**Tags:** roadmap, risks, gaps, analysis, future-work, technical-debt
+**Summary:** Analysis of implementation gaps, known risks, and areas requiring future attention in the roadmap feature. Updated 2025-11-20: Risk 2 (Git unavailability in production) marked as RESOLVED with GitHub API fallback solution.
+**Tags:** roadmap, risks, gaps, analysis, future-work, technical-debt, mitigations
 **Related:** [features-roadmap-changelog-070](#features-roadmap-changelog-070), [features-roadmap-summary-074](#features-roadmap-summary-074)
 
 ### ROADMAP_CHANGELOG_PRODUCTION_SPEC.md
-**Summary:** Detailed production specification for roadmap system including security considerations, performance optimizations, error handling strategies, and deployment requirements.
-**Tags:** roadmap, production, specification, security, performance, deployment, error-handling, monitoring
+**Summary:** Detailed production specification for roadmap system including GitHub API configuration, environment variables setup, serverless deployment support, security considerations, performance optimizations, error handling strategies, and production deployment checklist. Updated 2025-11-20 with GitHub API fallback solution.
+**Tags:** roadmap, production, specification, security, performance, deployment, error-handling, monitoring, github-api, serverless, environment-variables
 **Related:** [features-roadmap-changelog-070](#features-roadmap-changelog-070), [features-roadmap-checklist-072](#features-roadmap-checklist-072)
 
 ### ROADMAP_IMPLEMENTATION_SUMMARY.md
-**Summary:** Executive summary of roadmap feature implementation, key decisions, and final architecture.
-**Tags:** roadmap, summary, implementation, architecture, decisions
+**Summary:** Executive summary of roadmap feature implementation, key decisions, and final architecture. Updated 2025-11-20 with Production Deployment Fix section documenting GitHub API fallback solution for serverless environments.
+**Tags:** roadmap, summary, implementation, architecture, decisions, production-fix, github-api-fallback
 **Related:** [features-roadmap-changelog-070](#features-roadmap-changelog-070), [features-roadmap-gaps-073](#features-roadmap-gaps-073)
 
 ### TUTORIAL_ACCOUNT_PAGE_STRUCTURE.md

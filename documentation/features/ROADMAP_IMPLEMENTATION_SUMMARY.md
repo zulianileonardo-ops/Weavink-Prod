@@ -2,13 +2,15 @@
 id: roadmap-implementation-summary
 title: Roadmap & Changelog Feature - Implementation Summary
 category: implementation
-tags: [roadmap, changelog, summary, deployment, testing]
+tags: [roadmap, changelog, summary, deployment, testing, production, github-api]
 status: complete
 created: 2025-11-19
 completed: 2025-11-19
+updated: 2025-11-20
 related:
   - ROADMAP_CHANGELOG_PRODUCTION_SPEC.md
   - ROADMAP_IMPLEMENTATION_CHECKLIST.md
+  - ROADMAP_GAPS_AND_RISKS.md
 ---
 
 # Roadmap & Changelog Feature - Implementation Summary
@@ -33,8 +35,9 @@ lib/services/serviceRoadmap/
 ├── constants/
 │   └── roadmapConstants.js              ✅ (146 lines)
 ├── server/
-│   ├── gitService.js                    ✅ (154 lines) - Parses git commits
-│   ├── githubService.js                 ✅ (191 lines) - Fetches GitHub issues
+│   ├── gitService.js                    ✅ (154 lines) - Parses git commits (with production fallback)
+│   ├── githubService.js                 ✅ (254 lines) - Fetches GitHub issues + commits (GitHub API)
+│   ├── commitParserUtils.js             ✅ (63 lines) - Shared commit parsing utilities ⭐ NEW
 │   ├── cacheManager.js                  ✅ (95 lines) - 15-min cache for GitHub API
 │   └── categoryService.js               ✅ (167 lines) - Builds tree structure
 └── client/
@@ -281,9 +284,76 @@ Already installed:
 - ✅ `react-hot-toast` (Notifications)
 
 System requirements:
-- ✅ Git CLI (must be installed on server)
+- ✅ ~~Git CLI (must be installed on server)~~ → **OPTIONAL: Falls back to GitHub API in production**
 - ✅ Node.js 18+ (already required by Next.js 14)
 - ✅ Next.js 14 (already in use)
+
+---
+
+## 🔧 Production Deployment Fix (2025-11-20)
+
+### Problem Solved: Git Unavailable in Serverless Environments
+
+**Issue:**
+- Original implementation relied on local `git` commands
+- Serverless platforms (Vercel, AWS Lambda) don't include `.git/` folder
+- `/api/user/roadmap` was returning HTTP 500 errors in production:
+  ```
+  Error: Not a git repository at n.getCommitHistory
+  ```
+
+**Solution Implemented:**
+
+1. **Created Shared Parsing Utilities** (`commitParserUtils.js`)
+   - `extractGitmoji(message)` - Extracts emoji from commit messages
+   - `inferSubcategory(message, category)` - Infers subcategory from keywords
+   - `parseCommit(commitData)` - Transforms raw commit data to standardized format
+   - Works with both git output and GitHub API responses
+
+2. **Added GitHub API Commit Fetching** (`GitHubService.getCommitHistoryFromGitHub()`)
+   - Fetches commits via `octokit.repos.listCommits()`
+   - Paginates through results (100 per page, max 500)
+   - Parses using shared utilities
+   - Returns identical structure to GitService
+   - Cached for 15 minutes
+
+3. **Implemented Automatic Fallback** in API routes
+   ```javascript
+   // Try local git first (fast in development)
+   let commits = await GitService.getCommitHistory({ limit: 500 });
+
+   // Fallback to GitHub API if git unavailable (production)
+   if (commits.length === 0) {
+     commits = await GitHubService.getCommitHistoryFromGitHub({ limit: 500 });
+   }
+   ```
+
+4. **Updated Git Service** to return boolean instead of throwing
+   - `validateGitRepository()` now returns true/false
+   - `getCommitHistory()` returns empty array if git unavailable
+   - Logs warning instead of crashing
+
+**Files Modified:**
+- ✅ Created: `lib/services/serviceRoadmap/server/commitParserUtils.js`
+- ✅ Updated: `lib/services/serviceRoadmap/server/gitService.js`
+- ✅ Updated: `lib/services/serviceRoadmap/server/githubService.js`
+- ✅ Updated: `app/api/roadmap/route.js`
+- ✅ Updated: `app/api/user/roadmap/route.js`
+- ✅ Updated: `.env` (added GITHUB_TOKEN, GITHUB_REPO_OWNER, GITHUB_REPO_NAME)
+
+**Result:**
+- ✅ Works in development (uses fast local git)
+- ✅ Works in production (automatically uses GitHub API)
+- ✅ No code changes needed between environments
+- ✅ No manual fallback configuration
+- ✅ Same data structure regardless of source
+
+**Deployment Checklist for Production:**
+- ⚠️ Add `GITHUB_TOKEN` to production environment variables
+- ⚠️ Add `GITHUB_REPO_OWNER` to production environment variables
+- ⚠️ Add `GITHUB_REPO_NAME` to production environment variables
+- ✅ Deploy and test `/api/roadmap` endpoint
+- ✅ Deploy and test `/api/user/roadmap` endpoint
 
 ---
 

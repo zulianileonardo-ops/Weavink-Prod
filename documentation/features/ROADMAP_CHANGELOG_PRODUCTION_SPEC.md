@@ -2,11 +2,11 @@
 id: features-roadmap-changelog-production-070
 title: Roadmap & Changelog Feature - Production Implementation Specification
 category: features
-tags: [roadmap, changelog, git-commits, github-issues, feature-tree, gitmoji, visualization, public-page, dashboard, production-ready]
+tags: [roadmap, changelog, git-commits, github-issues, github-api, feature-tree, gitmoji, visualization, public-page, dashboard, production-ready, serverless]
 status: active
 created: 2025-11-19
-updated: 2025-11-19
-version: 2.0-production
+updated: 2025-11-20
+version: 2.1-production
 related:
   - ROADMAP_CHANGELOG_FEATURE_GUIDE.md
   - ROADMAP_IMPLEMENTATION_CHECKLIST.md
@@ -65,9 +65,41 @@ A **dual-purpose roadmap/changelog system** that visualizes:
 - react-hot-toast (notifications)
 
 **Deployment:**
-- Vercel / Next.js deployment
-- Environment variables for GitHub token
+- Vercel / Next.js / Serverless deployment
+- Environment variables for GitHub API
 - Edge caching for public endpoint
+- Automatic GitHub API fallback in production
+
+### Production Environment Configuration
+
+**Required Environment Variables:**
+
+```bash
+# GitHub API Configuration
+GITHUB_TOKEN="ghp_your_personal_access_token_here"
+GITHUB_REPO_OWNER="Leo910032"
+GITHUB_REPO_NAME="temp2"
+```
+
+**GitHub Token Permissions:**
+- Scope: `repo` (or `public_repo` for public repositories only)
+- Generate at: https://github.com/settings/tokens
+- Rate limits:
+  - Without token: 60 requests/hour
+  - With token: 5,000 requests/hour
+  - Actual usage with caching: ~4 requests/hour
+
+**Production Deployment Checklist:**
+1. ✅ Add `GITHUB_TOKEN` to production environment variables
+2. ✅ Add `GITHUB_REPO_OWNER` to production environment variables
+3. ✅ Add `GITHUB_REPO_NAME` to production environment variables
+4. ✅ Verify GitHub token has correct permissions
+5. ✅ Test roadmap API endpoints in production
+
+**Git Availability:**
+- Development: Uses local `git` commands (fast, no API limits)
+- Production: Automatically falls back to GitHub API (serverless compatible)
+- No `.git/` directory needed in deployed environments
 
 ### Weavink Integration Points
 
@@ -79,7 +111,8 @@ Weavink Application
 │   │   ├── gitService.js
 │   │   ├── githubService.js
 │   │   ├── categoryService.js
-│   │   └── cacheManager.js
+│   │   ├── cacheManager.js
+│   │   └── commitParserUtils.js        # Shared commit parsing
 │   └── client/roadmapService.js         # Client API calls
 │
 ├── app/api/roadmap/route.js             # NEW - Public API endpoint
