@@ -119,7 +119,7 @@ export default function RoadmapGraphView({ tree, selectedCommitHash }) {
         // Subcategories
         const subChildren = Object.values(cat.subcategories).map(sub => {
             const itemChildren = sub.items.map((item, idx) => ({
-                id: `item-${sub.name}-${idx}`,
+                id: `item-${cat.name}-${sub.name}-${idx}`,
                 label: item.type === 'commit' ? item.message : item.title,
                 type: item.type,
                 data: item,
@@ -127,7 +127,7 @@ export default function RoadmapGraphView({ tree, selectedCommitHash }) {
             }));
 
             return {
-                id: `sub-${sub.name}`,
+                id: `sub-${cat.name}-${sub.name}`,
                 label: sub.displayName,
                 type: 'subcategory',
                 data: sub,
