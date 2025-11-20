@@ -32,6 +32,12 @@ const nextConfig = {
     ],
   },
   webpack: (config) => {
+    // Exclude the Vite project directory from webpack processing
+    config.module.rules.push({
+      test: /\.tsx?$/,
+      exclude: /weavink-roadmap-&-changelog/,
+    });
+
     config.resolve.alias = {
       ...config.resolve.alias,
       '@/components': path.resolve(__dirname, 'app/components'),
