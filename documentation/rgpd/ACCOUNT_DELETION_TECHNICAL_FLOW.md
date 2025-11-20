@@ -2,22 +2,27 @@
 id: rgpd-account-deletion-flow-047
 title: Account Deletion Technical Flow - User Deletion to Contact Notification
 category: rgpd
-tags: [account-deletion, gdpr, notifications, cascade-deletion, email, firestore, privacy, technical-flow, database-operations, multilingual]
+tags: [account-deletion, gdpr, notifications, cascade-deletion, email, firestore, privacy, technical-flow, database-operations, multilingual, cancellation]
 status: active
 created: 2025-11-19
-updated: 2025-11-19
+updated: 2025-11-20
 related:
   - EMAIL_NOTIFICATION_MANUAL_TEST_GUIDE.md
   - RGPD_COMPLIANCE_MATRIX.md
   - RGPD_COMPLIANCE_MATRIX.PREVIOUS.md
   - RGPD_IMPLEMENTATION_SUMMARY.md
   - RGPD_ARCHITECTURE_COMPLIANCE.md
+  - CONTACT_DELETION_WARNING_IMPLEMENTATION.md
 functions:
   - requestAccountDeletion()
+  - cancelAccountDeletion()
   - findUsersWithContact()
   - notifyContactDeletion()
+  - notifyContactDeletionCancellation()
   - sendContactDeletionNoticeEmail()
+  - sendContactDeletionCancelledEmail()
   - sendAccountDeletionConfirmationEmail()
+  - sendAccountDeletionCancelledEmail()
 components:
   - AccountDeletionService
   - EmailService
@@ -27,8 +32,9 @@ components:
 
 # Account Deletion Technical Flow: User Deletion to Contact Notification
 
-**Document Version**: 1.0
+**Document Version**: 1.1
 **Created**: 2025-11-19
+**Last Updated**: 2025-11-20
 **Status**: Active
 **Category**: RGPD/GDPR Compliance
 
@@ -37,7 +43,7 @@ components:
 ## Table of Contents
 
 1. [Overview](#overview)
-2. [Complete Technical Flow (10 Phases)](#complete-technical-flow-10-phases)
+2. [Complete Technical Flow (11 Phases)](#complete-technical-flow-11-phases)
 3. [Database Schema Changes](#database-schema-changes)
 4. [Code References](#code-references)
 5. [Timeline Analysis](#timeline-analysis)
@@ -66,7 +72,7 @@ This document provides a complete technical walkthrough of the account deletion 
 
 ---
 
-## Complete Technical Flow (10 Phases)
+## Complete Technical Flow (11 Phases)
 
 ### Phase 1: User A Initiates Deletion
 
@@ -610,6 +616,251 @@ router.push('/dashboard/account?tab=delete');
 - Deletion warning banner in NavBar
 
 **Timestamp**: T+1900ms (backend complete)
+
+---
+
+### Phase 11: Cancellation Flow (Optional - If User A Cancels)
+
+**When**: User A cancels their deletion request before the 30-day grace period expires
+**Location**: Frontend → API Route → `cancelAccountDeletion()`
+**File**: `/lib/services/servicePrivacy/server/accountDeletionService.js:603-678`
+
+#### Step 11.1: User A Initiates Cancellation
+
+```javascript
+// User A clicks "Cancel Deletion" button in account settings
+const response = await fetch('/api/user/privacy/cancel-account-deletion', {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${idToken}`,
+    'Content-Type': 'application/json'
+  }
+});
+```
+
+#### Step 11.2: Update Deletion Request Status
+
+```javascript
+// File: /lib/services/servicePrivacy/server/accountDeletionService.js:625-633
+await db.collection('PrivacyRequests').doc(deletionRequestId).update({
+  status: 'cancelled',
+  cancelledAt: FieldValue.serverTimestamp(),
+  cancelledBy: userId,
+  cancelReason: 'User changed mind during grace period'
+});
+```
+
+**Database Result**:
+```
+Firestore:
+└── PrivacyRequests
+    └── {deletionRequestId}
+        ├── userId: "userA-id"
+        ├── status: "cancelled" (changed from "pending")
+        ├── cancelledAt: Timestamp(2025-11-20)
+        └── cancelledBy: "userA-id"
+```
+
+#### Step 11.3: Clear User A's Pending Deletion Flags
+
+```javascript
+// File: /lib/services/servicePrivacy/server/accountDeletionService.js:635-642
+await db.collection('users').doc(userId).update({
+  'privacy.pendingDeletion': false,
+  'privacy.deletionRequestId': null,
+  'privacy.deletionCancelledAt': FieldValue.serverTimestamp(),
+  updatedAt: FieldValue.serverTimestamp()
+});
+```
+
+**Database Result**:
+```
+Firestore:
+└── users
+    └── userA-id
+        ├── privacy
+        │   ├── pendingDeletion: false (changed from true)
+        │   ├── deletionRequestId: null (cleared)
+        │   └── deletionCancelledAt: Timestamp(2025-11-20)
+        └── updatedAt: Timestamp
+```
+
+#### Step 11.4: Send Cancellation Email to User A
+
+```javascript
+// File: /lib/services/servicePrivacy/server/accountDeletionService.js:644-657
+const userLanguage = userData.settings?.defaultLanguage || 'en';
+
+await EmailService.sendAccountDeletionCancelledEmail(
+  userData.email,                      // 'userA@example.com'
+  userData.profile?.displayName,       // 'User A'
+  userLanguage                         // 'fr' (French)
+);
+```
+
+**Email Content (French for User A)**:
+```
+To: userA@example.com
+Subject: Demande de suppression de compte annulée - Weavink
+Language: French
+
+Body:
+  Bonjour User A,
+
+  Nous sommes heureux de vous revoir ! Votre demande de suppression de compte a été annulée avec succès.
+
+  Votre compte reste actif et toutes vos données ont été préservées :
+  - Tous vos contacts et groupes
+  - Vos paramètres de profil et préférences
+  - Votre historique d'activité et analyses
+
+  Vous pouvez continuer à utiliser Weavink normalement.
+
+  [Aller au tableau de bord] → /dashboard
+
+  Cordialement,
+  L'équipe Weavink
+```
+
+#### Step 11.5: Find Users Who Were Notified About Deletion
+
+```javascript
+// File: /lib/services/servicePrivacy/server/accountDeletionService.js:659-665
+// Reuse same findUsersWithContact() function from Phase 4
+const usersWithContact = await findUsersWithContact(
+  userId,
+  userData.email
+);
+// Returns: ['userB-id', 'userC-id']
+```
+
+#### Step 11.6: Notify Contacts About Cancellation
+
+```javascript
+// File: /lib/services/servicePrivacy/server/accountDeletionService.js:667-678
+if (usersWithContact.length > 0) {
+  await notifyContactDeletionCancellation(
+    userId,                    // 'userA-id'
+    usersWithContact,         // ['userB-id', 'userC-id']
+    userData.profile?.displayName || userData.username
+  );
+}
+```
+
+**Function Implementation**:
+```javascript
+async function notifyContactDeletionCancellation(deletedUserId, userIds, userName) {
+  console.log(`[AccountDeletion] Notifying ${userIds.length} users about cancellation`);
+
+  // Create notifications in parallel
+  const notifications = userIds.map((userId) => {
+    return db.collection('users')
+      .doc(userId)
+      .collection('notifications')
+      .add({
+        type: 'contact_deletion_cancelled',
+        title: 'Contact Deletion Cancelled',
+        message: `${userName} has cancelled their account deletion request. They will remain in your contact list.`,
+        deletedUserId: deletedUserId,
+        deletedUserName: userName,
+        createdAt: FieldValue.serverTimestamp(),
+        read: false
+      });
+  });
+
+  await Promise.all(notifications);
+}
+```
+
+**Database Result** (for each affected user):
+```
+Firestore:
+└── users
+    └── userB-id
+        └── notifications
+            └── {auto-generated-id}
+                ├── type: 'contact_deletion_cancelled'
+                ├── title: 'Contact Deletion Cancelled'
+                ├── message: 'User A has cancelled their deletion...'
+                ├── deletedUserId: 'userA-id'
+                ├── deletedUserName: 'User A'
+                ├── createdAt: Timestamp(2025-11-20)
+                └── read: false
+```
+
+#### Step 11.7: Send Cancellation Emails to Contacts
+
+```javascript
+// File: /lib/services/servicePrivacy/server/accountDeletionService.js
+const emailPromises = [];
+
+for (const userId of usersWithContact) {
+  const userDoc = await db.collection('users').doc(userId).get();
+
+  if (userDoc.exists) {
+    const contactUserData = userDoc.data();
+    const contactUserLanguage = contactUserData.settings?.defaultLanguage || 'en';
+
+    // Each contact gets email in THEIR language
+    emailPromises.push(
+      EmailService.sendContactDeletionCancelledEmail(
+        contactUserData.email,                    // 'userB@example.com'
+        contactUserData.profile?.displayName,     // 'User B'
+        userData.profile?.displayName,            // 'User A'
+        contactUserLanguage                       // 'en' (User B's language!)
+      ).catch(error => {
+        console.error(`Failed to send cancellation notice to ${userId}:`, error);
+      })
+    );
+  }
+}
+
+await Promise.allSettled(emailPromises);
+```
+
+**Email Content to User B (English)**:
+```
+To: userB@example.com
+Subject: Contact Deletion Cancelled - Weavink
+Language: English
+
+Body:
+  Hi User B,
+
+  Good news! User A has cancelled their account deletion request.
+
+  This means:
+  - They remain in your contact list
+  - You can continue to contact them through Weavink
+  - No changes to your shared data
+
+  You can continue collaborating with User A as before. No action is required on your part.
+
+  Best regards,
+  The Weavink Team
+```
+
+**Critical Detail**: Email sent to User B in **English** (User B's language), NOT French (User A's language)!
+
+#### Step 11.8: Return Success Response
+
+```javascript
+return {
+  success: true,
+  message: 'Account deletion cancelled successfully',
+  affectedContacts: usersWithContact.length
+};
+```
+
+**Frontend Result**:
+- Deletion warning banner removed from NavBar
+- Account page shows normal state (no pending deletion)
+- Success toast: "Account deletion cancelled. X contacts were notified."
+- User can continue using Weavink normally
+
+**Total Cancellation Time**: ~1-2 seconds (same performance as deletion request)
+
+**Timestamp**: Cancellation T+0 to T+2000ms
 
 ---
 
@@ -1168,13 +1419,14 @@ GET    /api/admin/privacy/non-user-audit-log     // Audit trail
 
 ## Document Maintenance
 
-**Last Updated**: 2025-11-19
+**Last Updated**: 2025-11-20
 **Maintained By**: Weavink Engineering Team
 **Review Frequency**: Quarterly or after major changes
-**Version**: 1.0
+**Version**: 1.1
 
 ### Changelog
-- **2025-11-19**: Initial document creation
+- **2025-11-20**: Added Phase 11 (Cancellation Flow) - documents contact notification when User A cancels deletion
+- **2025-11-19**: Initial document creation (Phases 1-10)
 - **Future**: Add non-user deletion feature documentation
 
 ---

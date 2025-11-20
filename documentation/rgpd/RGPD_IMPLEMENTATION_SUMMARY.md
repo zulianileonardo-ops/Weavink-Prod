@@ -155,7 +155,7 @@ PATCH  /api/user/privacy/delete-account           # Modify deletion (postpone)
 - ✅ Non-blocking email sending (failures don't stop operations)
 - ✅ Multilingual support for 5 languages: English, French, Spanish, Chinese, Vietnamese
 
-**Email Types Implemented (5)**:
+**Email Types Implemented (6)**:
 
 1. **Account Deletion Confirmation**
    - Sent when deletion request created
@@ -184,7 +184,14 @@ PATCH  /api/user/privacy/delete-account           # Modify deletion (postpone)
    - List of preserved data
    - Dashboard link
 
-5. **Data Export Completed**
+5. **Contact Deletion Cancellation Notice** (Added 2025-11-20)
+   - Sent to users who were notified about contact deletion
+   - Informs them the deletion was cancelled
+   - Reassurance that contact remains in their list
+   - Each recipient receives email in THEIR language
+   - Positive, welcoming tone
+
+6. **Data Export Completed**
    - Export summary with counts (contacts, groups, consents)
    - Format listing (JSON, CSV, vCard)
    - GDPR Article 20 compliance note
@@ -196,7 +203,7 @@ PATCH  /api/user/privacy/delete-account           # Modify deletion (postpone)
 - Interpolation: Automatic with i18next on server
 
 **Integration Points**:
-- `accountDeletionService.js` - 4 email integrations (confirmation, notices, completed, cancelled)
+- `accountDeletionService.js` - 5 email integrations (confirmation, contact notices, completed, user cancelled, contact cancellation notices)
 - `export/route.js` - 1 email integration (completion notification)
 - User language: `users/{userId}/settings.defaultLanguage`
 
@@ -206,6 +213,7 @@ PATCH  /api/user/privacy/delete-account           # Modify deletion (postpone)
 - ✅ Locale-based deletion confirmation validation (each language has unique text)
 - ✅ Locale parameter passed through entire deletion flow for audit compliance
 - ✅ Fixed email footer translation bug (footer was hardcoded in English) - Added translation variables for `thank_you`, `team_name`, `request_id`, `dpo_label` (2025-11-19)
+- ✅ Fixed email sign-off translation bug - Added `bestRegards` translation variable to prevent hardcoded "Best regards," in multilingual emails (French users were seeing "Best regards," instead of "Cordialement,") (2025-11-20)
 - ✅ Fixed consent count showing 0 in data export emails - Property name mismatch resolved (`consentCount` vs `consentsCount`) (2025-11-19)
 - ✅ Fixed environment variable security - Changed from `NEXT_PUBLIC_SMTP_API` (browser-exposed) to `SMTP_API` (server-only) (2025-11-19)
 - ✅ Documented Brevo sender validation and IP whitelisting requirements

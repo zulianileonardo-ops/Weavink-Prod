@@ -1,8 +1,8 @@
 {
   "metadata": {
     "project": "Weavink Documentation",
-    "last_updated": "2025-11-19",
-    "total_guides": 69,
+    "last_updated": "2025-11-20",
+    "total_guides": 75,
     "version": "1.0.0"
   },
   "categories": {
@@ -64,7 +64,13 @@
         "features-image-handling-027",
         "features-tutorial-account-018",
         "features-media-enhancement-027",
-        "features-contacts-i18n-028"
+        "features-contacts-i18n-028",
+        "features-roadmap-changelog-070",
+        "features-roadmap-production-spec-071",
+        "features-roadmap-checklist-072",
+        "features-roadmap-gaps-073",
+        "features-roadmap-summary-074",
+        "features-contact-deletion-status-api-075"
       ]
     },
     "technical": {
@@ -2126,6 +2132,183 @@
       "status": "active",
       "created": "2025-11-19",
       "updated": "2025-11-19"
+    },
+    {
+      "id": "features-roadmap-changelog-070",
+      "title": "Roadmap & Changelog Feature - Complete Implementation",
+      "filename": "documentation/features/ROADMAP_CHANGELOG_FEATURE_GUIDE.md",
+      "category": "features",
+      "summary": "Complete roadmap/changelog system with git commit parsing, GitHub Issues integration, interactive SVG graph visualization, public page (/roadmap), dashboard integration, category tree structure, and multilingual support.",
+      "tags": [
+        "roadmap",
+        "changelog",
+        "git-commits",
+        "github-issues",
+        "graph-visualization",
+        "svg",
+        "interactive-ui",
+        "category-tree",
+        "public-page",
+        "dashboard",
+        "caching",
+        "redis"
+      ],
+      "related_guides": [
+        "features-roadmap-production-spec-071",
+        "features-roadmap-checklist-072",
+        "features-roadmap-gaps-073",
+        "features-roadmap-summary-074"
+      ],
+      "functions": [
+        "GitService.parseCommits",
+        "GitHubService.fetchIssues",
+        "CategoryService.buildTree",
+        "CacheManager.get",
+        "CacheManager.set",
+        "RoadmapService.getRoadmap"
+      ],
+      "components": [
+        "RoadmapGraphView",
+        "CategoryTree",
+        "CommitCard",
+        "IssueCard",
+        "ViewToggle",
+        "StatCard",
+        "DashboardCharts",
+        "CategoryBadge"
+      ],
+      "status": "active",
+      "created": "2025-11-19",
+      "updated": "2025-11-20"
+    },
+    {
+      "id": "features-roadmap-production-spec-071",
+      "title": "Roadmap & Changelog - Production Specification",
+      "filename": "documentation/features/ROADMAP_CHANGELOG_PRODUCTION_SPEC.md",
+      "category": "features",
+      "summary": "Detailed production specification for roadmap system including security considerations, performance optimizations, error handling strategies, and deployment requirements.",
+      "tags": [
+        "roadmap",
+        "production",
+        "specification",
+        "security",
+        "performance",
+        "deployment",
+        "error-handling",
+        "monitoring"
+      ],
+      "related_guides": [
+        "features-roadmap-changelog-070",
+        "features-roadmap-checklist-072"
+      ],
+      "functions": [],
+      "components": [],
+      "status": "active",
+      "created": "2025-11-19",
+      "updated": "2025-11-20"
+    },
+    {
+      "id": "features-roadmap-checklist-072",
+      "title": "Roadmap Implementation Checklist",
+      "filename": "documentation/features/ROADMAP_IMPLEMENTATION_CHECKLIST.md",
+      "category": "features",
+      "summary": "Comprehensive implementation checklist covering all aspects of roadmap feature development, testing, and deployment.",
+      "tags": [
+        "roadmap",
+        "checklist",
+        "implementation",
+        "testing",
+        "deployment",
+        "project-management"
+      ],
+      "related_guides": [
+        "features-roadmap-changelog-070",
+        "features-roadmap-production-spec-071"
+      ],
+      "functions": [],
+      "components": [],
+      "status": "active",
+      "created": "2025-11-19",
+      "updated": "2025-11-20"
+    },
+    {
+      "id": "features-roadmap-gaps-073",
+      "title": "Roadmap Gaps and Risks Analysis",
+      "filename": "documentation/features/ROADMAP_GAPS_AND_RISKS.md",
+      "category": "features",
+      "summary": "Analysis of implementation gaps, known risks, and areas requiring future attention in the roadmap feature.",
+      "tags": [
+        "roadmap",
+        "risks",
+        "gaps",
+        "analysis",
+        "future-work",
+        "technical-debt"
+      ],
+      "related_guides": [
+        "features-roadmap-changelog-070",
+        "features-roadmap-summary-074"
+      ],
+      "functions": [],
+      "components": [],
+      "status": "active",
+      "created": "2025-11-19",
+      "updated": "2025-11-20"
+    },
+    {
+      "id": "features-roadmap-summary-074",
+      "title": "Roadmap Implementation Summary",
+      "filename": "documentation/features/ROADMAP_IMPLEMENTATION_SUMMARY.md",
+      "category": "features",
+      "summary": "Executive summary of roadmap feature implementation, key decisions, and final architecture.",
+      "tags": [
+        "roadmap",
+        "summary",
+        "implementation",
+        "architecture",
+        "decisions"
+      ],
+      "related_guides": [
+        "features-roadmap-changelog-070",
+        "features-roadmap-gaps-073"
+      ],
+      "functions": [],
+      "components": [],
+      "status": "active",
+      "created": "2025-11-19",
+      "updated": "2025-11-20"
+    },
+    {
+      "id": "features-contact-deletion-status-api-075",
+      "title": "Contact Deletion Status API",
+      "filename": "documentation/features/CONTACT_DELETION_STATUS_API.md",
+      "category": "features",
+      "summary": "API endpoint documentation for checking if a contact has a pending account deletion, enabling real-time warning displays in ContactCard and EditContactModal components.",
+      "tags": [
+        "contacts",
+        "deletion",
+        "api",
+        "gdpr",
+        "notifications",
+        "warnings",
+        "real-time",
+        "firestore"
+      ],
+      "related_guides": [
+        "rgpd-contact-deletion-warning-048",
+        "rgpd-account-deletion-flow-047",
+        "features-contacts-i18n-028"
+      ],
+      "functions": [
+        "getContactDeletionStatus"
+      ],
+      "components": [
+        "ContactCard",
+        "EditContactModal"
+      ],
+      "status": "active",
+      "created": "2025-11-20",
+      "updated": "2025-11-20"
     }
   ]
 }

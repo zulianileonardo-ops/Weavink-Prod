@@ -2,10 +2,10 @@
 id: testing-email-notifications-065
 title: Email Notification System - Manual Test Guide (Phase 1, 2 & 3)
 category: testing
-tags: [email, notifications, multilingual, i18n, rgpd, manual-testing, phase1, phase2, phase3, data-export]
+tags: [email, notifications, multilingual, i18n, rgpd, manual-testing, phase1, phase2, phase3, data-export, cancellation]
 status: active
 created: 2025-11-19
-updated: 2025-11-19
+updated: 2025-11-20
 related:
   - RGPD_TESTING_GUIDE.md
   - ACCOUNT_PRIVACY_TESTING_GUIDE.md
@@ -18,7 +18,7 @@ related:
 
 This guide provides focused manual testing procedures for the multilingual email notification system implementation. It covers:
 - **Phase 1**: i18n bug fixes (text and date interpolation + multilingual validation)
-- **Phase 2**: Account deletion email notifications (4 email types)
+- **Phase 2**: Account deletion email notifications (5 email types)
 - **Phase 3**: Data export email notifications (1 email type)
 
 Use this guide to verify all email notification functionality works correctly across all supported languages.
@@ -628,6 +628,99 @@ POST /api/user/privacy/delete-account
 
 ---
 
+### Test 2.6: Contact Deletion Cancellation Notice
+
+**Email Type:** Notification sent to contacts when a user cancels their deletion request
+
+**Background:** When User A requests account deletion, User B (who has User A in contacts) receives a "Contact Deletion Notice" (Test 2.3). If User A then cancels the deletion, User B should receive a follow-up notification that the deletion has been cancelled.
+
+**Setup:**
+1. Ensure User B (English) has User A (French) in their contact list
+2. User A requests account deletion (Test 2.1)
+3. User B receives contact deletion notice (Test 2.3)
+
+**Test Steps:**
+1. Log in as User A (French)
+2. Navigate to: Account Settings → Privacy Tab
+3. See pending deletion warning
+4. Click "Cancel Deletion" button
+5. Confirm cancellation
+6. **Check User B's email inbox** (NOT User A - User A gets Test 2.5 email)
+
+**Expected Email to User B:**
+
+**To:** User B's email
+**Subject:** "Contact Deletion Cancelled - Weavink" (ENGLISH - User B's language, not User A's)
+**Language:** English (recipient's language)
+
+**Email Content:**
+
+✅ **Headline:** "Contact Deletion Cancelled"
+✅ **Intro:** "Good news! [User A's Display Name] has cancelled their account deletion request."
+✅ **Status Message:** "This means:"
+   - "They remain in your contact list"
+   - "You can continue to contact them through Weavink"
+   - "No changes to your shared data"
+✅ **Next Steps:** "You can continue collaborating with [User A's Name] as before. No action is required on your part."
+✅ **Footer:** "Best regards," (translated to User B's language)
+✅ **Footer:** "The Weavink Team" (translated)
+
+**Verification Checklist:**
+
+- [ ] Email sent to User B (the contact owner)
+- [ ] Email in User B's language (English) NOT User A's (French)
+- [ ] User A's display name appears correctly
+- [ ] Positive/reassuring tone
+- [ ] Footer properly translated (NOT hardcoded "Best regards,")
+- [ ] If User A has multiple contacts, each receives email in THEIR OWN language
+
+**Multi-Contact Test (Optional):**
+1. Ensure User A is in contact lists of User B, C, D
+2. User A requests deletion (all receive Test 2.3 notice)
+3. User A cancels deletion
+4. Verify:
+   - User B receives cancellation notice in English
+   - User C receives cancellation notice in Spanish
+   - User D receives cancellation notice in Chinese
+   - All emails sent within 30 seconds
+
+**Database Verification:**
+1. Check User B → `notifications` subcollection
+2. Verify cancellation notification document created:
+```javascript
+{
+  type: 'contact_deletion_cancelled',
+  title: 'Contact Deletion Cancelled',
+  message: '[User A] has cancelled their deletion request...',
+  deletedUserId: '[User A ID]',
+  deletedUserName: '[User A name]',
+  read: false,
+  createdAt: [timestamp]
+}
+```
+
+**✅ Pass Criteria:**
+- Each affected user receives ONE cancellation email
+- Each email in recipient's own language
+- Positive, reassuring tone
+- Footer properly translated using `bestRegards` variable
+- Batch processing completes within 1 minute
+
+**❌ Fail Criteria:**
+- User B receives email in French (cancelling user's language)
+- No email sent to contacts
+- Hardcoded "Best regards," in footer (translation bug)
+- Multiple duplicate emails sent
+
+**Files:**
+- EmailService: `lib/services/server/emailService.js:sendContactDeletionCancelledEmail`
+- Integration: `lib/services/servicePrivacy/server/accountDeletionService.js:646-661`
+- Batch processing: Uses `Promise.allSettled()` for non-blocking parallel sends
+
+**Added:** 2025-11-20 (part of account deletion cancellation feature)
+
+---
+
 ## Phase 3: Data Export Email
 
 ### Test 3.1: Data Export Completed Email
@@ -842,6 +935,48 @@ Repeat the test with:
 - Footer now appears in user's language across all 5 email types
 - Request ID and DPO label also translated
 
+**Related Bug (Fixed 2025-11-20):**
+
+**Symptoms:** Email sign-off shows "Best regards," in all emails regardless of language. French users see "Best regards," instead of "Cordialement,".
+
+**Root Cause:** The `bestRegards` sign-off was hardcoded in HTML templates as `"Best regards,<br>"` instead of using translation variable.
+
+**Resolution:**
+1. Added `bestRegards` translation key to all 5 language files:
+   - English: "Best regards,"
+   - French: "Cordialement,"
+   - Spanish: "Atentamente,"
+   - Chinese: "此致，"
+   - Vietnamese: "Trân trọng,"
+
+2. Updated email templates to use `${bestRegards}` variable instead of hardcoded text
+
+**Before (WRONG):**
+```javascript
+const emailHtml = `<p>Best regards,<br>${teamName}</p>`; // ❌ Hardcoded
+```
+
+**After (CORRECT):**
+```javascript
+const bestRegards = translations.bestRegards || 'Best regards,';
+const emailHtml = `<p>${bestRegards}<br>${teamName}</p>`; // ✅ Translated
+```
+
+**Files Modified:**
+- `lib/services/server/emailService.js` - All email templates updated to use `bestRegards` variable
+- All translation files in `/public/locales/{locale}/common.json` - Added `bestRegards` key
+
+**Affected Email Types:**
+- Contact deletion notice (Test 2.3)
+- Contact deletion cancellation notice (Test 2.6)
+- All other emails using sign-off
+
+**Verification:**
+- Sign-off now appears in user's language
+- French: "Cordialement," not "Best regards,"
+- Spanish: "Atentamente," not "Best regards,"
+- etc.
+
 ### Issue 7: Consent Count Showing 0 (Fixed)
 
 **Symptoms:** Data export email shows "Consent records: 0" even when user has active consents in database.
@@ -1003,6 +1138,13 @@ Use this template to record your test results:
 - [ ] PASS / [ ] FAIL
 - Notes:
 
+### Test 2.6: Contact Deletion Cancellation Notice
+- [ ] PASS / [ ] FAIL
+- Contacts notified: [X users]
+- Each in correct language: YES / NO
+- Footer properly translated: YES / NO
+- Notes:
+
 ## Phase 3: Data Export Email
 
 ### Test 3.1: Data Export Completed Email
@@ -1053,7 +1195,8 @@ Before deploying to production:
 - [ ] `SMTP_API` environment variable set (server-side only)
 - [ ] IP whitelisting configured in Brevo (if enabled)
 - [ ] All 5 languages tested (en, fr, es, zh, vm)
-- [ ] Footer translation verified across all email types
+- [ ] Footer translation verified across all 6 email types
+- [ ] `bestRegards` sign-off translated (not hardcoded "Best regards,")
 - [ ] Export summary counts verified (not showing 0)
 - [ ] Email deliverability tested (check spam folders)
 - [ ] Error logging and monitoring in place
@@ -1084,7 +1227,10 @@ Before deploying to production:
 
 ---
 
-**Last Updated:** 2025-11-19
+**Last Updated:** 2025-11-20
 **Status:** Active
 **Coverage:** Phase 1 (i18n fixes) + Phase 2 (Account deletion emails) + Phase 3 (Data export emails)
-**Total Email Types:** 5 (All multilingual across en, fr, es, zh, vm)
+**Total Email Types:** 6 (All multilingual across en, fr, es, zh, vm)
+**Recent Updates:**
+- 2025-11-20: Added Test 2.6 (Contact Deletion Cancellation Notice)
+- 2025-11-20: Added `bestRegards` translation bug documentation to Issue 6

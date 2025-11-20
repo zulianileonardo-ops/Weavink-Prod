@@ -5,7 +5,7 @@ category: tutorials
 tags: [email, notifications, multilingual, i18n, rgpd, development, tutorial]
 status: active
 created: 2025-11-19
-updated: 2025-11-19
+updated: 2025-11-20
 related:
   - EMAIL_NOTIFICATION_MANUAL_TEST_GUIDE.md
   - RGPD_IMPLEMENTATION_SUMMARY.md
@@ -431,6 +431,7 @@ These keys are shared across ALL emails:
 
 ```json
 {
+  "bestRegards": "Best regards,",
   "thank_you": "Thank you,",
   "team_name": "The Weavink Team",
   "request_id": "Request ID:",
@@ -440,9 +441,12 @@ These keys are shared across ALL emails:
 
 **Usage in Code:**
 ```javascript
+const bestRegards = translations.bestRegards || 'Best regards,';
 const thankYou = translations.thank_you || 'Thank you,';
 const teamName = translations.team_name || 'The Weavink Team';
 ```
+
+**IMPORTANT:** Always use `bestRegards` for email sign-offs - NEVER hardcode "Best regards," or similar closings. This was a bug that caused French users to receive "Best regards," instead of "Cordialement," (fixed 2025-11-20).
 
 ---
 
@@ -504,14 +508,18 @@ Test with accounts in each language:
 ❌ **Wrong:**
 ```javascript
 const footer = 'Thank you, The Weavink Team';
+const signOff = 'Best regards,'; // BUG: French users see "Best regards," not "Cordialement,"
 ```
 
 ✅ **Correct:**
 ```javascript
+const bestRegards = translations.bestRegards || 'Best regards,';
 const thankYou = translations.thank_you || 'Thank you,';
 const teamName = translations.team_name || 'The Weavink Team';
-const footer = `${thankYou} ${teamName}`;
+const footer = `${bestRegards}\n${teamName}`;
 ```
+
+**Real Bug Example:** Prior to 2025-11-20, email templates hardcoded `"Best regards,"` in the HTML, causing French users to receive English sign-offs instead of `"Cordialement,"`. Always use translation variables for ALL text, including common phrases.
 
 ### Pitfall 2: Property Name Mismatch
 

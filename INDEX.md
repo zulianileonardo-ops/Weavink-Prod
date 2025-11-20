@@ -1,13 +1,13 @@
 # Weavink Documentation Index
 
-**Last Updated:** 2025-11-19
-**Total Guides:** 69
+**Last Updated:** 2025-11-20
+**Total Guides:** 75
 
 ## Quick Navigation
 - [Admin System](#admin-system) (9 guides)
 - [Analytics & Tracking](#analytics-tracking) (3 guides)
 - [RGPD/GDPR Compliance](#rgpd-gdpr-compliance) (9 guides)
-- [Feature Implementations](#feature-implementations) (16 guides)
+- [Feature Implementations](#feature-implementations) (22 guides)
 - [Technical Infrastructure](#technical-infrastructure) (17 guides)
 - [Testing & QA](#testing-qa) (7 guides)
 - [General Documentation](#general-documentation) (4 guides)
@@ -153,6 +153,11 @@
 **Summary:** Documents multi-carousel support system allowing users to create multiple independent carousels with grouped item structure.
 **Tags:** carousel, features, data-structure, component-architecture, multi-carousel, firestore, ui-components
 
+### CONTACT_DELETION_STATUS_API.md
+**Summary:** API endpoint documentation for checking if a contact has a pending account deletion, enabling real-time warning displays in ContactCard and EditContactModal components.
+**Tags:** contacts, deletion, api, gdpr, notifications, warnings, real-time, firestore
+**Related:** [rgpd-contact-deletion-warning-048](#rgpd-contact-deletion-warning-048), [rgpd-account-deletion-flow-047](#rgpd-account-deletion-flow-047), [features-contacts-i18n-028](#features-contacts-i18n-028)
+
 ### CONTACT_DOWNLOAD_SETTINGS.md
 **Summary:** Feature implementation allowing profile owners to control who can download their contact information with granular field-level permissions.
 **Tags:** contacts, download, vcard, privacy, permissions, dashboard, settings, field-control
@@ -199,6 +204,31 @@
 **Summary:** Implements real-time subscription updates using Firestore listeners for instant UI synchronization.
 **Tags:** subscription, real-time, firestore, listeners, state-management
 **Related:** [technical-subscription-revalidation-031](#technical-subscription-revalidation-031)
+
+### ROADMAP_CHANGELOG_FEATURE_GUIDE.md
+**Summary:** Complete roadmap/changelog system with git commit parsing, GitHub Issues integration, interactive SVG graph visualization, public page (/roadmap), dashboard integration, category tree structure, and multilingual support.
+**Tags:** roadmap, changelog, git-commits, github-issues, graph-visualization, svg, interactive-ui, category-tree, public-page, dashboard, caching, redis
+**Related:** [features-roadmap-production-spec-071](#features-roadmap-production-spec-071), [features-roadmap-checklist-072](#features-roadmap-checklist-072), [features-roadmap-gaps-073](#features-roadmap-gaps-073), [features-roadmap-summary-074](#features-roadmap-summary-074)
+
+### ROADMAP_IMPLEMENTATION_CHECKLIST.md
+**Summary:** Comprehensive implementation checklist covering all aspects of roadmap feature development, testing, and deployment.
+**Tags:** roadmap, checklist, implementation, testing, deployment, project-management
+**Related:** [features-roadmap-changelog-070](#features-roadmap-changelog-070), [features-roadmap-production-spec-071](#features-roadmap-production-spec-071)
+
+### ROADMAP_GAPS_AND_RISKS.md
+**Summary:** Analysis of implementation gaps, known risks, and areas requiring future attention in the roadmap feature.
+**Tags:** roadmap, risks, gaps, analysis, future-work, technical-debt
+**Related:** [features-roadmap-changelog-070](#features-roadmap-changelog-070), [features-roadmap-summary-074](#features-roadmap-summary-074)
+
+### ROADMAP_CHANGELOG_PRODUCTION_SPEC.md
+**Summary:** Detailed production specification for roadmap system including security considerations, performance optimizations, error handling strategies, and deployment requirements.
+**Tags:** roadmap, production, specification, security, performance, deployment, error-handling, monitoring
+**Related:** [features-roadmap-changelog-070](#features-roadmap-changelog-070), [features-roadmap-checklist-072](#features-roadmap-checklist-072)
+
+### ROADMAP_IMPLEMENTATION_SUMMARY.md
+**Summary:** Executive summary of roadmap feature implementation, key decisions, and final architecture.
+**Tags:** roadmap, summary, implementation, architecture, decisions
+**Related:** [features-roadmap-changelog-070](#features-roadmap-changelog-070), [features-roadmap-gaps-073](#features-roadmap-gaps-073)
 
 ### TUTORIAL_ACCOUNT_PAGE_STRUCTURE.md
 **Summary:** Documents restructured tutorial progression and account page with complete independence between Privacy Overview and Tutorial Progression sections. Tutorial now renders at page level, always visible regardless of active Privacy tab.
