@@ -2,15 +2,17 @@
 id: features-location-services-auto-tagging-080
 title: Intelligent Location Services & AI Auto-Tagging System
 category: features
-tags: [location, gps, google-places, auto-tagging, event-detection, redis-cache, ai, gemini, premium-features, planned]
-status: planned
+tags: [location, gps, google-places, auto-tagging, event-detection, redis-cache, ai, gemini, premium-features, partially-implemented]
+status: partial
 created: 2025-11-21
 updated: 2025-11-21
+phase_1_completed: 2025-11-21
+next_phase: phase-2-user-settings
 related:
+  - features-geocoding-system-082
   - features-venue-enrichment-021
-  - features-event-grouping-018
   - technical-cost-tracking-migration-024
-  - technical-budget-check-usage-027
+  - build-manager-skill
 ---
 
 # Intelligent Location Services & AI Auto-Tagging System
@@ -19,23 +21,171 @@ related:
 
 An advanced location-based contact management system that automatically enriches contact data with venue information, detects events, suggests batch group additions, and generates semantic tags using AI for enhanced search and organization.
 
+## Implementation Status
+
+**Status:** Partially Implemented
+- ✅ **Manual Location Search** - Fully implemented in GroupManagerModal
+- ✅ **PlacesService** - Autocomplete and place details working
+- ✅ **Budget Tracking** - Cost tracking integrated
+- ⏸️ **Auto-enrichment** - Planned for public profile integration
+- ⏸️ **Event Detection** - Planned feature
+- ⏸️ **AI Auto-tagging** - Planned feature
+- ⏸️ **User Settings** - Settings toggle to be implemented
+
+## Access Points
+
+There are **2 main ways** users can access location services:
+
+### 1. Public Profile (Planned - Auto-enrichment)
+
+**Files:**
+- `app/[userId]/House.jsx` - Main public profile component
+- `app/[userId]/page.jsx` - Server component that renders public profile
+
+**Flow:**
+- Visitor exchanges contact information via ExchangeButton
+- GPS coordinates captured automatically
+- **[PLANNED]** Auto-enrich with venue data if user has enabled location services
+- Cost tracked against profile owner's budget
+
+**User Control:**
+- Users can enable/disable auto-enrichment in `/dashboard/settings`
+- Cost transparency: Show monthly usage and limits
+- Graceful degradation if budget exceeded
+
+### 2. Group Creation (Currently Implemented)
+
+**Files:**
+- `app/dashboard/(dashboard pages)/contacts/components/GroupManagerModal.jsx` - Main group modal
+- `app/dashboard/(dashboard pages)/contacts/components/GroupModalComponents/creategroup/LocationSelector.jsx` - Location selector component
+- `app/dashboard/(dashboard pages)/contacts/components/GroupModalComponents/creategroup/EventLocationSearch.jsx` - Search interface
+
+**Flow:**
+- User creates a new group
+- Can manually search for event location
+- PlacesService autocomplete with budget tracking
+- Location saved with group metadata
+
+**Current Implementation:**
+- ✅ Google Places Autocomplete integration
+- ✅ Budget pre-flight checks via `usePlacesSearch` hook
+- ✅ Cost tracking per search operation
+- ✅ Error handling and budget exceeded warnings
+
+## User Settings & Cost Control
+
+### Settings Dashboard Integration
+
+**Location:** `/app/dashboard/(dashboard pages)/settings/page.jsx`
+
+Users can control location services through a new settings section, similar to the existing contact exchange and download contact toggles.
+
+**Proposed Settings Structure:**
+
+```javascript
+{
+  // Master toggle
+  locationServicesEnabled: boolean,  // Default: true for Premium+, false for Base/Pro
+
+  // Granular controls
+  autoVenueEnrichment: boolean,     // Auto-enrich contacts with venue data
+  eventDetection: boolean,          // Smart event detection
+  autoTagging: boolean,             // AI-powered auto-tagging
+
+  // Budget visibility
+  monthlyUsageLocation: number,     // Current month usage
+  locationServicesLimit: number     // Based on subscription tier
+}
+```
+
+**UI Components:**
+
+Similar to `ContactDownloadTab.jsx` pattern:
+```jsx
+// New file: app/dashboard/(dashboard pages)/settings/components/LocationServicesTab.jsx
+
+<div className="space-y-6">
+  {/* Master Toggle Card */}
+  <div className="bg-white border rounded-lg p-6">
+    <div className="flex items-start justify-between">
+      <div>
+        <MapPin className="w-5 h-5 text-blue-600" />
+        <h3>Enable Location Services</h3>
+        <p>Automatically enrich contacts with venue data</p>
+      </div>
+      <Toggle checked={locationServicesEnabled} onChange={handleToggle} />
+    </div>
+  </div>
+
+  {/* Cost Transparency Card */}
+  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+    <h4>Monthly Usage</h4>
+    <p>Geocoding: {geocodingCount} / {limit} calls</p>
+    <p>Cost: ${monthlyCost.toFixed(2)} / ${budgetLimit.toFixed(2)}</p>
+    <ProgressBar value={usagePercent} />
+  </div>
+
+  {/* Feature Controls */}
+  <div className="space-y-3">
+    <FeatureToggle
+      label="Auto Venue Enrichment"
+      description="Automatically detect venue names when contacts are exchanged"
+      enabled={autoVenueEnrichment}
+      cost="~$0.0015 per contact"
+      tier="Premium+"
+    />
+    <FeatureToggle
+      label="Smart Event Detection"
+      description="Suggest creating groups for contacts at same location"
+      enabled={eventDetection}
+      cost="Free (internal)"
+      tier="Premium+"
+    />
+    <FeatureToggle
+      label="AI Auto-Tagging"
+      description="Generate semantic tags automatically"
+      enabled={autoTagging}
+      cost="~$0.0000002 per tag"
+      tier="Pro+"
+    />
+  </div>
+</div>
+```
+
+**Settings Service Integration:**
+
+Update `lib/services/serviceSetting/server/settingsService.js`:
+```javascript
+export async function updateLocationSettings(userId, settings) {
+  const settingsRef = doc(adminDb, 'users', userId);
+  await settingsRef.update({
+    'settings.locationServicesEnabled': settings.locationServicesEnabled,
+    'settings.autoVenueEnrichment': settings.autoVenueEnrichment,
+    'settings.eventDetection': settings.eventDetection,
+    'settings.autoTagging': settings.autoTagging,
+    'settings.updatedAt': FieldValue.serverTimestamp()
+  });
+}
+```
+
 ## Business Requirements
 
 ### Core Features
 
-1. **Reverse Location Search (Pro/Premium)**
-   - Automatic venue detection when contacts are exchanged
-   - Google Places API integration for venue enrichment
-   - Intelligent caching strategy (100m radius, 15-30 min TTL)
-   - Cost optimization through aggressive caching
+1. **Reverse Location Search (Pro/Premium) - PARTIAL**
+   - ✅ Manual search in group creation (implemented)
+   - ⏸️ Automatic venue detection during contact exchange (planned)
+   - ✅ Google Places API integration (implemented)
+   - ⏸️ Intelligent caching strategy (100m radius, 15-30 min TTL) (planned)
+   - ⏸️ Cost optimization through aggressive caching (planned)
 
-2. **Smart Event Detection Dashboard**
+2. **Smart Event Detection Dashboard - PLANNED**
    - Automatically detect when multiple contacts share location + time
    - Popup suggestions: "Add all contacts from the past 4 hours?"
    - Batch group creation with one click
    - Event venue naming
 
-3. **AI-Powered Auto-Tagging**
+3. **AI-Powered Auto-Tagging - PLANNED**
    - Ultra-fast tagging using Gemini 2.5 Flash
    - Semantic tags for improved search accuracy
    - Lightning-fast group creation with structured tags
@@ -50,81 +200,181 @@ An advanced location-based contact management system that automatically enriches
 
 ## Technical Architecture
 
-### System Components
+### System Components (Updated)
 
 ```
 ┌────────────────────────────────────────────────────────────────────┐
 │                        CLIENT LAYER                                 │
-│  LocationEnrichmentService.js (client)                             │
-│  - reverseGeocode()                                                │
-│  - findNearbyVenues()                                              │
-│  - suggestEventGroups()                                            │
-│  AutoTagService.js (client)                                        │
-│  - generateTags()                                                  │
-│  - suggestTags()                                                   │
+│  ✅ IMPLEMENTED:                                                    │
+│    - EventLocationSearch.jsx (autocomplete search)                 │
+│    - LocationSelector.jsx (group creation)                         │
+│    - usePlacesSearch.js (custom hook with budget tracking)         │
+│                                                                    │
+│  ⏸️ PLANNED:                                                        │
+│    - LocationEnrichmentService.js (auto-enrichment)                │
+│    - EventDetectionService.js (smart event detection)              │
+│    - AutoTagService.js (AI tagging)                                │
 └────────────────────┬───────────────────────────────────────────────┘
                      │
                      ▼
 ┌────────────────────────────────────────────────────────────────────┐
 │                        API ROUTES                                   │
-│  /api/user/contacts/location/reverse-search/route.js              │
-│  /api/user/contacts/location/suggest-event/route.js               │
-│  /api/user/contacts/tags/generate/route.js                        │
+│  ✅ IMPLEMENTED:                                                    │
+│    - /api/user/contacts/places/autocomplete/route.js              │
+│    - /api/user/contacts/places/details/route.js                   │
+│    - /api/user/contacts/geocode/route.js (reverse geocoding)      │
 │                                                                    │
-│  - Authentication (createApiSession)                               │
-│  - Permission checks (PREMIUM_LOCATION_SERVICES)                   │
-│  - Budget pre-flight checks                                        │
-│  - Rate limiting (follows existing patterns)                       │
+│  ⏸️ PLANNED:                                                        │
+│    - /api/user/contacts/location/enrich/route.js                  │
+│    - /api/user/contacts/location/suggest-event/route.js           │
+│    - /api/user/contacts/tags/generate/route.js                    │
+│                                                                    │
+│  All routes include:                                               │
+│    - Budget pre-flight checks (CostTrackingService)                │
+│    - Cost recording after operations                               │
+│    - Subscription level validation                                 │
 └────────────────────┬───────────────────────────────────────────────┘
                      │
                      ▼
 ┌────────────────────────────────────────────────────────────────────┐
 │                      SERVICE LAYER                                  │
-│  lib/services/serviceContact/server/                               │
-│  ├── LocationEnrichmentService.js                                 │
-│  │   - reverseGeocodeLocation()                                   │
-│  │   - findNearbyVenues() (extends PlacesService)                 │
-│  │   - calculateProximity()                                       │
-│  │   - detectEventClusters()                                      │
-│  ├── EventDetectionService.js                                     │
-│  │   - findTemporalClusters()                                     │
-│  │   - suggestBatchAdditions()                                    │
-│  │   - createEventGroup()                                         │
-│  └── AutoTagService.js (server)                                   │
-│      - generateSemanticTags()                                     │
-│      - inferTagsFromContext()                                     │
-│      - batchTagGeneration()                                       │
+│  lib/services/serviceContact/                                      │
+│  ✅ IMPLEMENTED:                                                    │
+│    ├── server/GroupService/placesService.js                       │
+│    │   - searchPlaces() (autocomplete)                            │
+│    │   - getPlaceDetails()                                        │
+│    │   - searchNearbyVenues()                                     │
+│    ├── client/services/PlacesService.js                           │
+│    │   - getPredictions() (client-side cache)                     │
+│    │   - getDetails() (client-side cache)                         │
+│    └── server/costTrackingService.js                              │
+│        - canAffordOperation()                                      │
+│        - recordUsage()                                             │
+│                                                                    │
+│  ⏸️ PLANNED:                                                        │
+│    ├── server/LocationEnrichmentService.js                        │
+│    │   - autoEnrichContact()                                      │
+│    │   - detectEventClusters()                                    │
+│    └── server/AutoTagService.js                                   │
+│        - generateSemanticTags()                                   │
+│        - batchTagGeneration()                                     │
 └────────────────────┬───────────────────────────────────────────────┘
                      │
                      ▼
 ┌────────────────────────────────────────────────────────────────────┐
 │                    EXTERNAL APIS & AI                               │
-│  Google Places API:                                                │
-│  - Reverse Geocoding                                               │
-│  - Nearby Search (venues, events)                                  │
-│  - Place Details                                                   │
-│  - Smart caching (100m radius, 15-30min TTL)                       │
+│  ✅ Google Places API (Active):                                    │
+│    - Autocomplete API (autocomplete suggestions)                   │
+│    - Place Details API (get full place info)                       │
+│    - Geocoding API (GPS → address)                                 │
+│    - Client-side caching (5min autocomplete, 24h details)          │
 │                                                                    │
-│  AI Layer:                                                         │
-│  - Gemini 2.5 Flash for auto-tagging                              │
-│  - Context analysis (location + company + time)                    │
-│  - Semantic tag generation                                         │
+│  ⏸️ Planned Integration:                                            │
+│    - Nearby Search (find venues within radius)                     │
+│    - Redis caching (100m radius grid, 15-30min TTL)                │
+│    - Gemini 2.5 Flash (AI auto-tagging)                            │
 └────────────────────┬───────────────────────────────────────────────┘
                      │
                      ▼
 ┌────────────────────────────────────────────────────────────────────┐
 │                    CACHE & DATABASE                                 │
-│  Redis Cache:                                                      │
-│  - Location data (100m radius grid)                                │
-│  - TTL: 15-30 minutes                                              │
-│  - Key format: location:${lat_round}:${lng_round}                 │
+│  ✅ Client-Side Cache (Implemented):                                │
+│    - Autocomplete: Map() with 5-minute TTL                         │
+│    - Place Details: Map() with 24-hour TTL                         │
+│    - Session token management                                      │
 │                                                                    │
-│  Firestore:                                                        │
-│  - Contacts with location data                                     │
-│  - Event groups metadata                                           │
-│  - Auto-generated tags                                             │
-│  - Location enrichment history                                     │
+│  ⏸️ Server-Side Cache (Planned):                                    │
+│    - Redis: location:${lat}:${lng} (100m grid, 15-30min TTL)      │
+│                                                                    │
+│  ✅ Firestore (Active):                                             │
+│    - ApiUsage/{userId}/operations/ (cost tracking)                 │
+│    - groups/{groupId} (eventLocation field)                        │
+│    - users/{userId}/settings (location service toggles)            │
+│                                                                    │
+│  ⏸️ Firestore (Planned):                                            │
+│    - contacts/{contactId}/metadata/venue (enrichment data)         │
+│    - contacts/{contactId}/tags (auto-generated tags)               │
 └────────────────────────────────────────────────────────────────────┘
+```
+
+### Current Implementation Architecture
+
+**Group Creation Flow (✅ Working):**
+
+```
+User clicks "Create Group"
+    ↓
+GroupManagerModal opens
+    ↓
+LocationSelector component rendered
+    ↓
+User types in EventLocationSearch
+    ↓
+usePlacesSearch hook triggered
+    ↓
+Budget check: CostTrackingService.canAffordOperation()
+    ↓
+    ✅ Allowed → Call /api/user/contacts/places/autocomplete
+    ❌ Denied → Show budget exceeded warning
+    ↓
+PlacesService.searchPlaces() (server-side)
+    ↓
+Google Places Autocomplete API
+    ↓
+Cache predictions client-side (5 min)
+    ↓
+User selects location
+    ↓
+Call /api/user/contacts/places/details with place_id
+    ↓
+PlacesService.getPlaceDetails()
+    ↓
+Google Place Details API
+    ↓
+Record cost: $0.017 per session
+    ↓
+Save location with group metadata
+    ↓
+Group created with eventLocation
+```
+
+**Planned Public Profile Flow (⏸️ To Be Implemented):**
+
+```
+Visitor views public profile (@username)
+    ↓
+User exchanges contact (ExchangeButton)
+    ↓
+GPS coordinates captured automatically
+    ↓
+Check user settings: locationServicesEnabled?
+    ↓
+    ✅ Enabled → Auto-enrich
+    ❌ Disabled → Skip (save GPS only)
+    ↓
+Budget check: CostTrackingService.canAffordOperation()
+    ↓
+    ✅ Allowed → Call /api/user/contacts/location/enrich
+    ❌ Denied → Graceful degradation (GPS only)
+    ↓
+LocationEnrichmentService.autoEnrichContact()
+    ↓
+Check Redis cache (100m radius)
+    ↓
+    Cache Hit → Return cached venue (cost: $0)
+    Cache Miss → Call Google Places API
+    ↓
+Google Places Nearby Search
+    ↓
+Find closest venue within 100m
+    ↓
+Save to Redis (15-30min TTL)
+    ↓
+Record cost: ~$0.032 per request
+    ↓
+Enrich contact with venue data
+    ↓
+Save contact with enriched location
 ```
 
 ---
@@ -277,9 +527,11 @@ function getRandomTTL(min, max) {
 
 ### 2. Smart Event Detection Dashboard
 
-**Component:** `app/dashboard/contacts/components/EventSuggestionPanel.jsx`
+**Status:** ⏸️ PLANNED - Component does not exist yet
 
-**Detection Logic:**
+**Planned Component:** `app/dashboard/(dashboard pages)/contacts/components/EventSuggestionPanel.jsx`
+
+**Detection Logic (Planned):**
 
 ```javascript
 async function detectEventClusters(userId, options = {}) {
@@ -376,10 +628,10 @@ async function detectEventClusters(userId, options = {}) {
 }
 ```
 
-**Dashboard UI:**
+**Dashboard UI (Planned):**
 
 ```jsx
-// EventSuggestionPanel.jsx
+// EventSuggestionPanel.jsx (TO BE CREATED)
 export default function EventSuggestionPanel({ userId }) {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -880,33 +1132,122 @@ describe('LocationEnrichmentService', () => {
 
 ## Implementation Phases
 
-### Phase 1: Location Enrichment (2 weeks)
-- ✅ Google Places API integration
-- ✅ Redis caching (100m radius)
-- ✅ Cost tracking integration
+### Phase 1: Foundation & Manual Search (✅ COMPLETED)
+**Timeline:** Completed
+**Status:** Production
+
+Implemented:
+- ✅ Google Places API integration (Autocomplete + Details)
+- ✅ Cost tracking integration (CostTrackingService)
 - ✅ Budget pre-flight checks
-- ✅ Basic UI for enriched contacts
+- ✅ Manual location search in group creation (LocationSelector)
+- ✅ Client-side caching (5min autocomplete, 24h details)
+- ✅ Error handling and budget exceeded warnings
+- ✅ usePlacesSearch custom hook
 
-### Phase 2: Event Detection (2 weeks)
-- ✅ Temporal + spatial clustering
-- ✅ Event suggestion panel
-- ✅ Batch group creation
-- ✅ Venue naming
-- ✅ Dashboard integration
+Files Created:
+- `lib/services/serviceContact/client/services/PlacesService.js`
+- `lib/services/serviceContact/server/GroupService/placesService.js`
+- `app/dashboard/(dashboard pages)/contacts/components/GroupModalComponents/creategroup/LocationSelector.jsx`
+- `app/dashboard/(dashboard pages)/contacts/components/GroupModalComponents/creategroup/EventLocationSearch.jsx`
+- `lib/services/serviceContact/client/hooks/usePlacesSearch.js`
 
-### Phase 3: AI Auto-Tagging (1 week)
-- ✅ Gemini 2.5 Flash integration
-- ✅ Tag generation logic
-- ✅ Batch processing
-- ✅ Redis cache for tags
-- ✅ Tag-based search
+### Phase 2: User Settings & Controls (⏸️ NEXT - 1 week)
+**Priority:** High
+**Blockers:** None
 
-### Phase 4: Polish & Testing (1 week)
-- ✅ i18n for 5 languages
-- ✅ Rate limiting
-- ✅ Performance optimization
-- ✅ Unit + integration tests
-- ✅ Documentation
+Tasks:
+- [ ] Create LocationServicesTab component in settings
+- [ ] Add locationServicesEnabled toggle
+- [ ] Add granular feature toggles (autoEnrichment, eventDetection, autoTagging)
+- [ ] Add cost transparency display (monthly usage, limits)
+- [ ] Update settingsService.js with location settings methods
+- [ ] Update settings page to include new tab
+- [ ] Add i18n translations for location settings
+
+Files to Create:
+- `app/dashboard/(dashboard pages)/settings/components/LocationServicesTab.jsx`
+
+Files to Update:
+- `lib/services/serviceSetting/server/settingsService.js`
+- `app/dashboard/(dashboard pages)/settings/page.jsx`
+- `public/locales/*/common.json` (5 languages)
+
+### Phase 3: Auto-Enrichment & Public Profile Integration (⏸️ PLANNED - 2 weeks)
+**Dependencies:** Phase 2 (settings must exist first)
+
+Tasks:
+- [ ] Create LocationEnrichmentService (server-side)
+- [ ] Implement Redis caching with 100m grid precision
+- [ ] Add /api/user/contacts/location/enrich endpoint
+- [ ] Integrate with ExchangeButton flow in public profile
+- [ ] Check locationServicesEnabled setting before enrichment
+- [ ] Implement budget checks and graceful degradation
+- [ ] Add venue enrichment to contact metadata
+- [ ] Update contact exchange flow
+
+Files to Create:
+- `lib/services/serviceContact/server/LocationEnrichmentService.js`
+- `app/api/user/contacts/location/enrich/route.js`
+
+Files to Update:
+- `app/[userId]/components/ExchangeButton.jsx`
+- `lib/services/serviceContact/server/exchangeService.js`
+
+### Phase 4: Smart Event Detection (⏸️ PLANNED - 2 weeks)
+**Dependencies:** Phase 3 (needs enriched contacts)
+
+Tasks:
+- [ ] Create EventDetectionService (temporal + spatial clustering)
+- [ ] Implement Haversine distance calculation
+- [ ] Add /api/user/contacts/location/suggest-event endpoint
+- [ ] Create event detection background job (runs hourly)
+- [ ] Add notification system for event suggestions
+- [ ] Implement batch group creation from detected events
+- [ ] Update dashboard to show event suggestions
+
+Files to Create:
+- `lib/services/serviceContact/server/EventDetectionService.js`
+- `app/api/user/contacts/location/suggest-event/route.js`
+- `app/dashboard/(dashboard pages)/contacts/components/EventSuggestionsPanel.jsx` (new)
+
+### Phase 5: AI Auto-Tagging (⏸️ PLANNED - 1 week)
+**Dependencies:** Phase 3 (needs enriched contacts)
+
+Tasks:
+- [ ] Integrate Gemini 2.5 Flash API
+- [ ] Create AutoTagService with tag generation logic
+- [ ] Add /api/user/contacts/tags/generate endpoint
+- [ ] Implement batch tag generation for existing contacts
+- [ ] Add Redis caching for generated tags (24h TTL)
+- [ ] Update contact model to support tags field
+- [ ] Add tag-based search to contact search
+
+Files to Create:
+- `lib/services/serviceContact/server/AutoTagService.js`
+- `app/api/user/contacts/tags/generate/route.js`
+
+### Phase 6: Polish & Testing (⏸️ PLANNED - 1 week)
+**Dependencies:** All previous phases
+
+Tasks:
+- [ ] i18n for all new features (5 languages)
+- [ ] Unit tests for all services
+- [ ] Integration tests for API endpoints
+- [ ] Performance testing (budget tracking overhead)
+- [ ] Cost tracking validation
+- [ ] Documentation updates
+- [ ] User guide for location services
+- [ ] Build verification with build-manager-skill
+
+**Testing Checklist:**
+- [ ] Budget checks prevent API calls when exhausted
+- [ ] Settings toggle correctly enables/disables features
+- [ ] Client-side cache reduces API calls
+- [ ] Redis cache (when implemented) provides 70%+ hit rate
+- [ ] Cost tracking accurately records all operations
+- [ ] Graceful degradation when features disabled
+- [ ] Mobile responsive design for all new components
 
 ---
 
@@ -935,6 +1276,157 @@ describe('LocationEnrichmentService', () => {
 
 ---
 
-**Status:** Planned Feature (Not Yet Implemented)
+## Build Integration & Testing
+
+### Build Manager Skill Integration
+
+The location services implementation uses the **build-manager-skill** for automated build verification and error fixing.
+
+**Skill Overview:**
+- Automated Next.js build management
+- Identifies and fixes 38+ common build error patterns
+- Iterative fixing (max 10 iterations)
+- Stops on manual-review errors
+
+**Usage During Development:**
+
+```bash
+# After implementing a new location feature
+$ Run the build and fix any errors
+
+# The build-manager-skill will:
+# 1. Clear .next cache
+# 2. Run npm run build
+# 3. Analyze errors (Python script)
+# 4. Apply automatic fixes
+# 5. Re-run build
+# 6. Report results
+```
+
+**Common Errors to Watch For:**
+
+1. **Import Errors** (85% auto-fixable)
+   - Missing PlacesService imports
+   - Wrong path to LocationSelector component
+   - Missing hooks imports (usePlacesSearch)
+
+2. **TypeScript Errors** (70% auto-fixable)
+   - Missing type annotations on location parameters
+   - Implicit any in event handlers
+   - Type mismatches in API responses
+
+3. **React Errors** (75% auto-fixable)
+   - Missing useEffect dependencies
+   - Missing keys in location result lists
+   - Hook ordering issues
+
+4. **ESLint Warnings** (90% auto-fixable)
+   - Unused imports in LocationServicesTab
+   - Console.log statements in PlacesService
+   - Formatting issues
+
+**Build Verification Checklist:**
+
+After implementing each phase:
+```bash
+# Phase 2: Settings Implementation
+$ Run the build and fix any errors
+# Verify: LocationServicesTab component builds successfully
+# Check: No TypeScript errors in settings service
+
+# Phase 3: Auto-Enrichment
+$ Run the build and fix any errors
+# Verify: LocationEnrichmentService has no import errors
+# Check: Public profile still builds correctly
+
+# Phase 4: Event Detection
+$ Run the build and fix any errors
+# Verify: EventDetectionService builds without errors
+# Check: Dashboard renders with new components
+
+# Phase 5: AI Tagging
+$ Run the build and fix any errors
+# Verify: AutoTagService integrates properly
+# Check: Gemini API calls are typed correctly
+```
+
+**Manual Review Scenarios:**
+
+The build-manager-skill will stop and require manual review for:
+
+1. **Hydration Errors** - Server/client mismatch in LocationSelector
+2. **Circular Dependencies** - If services import each other incorrectly
+3. **Complex Type Errors** - Google Places API response types
+4. **Webpack Errors** - Bundle size issues with new location code
+
+**Cost Considerations for Builds:**
+
+- Each build runs Google Maps API in development mode
+- **Important:** Use `.env.local` with test API key during builds
+- Production API key should only be in production environment
+- Development builds should not charge real costs
+
+**Build Health Monitoring:**
+
+After major changes:
+```bash
+# Check build health without fixes
+$ Check build health
+
+# Example output:
+# 📊 Build Health Report
+# Status: FAILED
+# Errors: 3
+# Warnings: 5
+#
+# ── Auto-fix Potential ──
+# ✓ 2 import errors (auto-fixable)
+# ✓ 5 eslint warnings (auto-fixable)
+# ⚠ 1 TypeScript error (manual review)
+```
+
+**Integration with Other Skills:**
+
+The build-manager-skill is standalone but works well with:
+- **test-manager-skill** - Run tests before builds
+- **git-manager-skill** - Commit after successful builds
+- **docs-manager-skill** - Update docs after builds pass
+
+**Recommended Workflow:**
+
+```bash
+# 1. Implement feature
+# 2. Run tests
+$ Run tests for location services
+
+# 3. Fix build errors
+$ Run the build and fix any errors
+
+# 4. Commit if successful
+$ Commit the changes with message "feat: add location services settings"
+
+# 5. Update documentation
+$ Update documentation for location services
+```
+
+---
+
+## Related Documentation
+
+- `documentation/features/GEOCODING_SYSTEM_GUIDE.md` - Reverse geocoding implementation
+- `documentation/features/VENUE_ENRICHMENT_FEATURE.md` - Venue enrichment details
+- `documentation/infrastructure/COST_TRACKING_MIGRATION_GUIDE.md` - Cost tracking system
+- `.claude/skills/build-manager-skill/SKILL.md` - Build automation documentation
+
+---
+
+**Status:** Partially Implemented
+- ✅ Phase 1: Foundation & Manual Search (Production)
+- ⏸️ Phase 2: User Settings & Controls (Next - High Priority)
+- ⏸️ Phase 3: Auto-Enrichment (Planned)
+- ⏸️ Phase 4: Event Detection (Planned)
+- ⏸️ Phase 5: AI Auto-Tagging (Planned)
+- ⏸️ Phase 6: Polish & Testing (Planned)
+
 **Priority:** High
-**Estimated Effort:** 6 weeks
+**Estimated Remaining Effort:** 5 weeks (excluding Phase 1)
