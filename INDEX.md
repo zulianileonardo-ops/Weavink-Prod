@@ -1,14 +1,14 @@
 # Weavink Documentation Index
 
 **Last Updated:** 2025-11-21
-**Total Guides:** 82
+**Total Guides:** 83
 
 ## Quick Navigation
 - [Admin System](#admin-system) (9 guides)
 - [Analytics & Tracking](#analytics-tracking) (3 guides)
 - [RGPD/GDPR Compliance](#rgpd-gdpr-compliance) (13 guides)
 - [Feature Implementations](#feature-implementations) (23 guides)
-- [Technical Infrastructure](#technical-infrastructure) (17 guides)
+- [Technical Infrastructure](#technical-infrastructure) (18 guides)
 - [Testing & QA](#testing-qa) (10 guides)
 - [General Documentation](#general-documentation) (4 guides)
 - [Tutorials & Guides](#tutorials-guides) (3 guides)
@@ -310,6 +310,11 @@
 ### DYNAMICFIELDS_FIX_SUMMARY.md
 **Summary:** Fixes dynamic field system for contacts with improved data validation and error handling.
 **Tags:** contacts, dynamic-fields, bug-fix, validation, data-integrity
+
+### GIT_DUAL_REMOTE_SETUP.md
+**Summary:** Complete setup guide for configuring repository to push to both GitHub and GitLab simultaneously. Covers initial setup, authentication (SSH for GitLab, HTTPS for GitHub), troubleshooting common issues including GitLab SSO/SAML messages, and integration with git-manager-skill.
+**Tags:** git, github, gitlab, repository, deployment, version-control, multi-remote, infrastructure, setup, ssh, authentication
+**Related:** [git-manager-skill](#git-manager-skill), [features-roadmap-changelog-070](#features-roadmap-changelog-070)
 
 ### QUICK_START_INTEGRATION.md
 **Summary:** Quick 30-minute integration guide for new features and components.

@@ -11,11 +11,47 @@ Professional version control system for Weavink with automated workflows and int
 ## Core Capabilities
 
 1. **Commit Changes** - Create commits with descriptive messages
-2. **Push/Pull** - Sync with remote repositories  
+2. **Push/Pull** - Sync with remote repositories
 3. **Branch Management** - Create, switch, merge branches
 4. **Status Checks** - View git status and history
 5. **Workflow Automation** - Integrate with test and docs workflows
 6. **Commit Message Generation** - AI-powered commit messages based on changes
+7. **Multi-Remote Support** - Automatically push to multiple remotes (GitHub + GitLab)
+
+## Multi-Remote Configuration
+
+This repository is configured to push to **BOTH GitHub and GitLab** simultaneously:
+
+**Configured Remotes**:
+- `origin` → GitHub (https://github.com/Leo910032/temp2.git)
+- `Weavink` → GitLab (git@gitlab.com:website9841615/weavink.git)
+
+**Default Behavior**:
+- All push operations will push to **BOTH** remotes automatically
+- Status checks will show sync status with both remotes
+- One confirmation prompt approves push to all remotes
+- Keeps GitHub and GitLab perfectly synchronized
+
+**Commands**:
+```bash
+# View all remotes
+git remote -v
+
+# Push to all remotes (automatic in this skill)
+for remote in $(git remote); do
+  git push $remote $(git branch --show-current)
+done
+
+# Pull from specific remote if needed
+git pull origin main
+git pull Weavink main
+```
+
+**Benefits**:
+- ✅ Automatic backup to both platforms
+- ✅ No manual syncing needed
+- ✅ Single workflow works for both
+- ✅ Always in sync across platforms
 
 ## Git Workflow Patterns
 
@@ -163,49 +199,80 @@ Before ANY git operation:
 **Process**:
 1. **Check What Will Be Pushed**
    ```bash
-   # Check if there are commits to push
+   # Check if there are commits to push (check all remotes)
+   git remote
    git log origin/main..HEAD --oneline
+
+   # Check each remote to see if they're in sync
+   for remote in $(git remote); do
+     echo "Checking $remote..."
+     git log $remote/$(git branch --show-current)..HEAD --oneline 2>/dev/null || echo "New branch on $remote"
+   done
    ```
 
 2. **Show User What Will Push**
    ```
-   📤 Ready to push
-   
+   📤 Ready to push to ALL remotes
+
    Commits to push (3):
    1. a1b2c3d - ✅ Tests: RGPD Consent (12/12 passing)
    2. b2c3d4e - 📝 Updated consent documentation
    3. c3d4e5f - 🐛 Fixed consent validation bug
-   
-   Branch: main → origin/main
-   Remote: origin (git@github.com:user/weavink.git)
+
+   Branch: main
+
+   Remotes (will push to ALL):
+   - origin → https://github.com/Leo910032/temp2.git
+   - Weavink → git@gitlab.com:website9841615/weavink.git
+
+   All remotes will receive these commits
    ```
 
 3. **ASK FOR CONFIRMATION** ⚠️ MANDATORY
    ```
-   ⚠️  About to push 3 commits to origin/main
-   
+   ⚠️  About to push 3 commits to MULTIPLE REMOTES
+
+   Will push to:
+   - origin (GitHub: https://github.com/Leo910032/temp2.git)
+   - Weavink (GitLab: git@gitlab.com:website9841615/weavink.git)
+
    This will:
-   - Upload commits to remote repository
-   - Make changes visible to team
-   - Trigger CI/CD if configured
-   
-   Proceed with push? [Y/n/view]
+   - Upload commits to ALL remote repositories
+   - Make changes visible to team on both platforms
+   - Trigger CI/CD if configured on either remote
+
+   Proceed with push to ALL remotes? [Y/n/view]
    ```
 
 4. **Execute Push** (only after approval)
    ```bash
-   git push origin main
+   # Push to ALL configured remotes
+   for remote in $(git remote); do
+     echo "Pushing to $remote..."
+     git push $remote $(git branch --show-current) || echo "⚠️ Failed to push to $remote"
+   done
+
+   # Alternative: Push to specific remotes if you want more control
+   # git push origin main
+   # git push Weavink main
    ```
 
 5. **Confirm Success**
    ```
-   ✅ Pushed successfully!
-   
-   Remote: origin/main
+   ✅ Pushed successfully to ALL remotes!
+
+   Remotes updated:
+   - ✅ origin (GitHub)
+   - ✅ Weavink (GitLab)
+
+   Branch: main
    Commits pushed: 3
-   
-   View on GitHub:
-   https://github.com/user/weavink/commits/main
+
+   View on:
+   - GitHub: https://github.com/Leo910032/temp2/commits/main
+   - GitLab: https://gitlab.com/website9841615/weavink/-/commits/main
+
+   Your code is now synchronized across both platforms!
    ```
 
 ### 3. Checking Status
@@ -224,18 +291,21 @@ Before ANY git operation:
 2. **Parse and Display**
    ```
    📊 Git Status
-   
+
    Branch: main
-   Remote: origin/main (up to date)
-   
+
+   Remotes:
+   - origin (GitHub): up to date
+   - Weavink (GitLab): up to date
+
    Modified files (3):
    - test-index.json
    - documentation/rgpd/CONSENT_IMPLEMENTATION_GUIDE.md
    - lib/services/servicePrivacy/consentService.js
-   
+
    Untracked files (1):
    - test-reports/rgpd-consent-2025-11-11.md
-   
+
    Status: Ready to commit
    ```
 
@@ -337,7 +407,9 @@ Before ANY git operation:
    You can now:
    - Make changes
    - Commit to this branch
-   - Push: git push -u origin feature/test-coverage-improvements
+   - Push to all remotes:
+     • git push -u origin feature/test-coverage-improvements
+     • git push -u Weavink feature/test-coverage-improvements
    ```
 
 ### 6. Merging Branches
@@ -413,14 +485,14 @@ Before ANY git operation:
 6. **Confirm Success**
    ```
    ✅ Merged successfully!
-   
+
    Branch: feature/test-coverage-improvements → main
    Commits merged: 5
    Files changed: 8
-   
+
    Next steps:
    - Delete feature branch? git branch -d feature/test-coverage-improvements
-   - Push merged changes? git push
+   - Push merged changes to all remotes? (will push to origin + Weavink)
    ```
 
 ### 7. Integration with test-manager
@@ -445,8 +517,8 @@ Before ANY git operation:
 3. ✅ Generate commit message
 4. ⚠️  ASK USER: "Tests passed. Commit results? [Y/n]"
 5. If Y: Commit test files
-6. ⚠️  ASK USER: "Push to remote? [Y/n]"
-7. If Y: Push changes
+6. ⚠️  ASK USER: "Push to all remotes (origin + Weavink)? [Y/n]"
+7. If Y: Push changes to all remotes
 ```
 
 ### 8. Integration with docs-manager
@@ -511,13 +583,14 @@ User: "Y"
 
 git-manager:
 11. ✅ Commits all changes
-12. ⚠️ ASKS: "Push to origin/main? [Y/n]"
+12. ⚠️ ASKS: "Push to ALL remotes (origin + Weavink)? [Y/n]"
 
 User: "Y"
 
 git-manager:
-13. ✅ Pushes to remote
-14. ✅ Reports: "Complete! Tests → Docs → Git ✅"
+13. ✅ Pushes to origin (GitHub)
+14. ✅ Pushes to Weavink (GitLab)
+15. ✅ Reports: "Complete! Tests → Docs → Git (GitHub + GitLab) ✅"
 ```
 
 ## Commit Message Templates
@@ -639,10 +712,14 @@ Your choice: [1/2/3]
 
 Reason: Remote has changes you don't have
 
+⚠️  Note: When using multiple remotes (origin + Weavink), you may
+   need to pull from both remotes if they have diverged.
+
 Solution:
-1. Pull first: git pull origin main
-2. Resolve conflicts (if any)
-3. Try push again
+1. Pull from origin: git pull origin main
+2. Pull from Weavink: git pull Weavink main (if needed)
+3. Resolve conflicts (if any)
+4. Try push again to all remotes
 
 Proceed with pull? [Y/n/abort]
 ```
