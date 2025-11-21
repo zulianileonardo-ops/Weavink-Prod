@@ -3008,6 +3008,13 @@
           }
         }
       }
+    },
+    "contact_anonymization": {
+      "placeholder": "[đã xóa]",
+      "deleted_notice": "Liên hệ này đã xóa tài khoản Weavink của họ vào {date}. Một số chi tiết liên hệ đã bị xóa để tuân thủ quyền riêng tư.",
+      "deleted_name": "[Liên Hệ Đã Xóa - {date}]",
+      "anonymized_label": "Liên Hệ Ẩn Danh",
+      "anonymized_tooltip": "Liên hệ này đã xóa tài khoản của họ. Thông tin cá nhân đã bị xóa, nhưng bối cảnh kinh doanh đã được bảo tồn."
     }
   },
   "roadmap": {

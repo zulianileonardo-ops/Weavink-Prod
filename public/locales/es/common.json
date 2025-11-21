@@ -3017,6 +3017,13 @@
           }
         }
       }
+    },
+    "contact_anonymization": {
+      "placeholder": "[eliminado]",
+      "deleted_notice": "Este contacto eliminó su cuenta de Weavink el {date}. Algunos detalles de contacto han sido eliminados por cumplimiento de privacidad.",
+      "deleted_name": "[Contacto Eliminado - {date}]",
+      "anonymized_label": "Contacto Anonimizado",
+      "anonymized_tooltip": "Este contacto eliminó su cuenta. La información personal ha sido eliminada, pero se ha conservado el contexto empresarial."
     }
   },
   "roadmap": {

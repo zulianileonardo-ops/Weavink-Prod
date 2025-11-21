@@ -3232,6 +3232,13 @@
           }
         }
       }
+    },
+    "contact_anonymization": {
+      "placeholder": "[supprimé]",
+      "deleted_notice": "Ce contact a supprimé son compte Weavink le {date}. Certains détails de contact ont été supprimés pour conformité à la vie privée.",
+      "deleted_name": "[Contact Supprimé - {date}]",
+      "anonymized_label": "Contact Anonymisé",
+      "anonymized_tooltip": "Ce contact a supprimé son compte. Les informations personnelles ont été supprimées, mais le contexte professionnel a été préservé."
     }
   },
   "roadmap": {

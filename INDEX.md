@@ -1,15 +1,15 @@
 # Weavink Documentation Index
 
-**Last Updated:** 2025-11-20
-**Total Guides:** 77
+**Last Updated:** 2025-11-21
+**Total Guides:** 81
 
 ## Quick Navigation
 - [Admin System](#admin-system) (9 guides)
 - [Analytics & Tracking](#analytics-tracking) (3 guides)
-- [RGPD/GDPR Compliance](#rgpd-gdpr-compliance) (10 guides)
+- [RGPD/GDPR Compliance](#rgpd-gdpr-compliance) (13 guides)
 - [Feature Implementations](#feature-implementations) (22 guides)
 - [Technical Infrastructure](#technical-infrastructure) (17 guides)
-- [Testing & QA](#testing-qa) (9 guides)
+- [Testing & QA](#testing-qa) (10 guides)
 - [General Documentation](#general-documentation) (4 guides)
 - [Tutorials & Guides](#tutorials-guides) (3 guides)
 - [Meta Documentation](#meta-documentation) (2 guides)
@@ -113,6 +113,21 @@
 **Summary:** Comprehensive guide for implementing GDPR-compliant consent checks with greyed-out buttons and consent popovers in React/Next.js applications. Includes automated test coverage (12/12 passing tests).
 **Tags:** gdpr, rgpd, consent, ui-implementation, react, nextjs, consent-popovers, blocked-features, testing, test-coverage
 **Related:** [rgpd-implementation-summary-042](#rgpd-implementation-summary-042), [rgpd-conformite-tapit-013](#rgpd-conformite-tapit-013), [testing-rgpd-guide-038](#testing-rgpd-guide-038)
+
+### CONTACT_ANONYMIZATION_IMPLEMENTATION_GUIDE.md
+**Summary:** Comprehensive implementation guide for anonymizing User A's contact data in User B's contact list when User A deletes their account. Implements GDPR Article 17 (Right to be Forgotten) with Option B (Preserve Context) strategy, anonymizing all PII while preserving business context and User B's notes/tags.
+**Tags:** gdpr, rgpd, anonymization, contact-deletion, right-to-be-forgotten, privacy, data-protection, firestore, pinecone
+**Related:** [rgpd-account-deletion-flow-047](#rgpd-account-deletion-flow-047), [rgpd-contact-deletion-warning-048](#rgpd-contact-deletion-warning-048), [rgpd-implementation-summary-042](#rgpd-implementation-summary-042), [rgpd-consent-guide-045](#rgpd-consent-guide-045), [rgpd-anonymous-analytics-046](#rgpd-anonymous-analytics-046)
+
+### CONTACT_ANONYMIZATION_BUGFIX.md
+**Summary:** Complete documentation of four critical bugs discovered and fixed in the contact anonymization system: Bug #1 (Execution order causing anonymization to never execute), Bug #2 (Pinecone API method error), Bug #3 (Missing vector integration in ExchangeService), and Bug #4 (Field name mismatch causing premium accounts to be treated as base tier). All bugs fixed and tested, achieving full GDPR Article 17 compliance.
+**Tags:** gdpr, rgpd, bug-fixes, contact-anonymization, execution-order, pinecone-api, vector-storage, field-mismatch, subscription-tier, accountType, exchangeService
+**Related:** [rgpd-contact-anonymization-049](#rgpd-contact-anonymization-049), [testing-contact-anonymization-078](#testing-contact-anonymization-078), [rgpd-account-deletion-flow-047](#rgpd-account-deletion-flow-047), [technical-semantic-search-032](#technical-semantic-search-032)
+
+### CONTACT_ANONYMIZATION_FINAL_REPORT.md
+**Summary:** Final implementation report for contact anonymization system implementing GDPR Article 17 Right to be Forgotten. Documents complete implementation including all bug fixes, testing results, and deployment status.
+**Tags:** gdpr, rgpd, contact-anonymization, final-report, implementation-complete, right-to-be-forgotten, article-17
+**Related:** [rgpd-contact-anonymization-049](#rgpd-contact-anonymization-049), [rgpd-contact-anonymization-bugfix-080](#rgpd-contact-anonymization-bugfix-080), [testing-contact-anonymization-078](#testing-contact-anonymization-078), [rgpd-account-deletion-flow-047](#rgpd-account-deletion-flow-047)
 
 ### CONTACT_DELETION_WARNING_IMPLEMENTATION.md
 **Summary:** Implementation of comprehensive warning system that notifies users when viewing or editing contacts whose Weavink accounts are scheduled for deletion. Supports both userId-based matching (for Weavink user accounts) and email-based matching (for form-submitted contacts), ensuring GDPR transparency requirements are met.
@@ -338,6 +353,11 @@
 **Summary:** Comprehensive manual testing guide for Phase 3.3 of anonymous analytics implementation. Covers 8 test categories with 35+ individual tests including consent withdrawal scenarios, Firestore verification, TTL validation, GDPR compliance, multi-language testing, rate limiting, edge cases, and client-side integration.
 **Tags:** testing, manual-testing, anonymous-analytics, gdpr, rgpd, consent-withdrawal, firestore-verification, ttl, rate-limiting, multi-language, troubleshooting
 **Related:** [rgpd-anonymous-analytics-046](#rgpd-anonymous-analytics-046), [testing-rgpd-guide-038](#testing-rgpd-guide-038), [testing-email-notifications-065](#testing-email-notifications-065), [analytics-implementation-012](#analytics-implementation-012)
+
+### CONTACT_ANONYMIZATION_MANUAL_TEST_GUIDE.md
+**Summary:** Comprehensive manual testing guide for contact anonymization system implementing GDPR Article 17 Right to be Forgotten. Covers 6 test scenarios including end-to-end anonymization flow, Firestore verification, Pinecone vector metadata verification, semantic search functionality, edge cases & idempotency, and multi-language UI testing across 5 languages.
+**Tags:** testing, manual-testing, contact-anonymization, gdpr, rgpd, right-to-be-forgotten, article-17, firestore-verification, pinecone-verification, semantic-search, multi-language, edge-cases, troubleshooting
+**Related:** [rgpd-contact-anonymization-049](#rgpd-contact-anonymization-049), [testing-rgpd-guide-038](#testing-rgpd-guide-038), [rgpd-account-deletion-flow-047](#rgpd-account-deletion-flow-047), [rgpd-contact-deletion-warning-048](#rgpd-contact-deletion-warning-048)
 
 ### EMAIL_NOTIFICATION_BUG_FIXES.md
 **Summary:** Documents 3 bugs discovered during email notification system testing: completion email fetch-after-delete bug, Firebase composite index requirement, and contact deletion notifications not updating on completion. Includes root cause analysis, fixes, and verification.

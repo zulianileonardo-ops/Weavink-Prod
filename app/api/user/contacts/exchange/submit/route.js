@@ -64,9 +64,18 @@ export async function POST(request) {
     };
 
     // Submit through exchange service
+    console.log('[VECTOR] 📨 Exchange form submission received', {
+      targetUserId: submissionData.userId,
+      targetUsername: submissionData.username,
+      contactEmail: submissionData.contact?.email
+    });
+
     const result = await ExchangeService.submitExchangeContact(submissionData);
 
     const totalTime = Date.now() - requestStartTime;
+    console.log('[VECTOR] ✅ Exchange submission complete (vector creation in background)', {
+      contactId: result.contactId
+    });
     console.log(`✅ Exchange contact submitted successfully in ${totalTime}ms`);
 
     return NextResponse.json({

@@ -5,9 +5,10 @@ category: technical
 tags: [semantic-search, vector-database, pinecone, embeddings, ai-features]
 status: active
 created: 2025-01-01
-updated: 2025-11-11
+updated: 2025-11-21
 related:
   - ADMIN_VECTOR_PANEL_REFACTOR_SUMMARY.md
+  - CONTACT_ANONYMIZATION_BUGFIX.md
 ---
 
 # Semantic Search & Rerank System - Complete Architecture Documentation
@@ -1490,6 +1491,61 @@ static async finalizeSession({ userId, sessionId }) {
 // ALWAYS USE RERANK-V3.5 (BEST MODEL)
 // Testing showed v3.5 outperforms even rerank-english-v3.0 for English queries
 ```
+
+---
+
+## Known Issues & Recent Bug Fixes
+
+### Bug #4: Exchange Contact Vector Storage Field Mismatch (2025-11-21)
+
+**Status**: ✅ **FIXED**
+
+**Issue**: Exchange form contacts submitted by premium users were not getting vector storage, preventing proper contact anonymization when those contacts deleted their accounts.
+
+**Root Cause**: The `exchangeService.js` was reading from the wrong field name when determining subscription tier:
+- **Correct field**: `accountType` (used throughout the application)
+- **Incorrect field**: `subscriptionLevel` (doesn't exist in user documents)
+- **Result**: All premium accounts were being treated as 'base' tier
+
+**Impact on Vector Storage**:
+```javascript
+// Before fix - Field name mismatch
+userData.subscriptionLevel || 'base'  // Always 'base' (subscriptionLevel doesn't exist)
+→ Tier check: 'base' not in ['premium', 'business', 'enterprise']
+→ Vector creation skipped
+→ No vectors to anonymize during account deletion
+
+// After fix - Correct field name
+userData.accountType || 'base'  // Correctly reads 'premium'
+→ Tier check: 'premium' in ['premium', 'business', 'enterprise']
+→ Vector creation proceeds
+→ Vectors exist for anonymization
+```
+
+**Chain of Bugs**:
+This bug was discovered as part of a series of four critical bugs affecting GDPR Article 17 (Right to be Forgotten) compliance:
+
+1. **Bug #1**: Execution order - Contact anonymization never executed
+2. **Bug #2**: Pinecone API - Wrong API method called
+3. **Bug #3**: Missing integration - ExchangeService didn't call VectorStorageService
+4. **Bug #4**: Field name mismatch - Premium accounts treated as 'base' tier
+
+**Files Modified**:
+- `/lib/services/serviceContact/server/exchangeService.js` (lines 40, 45)
+
+**Fix**: Changed 2 occurrences of `userData.subscriptionLevel` to `userData.accountType`
+
+**Testing**:
+- Build: ✅ Passing
+- Vector creation: ✅ Working for premium accounts
+- Full pipeline: ✅ Exchange contact → Vector creation → Account deletion → Vector anonymization
+
+**Documentation**: See [`CONTACT_ANONYMIZATION_BUGFIX.md`](../rgpd/CONTACT_ANONYMIZATION_BUGFIX.md) for complete details on all four bugs and fixes.
+
+**Related Architecture**: This bug affected the subscription tier checking logic documented in:
+- [Subscription Limits](#subscription-limits) (lines 695-721)
+- [Vector Search](#step-2-vector-search) (lines 142-180)
+- [Threshold-Based Filtering](#threshold-based-filtering) (lines 854-946)
 
 ---
 

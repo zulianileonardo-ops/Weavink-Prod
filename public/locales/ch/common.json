@@ -2577,6 +2577,13 @@
           }
         }
       }
+    },
+    "contact_anonymization": {
+      "placeholder": "[已删除]",
+      "deleted_notice": "此联系人已于 {date} 删除其 Weavink 帐户。部分联系详情已因隐私合规而删除。",
+      "deleted_name": "[联系人已删除 - {date}]",
+      "anonymized_label": "匿名联系人",
+      "anonymized_tooltip": "此联系人已删除其帐户。个人信息已删除，但业务背景已保留。"
     }
   },
   "roadmap": {

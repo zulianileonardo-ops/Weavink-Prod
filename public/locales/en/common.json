@@ -2009,6 +2009,13 @@
           }
         }
       }
+    },
+    "contact_anonymization": {
+      "placeholder": "[deleted]",
+      "deleted_notice": "This contact deleted their Weavink account on {date}. Some contact details have been removed for privacy compliance.",
+      "deleted_name": "[Contact Deleted - {date}]",
+      "anonymized_label": "Anonymized Contact",
+      "anonymized_tooltip": "This contact deleted their account. Personal information has been removed, but business context has been preserved."
     }
   },
   "roadmap": {

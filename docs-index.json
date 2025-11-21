@@ -1,8 +1,8 @@
 {
   "metadata": {
     "project": "Weavink Documentation",
-    "last_updated": "2025-11-20",
-    "total_guides": 77,
+    "last_updated": "2025-11-21",
+    "total_guides": 81,
     "version": "1.0.0"
   },
   "categories": {
@@ -43,7 +43,10 @@
         "rgpd-anonymous-analytics-046",
         "rgpd-account-deletion-flow-047",
         "rgpd-contact-deletion-warning-048",
-        "rgpd-anonymous-analytics-testing-077"
+        "rgpd-anonymous-analytics-testing-077",
+        "rgpd-contact-anonymization-049",
+        "rgpd-contact-anonymization-bugfix-080",
+        "rgpd-contact-anonymization-final-081"
       ]
     },
     "features": {
@@ -109,7 +112,8 @@
         "testing-rgpd-results-040",
         "testing-email-notifications-065",
         "testing-email-notification-bugs-076",
-        "testing-anonymous-analytics-077"
+        "testing-anonymous-analytics-077",
+        "testing-contact-anonymization-078"
       ]
     },
     "general": {
@@ -2422,6 +2426,156 @@
       "status": "active",
       "created": "2025-11-20",
       "updated": "2025-11-20"
+    },
+    {
+      "id": "testing-contact-anonymization-078",
+      "title": "Contact Anonymization Manual Test Guide - GDPR Article 17",
+      "filename": "documentation/testing/CONTACT_ANONYMIZATION_MANUAL_TEST_GUIDE.md",
+      "category": "testing",
+      "summary": "Comprehensive manual testing guide for contact anonymization system implementing GDPR Article 17 Right to be Forgotten. Covers 6 test scenarios including end-to-end anonymization flow, Firestore verification, Pinecone vector metadata verification, semantic search functionality, edge cases & idempotency, and multi-language UI testing across 5 languages.",
+      "tags": [
+        "testing",
+        "manual-testing",
+        "contact-anonymization",
+        "gdpr",
+        "rgpd",
+        "right-to-be-forgotten",
+        "article-17",
+        "firestore-verification",
+        "pinecone-verification",
+        "semantic-search",
+        "multi-language",
+        "edge-cases",
+        "troubleshooting"
+      ],
+      "related_guides": [
+        "rgpd-contact-anonymization-049",
+        "testing-rgpd-guide-038",
+        "rgpd-account-deletion-flow-047",
+        "rgpd-contact-deletion-warning-048"
+      ],
+      "functions": [
+        "ContactAnonymizationService.anonymizeContact",
+        "ContactAnonymizationService.anonymizeDynamicFields",
+        "ContactAnonymizationService.anonymizeMetadata",
+        "VectorStorageService.anonymizeVectorMetadata",
+        "removeContactFromUser"
+      ],
+      "components": [
+        "ContactAnonymizationService",
+        "VectorStorageService",
+        "AccountDeletionService"
+      ],
+      "status": "active",
+      "created": "2025-11-20",
+      "updated": "2025-11-20"
+    },
+    {
+      "id": "rgpd-contact-anonymization-049",
+      "title": "Contact Anonymization Implementation Guide - Right to Be Forgotten",
+      "filename": "documentation/rgpd/CONTACT_ANONYMIZATION_IMPLEMENTATION_GUIDE.md",
+      "category": "rgpd",
+      "summary": "Comprehensive implementation guide for anonymizing User A's contact data in User B's contact list when User A deletes their account. Implements GDPR Article 17 (Right to be Forgotten) with Option B (Preserve Context) strategy, anonymizing all PII while preserving business context and User B's notes/tags.",
+      "tags": [
+        "gdpr",
+        "rgpd",
+        "anonymization",
+        "contact-deletion",
+        "right-to-be-forgotten",
+        "privacy",
+        "data-protection",
+        "firestore",
+        "pinecone"
+      ],
+      "related_guides": [
+        "rgpd-account-deletion-flow-047",
+        "rgpd-contact-deletion-warning-048",
+        "rgpd-implementation-summary-042",
+        "rgpd-consent-guide-045",
+        "rgpd-anonymous-analytics-046"
+      ],
+      "functions": [
+        "anonymizeContact",
+        "anonymizeDynamicFields",
+        "anonymizeMetadata",
+        "removeContactFromUser",
+        "anonymizeVectorMetadata"
+      ],
+      "components": [
+        "ContactAnonymizationService"
+      ],
+      "status": "active",
+      "created": "2025-11-20",
+      "updated": "2025-11-20"
+    },
+    {
+      "id": "rgpd-contact-anonymization-bugfix-080",
+      "title": "Contact Anonymization - Critical Bugfixes (4 Bugs Fixed)",
+      "filename": "documentation/rgpd/CONTACT_ANONYMIZATION_BUGFIX.md",
+      "category": "rgpd",
+      "summary": "Complete documentation of four critical bugs discovered and fixed in the contact anonymization system: Bug #1 (Execution order causing anonymization to never execute), Bug #2 (Pinecone API method error), Bug #3 (Missing vector integration in ExchangeService), and Bug #4 (Field name mismatch causing premium accounts to be treated as base tier). All bugs fixed and tested, achieving full GDPR Article 17 compliance.",
+      "tags": [
+        "gdpr",
+        "rgpd",
+        "bug-fixes",
+        "contact-anonymization",
+        "execution-order",
+        "pinecone-api",
+        "vector-storage",
+        "field-mismatch",
+        "subscription-tier",
+        "accountType",
+        "exchangeService"
+      ],
+      "related_guides": [
+        "rgpd-contact-anonymization-049",
+        "testing-contact-anonymization-078",
+        "rgpd-account-deletion-flow-047",
+        "technical-semantic-search-032"
+      ],
+      "functions": [
+        "executeAccountDeletion",
+        "cascadeDeleteContact",
+        "deleteUserOwnData",
+        "anonymizeVectorMetadata",
+        "submitExchangeContact"
+      ],
+      "components": [
+        "AccountDeletionService",
+        "ExchangeService",
+        "VectorStorageService",
+        "ContactAnonymizationService"
+      ],
+      "status": "active",
+      "created": "2025-11-20",
+      "updated": "2025-11-21"
+    },
+    {
+      "id": "rgpd-contact-anonymization-final-081",
+      "title": "Contact Anonymization Final Report",
+      "filename": "documentation/rgpd/CONTACT_ANONYMIZATION_FINAL_REPORT.md",
+      "category": "rgpd",
+      "summary": "Final implementation report for contact anonymization system implementing GDPR Article 17 Right to be Forgotten. Documents complete implementation including all bug fixes, testing results, and deployment status.",
+      "tags": [
+        "gdpr",
+        "rgpd",
+        "contact-anonymization",
+        "final-report",
+        "implementation-complete",
+        "right-to-be-forgotten",
+        "article-17"
+      ],
+      "related_guides": [
+        "rgpd-contact-anonymization-049",
+        "rgpd-contact-anonymization-bugfix-080",
+        "testing-contact-anonymization-078",
+        "rgpd-account-deletion-flow-047"
+      ],
+      "functions": [],
+      "components": [],
+      "status": "active",
+      "created": "2025-11-20",
+      "updated": "2025-11-21"
     }
   ]
 }
