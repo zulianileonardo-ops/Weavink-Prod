@@ -2,7 +2,7 @@
   "metadata": {
     "project": "Weavink Documentation",
     "last_updated": "2025-11-21",
-    "total_guides": 81,
+    "total_guides": 82,
     "version": "1.0.0"
   },
   "categories": {
@@ -74,7 +74,8 @@
         "features-roadmap-checklist-072",
         "features-roadmap-gaps-073",
         "features-roadmap-summary-074",
-        "features-contact-deletion-status-api-075"
+        "features-contact-deletion-status-api-075",
+        "features-geocoding-system-082"
       ]
     },
     "technical": {
@@ -2575,6 +2576,51 @@
       "components": [],
       "status": "active",
       "created": "2025-11-20",
+      "updated": "2025-11-21"
+    },
+    {
+      "id": "features-geocoding-system-082",
+      "title": "Geocoding System - Complete Technical Guide",
+      "filename": "documentation/features/GEOCODING_SYSTEM_GUIDE.md",
+      "category": "features",
+      "summary": "Comprehensive technical guide for the geocoding system using Google Maps API. Covers reverse geocoding ($0.005/request), cost tracking, budget management, location data model (PII vs business context), GDPR compliance with anonymization, and integration with exchange contacts and venue enrichment. Includes complete API reference, usage examples, subscription tier limits, monitoring, debugging, and troubleshooting.",
+      "tags": [
+        "geocoding",
+        "google-maps",
+        "reverse-geocoding",
+        "cost-tracking",
+        "location",
+        "gps",
+        "api",
+        "budget",
+        "subscription",
+        "gdpr",
+        "venue-enrichment",
+        "places-api",
+        "exchange-contacts"
+      ],
+      "related_guides": [
+        "features-venue-enrichment-021",
+        "rgpd-contact-anonymization-049",
+        "technical-cost-tracking-migration-024",
+        "technical-semantic-search-032"
+      ],
+      "functions": [
+        "reverseGeocode",
+        "parseGeocodingResult",
+        "canAffordOperation",
+        "recordUsage",
+        "anonymizeLocationData",
+        "geocodeContactLocation"
+      ],
+      "components": [
+        "PlacesApiClient",
+        "CostTrackingService",
+        "ExchangeModal",
+        "ContactAnonymizationService"
+      ],
+      "status": "active",
+      "created": "2025-11-21",
       "updated": "2025-11-21"
     }
   ]

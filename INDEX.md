@@ -1,13 +1,13 @@
 # Weavink Documentation Index
 
 **Last Updated:** 2025-11-21
-**Total Guides:** 81
+**Total Guides:** 82
 
 ## Quick Navigation
 - [Admin System](#admin-system) (9 guides)
 - [Analytics & Tracking](#analytics-tracking) (3 guides)
 - [RGPD/GDPR Compliance](#rgpd-gdpr-compliance) (13 guides)
-- [Feature Implementations](#feature-implementations) (22 guides)
+- [Feature Implementations](#feature-implementations) (23 guides)
 - [Technical Infrastructure](#technical-infrastructure) (17 guides)
 - [Testing & QA](#testing-qa) (10 guides)
 - [General Documentation](#general-documentation) (4 guides)
@@ -196,6 +196,11 @@
 **Summary:** Enhances contact timeline by grouping related events (exchanges, follow-ups, meetings) for better readability and context.
 **Tags:** contacts, timeline, event-grouping, ui-enhancement, ux-improvement
 **Related:** [features-enhanced-reviews-019](#features-enhanced-reviews-019)
+
+### GEOCODING_SYSTEM_GUIDE.md
+**Summary:** Comprehensive technical guide for the geocoding system using Google Maps API. Covers reverse geocoding ($0.005/request), cost tracking, budget management, location data model (PII vs business context), GDPR compliance with anonymization, and integration with exchange contacts and venue enrichment. Includes complete API reference, usage examples, subscription tier limits, monitoring, debugging, and troubleshooting.
+**Tags:** geocoding, google-maps, reverse-geocoding, cost-tracking, location, gps, api, budget, subscription, gdpr, venue-enrichment, places-api, exchange-contacts
+**Related:** [features-venue-enrichment-021](#features-venue-enrichment-021), [rgpd-contact-anonymization-049](#rgpd-contact-anonymization-049), [technical-cost-tracking-migration-024](#technical-cost-tracking-migration-024), [technical-semantic-search-032](#technical-semantic-search-032)
 
 ### IMAGE_HANDLING_IMPROVEMENTS.md
 **Summary:** Fixes three critical image handling issues: IndexSizeError in cropping, white line bug with 'Free' aspect ratio, and incorrect aspect ratio display in carousel items.
