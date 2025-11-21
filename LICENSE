@@ -1,0 +1,107 @@
+PROPRIETARY SOFTWARE LICENSE
+
+Copyright (c) 2025 Weavink. All rights reserved.
+
+NOTICE: This software and associated documentation files (the "Software") are
+proprietary to Weavink and are protected by copyright law and international
+treaties.
+
+================================================================================
+TERMS AND CONDITIONS
+================================================================================
+
+1. GRANT OF LICENSE
+
+Subject to the terms and conditions of this License, Weavink grants you a
+limited, non-exclusive, non-transferable, revocable license to use the Software
+solely for the purposes expressly permitted below.
+
+2. PERMITTED USE
+
+You may use the Software for:
+  a) Personal, non-commercial evaluation for up to 30 days
+  b) Development and testing purposes with the free tier
+  c) Educational and learning purposes (non-commercial)
+  d) Security audits and compliance reviews (source code inspection only)
+
+3. RESTRICTIONS
+
+You may NOT, without express written permission from Weavink:
+  a) Use the Software for any commercial purpose without a valid paid subscription
+  b) Distribute, sublicense, lease, rent, or lend the Software
+  c) Modify, adapt, translate, or create derivative works for production use
+  d) Reverse engineer, decompile, or disassemble the Software (except as
+     permitted by applicable law)
+  e) Remove or alter any proprietary notices, labels, or marks on the Software
+  f) Use the Software to develop competing products or services
+  g) Deploy the Software in production without a valid commercial license
+
+4. COMMERCIAL USE
+
+Commercial use of the Software requires a valid subscription plan. Available
+subscription tiers:
+  - Base Tier: Limited features for individuals
+  - Pro Tier: Enhanced features for professionals
+  - Premium Tier: Advanced features and analytics
+  - Business Tier: Team collaboration and management
+  - Enterprise Tier: Full feature access with dedicated support
+
+To obtain a commercial license, contact: licensing@weavink.com
+
+5. INTELLECTUAL PROPERTY
+
+The Software, including all source code, object code, documentation, and related
+materials, contains proprietary information and trade secrets of Weavink. All
+title and intellectual property rights in and to the Software remain with
+Weavink.
+
+6. NO WARRANTY
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+WEAVINK BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+7. LIMITATION OF LIABILITY
+
+IN NO EVENT SHALL WEAVINK BE LIABLE FOR ANY SPECIAL, INCIDENTAL, INDIRECT, OR
+CONSEQUENTIAL DAMAGES WHATSOEVER (INCLUDING, WITHOUT LIMITATION, DAMAGES FOR
+LOSS OF BUSINESS PROFITS, BUSINESS INTERRUPTION, LOSS OF BUSINESS INFORMATION,
+OR ANY OTHER PECUNIARY LOSS) ARISING OUT OF THE USE OF OR INABILITY TO USE
+THE SOFTWARE.
+
+8. TERMINATION
+
+This License is effective until terminated. Your rights under this License
+will terminate automatically without notice if you fail to comply with any
+term of this License. Upon termination, you must cease all use of the Software
+and destroy all copies in your possession.
+
+9. THIRD-PARTY COMPONENTS
+
+The Software may include third-party open-source components licensed under
+separate terms. Such components are subject to their respective licenses,
+which can be found in the project dependencies and documentation.
+
+10. GOVERNING LAW
+
+This License shall be governed by and construed in accordance with the laws
+of France, without regard to its conflict of law provisions.
+
+11. CONTACT INFORMATION
+
+For licensing inquiries, support, or permissions:
+  - Email: licensing@weavink.com
+  - Website: https://weavink.com
+
+================================================================================
+
+ACKNOWLEDGMENT: This Software was originally derived from an open-source
+project (https://github.com/fabiconcept/linktree) but has been substantially
+modified and enhanced with proprietary features, AI capabilities, and
+enterprise-grade functionality.
+
+By using the Software, you acknowledge that you have read this License,
+understand it, and agree to be bound by its terms and conditions.

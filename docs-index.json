@@ -2,7 +2,7 @@
   "metadata": {
     "project": "Weavink Documentation",
     "last_updated": "2025-11-21",
-    "total_guides": 82,
+    "total_guides": 83,
     "version": "1.0.0"
   },
   "categories": {
@@ -98,7 +98,8 @@
         "technical-build-fix-import-paths-037",
         "technical-rgpd-architecture-compliance-038",
         "infrastructure-firebase-cleanup-047",
-        "infrastructure-audit-log-monitoring-048"
+        "infrastructure-audit-log-monitoring-048",
+        "technical-git-dual-remote-setup-049"
       ]
     },
     "testing": {
@@ -1164,20 +1165,31 @@
       "title": "Project README",
       "filename": "README.md",
       "category": "general",
-      "summary": "Main project README with setup instructions and overview.",
+      "summary": "Comprehensive README for Weavink enterprise-grade professional networking platform with AI-powered contact management, full GDPR compliance, complete tech stack documentation, installation guide, and proprietary licensing information.",
       "tags": [
         "readme",
         "setup",
         "getting-started",
         "overview",
-        "installation"
+        "installation",
+        "weavink",
+        "enterprise",
+        "gdpr-compliant",
+        "ai-features",
+        "license",
+        "proprietary"
       ],
-      "related_guides": [],
+      "related_guides": [
+        "rgpd-implementation-summary-042",
+        "features-geocoding-system-082",
+        "technical-cost-tracking-migration-024",
+        "testing-rgpd-guide-038"
+      ],
       "functions": [],
       "components": [],
       "status": "active",
       "created": "2025-01-01",
-      "updated": "2025-11-11"
+      "updated": "2025-11-21"
     },
     {
       "id": "general-preview-039",
@@ -2619,6 +2631,35 @@
         "ExchangeModal",
         "ContactAnonymizationService"
       ],
+      "status": "active",
+      "created": "2025-11-21",
+      "updated": "2025-11-21"
+    },
+    {
+      "id": "technical-git-dual-remote-setup-049",
+      "title": "Dual GitHub + GitLab Repository Setup",
+      "filename": "documentation/technical/GIT_DUAL_REMOTE_SETUP.md",
+      "category": "technical",
+      "summary": "Complete setup guide for configuring repository to push to both GitHub and GitLab simultaneously. Covers initial setup, authentication (SSH for GitLab, HTTPS for GitHub), troubleshooting common issues including GitLab SSO/SAML messages, and integration with git-manager-skill.",
+      "tags": [
+        "git",
+        "github",
+        "gitlab",
+        "repository",
+        "deployment",
+        "version-control",
+        "multi-remote",
+        "infrastructure",
+        "setup",
+        "ssh",
+        "authentication"
+      ],
+      "related_guides": [
+        "git-manager-skill",
+        "features-roadmap-changelog-070"
+      ],
+      "functions": [],
+      "components": [],
       "status": "active",
       "created": "2025-11-21",
       "updated": "2025-11-21"
