@@ -5,10 +5,11 @@ category: technical
 tags: [budget, permissions, subscription, cost-control, validation]
 status: active
 created: 2025-01-01
-updated: 2025-11-11
+updated: 2025-11-22
 related:
   - BUDGET_CHECK_USAGE_GUIDE.md
   - COST_TRACKING_MIGRATION_GUIDE.md
+  - SESSION_TRACKING_FIX.md
 ---
 
 # Budget & Affordability Check Implementation Guide
@@ -19,7 +20,12 @@ related:
 
 This guide documents the complete implementation of budget tracking and affordability checks for features that consume AI or API resources. Use this as a reference when implementing similar checks for new features.
 
-**📌 Latest Update (Nov 2025)**: `getUserMonthlyUsage()` now reads from `users/{userId}` document (not monthly aggregation collections) for real-time budget tracking. Session-based operations update user document during step recording.
+**📌 Latest Update (Nov 22, 2025)**:
+- Fixed critical bug: `aiCostBudget` is shared for both AI and API operations (no separate `apiCostBudget`)
+- Fixed missing `maxApiCallsPerMonth` in subscription limits
+- Added comprehensive diagnostic logging to budget checks
+- Added budget exceeded tracking in contacts, sessions, and usage collections
+- `getUserMonthlyUsage()` reads from `users/{userId}` document for real-time tracking
 
 ---
 
@@ -166,6 +172,29 @@ export const MAX_COST_BUDGET_PER_MONTH = {
 
 **⚠️ IMPORTANT:** Keep `lib/services/serviceContact/client/constants/contactConstants.js` synchronized with these values!
 
+### 🔑 Critical Implementation Detail: Shared Cost Budget
+
+**IMPORTANT**: The `aiCostBudget` field is a **SHARED** budget pool for BOTH AI and API operations. There is NO separate `apiCostBudget` field.
+
+```javascript
+// ❌ WRONG - This field does NOT exist in subscription limits
+const maxCost = usageType === 'AIUsage' ? limits.aiCostBudget || 0 : limits.apiCostBudget || 0;
+//                                                                     ^^^ Undefined!
+
+// ✅ CORRECT - Use aiCostBudget for all operation types
+const maxCost = limits.aiCostBudget || 0;  // Shared budget for both AI and API
+```
+
+**Why This Matters:**
+- Premium tier has $3.00/month total budget
+- This $3.00 covers ALL operations (AI + API combined)
+- If you spend $2.00 on AI and $1.50 on API, you've exceeded the budget
+- The budget check must use `aiCostBudget` for both `AIUsage` and `ApiUsage` types
+
+**Common Bug:** Attempting to read `limits.apiCostBudget` returns `undefined`, which becomes `0`, causing the guard condition `maxCost > 0` to fail and bypass the entire cost budget check.
+
+**Fixed in:** `costTrackingService.js` line 573
+
 ### 3. SessionManager Methods
 
 **Location:** `lib/server/session.js`
@@ -258,6 +287,135 @@ await CostTrackingService.recordUsage({
 3. Increments `monthlyBillableRunsAI` or `monthlyBillableRunsAPI`
 4. Records detailed log in `AIUsage` or `ApiUsage` collection
 5. If `sessionId` provided, also records in `SessionUsage`
+
+### 5. Budget Exceeded Tracking
+
+**Location:** `lib/services/serviceContact/server/costTrackingService.js`
+
+When operations are blocked due to budget limits, the system tracks this for audit and user transparency.
+
+#### Recording Budget Exceeded Events
+
+```javascript
+await CostTrackingService.recordBudgetExceeded({
+  userId: 'user123',
+  usageType: 'ApiUsage',
+  feature: 'location_enrichment',
+  estimatedCost: 0.037,
+  reason: 'budget_exceeded',  // or 'runs_exceeded'
+  metadata: {
+    skippedFeatures: ['geocoding', 'venue_enrichment'],
+    provider: 'google_maps'
+  }
+});
+```
+
+**What This Records:**
+- Creates an operation record in `ApiUsage` or `AIUsage` collection
+- Sets `budgetExceeded: true`
+- Sets `budgetExceededReason: 'budget_exceeded' | 'runs_exceeded'`
+- Records `estimatedCost` (what it would have cost)
+- Sets `cost: 0` (no actual cost incurred since blocked)
+- Sets `isBillableRun: false` (doesn't count toward limits)
+- Includes `blocked: true` in metadata
+
+#### Contact Metadata Tracking
+
+When location enrichment or other contact operations are blocked, the contact document tracks this:
+
+```javascript
+{
+  // Contact fields...
+  metadata: {
+    budgetExceeded: true,
+    budgetExceededReason: 'budget_exceeded',  // or 'runs_exceeded'
+    budgetExceededAt: '2025-11-22T10:30:00.000Z',
+    enrichmentAttempted: true,
+    skippedFeatures: ['geocoding', 'venue_enrichment']
+  }
+}
+```
+
+**UI Impact:**
+- ContactCard displays amber badge: "⏸️ Budget" or "⏸️ Limit"
+- Info banner shows: "Budget limit reached. Features skipped: Geocoding, Venue Enrichment"
+- User knows exactly why enrichment didn't happen
+
+#### Session Budget Tracking
+
+For session-based operations, budget exceeded status is tracked at both session and step level:
+
+```javascript
+// Session document
+{
+  sessionId: 'session_123',
+  budgetExceeded: true,
+  budgetExceededAt: Timestamp,
+  budgetExceededReason: 'runs_exceeded',
+  steps: [
+    {
+      feature: 'location_enrichment',
+      budgetExceeded: true,
+      budgetExceededReason: 'runs_exceeded',
+      metadata: {
+        budgetCheck: {
+          passed: false,
+          reason: 'runs_exceeded',
+          currentRuns: 102,
+          maxRuns: 100
+        }
+      }
+    }
+  ]
+}
+```
+
+### 6. Diagnostic Logging
+
+The affordability check system includes comprehensive logging for debugging:
+
+#### Cost Budget Check Logs
+
+```
+🔍 [CostTracking] [generic_afford_xxx] Checking cost budget:
+  usageType: 'ApiUsage'
+  currentCost: 3.057
+  maxCost: 3.0
+  estimatedCost: 0.037
+  projectedCost: 3.094
+  guardCondition: true
+  wouldExceed: true
+
+🚫 [CostTracking] [generic_afford_xxx] Cost budget exceeded!
+  currentCost: 3.057
+  maxCost: 3.0
+  estimatedCost: 0.037
+  remainingBudget: 0
+```
+
+#### Run Limit Check Logs
+
+```
+🔍 [CostTracking] [generic_afford_xxx] Checking run limits:
+  usageType: 'ApiUsage'
+  currentRuns: 102
+  maxRuns: 100
+  nextRunCount: 103
+  guardCondition: true
+  wouldExceed: true
+
+🚫 [CostTracking] [generic_afford_xxx] Run limit exceeded!
+  currentRuns: 102
+  maxRuns: 100
+  remainingRuns: 0
+```
+
+**Key Fields:**
+- `guardCondition`: Whether `maxCost > 0` or `maxRuns > 0` (must be true to check)
+- `wouldExceed`: Whether the operation would exceed the limit
+- `projected*`: What the new value would be after operation
+
+**Common Issue:** If `guardCondition: false`, the limit is not configured properly (likely `0` or `undefined`).
 
 ---
 
@@ -698,7 +856,30 @@ maxAiRunsPerMonth: 20;  // WRONG!
 
 ✅ **Solution:** Keep both files synchronized or use single source of truth
 
-### 2. **Wrong Usage Type**
+### 2. **Assuming Separate Cost Budgets for AI vs API**
+
+❌ **Problem:** Trying to use a separate `apiCostBudget` field that doesn't exist
+
+```javascript
+// WRONG - apiCostBudget doesn't exist
+const maxCost = usageType === 'AIUsage' ? limits.aiCostBudget || 0 : limits.apiCostBudget || 0;
+// When usageType is 'ApiUsage', this becomes: undefined || 0 = 0
+// Then guardCondition: 0 > 0 = false, bypassing the entire cost check!
+```
+
+✅ **Solution:** Use shared `aiCostBudget` for all operation types
+
+```javascript
+// CORRECT - aiCostBudget is shared for both AI and API
+const maxCost = limits.aiCostBudget || 0;
+```
+
+**Why This Matters:**
+- Premium tier: $3.00/month covers ALL operations (AI + API combined)
+- User at $3.05 spent was being allowed to proceed because `maxCost = 0`
+- Fixed in `costTrackingService.js` line 573
+
+### 3. **Wrong Usage Type**
 
 ❌ **Problem:** Recording API operation as AI usage
 
@@ -718,7 +899,7 @@ await CostTrackingService.recordUsage({
 });
 ```
 
-### 3. **Forgetting Pre-flight Check**
+### 4. **Forgetting Pre-flight Check**
 
 ❌ **Problem:** Recording usage without checking first
 
@@ -738,7 +919,7 @@ const result = await expensiveOperation();
 await CostTrackingService.recordUsage(...);
 ```
 
-### 4. **Not Handling Month Rollover**
+### 5. **Not Handling Month Rollover**
 
 ❌ **Problem:** Manual month comparison
 
@@ -750,7 +931,7 @@ if (userData.month !== currentMonth) {
 
 ✅ **Solution:** `recordUsage()` handles this automatically
 
-### 5. **Reading from Wrong Source**
+### 6. **Reading from Wrong Source**
 
 ❌ **Problem:** Reading from collections instead of user document
 
@@ -765,7 +946,7 @@ const usage = await db.collection('AIUsage')
 
 ✅ **Solution:** Use `SessionManager.getRemainingBudget()` which reads from user document
 
-### 6. **Incorrect Greater Than Logic**
+### 7. **Incorrect Greater Than Logic**
 
 ❌ **Problem:** Using `>=` instead of `>`
 
@@ -786,6 +967,74 @@ if ((currentRuns + 1) > maxRuns) {  // Allows 30/30
 ---
 
 ## Troubleshooting
+
+### Issue: Cost budget check not blocking despite exceeded budget
+
+**Symptoms:**
+- User at $3.05/$3.00 budget still allowed to proceed
+- Logs show `remaining: '$0.00'` but operation proceeds
+- No "Cost budget exceeded" error
+
+**Cause:** Using non-existent `apiCostBudget` field for API operations
+
+**Investigation:**
+```javascript
+// Check what maxCost is being used
+console.log('maxCost:', usage.limits.maxCost);  // If 0, this is the bug
+console.log('guardCondition:', usage.limits.maxCost > 0);  // Should be true
+```
+
+**Fix:** In `costTrackingService.js` line 573:
+```javascript
+// WRONG:
+const maxCost = usageType === 'AIUsage' ? limits.aiCostBudget || 0 : limits.apiCostBudget || 0;
+
+// CORRECT:
+const maxCost = limits.aiCostBudget || 0;  // Shared budget for both AI and API
+```
+
+**Verification:**
+After fix, logs should show:
+```
+🔍 Checking cost budget:
+  maxCost: 3.0          ← Should be 3.0, not 0
+  guardCondition: true  ← Should be true
+  wouldExceed: true     ← Should correctly detect
+🚫 Cost budget exceeded!
+```
+
+### Issue: Run limit check not blocking at 100/100 runs
+
+**Symptoms:**
+- User at 100/100 API calls proceeds to 101/100
+- Logs show correct current runs but operation allowed
+
+**Cause:** Missing `maxApiCallsPerMonth` in subscription limits
+
+**Investigation:**
+```javascript
+// Check if maxRuns is populated
+console.log('maxRuns:', usage.limits.maxRuns);  // If 0, limits not configured
+```
+
+**Fix:** In `subscriptionService.js` add to `getUnifiedLimits()`:
+```javascript
+return {
+  // ... existing fields ...
+  maxApiCallsPerMonth: contactLimits.maxApiCallsPerMonth || 0  // ADD THIS
+};
+```
+
+**Verification:**
+After fix, logs should show:
+```
+🔍 Checking run limits:
+  maxRuns: 100          ← Should be 100, not 0
+  currentRuns: 100
+  guardCondition: true  ← Should be true
+  wouldExceed: true     ← Should correctly detect 101 > 100
+🚫 Run limit exceeded!
+```
 
 ### Issue: "Would exceed runs" at 29/30
 

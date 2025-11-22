@@ -940,7 +940,7 @@
       "components": [],
       "status": "active",
       "created": "2025-01-01",
-      "updated": "2025-11-11"
+      "updated": "2025-11-22"
     },
     {
       "id": "technical-dynamicfields-fix-029",
@@ -972,7 +972,8 @@
         "sessions",
         "bug-fix",
         "tracking",
-        "lifecycle-management"
+        "lifecycle-management",
+        "budget-tracking"
       ],
       "related_guides": [
         "admin-dashboard-session-fix-009"
@@ -981,7 +982,7 @@
       "components": [],
       "status": "active",
       "created": "2025-01-01",
-      "updated": "2025-11-11"
+      "updated": "2025-11-22"
     },
     {
       "id": "technical-subscription-revalidation-031",

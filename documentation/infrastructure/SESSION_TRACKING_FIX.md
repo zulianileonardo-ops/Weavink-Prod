@@ -2,12 +2,13 @@
 id: technical-session-tracking-fix-030
 title: Session Tracking Fix
 category: technical
-tags: [sessions, bug-fix, tracking, lifecycle-management]
+tags: [sessions, bug-fix, tracking, lifecycle-management, budget-tracking]
 status: active
 created: 2025-01-01
-updated: 2025-11-11
+updated: 2025-11-22
 related:
   - ADMIN_DASHBOARD_SESSION_AGGREGATION_FIX.md
+  - BUDGET_AFFORDABILITY_CHECK_GUIDE.md
 ---
 
 # Session Tracking Fix: User Document Updates
@@ -111,6 +112,7 @@ if (sessionId) {
 3. **Error Handling**: User doc update failure doesn't break session tracking
 4. **Conditional Logic**: Only updates for billable operations or operations with cost
 5. **Logging**: Clear console logs for debugging
+6. **Budget Exceeded Tracking**: Records when operations are blocked due to budget/limit constraints
 
 ### ⏰ Timing: When Updates Happen
 
@@ -134,6 +136,155 @@ Session Lifecycle:
 - Writes step to `SessionUsage/{userId}/sessions/{sessionId}`
 - Updates `users/{userId}` document counters atomically
 - Increments `monthlyTotalCost`, `monthlyBillableRunsAI`, or `monthlyBillableRunsAPI`
+
+### 🚫 Budget Exceeded Tracking in Sessions
+
+**New Feature (Nov 22, 2025)**: Sessions now track when budget/limit constraints prevent operations.
+
+#### Session-Level Tracking
+
+When ANY step in a session exceeds budget, the session document records this:
+
+```javascript
+{
+  sessionId: 'session_enrich_xxx',
+  feature: 'google_maps',
+  status: 'in-progress',
+
+  // Budget exceeded fields
+  budgetExceeded: true,
+  budgetExceededAt: Timestamp,
+  budgetExceededReason: 'budget_exceeded',  // or 'runs_exceeded'
+
+  totalCost: 0.005,
+  totalRuns: 1,
+  steps: [ ... ]
+}
+```
+
+#### Step-Level Tracking
+
+Each step in the session includes budget check information:
+
+```javascript
+{
+  stepLabel: 'Step 1: Reverse Geocoding',
+  operationId: 'usage_xxx',
+  feature: 'location_reverse_geocoding',
+  cost: 0.005,
+  isBillableRun: true,
+
+  // Budget tracking for this step
+  budgetExceeded: false,
+  budgetExceededReason: null,
+
+  metadata: {
+    budgetCheck: {
+      passed: true,
+      currentCost: 2.95,
+      maxCost: 3.0,
+      currentRuns: 12,
+      maxRuns: 100
+    }
+  }
+}
+```
+
+#### When Budget is Exceeded
+
+If a step is blocked due to budget limits, it records:
+
+```javascript
+{
+  stepLabel: 'Step 1: Reverse Geocoding',
+  operationId: 'usage_xxx',
+  feature: 'location_reverse_geocoding',
+  cost: 0,  // No cost incurred (blocked)
+  isBillableRun: false,
+
+  // Budget exceeded!
+  budgetExceeded: true,
+  budgetExceededReason: 'budget_exceeded',  // or 'runs_exceeded'
+
+  metadata: {
+    budgetCheck: {
+      passed: false,
+      reason: 'budget_exceeded',
+      currentCost: 3.057,
+      maxCost: 3.0,
+      estimatedCost: 0.037,
+      blocked: true
+    }
+  }
+}
+```
+
+**Session Update:** When a step exceeds budget:
+```javascript
+await SessionTrackingService.addStepToSession({
+  userId,
+  sessionId,
+  stepData: {
+    ...stepData,
+    budgetExceeded: true,
+    budgetExceededReason: 'runs_exceeded'
+  }
+});
+// This sets session.budgetExceeded = true automatically
+```
+
+#### Integration with Contact Metadata
+
+When location enrichment is blocked due to budget, the contact also tracks this:
+
+```javascript
+{
+  // Contact fields...
+  metadata: {
+    budgetExceeded: true,
+    budgetExceededReason: 'budget_exceeded',
+    budgetExceededAt: '2025-11-22T10:30:00.000Z',
+    enrichmentAttempted: true,
+    skippedFeatures: ['geocoding', 'venue_enrichment']
+  }
+}
+```
+
+**UI Impact:**
+- ContactCard displays amber badge: "⏸️ Budget" or "⏸️ Limit"
+- Info banner shows: "Budget limit reached. Features skipped: Geocoding, Venue Enrichment"
+- Timestamp shows when limit was hit
+
+#### Audit Trail
+
+Budget exceeded events are also recorded in usage collections:
+
+**Location:** `ApiUsage/{userId}/operations/{operationId}`
+
+```javascript
+{
+  timestamp: '2025-11-22T10:30:00.000Z',
+  feature: 'location_enrichment',
+  cost: 0,  // No actual cost
+  estimatedCost: 0.037,  // What it would have cost
+  isBillableRun: false,
+
+  budgetExceeded: true,
+  budgetExceededReason: 'budget_exceeded',
+
+  metadata: {
+    operationId: 'budget_exceeded_xxx',
+    blocked: true,
+    reason: 'budget_exceeded'
+  }
+}
+```
+
+**Benefits:**
+1. **Complete Audit Trail**: Every budget block is logged
+2. **User Transparency**: Users see exactly why features were skipped
+3. **Analytics**: Can analyze budget hit patterns
+4. **Debugging**: Clear indicators of limit issues
 
 ## Expected Behavior After Fix
 
