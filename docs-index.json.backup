@@ -1,8 +1,8 @@
 {
   "metadata": {
     "project": "Weavink Documentation",
-    "last_updated": "2025-11-19",
-    "total_guides": 63,
+    "last_updated": "2025-11-22",
+    "total_guides": 86,
     "version": "1.0.0"
   },
   "categories": {
@@ -40,7 +40,13 @@
         "rgpd-master-progress-043",
         "rgpd-phase4-summary-044",
         "rgpd-consent-guide-045",
-        "rgpd-anonymous-analytics-046"
+        "rgpd-anonymous-analytics-046",
+        "rgpd-account-deletion-flow-047",
+        "rgpd-contact-deletion-warning-048",
+        "rgpd-anonymous-analytics-testing-077",
+        "rgpd-contact-anonymization-049",
+        "rgpd-contact-anonymization-bugfix-080",
+        "rgpd-contact-anonymization-final-081"
       ]
     },
     "features": {
@@ -61,7 +67,16 @@
         "features-cv-enhancement-026",
         "features-image-handling-027",
         "features-tutorial-account-018",
-        "features-media-enhancement-027"
+        "features-media-enhancement-027",
+        "features-contacts-i18n-028",
+        "features-roadmap-changelog-070",
+        "features-roadmap-production-spec-071",
+        "features-roadmap-checklist-072",
+        "features-roadmap-gaps-073",
+        "features-roadmap-summary-074",
+        "features-contact-deletion-status-api-075",
+        "features-geocoding-system-082",
+        "features-session-enrichment-001"
       ]
     },
     "technical": {
@@ -83,7 +98,10 @@
         "technical-refactoring-cost-tracking-036",
         "technical-build-fix-import-paths-037",
         "technical-rgpd-architecture-compliance-038",
-        "infrastructure-firebase-cleanup-047"
+        "infrastructure-firebase-cleanup-047",
+        "infrastructure-audit-log-monitoring-048",
+        "technical-git-dual-remote-setup-049",
+        "infrastructure-session-comparison-001"
       ]
     },
     "testing": {
@@ -95,7 +113,12 @@
         "testing-rate-limits-collection-v2-041",
         "testing-rgpd-guide-038",
         "testing-rgpd-quickstart-039",
-        "testing-rgpd-results-040"
+        "testing-rgpd-results-040",
+        "testing-email-notifications-065",
+        "testing-email-notification-bugs-076",
+        "testing-anonymous-analytics-077",
+        "testing-contact-anonymization-078",
+        "testing-location-phase3-079"
       ]
     },
     "general": {
@@ -113,7 +136,8 @@
       "description": "Implementation guides, tutorials, and how-tos",
       "guides": [
         "tutorials-conversation-manager-001",
-        "tutorials-rate-limit-ui-pattern-042"
+        "tutorials-rate-limit-ui-pattern-042",
+        "tutorials-email-integration-066"
       ]
     },
     "meta": {
@@ -517,7 +541,7 @@
     },
     {
       "id": "rgpd-conformite-tapit-013",
-      "title": "RGPD Conformit\u00e9 Tapit",
+      "title": "RGPD Conformité Tapit",
       "filename": "documentation/rgpd/RGPD_Conformite_Tapit.md",
       "category": "rgpd",
       "summary": "Complete GDPR/RGPD compliance roadmap and implementation plan for Weavink (Tapit SAS).",
@@ -1144,20 +1168,31 @@
       "title": "Project README",
       "filename": "README.md",
       "category": "general",
-      "summary": "Main project README with setup instructions and overview.",
+      "summary": "Comprehensive README for Weavink enterprise-grade professional networking platform with AI-powered contact management, full GDPR compliance, complete tech stack documentation, installation guide, and proprietary licensing information.",
       "tags": [
         "readme",
         "setup",
         "getting-started",
         "overview",
-        "installation"
+        "installation",
+        "weavink",
+        "enterprise",
+        "gdpr-compliant",
+        "ai-features",
+        "license",
+        "proprietary"
       ],
-      "related_guides": [],
+      "related_guides": [
+        "rgpd-implementation-summary-042",
+        "features-geocoding-system-082",
+        "technical-cost-tracking-migration-024",
+        "testing-rgpd-guide-038"
+      ],
       "functions": [],
       "components": [],
       "status": "active",
       "created": "2025-01-01",
-      "updated": "2025-11-11"
+      "updated": "2025-11-21"
     },
     {
       "id": "general-preview-039",
@@ -1219,7 +1254,7 @@
       "title": "RGPD Implementation Summary",
       "filename": "documentation/rgpd/RGPD_IMPLEMENTATION_SUMMARY.md",
       "category": "rgpd",
-      "summary": "Complete summary of RGPD Phase 1-4 implementation with consent management, data portability, breach notifications, and compliance features.",
+      "summary": "Complete summary of RGPD Phase 1-4 implementation with consent management, data portability with multilingual export support, breach notifications, compliance features, and multilingual API error messages.",
       "tags": [
         "gdpr",
         "rgpd",
@@ -1228,14 +1263,21 @@
         "data-protection",
         "privacy",
         "implementation",
-        "phase-summary"
+        "phase-summary",
+        "translation",
+        "multilingual-errors",
+        "server-side-translation",
+        "data-export-i18n"
       ],
       "related_guides": [
         "rgpd-master-progress-043",
         "rgpd-phase4-summary-044",
         "rgpd-conformite-tapit-013"
       ],
-      "functions": [],
+      "functions": [
+        "generateReadmeContent",
+        "generateExportFiles"
+      ],
       "components": [
         "ConsentService",
         "DataExportService",
@@ -1245,7 +1287,7 @@
       ],
       "status": "active",
       "created": "2025-01-01",
-      "updated": "2025-11-11"
+      "updated": "2025-11-20"
     },
     {
       "id": "rgpd-master-progress-043",
@@ -1355,7 +1397,7 @@
       "title": "Anonymous Analytics Plan",
       "filename": "documentation/admin/ANONYMOUS_ANALYTICS_PLAN.md",
       "category": "rgpd",
-      "summary": "Implementation plan for anonymous aggregated analytics tracking for users who withdraw consent, using legitimate interest legal basis.",
+      "summary": "Implementation plan and completed implementation for anonymous aggregated analytics tracking for users who withdraw consent, using legitimate interest legal basis. Includes Phase 1-3 complete with TTL configuration, translations, and automated tests.",
       "tags": [
         "gdpr",
         "rgpd",
@@ -1363,18 +1405,30 @@
         "anonymous-tracking",
         "legitimate-interest",
         "privacy",
-        "planning",
-        "dual-track"
+        "implementation",
+        "dual-track",
+        "firestore-ttl",
+        "multilingual",
+        "testing"
       ],
       "related_guides": [
         "analytics-implementation-012",
-        "rgpd-implementation-summary-042"
+        "rgpd-implementation-summary-042",
+        "testing-anonymous-analytics-077"
       ],
-      "functions": [],
-      "components": [],
-      "status": "draft",
+      "functions": [
+        "trackEvent",
+        "trackAnonymousView",
+        "trackAnonymousClick",
+        "trackAnonymousShare",
+        "trackAnonymousQRScan"
+      ],
+      "components": [
+        "AnonymousAnalyticsService"
+      ],
+      "status": "active",
       "created": "2025-11-07",
-      "updated": "2025-11-11"
+      "updated": "2025-11-20"
     },
     {
       "id": "testing-rgpd-guide-038",
@@ -1729,7 +1783,7 @@
       "title": "RGPD Architecture Compliance Report",
       "filename": "documentation/rgpd/RGPD_ARCHITECTURE_COMPLIANCE.md",
       "category": "technical",
-      "summary": "Comprehensive refactoring report documenting architectural alignment of RGPD implementation with Weavink 5-layer pattern. Achieved 95% compliance (from 34%), eliminated 12 raw fetch() calls, implemented permission-based security, and centralized constants management. Documents 15 files modified across client services, API routes, server services, and context layers.",
+      "summary": "Comprehensive refactoring report documenting architectural alignment of RGPD implementation with Weavink 5-layer pattern. Achieved 95% compliance (from 34%), eliminated 12 raw fetch() calls, implemented permission-based security, centralized constants management, and multilingual error translation system. Documents 21 files modified across client services, API routes, server services, translation files, and context layers.",
       "tags": [
         "rgpd",
         "gdpr",
@@ -1742,7 +1796,10 @@
         "session-manager",
         "contact-api-client",
         "permissions",
-        "code-quality"
+        "code-quality",
+        "translation",
+        "multilingual-errors",
+        "i18n"
       ],
       "related_guides": [
         "rgpd-implementation-summary-042",
@@ -1760,7 +1817,9 @@
         "cancelDeletion",
         "updatePrivacySetting",
         "updateContactDownloadSettings",
-        "updateLanguagePreference"
+        "updateLanguagePreference",
+        "translateServerSide",
+        "getUserLocale"
       ],
       "components": [
         "ConsentService",
@@ -1772,7 +1831,7 @@
       ],
       "status": "active",
       "created": "2025-11-18",
-      "updated": "2025-11-18"
+      "updated": "2025-11-19"
     },
     {
       "id": "tutorials-conversation-manager-001",
@@ -1893,6 +1952,831 @@
       "status": "active",
       "created": "2025-11-19",
       "updated": "2025-11-19"
+    },
+    {
+      "id": "infrastructure-audit-log-monitoring-048",
+      "title": "Firebase Audit Log Retention Monitoring (5-Year TTL)",
+      "filename": "documentation/infrastructure/FIREBASE_AUDIT_LOG_MONITORING.md",
+      "category": "technical",
+      "summary": "Automated 5-year audit log retention using Firestore TTL with monthly monitoring function for GDPR Article 5(2) accountability compliance.",
+      "tags": [
+        "firebase",
+        "firestore-ttl",
+        "scheduled-functions",
+        "cloud-functions",
+        "gdpr",
+        "rgpd",
+        "audit-logging",
+        "retention-policy",
+        "accountability",
+        "monitoring",
+        "compliance"
+      ],
+      "related_guides": [
+        "FIREBASE_SCHEDULED_CLEANUP.md",
+        "RGPD_COMPLIANCE_MATRIX.md",
+        "RGPD_ARCHITECTURE_COMPLIANCE.md",
+        "ACCOUNT_PRIVACY_TESTING_GUIDE.md"
+      ],
+      "functions": [
+        "monitorAuditLogRetention"
+      ],
+      "components": [],
+      "status": "active",
+      "created": "2025-11-19",
+      "updated": "2025-11-19"
+    },
+    {
+      "id": "testing-email-notifications-065",
+      "title": "Email Notification System - Manual Test Guide (Phase 1, 2 & 3)",
+      "filename": "documentation/testing/EMAIL_NOTIFICATION_MANUAL_TEST_GUIDE.md",
+      "category": "testing",
+      "summary": "Comprehensive manual testing guide for multilingual email notification system covering i18n bug fixes, account deletion emails, and data export emails. Includes Test 2.2 results (immediate deletion variant).",
+      "tags": [
+        "email",
+        "notifications",
+        "multilingual",
+        "i18n",
+        "rgpd",
+        "manual-testing",
+        "phase1",
+        "phase2",
+        "phase3",
+        "data-export",
+        "gdpr",
+        "brevo",
+        "troubleshooting",
+        "immediate-deletion"
+      ],
+      "status": "active",
+      "created": "2025-11-19",
+      "updated": "2025-11-20",
+      "related_guides": [
+        "RGPD_TESTING_GUIDE.md",
+        "ACCOUNT_PRIVACY_TESTING_GUIDE.md",
+        "RGPD_IMPLEMENTATION_SUMMARY.md",
+        "EMAIL_INTEGRATION_GUIDE.md",
+        "EMAIL_NOTIFICATION_BUG_FIXES.md"
+      ],
+      "functions": [
+        "sendAccountDeletionConfirmationEmail",
+        "sendContactDeletionNoticeEmail",
+        "sendAccountDeletionCompletedEmail",
+        "sendAccountDeletionCancelledEmail",
+        "sendDataExportCompletedEmail"
+      ],
+      "components": []
+    },
+    {
+      "id": "testing-email-notification-bugs-076",
+      "title": "Email Notification System - Bug Fixes Documentation",
+      "filename": "documentation/testing/EMAIL_NOTIFICATION_BUG_FIXES.md",
+      "category": "testing",
+      "summary": "Documents 3 bugs discovered during email notification system testing: completion email fetch-after-delete bug, Firebase composite index requirement, and contact deletion notifications not updating on completion. Includes root cause analysis, fixes, and verification.",
+      "tags": [
+        "email",
+        "notifications",
+        "bug-fixes",
+        "rgpd",
+        "testing",
+        "account-deletion",
+        "firebase",
+        "debugging",
+        "root-cause-analysis",
+        "notification-update",
+        "notifications-collection",
+        "contacts-ui"
+      ],
+      "status": "active",
+      "created": "2025-11-20",
+      "updated": "2025-11-20",
+      "related_guides": [
+        "EMAIL_NOTIFICATION_MANUAL_TEST_GUIDE.md",
+        "RGPD_ACCOUNT_DELETION_GUIDE.md"
+      ],
+      "functions": [
+        "executeAccountDeletion",
+        "sendAccountDeletionCompletedEmail",
+        "notifyContactDeletionCompleted",
+        "getContactDeletionStatus"
+      ],
+      "components": [
+        "DeleteAccountTab",
+        "ContactCard",
+        "EditContactModal"
+      ]
+    },
+    {
+      "id": "tutorials-email-integration-066",
+      "title": "Email Integration Guide - Adding New Email Types",
+      "filename": "documentation/tutorials/EMAIL_INTEGRATION_GUIDE.md",
+      "category": "tutorials",
+      "summary": "Step-by-step developer guide for adding new multilingual email notifications to the Weavink email system. Includes code examples, translation structure, testing checklist, best practices, and cross-reference to API error translation pattern.",
+      "tags": [
+        "email",
+        "notifications",
+        "multilingual",
+        "i18n",
+        "rgpd",
+        "development",
+        "tutorial",
+        "integration",
+        "brevo",
+        "gdpr",
+        "developer-guide",
+        "api-errors",
+        "translation-service"
+      ],
+      "status": "active",
+      "created": "2025-11-19",
+      "updated": "2025-11-19",
+      "related_guides": [
+        "EMAIL_NOTIFICATION_MANUAL_TEST_GUIDE.md",
+        "RGPD_IMPLEMENTATION_SUMMARY.md",
+        "RGPD_ARCHITECTURE_COMPLIANCE.md"
+      ],
+      "functions": [
+        "sendPasswordResetEmail",
+        "loadTranslations",
+        "sendViaBrevo",
+        "translateServerSide",
+        "getUserLocale"
+      ],
+      "components": []
+    },
+    {
+      "id": "rgpd-account-deletion-flow-047",
+      "title": "Account Deletion Technical Flow - User Deletion to Contact Notification",
+      "filename": "documentation/rgpd/ACCOUNT_DELETION_TECHNICAL_FLOW.md",
+      "category": "rgpd",
+      "summary": "Complete technical walkthrough of account deletion process from User A requesting deletion to User B receiving notifications. Includes 10-phase breakdown, database schema changes, timeline analysis (2-second backend, 5-second email), parallel operations, multi-language handling, and future non-user deletion feature specification.",
+      "tags": [
+        "account-deletion",
+        "gdpr",
+        "notifications",
+        "cascade-deletion",
+        "email",
+        "firestore",
+        "privacy",
+        "technical-flow",
+        "database-operations",
+        "multilingual"
+      ],
+      "related_guides": [
+        "EMAIL_NOTIFICATION_MANUAL_TEST_GUIDE.md",
+        "RGPD_COMPLIANCE_MATRIX.md",
+        "RGPD_COMPLIANCE_MATRIX.PREVIOUS.md",
+        "RGPD_IMPLEMENTATION_SUMMARY.md",
+        "RGPD_ARCHITECTURE_COMPLIANCE.md"
+      ],
+      "functions": [
+        "requestAccountDeletion",
+        "findUsersWithContact",
+        "notifyContactDeletion",
+        "sendContactDeletionNoticeEmail",
+        "sendAccountDeletionConfirmationEmail"
+      ],
+      "components": [
+        "AccountDeletionService",
+        "EmailService",
+        "PrivacyRequests collection",
+        "notifications subcollection"
+      ],
+      "status": "active",
+      "created": "2025-11-19",
+      "updated": "2025-11-19"
+    },
+    {
+      "id": "rgpd-contact-deletion-warning-048",
+      "title": "Contact Deletion Warning Implementation Guide",
+      "filename": "documentation/rgpd/CONTACT_DELETION_WARNING_IMPLEMENTATION.md",
+      "category": "rgpd",
+      "summary": "Implementation of comprehensive warning system that notifies users when viewing or editing contacts whose Weavink accounts are scheduled for deletion. Supports both userId-based matching (for Weavink user accounts) and email-based matching (for form-submitted contacts), ensuring GDPR transparency requirements are met.",
+      "tags": [
+        "contact-deletion",
+        "gdpr",
+        "notifications",
+        "ui-warnings",
+        "email-matching",
+        "api-endpoint",
+        "service-layer",
+        "firestore",
+        "multilingual"
+      ],
+      "related_guides": [
+        "ACCOUNT_DELETION_TECHNICAL_FLOW.md",
+        "EMAIL_NOTIFICATION_MANUAL_TEST_GUIDE.md",
+        "RGPD_IMPLEMENTATION_SUMMARY.md",
+        "CONTACTS_COMPONENT_INTERNATIONALIZATION.md"
+      ],
+      "functions": [
+        "getContactDeletionStatus",
+        "AccountDeletionService.getContactDeletionStatus"
+      ],
+      "components": [
+        "ContactCard",
+        "EditContactModal"
+      ],
+      "status": "active",
+      "created": "2025-11-19",
+      "updated": "2025-11-19"
+    },
+    {
+      "id": "features-contacts-i18n-028",
+      "title": "Contacts Component Internationalization",
+      "filename": "documentation/features/CONTACTS_COMPONENT_INTERNATIONALIZATION.md",
+      "category": "features",
+      "summary": "Complete internationalization of ContactCard and EditContactModal components, translating 54 hardcoded English strings across 5 languages (English, French, Spanish, Chinese, Vietnamese) to enable full multilingual support for contact management features.",
+      "tags": [
+        "contacts",
+        "i18n",
+        "multilingual",
+        "translation",
+        "contactcard",
+        "editcontactmodal",
+        "react",
+        "nextjs"
+      ],
+      "related_guides": [
+        "CONTACT_DELETION_WARNING_IMPLEMENTATION.md",
+        "RGPD_ARCHITECTURE_COMPLIANCE.md"
+      ],
+      "functions": [
+        "useTranslation",
+        "useLanguage"
+      ],
+      "components": [
+        "ContactCard",
+        "EditContactModal"
+      ],
+      "status": "active",
+      "created": "2025-11-19",
+      "updated": "2025-11-19"
+    },
+    {
+      "id": "features-roadmap-changelog-070",
+      "title": "Roadmap & Changelog Feature - Complete Implementation",
+      "filename": "documentation/features/ROADMAP_CHANGELOG_FEATURE_GUIDE.md",
+      "category": "features",
+      "summary": "Complete roadmap/changelog system with hybrid data source (local git + GitHub API fallback), GitHub Issues integration, interactive SVG graph visualization, production-ready deployment, public page (/roadmap), dashboard integration, category tree structure, and multilingual support. Includes automatic serverless environment detection.",
+      "tags": [
+        "roadmap",
+        "changelog",
+        "git-commits",
+        "github-issues",
+        "github-api",
+        "graph-visualization",
+        "svg",
+        "interactive-ui",
+        "category-tree",
+        "public-page",
+        "dashboard",
+        "caching",
+        "redis",
+        "production-fallback",
+        "serverless"
+      ],
+      "related_guides": [
+        "features-roadmap-production-spec-071",
+        "features-roadmap-checklist-072",
+        "features-roadmap-gaps-073",
+        "features-roadmap-summary-074"
+      ],
+      "functions": [
+        "GitService.getCommitHistory",
+        "GitService.validateGitRepository",
+        "GitHubService.getCommitHistoryFromGitHub",
+        "GitHubService.fetchIssues",
+        "CategoryService.buildTree",
+        "CacheManager.get",
+        "CacheManager.set",
+        "RoadmapService.getRoadmap",
+        "parseCommit",
+        "extractGitmoji",
+        "inferSubcategory"
+      ],
+      "components": [
+        "RoadmapGraphView",
+        "CategoryTree",
+        "CommitCard",
+        "IssueCard",
+        "ViewToggle",
+        "StatCard",
+        "DashboardCharts",
+        "CategoryBadge"
+      ],
+      "status": "active",
+      "created": "2025-11-19",
+      "updated": "2025-11-20"
+    },
+    {
+      "id": "features-roadmap-production-spec-071",
+      "title": "Roadmap & Changelog - Production Specification",
+      "filename": "documentation/features/ROADMAP_CHANGELOG_PRODUCTION_SPEC.md",
+      "category": "features",
+      "summary": "Detailed production specification for roadmap system including GitHub API configuration, environment variables setup, serverless deployment support, security considerations, performance optimizations, error handling strategies, and production deployment checklist. Updated 2025-11-20 with GitHub API fallback solution.",
+      "tags": [
+        "roadmap",
+        "production",
+        "specification",
+        "security",
+        "performance",
+        "deployment",
+        "error-handling",
+        "monitoring",
+        "github-api",
+        "serverless",
+        "environment-variables"
+      ],
+      "related_guides": [
+        "features-roadmap-changelog-070",
+        "features-roadmap-checklist-072"
+      ],
+      "functions": [],
+      "components": [],
+      "status": "active",
+      "created": "2025-11-19",
+      "updated": "2025-11-20"
+    },
+    {
+      "id": "features-roadmap-checklist-072",
+      "title": "Roadmap Implementation Checklist",
+      "filename": "documentation/features/ROADMAP_IMPLEMENTATION_CHECKLIST.md",
+      "category": "features",
+      "summary": "Comprehensive implementation checklist covering all aspects of roadmap feature development, testing, and deployment. Updated 2025-11-20 with completed production deployment tasks including shared parsing utilities and GitHub API fallback implementation.",
+      "tags": [
+        "roadmap",
+        "checklist",
+        "implementation",
+        "testing",
+        "deployment",
+        "project-management",
+        "production-ready"
+      ],
+      "related_guides": [
+        "features-roadmap-changelog-070",
+        "features-roadmap-production-spec-071"
+      ],
+      "functions": [],
+      "components": [],
+      "status": "active",
+      "created": "2025-11-19",
+      "updated": "2025-11-20"
+    },
+    {
+      "id": "features-roadmap-gaps-073",
+      "title": "Roadmap Gaps and Risks Analysis",
+      "filename": "documentation/features/ROADMAP_GAPS_AND_RISKS.md",
+      "category": "features",
+      "summary": "Analysis of implementation gaps, known risks, and areas requiring future attention in the roadmap feature. Updated 2025-11-20: Risk 2 (Git unavailability in production) marked as RESOLVED with GitHub API fallback solution.",
+      "tags": [
+        "roadmap",
+        "risks",
+        "gaps",
+        "analysis",
+        "future-work",
+        "technical-debt",
+        "mitigations"
+      ],
+      "related_guides": [
+        "features-roadmap-changelog-070",
+        "features-roadmap-summary-074"
+      ],
+      "functions": [],
+      "components": [],
+      "status": "active",
+      "created": "2025-11-19",
+      "updated": "2025-11-20"
+    },
+    {
+      "id": "features-roadmap-summary-074",
+      "title": "Roadmap Implementation Summary",
+      "filename": "documentation/features/ROADMAP_IMPLEMENTATION_SUMMARY.md",
+      "category": "features",
+      "summary": "Executive summary of roadmap feature implementation, key decisions, and final architecture. Updated 2025-11-20 with Production Deployment Fix section documenting GitHub API fallback solution for serverless environments.",
+      "tags": [
+        "roadmap",
+        "summary",
+        "implementation",
+        "architecture",
+        "decisions",
+        "production-fix",
+        "github-api-fallback"
+      ],
+      "related_guides": [
+        "features-roadmap-changelog-070",
+        "features-roadmap-gaps-073"
+      ],
+      "functions": [],
+      "components": [],
+      "status": "active",
+      "created": "2025-11-19",
+      "updated": "2025-11-20"
+    },
+    {
+      "id": "features-contact-deletion-status-api-075",
+      "title": "Contact Deletion Status API",
+      "filename": "documentation/features/CONTACT_DELETION_STATUS_API.md",
+      "category": "features",
+      "summary": "API endpoint documentation for checking if a contact has a pending account deletion, enabling real-time warning displays in ContactCard and EditContactModal components.",
+      "tags": [
+        "contacts",
+        "deletion",
+        "api",
+        "gdpr",
+        "notifications",
+        "warnings",
+        "real-time",
+        "firestore"
+      ],
+      "related_guides": [
+        "rgpd-contact-deletion-warning-048",
+        "rgpd-account-deletion-flow-047",
+        "features-contacts-i18n-028"
+      ],
+      "functions": [
+        "getContactDeletionStatus"
+      ],
+      "components": [
+        "ContactCard",
+        "EditContactModal"
+      ],
+      "status": "active",
+      "created": "2025-11-20",
+      "updated": "2025-11-20"
+    },
+    {
+      "id": "testing-anonymous-analytics-077",
+      "title": "Anonymous Analytics Manual Test Guide",
+      "filename": "documentation/testing/ANONYMOUS_ANALYTICS_MANUAL_TEST_GUIDE.md",
+      "category": "testing",
+      "summary": "Comprehensive manual testing guide for Phase 3.3 of anonymous analytics implementation. Covers 8 test categories with 35+ individual tests including consent withdrawal scenarios, Firestore verification, TTL validation, GDPR compliance, multi-language testing, rate limiting, edge cases, and client-side integration.",
+      "tags": [
+        "testing",
+        "manual-testing",
+        "anonymous-analytics",
+        "gdpr",
+        "rgpd",
+        "consent-withdrawal",
+        "firestore-verification",
+        "ttl",
+        "rate-limiting",
+        "multi-language",
+        "troubleshooting"
+      ],
+      "related_guides": [
+        "rgpd-anonymous-analytics-046",
+        "testing-rgpd-guide-038",
+        "testing-email-notifications-065",
+        "analytics-implementation-012"
+      ],
+      "functions": [
+        "trackAnonymousView",
+        "trackAnonymousClick",
+        "trackAnonymousShare",
+        "trackAnonymousQRScan"
+      ],
+      "components": [
+        "AnonymousAnalyticsService"
+      ],
+      "status": "active",
+      "created": "2025-11-20",
+      "updated": "2025-11-20"
+    },
+    {
+      "id": "testing-contact-anonymization-078",
+      "title": "Contact Anonymization Manual Test Guide - GDPR Article 17",
+      "filename": "documentation/testing/CONTACT_ANONYMIZATION_MANUAL_TEST_GUIDE.md",
+      "category": "testing",
+      "summary": "Comprehensive manual testing guide for contact anonymization system implementing GDPR Article 17 Right to be Forgotten. Covers 6 test scenarios including end-to-end anonymization flow, Firestore verification, Pinecone vector metadata verification, semantic search functionality, edge cases & idempotency, and multi-language UI testing across 5 languages.",
+      "tags": [
+        "testing",
+        "manual-testing",
+        "contact-anonymization",
+        "gdpr",
+        "rgpd",
+        "right-to-be-forgotten",
+        "article-17",
+        "firestore-verification",
+        "pinecone-verification",
+        "semantic-search",
+        "multi-language",
+        "edge-cases",
+        "troubleshooting"
+      ],
+      "related_guides": [
+        "rgpd-contact-anonymization-049",
+        "testing-rgpd-guide-038",
+        "rgpd-account-deletion-flow-047",
+        "rgpd-contact-deletion-warning-048"
+      ],
+      "functions": [
+        "ContactAnonymizationService.anonymizeContact",
+        "ContactAnonymizationService.anonymizeDynamicFields",
+        "ContactAnonymizationService.anonymizeMetadata",
+        "VectorStorageService.anonymizeVectorMetadata",
+        "removeContactFromUser"
+      ],
+      "components": [
+        "ContactAnonymizationService",
+        "VectorStorageService",
+        "AccountDeletionService"
+      ],
+      "status": "active",
+      "created": "2025-11-20",
+      "updated": "2025-11-20"
+    },
+    {
+      "id": "rgpd-contact-anonymization-049",
+      "title": "Contact Anonymization Implementation Guide - Right to Be Forgotten",
+      "filename": "documentation/rgpd/CONTACT_ANONYMIZATION_IMPLEMENTATION_GUIDE.md",
+      "category": "rgpd",
+      "summary": "Comprehensive implementation guide for anonymizing User A's contact data in User B's contact list when User A deletes their account. Implements GDPR Article 17 (Right to be Forgotten) with Option B (Preserve Context) strategy, anonymizing all PII while preserving business context and User B's notes/tags.",
+      "tags": [
+        "gdpr",
+        "rgpd",
+        "anonymization",
+        "contact-deletion",
+        "right-to-be-forgotten",
+        "privacy",
+        "data-protection",
+        "firestore",
+        "pinecone"
+      ],
+      "related_guides": [
+        "rgpd-account-deletion-flow-047",
+        "rgpd-contact-deletion-warning-048",
+        "rgpd-implementation-summary-042",
+        "rgpd-consent-guide-045",
+        "rgpd-anonymous-analytics-046"
+      ],
+      "functions": [
+        "anonymizeContact",
+        "anonymizeDynamicFields",
+        "anonymizeMetadata",
+        "removeContactFromUser",
+        "anonymizeVectorMetadata"
+      ],
+      "components": [
+        "ContactAnonymizationService"
+      ],
+      "status": "active",
+      "created": "2025-11-20",
+      "updated": "2025-11-20"
+    },
+    {
+      "id": "rgpd-contact-anonymization-bugfix-080",
+      "title": "Contact Anonymization - Critical Bugfixes (4 Bugs Fixed)",
+      "filename": "documentation/rgpd/CONTACT_ANONYMIZATION_BUGFIX.md",
+      "category": "rgpd",
+      "summary": "Complete documentation of four critical bugs discovered and fixed in the contact anonymization system: Bug #1 (Execution order causing anonymization to never execute), Bug #2 (Pinecone API method error), Bug #3 (Missing vector integration in ExchangeService), and Bug #4 (Field name mismatch causing premium accounts to be treated as base tier). All bugs fixed and tested, achieving full GDPR Article 17 compliance.",
+      "tags": [
+        "gdpr",
+        "rgpd",
+        "bug-fixes",
+        "contact-anonymization",
+        "execution-order",
+        "pinecone-api",
+        "vector-storage",
+        "field-mismatch",
+        "subscription-tier",
+        "accountType",
+        "exchangeService"
+      ],
+      "related_guides": [
+        "rgpd-contact-anonymization-049",
+        "testing-contact-anonymization-078",
+        "rgpd-account-deletion-flow-047",
+        "technical-semantic-search-032"
+      ],
+      "functions": [
+        "executeAccountDeletion",
+        "cascadeDeleteContact",
+        "deleteUserOwnData",
+        "anonymizeVectorMetadata",
+        "submitExchangeContact"
+      ],
+      "components": [
+        "AccountDeletionService",
+        "ExchangeService",
+        "VectorStorageService",
+        "ContactAnonymizationService"
+      ],
+      "status": "active",
+      "created": "2025-11-20",
+      "updated": "2025-11-21"
+    },
+    {
+      "id": "rgpd-contact-anonymization-final-081",
+      "title": "Contact Anonymization Final Report",
+      "filename": "documentation/rgpd/CONTACT_ANONYMIZATION_FINAL_REPORT.md",
+      "category": "rgpd",
+      "summary": "Final implementation report for contact anonymization system implementing GDPR Article 17 Right to be Forgotten. Documents complete implementation including all bug fixes, testing results, and deployment status.",
+      "tags": [
+        "gdpr",
+        "rgpd",
+        "contact-anonymization",
+        "final-report",
+        "implementation-complete",
+        "right-to-be-forgotten",
+        "article-17"
+      ],
+      "related_guides": [
+        "rgpd-contact-anonymization-049",
+        "rgpd-contact-anonymization-bugfix-080",
+        "testing-contact-anonymization-078",
+        "rgpd-account-deletion-flow-047"
+      ],
+      "functions": [],
+      "components": [],
+      "status": "active",
+      "created": "2025-11-20",
+      "updated": "2025-11-21"
+    },
+    {
+      "id": "features-geocoding-system-082",
+      "title": "Geocoding System - Complete Technical Guide",
+      "filename": "documentation/features/GEOCODING_SYSTEM_GUIDE.md",
+      "category": "features",
+      "summary": "Comprehensive technical guide for the geocoding system using Google Maps API. Covers reverse geocoding ($0.005/request), cost tracking, budget management, location data model (PII vs business context), GDPR compliance with anonymization, and integration with exchange contacts and venue enrichment. Includes complete API reference, usage examples, subscription tier limits, monitoring, debugging, and troubleshooting.",
+      "tags": [
+        "geocoding",
+        "google-maps",
+        "reverse-geocoding",
+        "cost-tracking",
+        "location",
+        "gps",
+        "api",
+        "budget",
+        "subscription",
+        "gdpr",
+        "venue-enrichment",
+        "places-api",
+        "exchange-contacts"
+      ],
+      "related_guides": [
+        "features-venue-enrichment-021",
+        "rgpd-contact-anonymization-049",
+        "technical-cost-tracking-migration-024",
+        "technical-semantic-search-032"
+      ],
+      "functions": [
+        "reverseGeocode",
+        "parseGeocodingResult",
+        "canAffordOperation",
+        "recordUsage",
+        "anonymizeLocationData",
+        "geocodeContactLocation"
+      ],
+      "components": [
+        "PlacesApiClient",
+        "CostTrackingService",
+        "ExchangeModal",
+        "ContactAnonymizationService"
+      ],
+      "status": "active",
+      "created": "2025-11-21",
+      "updated": "2025-11-21"
+    },
+    {
+      "id": "technical-git-dual-remote-setup-049",
+      "title": "Dual GitHub + GitLab Repository Setup",
+      "filename": "documentation/technical/GIT_DUAL_REMOTE_SETUP.md",
+      "category": "technical",
+      "summary": "Complete setup guide for configuring repository to push to both GitHub and GitLab simultaneously. Covers initial setup, authentication (SSH for GitLab, HTTPS for GitHub), troubleshooting common issues including GitLab SSO/SAML messages, and integration with git-manager-skill.",
+      "tags": [
+        "git",
+        "github",
+        "gitlab",
+        "repository",
+        "deployment",
+        "version-control",
+        "multi-remote",
+        "infrastructure",
+        "setup",
+        "ssh",
+        "authentication"
+      ],
+      "related_guides": [
+        "git-manager-skill",
+        "features-roadmap-changelog-070"
+      ],
+      "functions": [],
+      "components": [],
+      "status": "active",
+      "created": "2025-11-21",
+      "updated": "2025-11-21"
+    },
+    {
+      "id": "testing-location-phase3-079",
+      "title": "Location Services Phase 3 Test Plan - Auto-Enrichment",
+      "filename": "documentation/testing/LOCATION_SERVICES_PHASE3_TEST_PLAN.md",
+      "category": "testing",
+      "summary": "Comprehensive testing guide for Phase 3 auto-enrichment implementation covering 80+ test scenarios including happy path, settings integration, budget tracking, Redis caching, error handling, subscription tiers, performance, data integrity, and graceful degradation with detailed verification procedures.",
+      "tags": [
+        "location-services",
+        "auto-enrichment",
+        "phase-3",
+        "testing",
+        "qa",
+        "redis-cache",
+        "google-places",
+        "budget-tracking",
+        "exchange-contacts",
+        "venue-enrichment",
+        "manual-testing",
+        "integration-testing"
+      ],
+      "related_guides": [
+        "LOCATION_SERVICES_AUTO_TAGGING_SPEC.md",
+        "GEOCODING_SYSTEM_GUIDE.md",
+        "RATE_LIMIT_TESTING.md",
+        "RGPD_TESTING_GUIDE.md"
+      ],
+      "functions": [
+        "enrichContact",
+        "getVenueData",
+        "getCacheKey",
+        "isEnrichmentEnabled",
+        "searchNearbyVenue",
+        "getRandomTTL"
+      ],
+      "components": [
+        "LocationEnrichmentService",
+        "ExchangeService",
+        "PlacesService",
+        "CostTrackingService"
+      ],
+      "status": "active",
+      "created": "2025-11-21",
+      "updated": "2025-11-21"
+    },
+    {
+      "id": "features-session-enrichment-001",
+      "title": "Session-Based Location Enrichment",
+      "filename": "SESSION_BASED_ENRICHMENT.md",
+      "path": "documentation/features/SESSION_BASED_ENRICHMENT.md",
+      "category": "features",
+      "summary": "Multi-step location enrichment with session-based cost tracking combining reverse geocoding and venue search",
+      "tags": [
+        "session-tracking",
+        "location-enrichment",
+        "cost-tracking",
+        "geocoding",
+        "venue-search",
+        "location-services"
+      ],
+      "status": "active",
+      "created": "2025-11-22",
+      "updated": "2025-11-22",
+      "functions": [
+        "enrichContact",
+        "searchNearbyVenue",
+        "reverseGeocode",
+        "finalizeSession"
+      ],
+      "components": [
+        "LocationEnrichmentService",
+        "SessionTrackingService",
+        "CostTrackingService"
+      ],
+      "related_guides": [
+        "GEOCODING_SYSTEM_GUIDE.md",
+        "LOCATION_SERVICES_AUTO_TAGGING_SPEC.md",
+        "SESSION_TRACKING_FIX.md"
+      ]
+    },
+    {
+      "id": "infrastructure-session-comparison-001",
+      "title": "Session vs Standalone Cost Tracking - Decision Guide",
+      "filename": "SESSION_VS_STANDALONE_TRACKING.md",
+      "path": "documentation/infrastructure/SESSION_VS_STANDALONE_TRACKING.md",
+      "category": "technical",
+      "summary": "Comprehensive comparison and decision guide for choosing between session-based and standalone cost tracking approaches",
+      "tags": [
+        "session-tracking",
+        "cost-tracking",
+        "api-usage",
+        "architecture",
+        "decision-guide"
+      ],
+      "status": "active",
+      "created": "2025-11-22",
+      "updated": "2025-11-22",
+      "functions": [
+        "recordUsage",
+        "finalizeSession",
+        "canAffordOperation"
+      ],
+      "components": [
+        "SessionTrackingService",
+        "CostTrackingService"
+      ],
+      "related_guides": [
+        "SESSION_BASED_ENRICHMENT.md",
+        "SESSION_TRACKING_FIX.md",
+        "COST_TRACKING_MIGRATION_GUIDE.md"
+      ]
     }
   ]
 }

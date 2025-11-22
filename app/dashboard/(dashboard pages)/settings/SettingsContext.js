@@ -67,6 +67,13 @@ export function SettingsProvider({ children }) {
                 sensitiveStatus: data.sensitiveStatus ?? false,
                 sensitivetype: data.sensitivetype ?? 3,
                 metaData: data.metaData || { title: '', description: '' },
+                // Location Services settings
+                locationServicesEnabled: data.locationServicesEnabled ?? false,
+                locationFeatures: data.locationFeatures || {
+                    autoVenueEnrichment: false,
+                    eventDetection: false,
+                    autoTagging: false
+                },
             };
 
             // Mark as server update and store reference

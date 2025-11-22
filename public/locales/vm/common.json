@@ -405,6 +405,25 @@
     "profile_title": "Tiêu đề hồ sơ",
     "bio": "Tiểu sử"
   },
+  "location": {
+    "settings": {
+      "title": "Dịch vụ Vị trí",
+      "subtitle": "Tự động làm giàu liên hệ với dữ liệu địa điểm",
+      "monthly_usage": "Sử dụng Hàng tháng",
+      "geocoding": "Mã hóa Địa lý",
+      "cost": "Chi phí",
+      "features": "Tính năng",
+      "auto_enrichment": "Làm giàu Địa điểm Tự động",
+      "auto_enrichment_desc": "Tự động phát hiện tên địa điểm khi trao đổi liên hệ",
+      "event_detection": "Phát hiện Sự kiện Thông minh",
+      "event_detection_desc": "Đề xuất tạo nhóm cho các liên hệ cùng địa điểm",
+      "auto_tagging": "Gắn thẻ Tự động bằng AI",
+      "auto_tagging_desc": "Tự động tạo thẻ ngữ nghĩa",
+      "tier_required": "Yêu cầu",
+      "how_it_works": "Cách hoạt động",
+      "how_it_works_desc": "Khi các liên hệ trao đổi thông tin, chúng tôi có thể tự động phát hiện địa điểm bằng tọa độ GPS. Điều này giúp bạn nhớ nơi gặp mọi người và kích hoạt các tính năng thông minh như phát hiện sự kiện."
+    }
+  },
   "dropdown": {
     "social_icons": "Biểu tượng xã hội",
     "support_banner": "Biểu ngữ hỗ trợ",

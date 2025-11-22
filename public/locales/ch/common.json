@@ -370,6 +370,25 @@
     "profile_title": "个人资料标题",
     "bio": "简介"
   },
+  "location": {
+    "settings": {
+      "title": "位置服务",
+      "subtitle": "自动丰富联系人地点数据",
+      "monthly_usage": "每月使用量",
+      "geocoding": "地理编码",
+      "cost": "费用",
+      "features": "功能",
+      "auto_enrichment": "自动地点丰富",
+      "auto_enrichment_desc": "交换联系人时自动检测地点名称",
+      "event_detection": "智能事件检测",
+      "event_detection_desc": "为同一地点的联系人建议创建群组",
+      "auto_tagging": "AI自动标记",
+      "auto_tagging_desc": "自动生成语义标签",
+      "tier_required": "需要",
+      "how_it_works": "工作原理",
+      "how_it_works_desc": "当联系人交换信息时，我们可以使用GPS坐标自动检测地点。这帮助您记住在哪里认识的人，并启用智能功能如事件检测。"
+    }
+  },
   "dropdown": {
     "social_icons": "社交图标",
     "support_banner": "支持横幅",

@@ -450,6 +450,25 @@
     "profile_title": "Titre du profil",
     "bio": "Bio"
   },
+  "location": {
+    "settings": {
+      "title": "Services de localisation",
+      "subtitle": "Enrichir automatiquement les contacts avec des données de lieu",
+      "monthly_usage": "Utilisation mensuelle",
+      "geocoding": "Géocodage",
+      "cost": "Coût",
+      "features": "Fonctionnalités",
+      "auto_enrichment": "Enrichissement automatique de lieu",
+      "auto_enrichment_desc": "Détecter automatiquement les noms de lieux lors de l'échange de contacts",
+      "event_detection": "Détection intelligente d'événements",
+      "event_detection_desc": "Suggérer la création de groupes pour les contacts au même endroit",
+      "auto_tagging": "Étiquetage automatique par IA",
+      "auto_tagging_desc": "Générer des étiquettes sémantiques automatiquement",
+      "tier_required": "Requis",
+      "how_it_works": "Comment ça marche",
+      "how_it_works_desc": "Lorsque les contacts échangent des informations, nous pouvons automatiquement détecter le lieu en utilisant les coordonnées GPS. Cela vous aide à vous souvenir où vous avez rencontré des personnes et active des fonctionnalités intelligentes comme la détection d'événements."
+    }
+  },
   "dropdown": {
     "social_icons": "Icônes sociales",
     "support_banner": "Bannière de soutien",

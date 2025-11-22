@@ -78,38 +78,9 @@ export default function ExchangeModal({
 
             toast.success(t('exchange.location_obtained') || 'Location obtained successfully!');
 
-            // Perform reverse geocoding to get address details
-            try {
-                console.log("🌍 Performing reverse geocoding...");
-                const geocodeUrl = `/api/user/contacts/geocode?lat=${userLocation.latitude}&lng=${userLocation.longitude}`;
-                // Add profileOwnerId if available to track costs against the profile owner
-                const geocodeUrlWithUser = profileOwnerId
-                    ? `${geocodeUrl}&userId=${profileOwnerId}`
-                    : geocodeUrl;
-
-                const geocodeResponse = await fetch(geocodeUrlWithUser);
-
-                if (geocodeResponse.ok) {
-                    const geocodeData = await geocodeResponse.json();
-                    if (geocodeData.success && geocodeData.address) {
-                        // Enrich location with address details
-                        const enrichedLocation = {
-                            ...userLocation,
-                            ...geocodeData.address
-                        };
-                        setLocation(enrichedLocation);
-                        console.log("✅ Location enriched with address:", {
-                            city: geocodeData.address.city,
-                            country: geocodeData.address.country
-                        });
-                    }
-                } else {
-                    console.warn("⚠️ Reverse geocoding failed, continuing with coordinates only");
-                }
-            } catch (geocodeError) {
-                console.warn("⚠️ Reverse geocoding error:", geocodeError);
-                // Continue with just coordinates if geocoding fails
-            }
+            // Note: Reverse geocoding and venue enrichment will happen server-side
+            // during contact submission as part of the enrichment session
+            console.log("✅ GPS coordinates obtained, enrichment will happen on submission");
 
             return userLocation;
 

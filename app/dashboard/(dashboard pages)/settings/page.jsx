@@ -12,6 +12,7 @@ import SEO from "./components/SEO";
 import SensitiveMaterial from "./components/SensitiveMaterial";
 import SocialSetting from "./components/SocialSetting";
 import SupportBanner from "./components/SupportBanner";
+import LocationServicesTab from "./components/LocationServicesTab";
 
 // Wrapper component to provide context
 export default function SettingsPageWrapper() {
@@ -114,6 +115,7 @@ function SettingsPage() {
             <SocialSetting />
             <SupportBanner />
             <SensitiveMaterial />
+            <LocationServicesTab />
             <SEO />
         </div>
     );

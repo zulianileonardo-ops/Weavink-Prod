@@ -73,6 +73,25 @@
       "other": "Other"
     }
   },
+  "location": {
+    "settings": {
+      "title": "Location Services",
+      "subtitle": "Automatically enrich contacts with venue data",
+      "monthly_usage": "Monthly Usage",
+      "geocoding": "Geocoding",
+      "cost": "Cost",
+      "features": "Features",
+      "auto_enrichment": "Auto Venue Enrichment",
+      "auto_enrichment_desc": "Automatically detect venue names when contacts are exchanged",
+      "event_detection": "Smart Event Detection",
+      "event_detection_desc": "Suggest creating groups for contacts at same location",
+      "auto_tagging": "AI Auto-Tagging",
+      "auto_tagging_desc": "Generate semantic tags automatically",
+      "tier_required": "Required",
+      "how_it_works": "How It Works",
+      "how_it_works_desc": "When contacts exchange information, we can automatically detect the venue using GPS coordinates. This helps you remember where you met people and enables smart features like event detection."
+    }
+  },
   "login": {
     "title": "Log in to your Linktree",
     "username_placeholder": "fabiconcept",

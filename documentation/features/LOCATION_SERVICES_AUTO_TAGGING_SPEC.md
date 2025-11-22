@@ -99,12 +99,15 @@ Users can control location services through a new settings section, similar to t
 ```javascript
 {
   // Master toggle
-  locationServicesEnabled: boolean,  // Default: true for Premium+, false for Base/Pro
+  locationServicesEnabled: boolean,  // Default: false (user must explicitly enable)
 
-  // Granular controls
-  autoVenueEnrichment: boolean,     // Auto-enrich contacts with venue data
-  eventDetection: boolean,          // Smart event detection
-  autoTagging: boolean,             // AI-powered auto-tagging
+  // Granular feature controls (nested under locationFeatures)
+  locationFeatures: {
+    geocoding: boolean,              // Convert GPS to addresses (Pro+, $0.005/contact)
+    autoVenueEnrichment: boolean,    // Auto-enrich with venue data (Premium+, $0.032/contact)
+    eventDetection: boolean,         // Smart event detection (Premium+, Free)
+    autoTagging: boolean             // AI-powered auto-tagging (Premium+, ~$0.0000002/tag)
+  },
 
   // Budget visibility
   monthlyUsageLocation: number,     // Current month usage
@@ -142,25 +145,32 @@ Similar to `ContactDownloadTab.jsx` pattern:
   {/* Feature Controls */}
   <div className="space-y-3">
     <FeatureToggle
+      label="Geocoding"
+      description="Convert GPS coordinates to readable addresses (reverse geocoding)"
+      enabled={locationFeatures.geocoding}
+      cost="~$0.005 per contact"
+      tier="Pro+"
+    />
+    <FeatureToggle
       label="Auto Venue Enrichment"
       description="Automatically detect venue names when contacts are exchanged"
-      enabled={autoVenueEnrichment}
-      cost="~$0.0015 per contact"
+      enabled={locationFeatures.autoVenueEnrichment}
+      cost="~$0.032 per contact"
       tier="Premium+"
     />
     <FeatureToggle
       label="Smart Event Detection"
       description="Suggest creating groups for contacts at same location"
-      enabled={eventDetection}
+      enabled={locationFeatures.eventDetection}
       cost="Free (internal)"
       tier="Premium+"
     />
     <FeatureToggle
       label="AI Auto-Tagging"
       description="Generate semantic tags automatically"
-      enabled={autoTagging}
+      enabled={locationFeatures.autoTagging}
       cost="~$0.0000002 per tag"
-      tier="Pro+"
+      tier="Premium+"
     />
   </div>
 </div>
@@ -171,12 +181,16 @@ Similar to `ContactDownloadTab.jsx` pattern:
 Update `lib/services/serviceSetting/server/settingsService.js`:
 ```javascript
 export async function updateLocationSettings(userId, settings) {
+  // Validate tier permissions before updating
+  const validation = await _validateLocationFeaturesTier(userId, settings.locationFeatures);
+  if (!validation.valid) {
+    throw new Error(`Permission denied: ${validation.errors.join(', ')}`);
+  }
+
   const settingsRef = doc(adminDb, 'users', userId);
   await settingsRef.update({
     'settings.locationServicesEnabled': settings.locationServicesEnabled,
-    'settings.autoVenueEnrichment': settings.autoVenueEnrichment,
-    'settings.eventDetection': settings.eventDetection,
-    'settings.autoTagging': settings.autoTagging,
+    'settings.locationFeatures': settings.locationFeatures,
     'settings.updatedAt': FieldValue.serverTimestamp()
   });
 }
@@ -186,13 +200,27 @@ export async function updateLocationSettings(userId, settings) {
 
 ### Core Features
 
-1. **Reverse Location Search (Pro/Premium) - IMPLEMENTED**
+1. **Location Services with Tiered Access - IMPLEMENTED**
+
+   **Tier Structure:**
+   - **BASE**: No location services
+   - **PRO+**: Geocoding only ($0.005/contact)
+     - ✅ Convert GPS coordinates to addresses
+     - ❌ No venue enrichment
+   - **PREMIUM+**: Geocoding + Venue Enrichment + Advanced Features
+     - ✅ Geocoding ($0.005/contact)
+     - ✅ Auto Venue Enrichment ($0.032/contact)
+     - ✅ Smart Event Detection (Free)
+     - ✅ AI Auto-Tagging (~$0.0000002/tag)
+
+   **Implemented Features:**
    - ✅ Manual search in group creation (implemented)
    - ✅ Automatic venue detection during contact exchange (implemented with session tracking)
    - ✅ Google Places API integration (implemented)
    - ✅ Intelligent caching strategy (100m radius grid, 15-30 min randomized TTL)
    - ✅ Cost optimization through aggressive caching (70%+ hit rate in production)
    - ✅ Session-based multi-step tracking (geocoding + venue search)
+   - ✅ Tier-based feature validation (prevents unauthorized access)
 
 2. **Smart Event Detection Dashboard - PLANNED**
    - Automatically detect when multiple contacts share location + time
@@ -206,10 +234,11 @@ export async function updateLocationSettings(userId, settings) {
    - Lightning-fast group creation with structured tags
    - Tag suggestions based on context (location, time, company)
 
-4. **Premium Tier Features**
-   - Pro: Basic location tagging, manual event grouping
-   - Premium: Full auto-detection, AI tagging, batch operations
-   - Business/Enterprise: Unlimited operations, priority processing
+4. **Subscription Tier Features**
+   - **BASE**: No location services access
+   - **PRO**: Geocoding only ($0.005/contact) - Convert GPS to addresses
+   - **PREMIUM**: All Pro features + Venue Enrichment ($0.032/contact) + Event Detection + AI Tagging
+   - **BUSINESS/ENTERPRISE**: All Premium features + Higher budget limits + Priority processing
 
 ---
 

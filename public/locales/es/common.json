@@ -405,6 +405,25 @@
     "profile_title": "Título del perfil",
     "bio": "Biografía"
   },
+  "location": {
+    "settings": {
+      "title": "Servicios de Ubicación",
+      "subtitle": "Enriquece automáticamente los contactos con datos de lugar",
+      "monthly_usage": "Uso Mensual",
+      "geocoding": "Geocodificación",
+      "cost": "Costo",
+      "features": "Características",
+      "auto_enrichment": "Enriquecimiento Automático de Lugar",
+      "auto_enrichment_desc": "Detecta automáticamente nombres de lugares cuando se intercambian contactos",
+      "event_detection": "Detección Inteligente de Eventos",
+      "event_detection_desc": "Sugiere crear grupos para contactos en el mismo lugar",
+      "auto_tagging": "Etiquetado Automático con IA",
+      "auto_tagging_desc": "Genera etiquetas semánticas automáticamente",
+      "tier_required": "Requerido",
+      "how_it_works": "Cómo Funciona",
+      "how_it_works_desc": "Cuando los contactos intercambian información, podemos detectar automáticamente el lugar usando coordenadas GPS. Esto te ayuda a recordar dónde conociste a las personas y habilita funciones inteligentes como la detección de eventos."
+    }
+  },
   "dropdown": {
     "social_icons": "Iconos sociales",
     "support_banner": "Banner de apoyo",

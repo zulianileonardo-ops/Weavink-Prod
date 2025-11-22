@@ -70,6 +70,37 @@ Output: Grenoble, France
 - **GDPR Compliant**: Location data properly anonymized
 - **Optimized**: Cost-controlled with minimal field masks
 
+### Subscription Tier Access
+
+Location services are now split into two tiers to give users more control over costs:
+
+**Tier Structure:**
+- **BASE**: No location services access
+- **PRO+**: Geocoding only ($0.005/contact)
+  - ✅ Convert GPS coordinates to readable addresses
+  - ❌ No venue enrichment
+- **PREMIUM+**: Full location services
+  - ✅ Geocoding ($0.005/contact)
+  - ✅ Auto Venue Enrichment ($0.032/contact)
+  - ✅ Smart Event Detection (Free)
+  - ✅ AI Auto-Tagging (~$0.0000002/tag)
+
+**Feature Flags:**
+Users control features via `settings.locationFeatures`:
+```javascript
+{
+  geocoding: boolean,              // Pro+ required
+  autoVenueEnrichment: boolean,    // Premium+ required
+  eventDetection: boolean,         // Premium+ required
+  autoTagging: boolean             // Premium+ required
+}
+```
+
+**Validation:**
+- Tier permissions validated server-side in `settingsService.js`
+- Users cannot enable features above their subscription level
+- Error: `"Permission denied: Geocoding requires Pro subscription or higher"`
+
 ---
 
 ## System Architecture
