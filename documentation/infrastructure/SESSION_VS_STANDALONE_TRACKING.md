@@ -526,6 +526,122 @@ const geocodingCost = monthlyDoc.data()
 
 ---
 
+## Troubleshooting & Common Issues
+
+### Bug: Single-Step Operations Saved to SessionUsage (Fixed 2025-11-22)
+
+**Problem**: Single-step operations (geocoding only OR venue only) were incorrectly creating sessionIds and saving to SessionUsage instead of ApiUsage.
+
+**Symptoms**:
+- Geocoding-only operations appeared in SessionUsage collection
+- Single venue searches created unnecessary sessions
+- ApiUsage collection was missing standalone operations
+- Session documents had only 1 step instead of multiple
+
+**Root Cause**:
+
+The bug was in `exchangeService.js` where sessionId was created whenever **ANY** enrichment was enabled:
+
+```javascript
+// ❌ BEFORE (Incorrect):
+if (LocationEnrichmentService.isEnrichmentEnabled(userData)) {
+  // isEnrichmentEnabled() returns true if geocoding OR venue enabled
+  enrichmentSessionId = `session_enrich_${Date.now()}_${randomString}`;
+  // This created sessionId even for single-step operations!
+}
+```
+
+**The Fix**:
+
+Now sessionId is only created for **MULTI-STEP** operations (geocoding AND venue both enabled):
+
+```javascript
+// ✅ AFTER (Correct):
+const canGeocode = LocationEnrichmentService.isGeocodingEnabled(userData);
+const canEnrichVenue = LocationEnrichmentService.isVenueEnrichmentEnabled(userData);
+const isMultiStep = canGeocode && canEnrichVenue;
+
+// Only create session for multi-step operations
+enrichmentSessionId = isMultiStep
+  ? `session_enrich_${Date.now()}_${randomString}`
+  : null;  // Single-step → ApiUsage
+
+console.log('🌍 [Exchange] Starting enrichment:', {
+  canGeocode,
+  canEnrichVenue,
+  isMultiStep,
+  trackingMode: isMultiStep ? 'SessionUsage' : 'ApiUsage',
+  sessionId: enrichmentSessionId || 'standalone'
+});
+```
+
+**Expected Behavior After Fix**:
+
+| Configuration | Steps | sessionId | Saved To | ✅ Correct |
+|--------------|-------|-----------|----------|-----------|
+| Geocoding only | 1 | `null` | ApiUsage | ✅ YES |
+| Venue only | 1 | `null` | ApiUsage | ✅ YES |
+| Geocoding + Venue | 2 | `session_enrich_...` | SessionUsage | ✅ YES |
+
+**Verification in Logs**:
+
+Single-step operations now show:
+```
+🌍 [Exchange] Starting enrichment: {
+  canGeocode: true,
+  canEnrichVenue: false,
+  isMultiStep: false,  // ✅ Correctly identified as single-step
+  trackingMode: 'ApiUsage',  // ✅ Will use ApiUsage
+  sessionId: 'standalone'  // ✅ No sessionId created
+}
+
+📋 [CostTracking] Standalone operation - writing to ApiUsage
+✅ [CostTracking] Usage recorded: { recordedIn: 'ApiUsage' }
+```
+
+Multi-step operations show:
+```
+🌍 [Exchange] Starting enrichment: {
+  canGeocode: true,
+  canEnrichVenue: true,
+  isMultiStep: true,  // ✅ Multi-step detected
+  trackingMode: 'SessionUsage',  // ✅ Will use SessionUsage
+  sessionId: 'session_enrich_1763820300612_kmdt'  // ✅ Session created
+}
+
+📋 [CostTracking] Session-based operation - writing to SessionUsage ONLY
+```
+
+**Database Verification**:
+
+Check your Firestore to ensure correct storage:
+
+```javascript
+// Single-step geocoding should be in ApiUsage:
+ApiUsage/{userId}/monthly/2025-11/
+  featureBreakdown: {
+    location_reverse_geocoding: {
+      cost: 0.005,
+      runs: 1  // ✅ Standalone operation
+    }
+  }
+
+// Multi-step should be in SessionUsage:
+SessionUsage/{userId}/sessions/{sessionId}/
+  steps: [
+    { stepLabel: "Step 1: Reverse Geocoding", cost: 0.005 },
+    { stepLabel: "Step 2: Venue Search", cost: 0.032 }
+  ]
+  totalRuns: 2  // ✅ Two steps
+```
+
+**Files Modified**:
+- `lib/services/serviceContact/server/exchangeService.js` (lines 38-54)
+- Added multi-step detection before creating sessionId
+- Added conditional session finalization
+
+---
+
 ## Related Documentation
 
 - `SESSION_BASED_ENRICHMENT.md` - Location enrichment implementation

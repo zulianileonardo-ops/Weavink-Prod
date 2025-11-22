@@ -2599,7 +2599,7 @@
       "title": "Geocoding System - Complete Technical Guide",
       "filename": "documentation/features/GEOCODING_SYSTEM_GUIDE.md",
       "category": "features",
-      "summary": "Comprehensive technical guide for the geocoding system using Google Maps API. Covers reverse geocoding ($0.005/request), session-based vs standalone tracking, cost tracking in SessionUsage/ApiUsage collections, budget management, location data model (PII vs business context), GDPR compliance with anonymization, and integration with exchange contacts and venue enrichment. Includes complete API reference, usage examples, subscription tier limits, monitoring, debugging, and troubleshooting.",
+      "summary": "Comprehensive technical guide for the geocoding system using Google Maps API. Covers reverse geocoding ($0.005/request), session-based vs standalone tracking, cost tracking in SessionUsage/ApiUsage collections, budget management, location data model (PII vs business context), GDPR compliance with anonymization, and integration with exchange contacts and venue enrichment. Includes complete API reference, usage examples, subscription tier limits, monitoring, debugging, and troubleshooting. Updated 2025-11-22 with subscription tier validation bug fixes (accountType field, case sensitivity, undefined object assignment).",
       "tags": [
         "geocoding",
         "google-maps",
@@ -2614,7 +2614,10 @@
         "venue-enrichment",
         "places-api",
         "exchange-contacts",
-        "session-tracking"
+        "session-tracking",
+        "troubleshooting",
+        "bug-fixes",
+        "tier-validation"
       ],
       "related_guides": [
         "features-venue-enrichment-021",
@@ -2721,14 +2724,17 @@
       "filename": "SESSION_BASED_ENRICHMENT.md",
       "path": "documentation/features/SESSION_BASED_ENRICHMENT.md",
       "category": "features",
-      "summary": "Multi-step location enrichment with session-based cost tracking combining reverse geocoding and venue search",
+      "summary": "Multi-step location enrichment with session-based cost tracking combining reverse geocoding and venue search. Updated 2025-11-22 with corrected session creation logic: sessions only for multi-step operations, single-step uses ApiUsage.",
       "tags": [
         "session-tracking",
         "location-enrichment",
         "cost-tracking",
         "geocoding",
         "venue-search",
-        "location-services"
+        "location-services",
+        "bug-fixes",
+        "multi-step-detection",
+        "session-creation"
       ],
       "status": "active",
       "created": "2025-11-22",
@@ -2756,13 +2762,16 @@
       "filename": "SESSION_VS_STANDALONE_TRACKING.md",
       "path": "documentation/infrastructure/SESSION_VS_STANDALONE_TRACKING.md",
       "category": "technical",
-      "summary": "Comprehensive comparison and decision guide for choosing between session-based and standalone cost tracking approaches",
+      "summary": "Comprehensive comparison and decision guide for choosing between session-based and standalone cost tracking approaches. Includes troubleshooting section for single-step vs multi-step detection bug (fixed 2025-11-22).",
       "tags": [
         "session-tracking",
         "cost-tracking",
         "api-usage",
         "architecture",
-        "decision-guide"
+        "decision-guide",
+        "bug-fixes",
+        "troubleshooting",
+        "multi-step-detection"
       ],
       "status": "active",
       "created": "2025-11-22",
@@ -2787,7 +2796,7 @@
       "title": "Intelligent Location Services & AI Auto-Tagging System",
       "filename": "documentation/features/LOCATION_SERVICES_AUTO_TAGGING_SPEC.md",
       "category": "features",
-      "summary": "Advanced location-based contact management system with automatic venue enrichment, session-based tracking, Redis caching (70% hit rate), event detection, and AI auto-tagging. Phase 1 complete: Two-step enrichment (geocoding + venue search) with budget tracking, graceful degradation, and user settings integration. Includes comprehensive architecture diagrams, cost optimization strategy, and implementation roadmap.",
+      "summary": "Advanced location-based contact management system with automatic venue enrichment, session-based tracking, Redis caching (70% hit rate), event detection, and AI auto-tagging. Phase 1 complete: Two-step enrichment (geocoding + venue search) with budget tracking, graceful degradation, and user settings integration. Includes comprehensive architecture diagrams, cost optimization strategy, implementation roadmap, and corrected tier validation implementation (2025-11-22 bug fixes).",
       "tags": [
         "location",
         "gps",
@@ -2802,7 +2811,10 @@
         "session-tracking",
         "venue-enrichment",
         "auto-enrichment",
-        "cost-optimization"
+        "cost-optimization",
+        "tier-validation",
+        "bug-fixes",
+        "settings-service"
       ],
       "related_guides": [
         "SESSION_BASED_ENRICHMENT.md",

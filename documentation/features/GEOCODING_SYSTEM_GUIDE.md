@@ -39,8 +39,9 @@ related:
 11. [GDPR Compliance](#gdpr-compliance)
 12. [Configuration & Constants](#configuration--constants)
 13. [Monitoring & Debugging](#monitoring--debugging)
-14. [Future Features](#future-features)
-15. [File Reference](#file-reference)
+14. [Troubleshooting & Common Issues](#troubleshooting--common-issues)
+15. [Future Features](#future-features)
+16. [File Reference](#file-reference)
 
 ---
 
@@ -1858,6 +1859,78 @@ curl "https://maps.googleapis.com/maps/api/geocode/json?latlng=45.1772416,5.7212
 // Navigate to: ApiUsage/{userId}/monthly/2025-11/
 // Check: totalCost, totalRuns, featureBreakdown.google_maps_geocoding
 ```
+
+---
+
+## Troubleshooting & Common Issues
+
+### Subscription Tier Validation Errors
+
+**Problem**: Premium users getting "Unknown subscription level" or permission denied errors
+
+**Symptoms**:
+- Error: `Unknown subscription level: PREMIUM, defaulting to BASE`
+- Error: `Permission denied: Error validating subscription tier`
+- Error: `Cannot read properties of undefined (reading 'geocoding')`
+- Premium users unable to enable location features
+
+**Root Causes** (Fixed in settingsService.js):
+
+1. **Field Name Mismatch**
+   - ❌ **Bug**: Code read `userData.subscriptionLevel`
+   - ✅ **Fix**: Should read `userData.accountType`
+   - **Why**: Firestore stores subscription in `accountType` field, not `subscriptionLevel`
+
+2. **Case Sensitivity Bug**
+   - ❌ **Bug**: Code used `.toUpperCase()` → looked up `'PREMIUM'`
+   - ✅ **Fix**: Use `.toLowerCase()` → looks up `'premium'`
+   - **Why**: `LOCATION_FEATURES_BY_TIER` constant has lowercase keys
+
+3. **Undefined Object Assignment**
+   - ❌ **Bug**: `allowedFeatures.geocoding = ...` when `allowedFeatures` is undefined
+   - ✅ **Fix**: `allowedFeatures = LOCATION_FEATURES_BY_TIER[SUBSCRIPTION_LEVELS.BASE]`
+   - **Why**: Must assign entire object, not properties of undefined
+
+**Correct Implementation**:
+```javascript
+// File: lib/services/serviceSetting/server/settingsService.js
+static async _validateLocationFeaturesTier(userId, locationFeatures) {
+  try {
+    const userDoc = await adminDb.collection('users').doc(userId).get();
+    const userData = userDoc.data();
+
+    // ✅ Correct: Read accountType and convert to lowercase
+    const subscriptionLevel = (userData.accountType || 'base').toLowerCase();
+
+    // ✅ Correct: Lookup with lowercase key
+    let allowedFeatures = LOCATION_FEATURES_BY_TIER[subscriptionLevel];
+
+    // ✅ Correct: Assign entire object if undefined
+    if (!allowedFeatures) {
+      console.warn(`Unknown subscription level: ${subscriptionLevel}, defaulting to BASE`);
+      allowedFeatures = LOCATION_FEATURES_BY_TIER[SUBSCRIPTION_LEVELS.BASE];
+    }
+
+    // Validate features...
+  }
+}
+```
+
+**Verification**:
+```bash
+# Check user's subscription field
+# Firebase Console → Firestore → users/{userId}
+# Look for: accountType: 'premium' (lowercase)
+
+# Verify LOCATION_FEATURES_BY_TIER keys
+# File: lib/services/serviceContact/client/constants/contactConstants.js
+# Keys should be: 'base', 'pro', 'premium' (all lowercase)
+```
+
+**Related Issues Fixed**: 2025-11-22
+- Premium accounts now correctly recognized
+- Tier validation works for all subscription levels
+- No more undefined property access errors
 
 ---
 

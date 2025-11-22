@@ -147,14 +147,49 @@ ApiUsage/
 
 ## Implementation
 
+### Session Creation Logic (Updated 2025-11-22)
+
+**File**: `lib/services/serviceContact/server/exchangeService.js` (lines 38-54)
+
+**Critical**: Sessions are ONLY created for multi-step operations (geocoding AND venue both enabled).
+
+```javascript
+// ✅ CORRECTED: Only create session for MULTI-STEP operations
+const canGeocode = LocationEnrichmentService.isGeocodingEnabled(userData);
+const canEnrichVenue = LocationEnrichmentService.isVenueEnrichmentEnabled(userData);
+const isMultiStep = canGeocode && canEnrichVenue;
+
+// Generate session ID ONLY for multi-step operations
+enrichmentSessionId = isMultiStep
+  ? `session_enrich_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`
+  : null;  // Single-step operations tracked in ApiUsage
+
+console.log('🌍 [Exchange] Starting enrichment:', {
+  canGeocode,
+  canEnrichVenue,
+  isMultiStep,
+  trackingMode: isMultiStep ? 'SessionUsage' : 'ApiUsage',
+  sessionId: enrichmentSessionId || 'standalone'
+});
+```
+
+**Decision Table**:
+
+| Geocoding | Venue | sessionId | Tracking Mode |
+|-----------|-------|-----------|---------------|
+| ✅ Enabled | ✅ Enabled | Created | SessionUsage (multi-step) |
+| ✅ Enabled | ❌ Disabled | `null` | ApiUsage (standalone) |
+| ❌ Disabled | ✅ Enabled | `null` | ApiUsage (standalone) |
+| ❌ Disabled | ❌ Disabled | N/A | No enrichment |
+
+**Bug Fix (2025-11-22)**: Previously, sessionId was created whenever ANY enrichment was enabled, causing single-step operations to incorrectly save to SessionUsage. This has been fixed to only create sessions for true multi-step operations.
+
 ### Step 1: Reverse Geocoding
 
 **File**: `lib/services/serviceContact/server/LocationEnrichmentService.js` (lines 99-154)
 
 ```javascript
-// Generate session ID
-const sessionId = `session_enrich_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`;
-
+// Session ID passed from parent (null for standalone, sessionId for multi-step)
 // STEP 1: Reverse geocoding (GPS → address)
 const apiKey = process.env.GOOGLE_MAPS_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 const placesClient = new OptimizedPlacesApiClient(apiKey);

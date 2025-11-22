@@ -180,6 +180,7 @@ Similar to `ContactDownloadTab.jsx` pattern:
 
 Update `lib/services/serviceSetting/server/settingsService.js`:
 ```javascript
+// ✅ CORRECTED IMPLEMENTATION (Bug fixes applied 2025-11-22)
 export async function updateLocationSettings(userId, settings) {
   // Validate tier permissions before updating
   const validation = await _validateLocationFeaturesTier(userId, settings.locationFeatures);
@@ -194,7 +195,41 @@ export async function updateLocationSettings(userId, settings) {
     'settings.updatedAt': FieldValue.serverTimestamp()
   });
 }
+
+// Implementation of tier validation (corrected)
+static async _validateLocationFeaturesTier(userId, locationFeatures) {
+  const userDoc = await adminDb.collection('users').doc(userId).get();
+  const userData = userDoc.data();
+
+  // ✅ Read from accountType field (not subscriptionLevel)
+  // ✅ Convert to lowercase (not uppercase)
+  const subscriptionLevel = (userData.accountType || 'base').toLowerCase();
+
+  let allowedFeatures = LOCATION_FEATURES_BY_TIER[subscriptionLevel];
+
+  if (!allowedFeatures) {
+    // ✅ Assign entire object (not individual properties)
+    allowedFeatures = LOCATION_FEATURES_BY_TIER[SUBSCRIPTION_LEVELS.BASE];
+  }
+
+  // Validate geocoding (Pro+) and venue enrichment (Premium+)
+  const errors = [];
+  if (locationFeatures.geocoding && !allowedFeatures.geocoding) {
+    errors.push('Geocoding requires Pro subscription or higher');
+  }
+  if (locationFeatures.autoVenueEnrichment && !allowedFeatures.autoVenueEnrichment) {
+    errors.push('Auto Venue Enrichment requires Premium subscription or higher');
+  }
+
+  return { valid: errors.length === 0, errors };
+}
 ```
+
+**Bug Fixes (2025-11-22)**:
+- Fixed field name: `subscriptionLevel` → `accountType`
+- Fixed case handling: `.toUpperCase()` → `.toLowerCase()`
+- Fixed fallback: Assign object instead of undefined properties
+- Premium users now correctly validated
 
 ## Business Requirements
 
