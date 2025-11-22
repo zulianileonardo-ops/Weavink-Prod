@@ -387,7 +387,19 @@
     "session_id_label": "ID de sesión:",
     "technical_details": "Detalles técnicos",
     "user_agent_label": "Agente de usuario:",
-    "referrer_label": "Referencia:"
+    "referrer_label": "Referencia:",
+    "badge_budget": "Presupuesto",
+    "badge_limit": "Límite",
+    "budget_exceeded_title": "Enriquecimiento de ubicación pausado",
+    "budget_exceeded_message": "Se ha alcanzado su presupuesto mensual de servicios de ubicación. Se guardó la información de contacto básica, pero se omitió el enriquecimiento de ubicación para permanecer dentro de los límites de su plan.",
+    "runs_exceeded_message": "Se ha alcanzado su límite mensual de llamadas API de ubicación. Se guardó la información de contacto básica, pero se omitió el enriquecimiento de ubicación para permanecer dentro de los límites de su plan.",
+    "skipped_features_label": "Funciones omitidas:",
+    "feature_geocoding": "Geocodificación",
+    "feature_venue": "Enriquecimiento de lugar",
+    "budget_exceeded_at": "Ocurrió el {{date}}",
+    "budget_exceeded_suggestion": "Sus límites se restablecerán el próximo mes. Para habilitar el enriquecimiento de ubicación ahora, considere actualizar su plan en Configuración.",
+    "budget_exceeded_badge_tooltip": "Enriquecimiento de ubicación pausado - presupuesto mensual alcanzado",
+    "runs_exceeded_badge_tooltip": "Enriquecimiento de ubicación pausado - límite mensual alcanzado"
   },
   "common": {
     "enabled": "Activado",

@@ -354,7 +354,19 @@
     "session_id_label": "会话ID：",
     "technical_details": "技术细节",
     "user_agent_label": "用户代理：",
-    "referrer_label": "引荐来源："
+    "referrer_label": "引荐来源：",
+    "badge_budget": "预算",
+    "badge_limit": "限额",
+    "budget_exceeded_title": "位置增强已暂停",
+    "budget_exceeded_message": "已达到您的每月位置服务预算。已保存基本联系信息，但跳过了位置增强以保持在您的计划限制内。",
+    "runs_exceeded_message": "已达到您的每月位置API调用限制。已保存基本联系信息，但跳过了位置增强以保持在您的计划限制内。",
+    "skipped_features_label": "已跳过的功能：",
+    "feature_geocoding": "地理编码",
+    "feature_venue": "场地增强",
+    "budget_exceeded_at": "发生于 {{date}}",
+    "budget_exceeded_suggestion": "您的限额将在下个月重置。要立即启用位置增强，请考虑在设置中升级您的计划。",
+    "budget_exceeded_badge_tooltip": "位置增强已暂停 - 已达到每月预算",
+    "runs_exceeded_badge_tooltip": "位置增强已暂停 - 已达到每月限额"
   },
   "common": {
     "login": "登录",

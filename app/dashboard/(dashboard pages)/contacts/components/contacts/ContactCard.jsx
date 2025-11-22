@@ -303,6 +303,20 @@ const ContactCard = memo(function ContactCard({ contact, onEdit, onStatusUpdate,
                                             {(contact.searchMetadata.rerankScore * 100).toFixed(1)}%
                                         </span>
                                     )}
+                                    {contact.metadata?.budgetExceeded && (
+                                        <span
+                                            className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-semibold rounded-full bg-amber-100 text-amber-800 border border-amber-300"
+                                            title={
+                                                contact.metadata.budgetExceededReason === 'budget_exceeded'
+                                                    ? t('contacts.budget_exceeded_badge_tooltip', 'Location enrichment paused - monthly budget reached')
+                                                    : t('contacts.runs_exceeded_badge_tooltip', 'Location enrichment paused - monthly limit reached')
+                                            }
+                                        >
+                                            ⏸️ {contact.metadata.budgetExceededReason === 'budget_exceeded'
+                                                ? t('contacts.badge_budget', 'Budget')
+                                                : t('contacts.badge_limit', 'Limit')}
+                                        </span>
+                                    )}
                                     {contact.location && <span className="text-xs text-green-600">📍</span>}
                                     {isFromTeamMember && <span className="text-xs text-purple-600">👥</span>}
                                     {isTestData && <span className="text-xs text-orange-600" title="Test Data">🧪</span>}
@@ -362,6 +376,75 @@ const ContactCard = memo(function ContactCard({ contact, onEdit, onStatusUpdate,
                                             name: deletionInfo.userName
                                         }, `${deletionInfo.userName}'s account has been deleted and their contact information has been anonymized.`)}
                                     </p>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Budget Exceeded Info Banner */}
+                        {contact.metadata?.budgetExceeded && (
+                            <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3 mb-4">
+                                <div className="text-2xl flex-shrink-0">⏸️</div>
+                                <div className="flex-1">
+                                    <h4 className="text-amber-900 font-semibold mb-1">
+                                        {t('contacts.budget_exceeded_title', 'Location Enrichment Paused')}
+                                    </h4>
+                                    <p className="text-amber-800 text-sm mb-2">
+                                        {contact.metadata.budgetExceededReason === 'budget_exceeded'
+                                            ? t('contacts.budget_exceeded_message',
+                                                'Your monthly location services budget has been reached. Basic contact information was saved, but location enrichment was skipped to stay within your plan limits.')
+                                            : t('contacts.runs_exceeded_message',
+                                                'Your monthly location API call limit has been reached. Basic contact information was saved, but location enrichment was skipped to stay within your plan limits.')
+                                        }
+                                    </p>
+
+                                    {/* Show which features were skipped */}
+                                    {contact.metadata.skippedFeatures && contact.metadata.skippedFeatures.length > 0 && (
+                                        <div className="mb-2">
+                                            <span className="text-xs text-amber-700 font-medium">
+                                                {t('contacts.skipped_features_label', 'Skipped features:')}
+                                            </span>
+                                            <div className="flex flex-wrap gap-1 mt-1">
+                                                {contact.metadata.skippedFeatures.map((feature, idx) => (
+                                                    <span key={idx} className="inline-flex px-2 py-0.5 text-xs rounded-full bg-amber-100 text-amber-800">
+                                                        {feature === 'geocoding'
+                                                            ? `📍 ${t('contacts.feature_geocoding', 'Geocoding')}`
+                                                            : `🏢 ${t('contacts.feature_venue', 'Venue Enrichment')}`}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Timestamp */}
+                                    {contact.metadata.budgetExceededAt && (
+                                        <p className="text-xs text-amber-600 mb-2">
+                                            {t('contacts.budget_exceeded_at',
+                                                { date: new Date(contact.metadata.budgetExceededAt).toLocaleDateString(locale, {
+                                                    year: 'numeric',
+                                                    month: 'long',
+                                                    day: 'numeric',
+                                                    hour: '2-digit',
+                                                    minute: '2-digit'
+                                                })
+                                                },
+                                                `Occurred on ${new Date(contact.metadata.budgetExceededAt).toLocaleDateString(locale, {
+                                                    year: 'numeric',
+                                                    month: 'long',
+                                                    day: 'numeric',
+                                                    hour: '2-digit',
+                                                    minute: '2-digit'
+                                                })}`
+                                            )}
+                                        </p>
+                                    )}
+
+                                    {/* Action suggestion */}
+                                    <div className="pt-2 border-t border-amber-300">
+                                        <p className="text-xs text-amber-800">
+                                            💡 {t('contacts.budget_exceeded_suggestion',
+                                                'Your limits will reset next month. To enable location enrichment now, consider upgrading your plan in Settings.')}
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         )}

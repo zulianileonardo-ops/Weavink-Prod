@@ -415,7 +415,19 @@
     "session_id_label": "ID de session:",
     "technical_details": "Détails techniques",
     "user_agent_label": "Agent utilisateur:",
-    "referrer_label": "Référent:"
+    "referrer_label": "Référent:",
+    "badge_budget": "Budget",
+    "badge_limit": "Limite",
+    "budget_exceeded_title": "Enrichissement de localisation en pause",
+    "budget_exceeded_message": "Votre budget mensuel de services de localisation a été atteint. Les informations de contact de base ont été enregistrées, mais l'enrichissement de localisation a été ignoré pour rester dans les limites de votre plan.",
+    "runs_exceeded_message": "Votre limite mensuelle d'appels API de localisation a été atteinte. Les informations de contact de base ont été enregistrées, mais l'enrichissement de localisation a été ignoré pour rester dans les limites de votre plan.",
+    "skipped_features_label": "Fonctionnalités ignorées :",
+    "feature_geocoding": "Géocodage",
+    "feature_venue": "Enrichissement de lieu",
+    "budget_exceeded_at": "Survenu le {{date}}",
+    "budget_exceeded_suggestion": "Vos limites seront réinitialisées le mois prochain. Pour activer l'enrichissement de localisation maintenant, envisagez de mettre à niveau votre plan dans les paramètres.",
+    "budget_exceeded_badge_tooltip": "Enrichissement de localisation en pause - budget mensuel atteint",
+    "runs_exceeded_badge_tooltip": "Enrichissement de localisation en pause - limite mensuelle atteinte"
   },
   "common": {
     "attribution": "Attribution",

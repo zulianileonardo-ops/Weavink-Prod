@@ -387,7 +387,19 @@
     "session_id_label": "ID phiên:",
     "technical_details": "Chi tiết kỹ thuật",
     "user_agent_label": "User Agent:",
-    "referrer_label": "Nguồn giới thiệu:"
+    "referrer_label": "Nguồn giới thiệu:",
+    "badge_budget": "Ngân sách",
+    "badge_limit": "Giới hạn",
+    "budget_exceeded_title": "Đã tạm dừng làm giàu vị trí",
+    "budget_exceeded_message": "Ngân sách dịch vụ vị trí hàng tháng của bạn đã đạt mức tối đa. Thông tin liên hệ cơ bản đã được lưu, nhưng việc làm giàu vị trí đã bị bỏ qua để duy trì trong giới hạn gói của bạn.",
+    "runs_exceeded_message": "Giới hạn cuộc gọi API vị trí hàng tháng của bạn đã đạt mức tối đa. Thông tin liên hệ cơ bản đã được lưu, nhưng việc làm giàu vị trí đã bị bỏ qua để duy trì trong giới hạn gói của bạn.",
+    "skipped_features_label": "Tính năng đã bỏ qua:",
+    "feature_geocoding": "Mã hóa địa lý",
+    "feature_venue": "Làm giàu địa điểm",
+    "budget_exceeded_at": "Xảy ra vào {{date}}",
+    "budget_exceeded_suggestion": "Giới hạn của bạn sẽ được đặt lại vào tháng sau. Để bật làm giàu vị trí ngay bây giờ, hãy xem xét nâng cấp gói của bạn trong Cài đặt.",
+    "budget_exceeded_badge_tooltip": "Đã tạm dừng làm giàu vị trí - đã đạt ngân sách hàng tháng",
+    "runs_exceeded_badge_tooltip": "Đã tạm dừng làm giàu vị trí - đã đạt giới hạn hàng tháng"
   },
   "common": {
     "enabled": "Đã bật",

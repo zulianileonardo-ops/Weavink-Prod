@@ -1644,7 +1644,19 @@
     "session_id_label": "Session ID:",
     "technical_details": "Technical Details",
     "user_agent_label": "User Agent:",
-    "referrer_label": "Referrer:"
+    "referrer_label": "Referrer:",
+    "badge_budget": "Budget",
+    "badge_limit": "Limit",
+    "budget_exceeded_title": "Location Enrichment Paused",
+    "budget_exceeded_message": "Your monthly location services budget has been reached. Basic contact information was saved, but location enrichment was skipped to stay within your plan limits.",
+    "runs_exceeded_message": "Your monthly location API call limit has been reached. Basic contact information was saved, but location enrichment was skipped to stay within your plan limits.",
+    "skipped_features_label": "Skipped features:",
+    "feature_geocoding": "Geocoding",
+    "feature_venue": "Venue Enrichment",
+    "budget_exceeded_at": "Occurred on {{date}}",
+    "budget_exceeded_suggestion": "Your limits will reset next month. To enable location enrichment now, consider upgrading your plan in Settings.",
+    "budget_exceeded_badge_tooltip": "Location enrichment paused - monthly budget reached",
+    "runs_exceeded_badge_tooltip": "Location enrichment paused - monthly limit reached"
   },
   "download_contact": {
     "button_text": "Download Contact",
