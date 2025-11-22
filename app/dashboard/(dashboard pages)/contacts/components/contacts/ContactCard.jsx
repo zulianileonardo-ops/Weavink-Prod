@@ -488,36 +488,162 @@ const ContactCard = memo(function ContactCard({ contact, onEdit, onStatusUpdate,
                         )}
 
                         {/* Location Information */}
-                        {contact.location && (contact.location.latitude || contact.location.longitude) && (
+                        {contact.location && (contact.location.latitude || contact.location.formattedAddress) && (
                             <div className="pt-3 border-t border-gray-100">
                                 <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2 flex items-center gap-2">
-                                    🗺️ {t('contacts.section_location_data', 'Location Data')}
+                                    🗺️ {t('contacts.section_location', 'Location Information')}
                                 </h4>
-                                <div className="grid grid-cols-2 gap-2 text-sm">
-                                    {contact.location.latitude && (
-                                        <div className="p-2 bg-gray-50 rounded">
-                                            <span className="text-gray-500 text-xs">{t('contacts.latitude_label', 'Latitude:')}</span>
-                                            <p className="font-mono text-gray-700">{contact.location.latitude.toFixed(6)}</p>
+
+                                {/* Formatted Address (if available) */}
+                                {contact.location.formattedAddress && (
+                                    <div className="mb-3 p-3 bg-green-50 rounded-lg border border-green-200">
+                                        <div className="flex items-start gap-2">
+                                            <span className="text-green-600 text-lg">📍</span>
+                                            <div className="flex-1">
+                                                <p className="text-sm font-medium text-green-900">
+                                                    {contact.location.formattedAddress}
+                                                </p>
+                                                <div className="flex flex-wrap gap-2 mt-2">
+                                                    {contact.location.city && (
+                                                        <span className="inline-flex px-2 py-0.5 text-xs font-medium rounded-full bg-green-100 text-green-800">
+                                                            🏙️ {contact.location.city}
+                                                        </span>
+                                                    )}
+                                                    {contact.location.country && (
+                                                        <span className="inline-flex px-2 py-0.5 text-xs font-medium rounded-full bg-green-100 text-green-800">
+                                                            🌍 {contact.location.country}
+                                                        </span>
+                                                    )}
+                                                    {contact.location.region && (
+                                                        <span className="inline-flex px-2 py-0.5 text-xs font-medium rounded-full bg-green-100 text-green-800">
+                                                            📌 {contact.location.region}
+                                                        </span>
+                                                    )}
+                                                    {contact.location.postalCode && (
+                                                        <span className="inline-flex px-2 py-0.5 text-xs font-medium rounded-full bg-green-100 text-green-800">
+                                                            📮 {contact.location.postalCode}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
                                         </div>
-                                    )}
-                                    {contact.location.longitude && (
-                                        <div className="p-2 bg-gray-50 rounded">
-                                            <span className="text-gray-500 text-xs">{t('contacts.longitude_label', 'Longitude:')}</span>
-                                            <p className="font-mono text-gray-700">{contact.location.longitude.toFixed(6)}</p>
+                                    </div>
+                                )}
+
+                                {/* GPS Coordinates */}
+                                {(contact.location.latitude || contact.location.longitude) && (
+                                    <div className="grid grid-cols-2 gap-2 text-sm">
+                                        {contact.location.latitude && (
+                                            <div className="p-2 bg-gray-50 rounded">
+                                                <span className="text-gray-500 text-xs">{t('contacts.latitude_label', 'Latitude:')}</span>
+                                                <p className="font-mono text-gray-700">{contact.location.latitude.toFixed(6)}</p>
+                                            </div>
+                                        )}
+                                        {contact.location.longitude && (
+                                            <div className="p-2 bg-gray-50 rounded">
+                                                <span className="text-gray-500 text-xs">{t('contacts.longitude_label', 'Longitude:')}</span>
+                                                <p className="font-mono text-gray-700">{contact.location.longitude.toFixed(6)}</p>
+                                            </div>
+                                        )}
+                                        {contact.location.accuracy && (
+                                            <div className="p-2 bg-gray-50 rounded">
+                                                <span className="text-gray-500 text-xs">{t('contacts.accuracy_label', 'Accuracy:')}</span>
+                                                <p className="text-gray-700">{contact.location.accuracy.toFixed(1)}m</p>
+                                            </div>
+                                        )}
+                                        {contact.location.timestamp && (
+                                            <div className="p-2 bg-gray-50 rounded">
+                                                <span className="text-gray-500 text-xs">{t('contacts.captured_label', 'Captured:')}</span>
+                                                <p className="text-gray-700">{formatDate(contact.location.timestamp)}</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Venue Enrichment */}
+                        {contact.metadata?.venue && (
+                            <div className="pt-3 border-t border-gray-100">
+                                <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2 flex items-center gap-2">
+                                    🏢 {t('contacts.section_venue', 'Venue Information')}
+                                </h4>
+                                <div className="p-3 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-lg border border-indigo-200">
+                                    <div className="space-y-3">
+                                        {/* Venue Name */}
+                                        <div>
+                                            <div className="flex items-start justify-between">
+                                                <h5 className="text-sm font-semibold text-indigo-900">
+                                                    {contact.metadata.venue.name}
+                                                </h5>
+                                                {contact.metadata.venue.distance !== undefined && (
+                                                    <span className="text-xs bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded-full ml-2">
+                                                        {contact.metadata.venue.distance.toFixed(1)}km away
+                                                    </span>
+                                                )}
+                                            </div>
+
+                                            {/* Google Maps Link */}
+                                            {(contact.metadata.venue.placeId || contact.metadata.venue.location) && (
+                                                <a
+                                                    href={
+                                                        contact.metadata.venue.placeId
+                                                            ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(contact.metadata.venue.name)}&query_place_id=${contact.metadata.venue.placeId}`
+                                                            : contact.metadata.venue.location
+                                                            ? `https://www.google.com/maps/search/?api=1&query=${contact.metadata.venue.location.lat},${contact.metadata.venue.location.lng}`
+                                                            : null
+                                                    }
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="inline-flex items-center gap-1 mt-2 text-xs text-indigo-600 hover:text-indigo-800 hover:underline"
+                                                >
+                                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    </svg>
+                                                    {t('contacts.view_on_google_maps', 'View on Google Maps')}
+                                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                    </svg>
+                                                </a>
+                                            )}
+
+                                            {contact.metadata.venue.address && (
+                                                <p className="text-xs text-indigo-700 mt-1">
+                                                    {contact.metadata.venue.address}
+                                                </p>
+                                            )}
                                         </div>
-                                    )}
-                                    {contact.location.accuracy && (
-                                        <div className="p-2 bg-gray-50 rounded">
-                                            <span className="text-gray-500 text-xs">{t('contacts.accuracy_label', 'Accuracy:')}</span>
-                                            <p className="text-gray-700">{contact.location.accuracy}m</p>
-                                        </div>
-                                    )}
-                                    {contact.location.timestamp && (
-                                        <div className="p-2 bg-gray-50 rounded">
-                                            <span className="text-gray-500 text-xs">{t('contacts.captured_label', 'Captured:')}</span>
-                                            <p className="text-gray-700">{formatDate(contact.location.timestamp)}</p>
-                                        </div>
-                                    )}
+
+                                        {/* Venue Types */}
+                                        {contact.metadata.venue.types && contact.metadata.venue.types.length > 0 && (
+                                            <div className="flex flex-wrap gap-1.5">
+                                                {contact.metadata.venue.types.slice(0, 5).map((type, idx) => (
+                                                    <span key={idx} className="inline-flex px-2 py-0.5 text-xs font-medium rounded-full bg-indigo-100 text-indigo-700">
+                                                        {type.replace(/_/g, ' ')}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        )}
+
+                                        {/* Metadata */}
+                                        {(contact.metadata.venue.matchedKeyword || contact.metadata.venue.source) && (
+                                            <div className="text-xs text-indigo-600 border-t border-indigo-200 pt-2 space-y-1">
+                                                {contact.metadata.venue.matchedKeyword && (
+                                                    <div className="flex justify-between">
+                                                        <span>{t('contacts.venue_matched_by', 'Matched by:')}</span>
+                                                        <span className="font-medium">{contact.metadata.venue.matchedKeyword}</span>
+                                                    </div>
+                                                )}
+                                                {contact.metadata.venue.source && (
+                                                    <div className="flex justify-between">
+                                                        <span>{t('contacts.venue_source', 'Data source:')}</span>
+                                                        <span className="font-medium">{contact.metadata.venue.source}</span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         )}
@@ -770,7 +896,60 @@ const ContactCard = memo(function ContactCard({ contact, onEdit, onStatusUpdate,
                                         <span className="text-gray-700">{contact.generatedBy}</span>
                                     </div>
                                 )}
+                                {contact.metadata?.timezone && contact.metadata.timezone !== 'unknown' && (
+                                    <div className="p-2 bg-gray-50 rounded">
+                                        <span className="text-gray-500 block mb-1">{t('contacts.timezone_label', 'Timezone:')}</span>
+                                        <span className="text-gray-700">{contact.metadata.timezone}</span>
+                                    </div>
+                                )}
+                                {contact.metadata?.language && contact.metadata.language !== 'unknown' && (
+                                    <div className="p-2 bg-gray-50 rounded">
+                                        <span className="text-gray-500 block mb-1">{t('contacts.language_label', 'Language:')}</span>
+                                        <span className="text-gray-700">{contact.metadata.language}</span>
+                                    </div>
+                                )}
                             </div>
+
+                            {/* Session ID - Full Width */}
+                            {contact.metadata?.sessionId && contact.metadata.sessionId !== '' && (
+                                <div className="p-2 bg-gray-50 rounded mt-2">
+                                    <span className="text-gray-500 text-xs block mb-1">{t('contacts.session_id_label', 'Session ID:')}</span>
+                                    <span className="text-gray-700 font-mono text-xs break-all">{contact.metadata.sessionId}</span>
+                                </div>
+                            )}
+
+                            {/* Advanced Technical Details - Collapsible */}
+                            {(contact.metadata?.userAgent || contact.metadata?.referrer) && (
+                                <details className="mt-3">
+                                    <summary className="text-xs text-gray-500 cursor-pointer hover:text-gray-700 flex items-center gap-1">
+                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        {t('contacts.technical_details', 'Technical Details')}
+                                    </summary>
+                                    <div className="mt-2 space-y-2">
+                                        {contact.metadata.userAgent && contact.metadata.userAgent !== 'unknown' && (
+                                            <div className="p-2 bg-gray-50 rounded">
+                                                <span className="text-gray-500 text-xs block mb-1">{t('contacts.user_agent_label', 'User Agent:')}</span>
+                                                <span className="text-gray-700 text-xs break-all">{contact.metadata.userAgent}</span>
+                                            </div>
+                                        )}
+                                        {contact.metadata.referrer && contact.metadata.referrer !== 'unknown' && (
+                                            <div className="p-2 bg-gray-50 rounded">
+                                                <span className="text-gray-500 text-xs block mb-1">{t('contacts.referrer_label', 'Referrer:')}</span>
+                                                <a
+                                                    href={contact.metadata.referrer}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="text-blue-600 hover:underline text-xs break-all"
+                                                >
+                                                    {contact.metadata.referrer}
+                                                </a>
+                                            </div>
+                                        )}
+                                    </div>
+                                </details>
+                            )}
                         </div>
                     </div>
 

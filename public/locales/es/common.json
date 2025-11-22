@@ -376,7 +376,18 @@
     "match_weak": "Coincidencia débil",
     "deletion_tooltip": "La cuenta de {{name}} está programada para eliminación el {{date}}",
     "match_confidence_tooltip": "Confianza de coincidencia: {{label}}",
-    "ai_fields_tooltip": "{{count}} campos detectados por IA"
+    "ai_fields_tooltip": "{{count}} campos detectados por IA",
+    "section_location": "Información de ubicación",
+    "section_venue": "Información del lugar",
+    "view_on_google_maps": "Ver en Google Maps",
+    "venue_matched_by": "Coincidencia por:",
+    "venue_source": "Fuente de datos:",
+    "timezone_label": "Zona horaria:",
+    "language_label": "Idioma:",
+    "session_id_label": "ID de sesión:",
+    "technical_details": "Detalles técnicos",
+    "user_agent_label": "Agente de usuario:",
+    "referrer_label": "Referencia:"
   },
   "common": {
     "enabled": "Activado",

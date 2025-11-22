@@ -376,7 +376,18 @@
     "match_weak": "Khớp yếu",
     "deletion_tooltip": "Tài khoản của {{name}} được lên lịch xóa vào {{date}}",
     "match_confidence_tooltip": "Độ tin cậy khớp: {{label}}",
-    "ai_fields_tooltip": "{{count}} trường được AI phát hiện"
+    "ai_fields_tooltip": "{{count}} trường được AI phát hiện",
+    "section_location": "Thông tin vị trí",
+    "section_venue": "Thông tin địa điểm",
+    "view_on_google_maps": "Xem trên Google Maps",
+    "venue_matched_by": "Khớp theo:",
+    "venue_source": "Nguồn dữ liệu:",
+    "timezone_label": "Múi giờ:",
+    "language_label": "Ngôn ngữ:",
+    "session_id_label": "ID phiên:",
+    "technical_details": "Chi tiết kỹ thuật",
+    "user_agent_label": "User Agent:",
+    "referrer_label": "Nguồn giới thiệu:"
   },
   "common": {
     "enabled": "Đã bật",

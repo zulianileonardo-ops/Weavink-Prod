@@ -343,7 +343,18 @@
     "match_weak": "弱匹配",
     "deletion_tooltip": "{{name}}的账户计划于{{date}}删除",
     "match_confidence_tooltip": "匹配置信度：{{label}}",
-    "ai_fields_tooltip": "{{count}}个AI检测到的字段"
+    "ai_fields_tooltip": "{{count}}个AI检测到的字段",
+    "section_location": "位置信息",
+    "section_venue": "场地信息",
+    "view_on_google_maps": "在谷歌地图中查看",
+    "venue_matched_by": "匹配方式：",
+    "venue_source": "数据来源：",
+    "timezone_label": "时区：",
+    "language_label": "语言：",
+    "session_id_label": "会话ID：",
+    "technical_details": "技术细节",
+    "user_agent_label": "用户代理：",
+    "referrer_label": "引荐来源："
   },
   "common": {
     "login": "登录",

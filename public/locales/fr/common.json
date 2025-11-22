@@ -404,7 +404,18 @@
     "match_weak": "Faible correspondance",
     "deletion_tooltip": "Le compte de {{name}} est programmé pour suppression le {{date}}",
     "match_confidence_tooltip": "Confiance de correspondance: {{label}}",
-    "ai_fields_tooltip": "{{count}} champs détectés par IA"
+    "ai_fields_tooltip": "{{count}} champs détectés par IA",
+    "section_location": "Informations de localisation",
+    "section_venue": "Informations sur le lieu",
+    "view_on_google_maps": "Voir sur Google Maps",
+    "venue_matched_by": "Correspondance par:",
+    "venue_source": "Source des données:",
+    "timezone_label": "Fuseau horaire:",
+    "language_label": "Langue:",
+    "session_id_label": "ID de session:",
+    "technical_details": "Détails techniques",
+    "user_agent_label": "Agent utilisateur:",
+    "referrer_label": "Référent:"
   },
   "common": {
     "attribution": "Attribution",
