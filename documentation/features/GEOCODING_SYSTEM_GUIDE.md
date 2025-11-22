@@ -2,11 +2,13 @@
 id: features-geocoding-system-082
 title: Geocoding System - Complete Technical Guide
 category: features
-tags: [geocoding, google-maps, reverse-geocoding, cost-tracking, location, gps, api, budget]
+tags: [geocoding, google-maps, reverse-geocoding, cost-tracking, location, gps, api, budget, session-tracking]
 status: active
 created: 2025-11-21
-updated: 2025-11-21
+updated: 2025-11-22
 related:
+  - SESSION_BASED_ENRICHMENT.md
+  - SESSION_VS_STANDALONE_TRACKING.md
   - VENUE_ENRICHMENT_FEATURE.md
   - LOCATION_SERVICES_AUTO_TAGGING_SPEC.md
   - COST_TRACKING_MIGRATION_GUIDE.md
@@ -26,18 +28,19 @@ related:
 
 1. [Overview](#overview)
 2. [System Architecture](#system-architecture)
-3. [API Endpoint Specification](#api-endpoint-specification)
-4. [Implementation Details](#implementation-details)
-5. [Location Data Model](#location-data-model)
-6. [Cost Tracking System](#cost-tracking-system)
-7. [Budget Management](#budget-management)
-8. [Usage Examples](#usage-examples)
-9. [Integration Points](#integration-points)
-10. [GDPR Compliance](#gdpr-compliance)
-11. [Configuration & Constants](#configuration--constants)
-12. [Monitoring & Debugging](#monitoring--debugging)
-13. [Future Features](#future-features)
-14. [File Reference](#file-reference)
+3. [Session-Based vs Standalone Geocoding](#session-based-vs-standalone-geocoding)
+4. [API Endpoint Specification](#api-endpoint-specification)
+5. [Implementation Details](#implementation-details)
+6. [Location Data Model](#location-data-model)
+7. [Cost Tracking System](#cost-tracking-system)
+8. [Budget Management](#budget-management)
+9. [Usage Examples](#usage-examples)
+10. [Integration Points](#integration-points)
+11. [GDPR Compliance](#gdpr-compliance)
+12. [Configuration & Constants](#configuration--constants)
+13. [Monitoring & Debugging](#monitoring--debugging)
+14. [Future Features](#future-features)
+15. [File Reference](#file-reference)
 
 ---
 
@@ -125,6 +128,146 @@ Return enriched location data to frontend
 │  - https://maps.googleapis.com/maps/api/geocode/json       │
 └─────────────────────────────────────────────────────────────┘
 ```
+
+---
+
+## Session-Based vs Standalone Geocoding
+
+### Overview
+
+Geocoding in Weavink can occur in **two different contexts**:
+
+1. **Standalone Geocoding**: Single, independent reverse geocoding operation
+2. **Session-Based Geocoding**: Part of a multi-step enrichment session (geocoding + venue search)
+
+The choice between these approaches affects cost tracking, data storage, and audit trails.
+
+### Standalone Geocoding
+
+**When Used**:
+- Public profile viewing (one-off address lookup)
+- Manual geocoding requests
+- Single geocoding without venue enrichment
+
+**Cost Tracking**: Writes to `ApiUsage/{userId}/monthly/{YYYY-MM}`
+
+**Example**:
+```javascript
+// Single geocoding request (no sessionId)
+const response = await fetch(
+  `/api/user/contacts/geocode?lat=45.177&lng=5.721&userId=${userId}`
+);
+
+// Tracked in ApiUsage monthly aggregation
+// No session document created
+```
+
+**Database Structure**:
+```
+ApiUsage/
+  {userId}/
+    monthly/
+      2025-11/
+        totalCost: 0.015
+        totalRuns: 3
+        featureBreakdown:
+          google_maps_geocoding:
+            cost: 0.015
+            runs: 3
+```
+
+### Session-Based Geocoding
+
+**When Used**:
+- Contact exchange with auto-enrichment enabled
+- Multi-step enrichment flow (geocoding + venue search)
+- Operations requiring detailed step-by-step audit trails
+
+**Cost Tracking**: Writes to `SessionUsage/{userId}/sessions/{sessionId}`
+
+**Example**:
+```javascript
+// Part of enrichment session
+const sessionId = `session_enrich_${Date.now()}_${randomString}`;
+
+// Step 1: Reverse geocoding
+await CostTrackingService.recordUsage({
+  userId,
+  sessionId,  // ← Session tracking enabled
+  feature: 'location_reverse_geocoding',
+  cost: 0.005,
+  stepLabel: 'Step 1: Reverse Geocoding'
+});
+
+// Step 2: Venue search
+await CostTrackingService.recordUsage({
+  userId,
+  sessionId,  // ← Same session
+  feature: 'location_venue_search',
+  cost: 0.032,
+  stepLabel: 'Step 2: Venue Search'
+});
+
+// Finalize session
+await SessionTrackingService.finalizeSession({ userId, sessionId });
+```
+
+**Database Structure**:
+```
+SessionUsage/
+  {userId}/
+    sessions/
+      {sessionId}/
+        feature: "location"
+        status: "completed"
+        totalCost: 0.037
+        totalRuns: 2
+        steps: [
+          {
+            stepLabel: "Step 1: Reverse Geocoding"
+            feature: "location_reverse_geocoding"
+            cost: 0.005
+            metadata: { city: "Grenoble", country: "France" }
+          },
+          {
+            stepLabel: "Step 2: Venue Search"
+            feature: "location_venue_search"
+            cost: 0.032
+            metadata: { venueName: "Conference Center" }
+          }
+        ]
+```
+
+### Key Differences
+
+| Aspect | Standalone | Session-Based |
+|--------|-----------|---------------|
+| **Storage** | `ApiUsage/monthly` | `SessionUsage/sessions` |
+| **Cost Tracking** | Aggregated monthly | Detailed per-step |
+| **Audit Trail** | Operation-level | Step-by-step |
+| **Use Case** | Single geocoding | Multi-step enrichment |
+| **Session ID** | `null` | `session_enrich_...` |
+| **Example Cost** | $0.005 | $0.005 - $0.037 |
+
+### Decision Guide
+
+**Use Standalone When**:
+- ✅ Single geocoding request
+- ✅ Public profile viewing
+- ✅ No venue enrichment needed
+- ✅ Fast monthly aggregation queries
+
+**Use Session-Based When**:
+- ✅ Multi-step enrichment (geocoding + venue search)
+- ✅ Need detailed audit trail
+- ✅ Want atomic cost tracking across steps
+- ✅ Contact exchange with auto-enrichment
+
+### Related Documentation
+
+For comprehensive information about session-based tracking:
+- `SESSION_BASED_ENRICHMENT.md` - Complete session enrichment guide
+- `SESSION_VS_STANDALONE_TRACKING.md` - Detailed comparison and decision guide
 
 ---
 
@@ -638,11 +781,17 @@ These fields are kept even after anonymization:
 
 Every geocoding API call is tracked in Firestore with:
 - **Cost**: $0.005 per request
-- **Feature**: `google_maps_geocoding`
-- **Type**: `ApiUsage` (not AIUsage)
+- **Feature**: `google_maps_geocoding` (standalone) or `location_reverse_geocoding` (session)
+- **Type**: `ApiUsage` (standalone) or `SessionUsage` (session-based)
 - **Billable**: Yes (counts toward monthly API limit)
 
-### Firestore Structure
+**Important**: Geocoding cost tracking depends on the context:
+- **Standalone**: Single geocoding requests write to `ApiUsage` collection
+- **Session-Based**: Multi-step enrichment writes to `SessionUsage` collection (includes geocoding + venue search)
+
+See [Session-Based vs Standalone Geocoding](#session-based-vs-standalone-geocoding) for details.
+
+### Firestore Structure (Standalone)
 
 ```
 Firestore
@@ -680,6 +829,66 @@ Firestore
                     ├── isPublicProfile: true
                     └── timestamp: "2025-11-21T10:54:53.600Z"
 ```
+
+### Firestore Structure (Session-Based)
+
+For multi-step enrichment sessions (geocoding + venue search):
+
+```
+Firestore
+└── SessionUsage/
+    └── {userId}/
+        └── sessions/
+            └── {sessionId}/
+                ├── feature: "location"
+                ├── status: "completed"
+                ├── totalCost: 0.037
+                ├── totalRuns: 2
+                ├── createdAt: Timestamp
+                ├── completedAt: Timestamp
+                └── steps: [
+                    {
+                      stepLabel: "Step 1: Reverse Geocoding"
+                      operationId: "usage_1763805372067_v0i9"
+                      feature: "location_reverse_geocoding"
+                      provider: "google_maps"
+                      cost: 0.005
+                      isBillableRun: true
+                      timestamp: "2025-11-22T09:56:12.067Z"
+                      metadata: {
+                        latitude: 45.1772416
+                        longitude: 5.7212928
+                        city: "Grenoble"
+                        country: "France"
+                        formattedAddress: "8 Rue Léo Lagrange, 38100 Grenoble, France"
+                        success: true
+                        duration: 431
+                      }
+                    },
+                    {
+                      stepLabel: "Step 2: Venue Search (Cache Hit)"
+                      operationId: "usage_1763805373023_o6yk"
+                      feature: "location_venue_search_cached"
+                      provider: "redis_cache"
+                      cost: 0
+                      isBillableRun: false
+                      timestamp: "2025-11-22T09:56:13.023Z"
+                      metadata: {
+                        cacheKey: "location:45.177:5.721"
+                        venueName: "Le Carré de la Source"
+                        cacheHit: true
+                      }
+                    }
+                  ]
+```
+
+**Key Differences**:
+- Session-based tracking groups related operations together
+- Provides step-by-step audit trail with detailed metadata
+- Tracks total cost across all steps
+- Used when geocoding is part of a larger enrichment workflow
+
+See `SESSION_BASED_ENRICHMENT.md` for complete implementation details.
 
 ### Cost Recording Process
 
@@ -1803,6 +2012,6 @@ The geocoding system is a production-ready, cost-tracked, GDPR-compliant feature
 
 ---
 
-**Last Updated**: 2025-11-21
+**Last Updated**: 2025-11-22
 **Author**: Weavink Development Team
-**Version**: 1.0.0
+**Version**: 1.1.0 (Added session-based tracking documentation)

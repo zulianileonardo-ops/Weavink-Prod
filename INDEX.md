@@ -1,17 +1,17 @@
 # Weavink Documentation Index
 
-**Last Updated:** 2025-11-21
-**Total Guides:** 83
+**Last Updated:** 2025-11-22
+**Total Guides:** 87
 
 ## Quick Navigation
 - [Admin System](#admin-system) (9 guides)
-- [Analytics & Tracking](#analytics-tracking) (3 guides)
+- [Analytics & Tracking](#analytics--tracking) (3 guides)
 - [RGPD/GDPR Compliance](#rgpd-gdpr-compliance) (13 guides)
-- [Feature Implementations](#feature-implementations) (23 guides)
-- [Technical Infrastructure](#technical-infrastructure) (18 guides)
-- [Testing & QA](#testing-qa) (10 guides)
+- [Feature Implementations](#feature-implementations) (25 guides)
+- [Technical Infrastructure](#technical-infrastructure) (19 guides)
+- [Testing & QA](#testing--qa) (11 guides)
 - [General Documentation](#general-documentation) (4 guides)
-- [Tutorials & Guides](#tutorials-guides) (3 guides)
+- [Tutorials & Guides](#tutorials--guides) (3 guides)
 - [Meta Documentation](#meta-documentation) (2 guides)
 
 ---
@@ -64,10 +64,8 @@
 **Tags:** admin, security, permissions, rbac, view-only, authorization, multi-layer-security, env-variables
 **Related:** [admin-security-layers-007](#admin-security-layers-007), [admin-service-separation-005](#admin-service-separation-005)
 
----
-
 ## Analytics & Tracking
-*Analytics implementation, tracking, and reporting*
+*User analytics, tracking, and metrics*
 
 ### ANALYTICS_IMPLEMENTATION_GUIDE.md
 **Summary:** Complete technical guide covering analytics system architecture with rate limiting, fingerprinting, session management, and data flow.
@@ -84,15 +82,8 @@
 **Tags:** analytics, testing, debugging, click-tracking, sendBeacon, browser-console, troubleshooting
 **Related:** [analytics-implementation-012](#analytics-implementation-012), [analytics-service-summary-011](#analytics-service-summary-011)
 
----
-
 ## RGPD/GDPR Compliance
-*Data protection, privacy, and compliance features*
-
-### ACCOUNT_DELETION_TECHNICAL_FLOW.md
-**Summary:** Complete technical walkthrough of account deletion process from User A requesting deletion to User B receiving notifications. Includes 10-phase breakdown, database schema changes, timeline analysis (2-second backend, 5-second email), parallel operations, multi-language handling, and future non-user deletion feature specification.
-**Tags:** account-deletion, gdpr, notifications, cascade-deletion, email, firestore, privacy, technical-flow, database-operations, multilingual
-**Related:** [EMAIL_NOTIFICATION_MANUAL_TEST_GUIDE.md](#email-notification-manual-test-guide-md), [RGPD_COMPLIANCE_MATRIX.md](#rgpd-compliance-matrix-md), [RGPD_COMPLIANCE_MATRIX.PREVIOUS.md](#rgpd-compliance-matrix-previous-md), [RGPD_IMPLEMENTATION_SUMMARY.md](#rgpd-implementation-summary-md), [RGPD_ARCHITECTURE_COMPLIANCE.md](#rgpd-architecture-compliance-md)
+*Privacy, data protection, and GDPR compliance*
 
 ### ANONYMOUS_ANALYTICS_PLAN.md
 **Summary:** Implementation plan and completed implementation for anonymous aggregated analytics tracking for users who withdraw consent, using legitimate interest legal basis. Includes Phase 1-3 complete with TTL configuration, translations, and automated tests.
@@ -104,20 +95,15 @@
 **Tags:** gdpr, rgpd, compliance, commit-summary, implementation, privacy-center, cookies, data-export
 **Related:** [rgpd-conformite-tapit-013](#rgpd-conformite-tapit-013)
 
-### RGPD_Conformite_Tapit.md
-**Summary:** Complete GDPR/RGPD compliance roadmap and implementation plan for Weavink (Tapit SAS).
-**Tags:** gdpr, rgpd, compliance, privacy, legal, data-protection, consent-management, cookies
-**Related:** [rgpd-commit-summary-014](#rgpd-commit-summary-014)
+### ACCOUNT_DELETION_TECHNICAL_FLOW.md
+**Summary:** Complete technical walkthrough of account deletion process from User A requesting deletion to User B receiving notifications. Includes 10-phase breakdown, database schema changes, timeline analysis (2-second backend, 5-second email), parallel operations, multi-language handling, and future non-user deletion feature specification.
+**Tags:** account-deletion, gdpr, notifications, cascade-deletion, email, firestore, privacy, technical-flow, database-operations, multilingual
+**Related:** [EMAIL_NOTIFICATION_MANUAL_TEST_GUIDE.md](#email-notification-manual-test-guide), [RGPD_COMPLIANCE_MATRIX.md](#rgpd-compliance-matrix), [RGPD_COMPLIANCE_MATRIX.PREVIOUS.md](#rgpd-compliance-matrix.previous), [RGPD_IMPLEMENTATION_SUMMARY.md](#rgpd-implementation-summary), [RGPD_ARCHITECTURE_COMPLIANCE.md](#rgpd-architecture-compliance)
 
 ### CONSENT_IMPLEMENTATION_GUIDE.md
 **Summary:** Comprehensive guide for implementing GDPR-compliant consent checks with greyed-out buttons and consent popovers in React/Next.js applications. Includes automated test coverage (12/12 passing tests).
 **Tags:** gdpr, rgpd, consent, ui-implementation, react, nextjs, consent-popovers, blocked-features, testing, test-coverage
 **Related:** [rgpd-implementation-summary-042](#rgpd-implementation-summary-042), [rgpd-conformite-tapit-013](#rgpd-conformite-tapit-013), [testing-rgpd-guide-038](#testing-rgpd-guide-038)
-
-### CONTACT_ANONYMIZATION_IMPLEMENTATION_GUIDE.md
-**Summary:** Comprehensive implementation guide for anonymizing User A's contact data in User B's contact list when User A deletes their account. Implements GDPR Article 17 (Right to be Forgotten) with Option B (Preserve Context) strategy, anonymizing all PII while preserving business context and User B's notes/tags.
-**Tags:** gdpr, rgpd, anonymization, contact-deletion, right-to-be-forgotten, privacy, data-protection, firestore, pinecone
-**Related:** [rgpd-account-deletion-flow-047](#rgpd-account-deletion-flow-047), [rgpd-contact-deletion-warning-048](#rgpd-contact-deletion-warning-048), [rgpd-implementation-summary-042](#rgpd-implementation-summary-042), [rgpd-consent-guide-045](#rgpd-consent-guide-045), [rgpd-anonymous-analytics-046](#rgpd-anonymous-analytics-046)
 
 ### CONTACT_ANONYMIZATION_BUGFIX.md
 **Summary:** Complete documentation of four critical bugs discovered and fixed in the contact anonymization system: Bug #1 (Execution order causing anonymization to never execute), Bug #2 (Pinecone API method error), Bug #3 (Missing vector integration in ExchangeService), and Bug #4 (Field name mismatch causing premium accounts to be treated as base tier). All bugs fixed and tested, achieving full GDPR Article 17 compliance.
@@ -129,10 +115,20 @@
 **Tags:** gdpr, rgpd, contact-anonymization, final-report, implementation-complete, right-to-be-forgotten, article-17
 **Related:** [rgpd-contact-anonymization-049](#rgpd-contact-anonymization-049), [rgpd-contact-anonymization-bugfix-080](#rgpd-contact-anonymization-bugfix-080), [testing-contact-anonymization-078](#testing-contact-anonymization-078), [rgpd-account-deletion-flow-047](#rgpd-account-deletion-flow-047)
 
+### CONTACT_ANONYMIZATION_IMPLEMENTATION_GUIDE.md
+**Summary:** Comprehensive implementation guide for anonymizing User A's contact data in User B's contact list when User A deletes their account. Implements GDPR Article 17 (Right to be Forgotten) with Option B (Preserve Context) strategy, anonymizing all PII while preserving business context and User B's notes/tags.
+**Tags:** gdpr, rgpd, anonymization, contact-deletion, right-to-be-forgotten, privacy, data-protection, firestore, pinecone
+**Related:** [rgpd-account-deletion-flow-047](#rgpd-account-deletion-flow-047), [rgpd-contact-deletion-warning-048](#rgpd-contact-deletion-warning-048), [rgpd-implementation-summary-042](#rgpd-implementation-summary-042), [rgpd-consent-guide-045](#rgpd-consent-guide-045), [rgpd-anonymous-analytics-046](#rgpd-anonymous-analytics-046)
+
 ### CONTACT_DELETION_WARNING_IMPLEMENTATION.md
 **Summary:** Implementation of comprehensive warning system that notifies users when viewing or editing contacts whose Weavink accounts are scheduled for deletion. Supports both userId-based matching (for Weavink user accounts) and email-based matching (for form-submitted contacts), ensuring GDPR transparency requirements are met.
 **Tags:** contact-deletion, gdpr, notifications, ui-warnings, email-matching, api-endpoint, service-layer, firestore, multilingual
-**Related:** [ACCOUNT_DELETION_TECHNICAL_FLOW.md](#account-deletion-technical-flow-md), [EMAIL_NOTIFICATION_MANUAL_TEST_GUIDE.md](#email-notification-manual-test-guide-md), [RGPD_IMPLEMENTATION_SUMMARY.md](#rgpd-implementation-summary-md), [CONTACTS_COMPONENT_INTERNATIONALIZATION.md](#contacts-component-internationalization-md)
+**Related:** [ACCOUNT_DELETION_TECHNICAL_FLOW.md](#account-deletion-technical-flow), [EMAIL_NOTIFICATION_MANUAL_TEST_GUIDE.md](#email-notification-manual-test-guide), [RGPD_IMPLEMENTATION_SUMMARY.md](#rgpd-implementation-summary), [CONTACTS_COMPONENT_INTERNATIONALIZATION.md](#contacts-component-internationalization)
+
+### RGPD_Conformite_Tapit.md
+**Summary:** Complete GDPR/RGPD compliance roadmap and implementation plan for Weavink (Tapit SAS).
+**Tags:** gdpr, rgpd, compliance, privacy, legal, data-protection, consent-management, cookies
+**Related:** [rgpd-commit-summary-014](#rgpd-commit-summary-014)
 
 ### RGPD_IMPLEMENTATION_SUMMARY.md
 **Summary:** Complete summary of RGPD Phase 1-4 implementation with consent management, data portability with multilingual export support, breach notifications, compliance features, and multilingual API error messages.
@@ -149,10 +145,13 @@
 **Tags:** gdpr, rgpd, phase4, data-portability, breach-notifications, compliance, xml-export, pdf-export
 **Related:** [rgpd-implementation-summary-042](#rgpd-implementation-summary-042), [rgpd-master-progress-043](#rgpd-master-progress-043), [testing-rgpd-results-040](#testing-rgpd-results-040)
 
----
-
 ## Feature Implementations
-*Product features and user-facing functionality*
+*User-facing features and implementations*
+
+### SESSION_BASED_ENRICHMENT.md
+**Summary:** Multi-step location enrichment with session-based cost tracking combining reverse geocoding and venue search
+**Tags:** session-tracking, location-enrichment, cost-tracking, geocoding, venue-search, location-services
+**Related:** [GEOCODING_SYSTEM_GUIDE.md](#geocoding-system-guide), [LOCATION_SERVICES_AUTO_TAGGING_SPEC.md](#location-services-auto-tagging-spec), [SESSION_TRACKING_FIX.md](#session-tracking-fix)
 
 ### BOT_DETECTION_FIX.md
 **Summary:** Implements multi-factor bot detection using 3 criteria (requests per second, average rate, burst windows) to catch sophisticated bots.
@@ -168,6 +167,11 @@
 **Summary:** Documents multi-carousel support system allowing users to create multiple independent carousels with grouped item structure.
 **Tags:** carousel, features, data-structure, component-architecture, multi-carousel, firestore, ui-components
 
+### CONTACTS_COMPONENT_INTERNATIONALIZATION.md
+**Summary:** Complete internationalization of ContactCard and EditContactModal components, translating 54 hardcoded English strings across 5 languages (English, French, Spanish, Chinese, Vietnamese) to enable full multilingual support for contact management features.
+**Tags:** contacts, i18n, multilingual, translation, contactcard, editcontactmodal, react, nextjs
+**Related:** [CONTACT_DELETION_WARNING_IMPLEMENTATION.md](#contact-deletion-warning-implementation), [RGPD_ARCHITECTURE_COMPLIANCE.md](#rgpd-architecture-compliance)
+
 ### CONTACT_DELETION_STATUS_API.md
 **Summary:** API endpoint documentation for checking if a contact has a pending account deletion, enabling real-time warning displays in ContactCard and EditContactModal components.
 **Tags:** contacts, deletion, api, gdpr, notifications, warnings, real-time, firestore
@@ -176,11 +180,6 @@
 ### CONTACT_DOWNLOAD_SETTINGS.md
 **Summary:** Feature implementation allowing profile owners to control who can download their contact information with granular field-level permissions.
 **Tags:** contacts, download, vcard, privacy, permissions, dashboard, settings, field-control
-
-### CONTACTS_COMPONENT_INTERNATIONALIZATION.md
-**Summary:** Complete internationalization of ContactCard and EditContactModal components, translating 54 hardcoded English strings across 5 languages (English, French, Spanish, Chinese, Vietnamese) to enable full multilingual support for contact management features.
-**Tags:** contacts, i18n, multilingual, translation, contactcard, editcontactmodal, react, nextjs
-**Related:** [CONTACT_DELETION_WARNING_IMPLEMENTATION.md](#contact-deletion-warning-implementation-md), [RGPD_ARCHITECTURE_COMPLIANCE.md](#rgpd-architecture-compliance-md)
 
 ### CV_FEATURES_ENHANCEMENT.md
 **Summary:** Comprehensive implementation of CV/resume features including service-level caching, individual link activation with toggle in appearance page, bidirectional navigation with visual highlighting, document validation with auto-activation, and real-time synchronization. Includes 35 passing tests covering all functionality.
@@ -198,18 +197,18 @@
 **Related:** [features-enhanced-reviews-019](#features-enhanced-reviews-019)
 
 ### GEOCODING_SYSTEM_GUIDE.md
-**Summary:** Comprehensive technical guide for the geocoding system using Google Maps API. Covers reverse geocoding ($0.005/request), cost tracking, budget management, location data model (PII vs business context), GDPR compliance with anonymization, and integration with exchange contacts and venue enrichment. Includes complete API reference, usage examples, subscription tier limits, monitoring, debugging, and troubleshooting.
-**Tags:** geocoding, google-maps, reverse-geocoding, cost-tracking, location, gps, api, budget, subscription, gdpr, venue-enrichment, places-api, exchange-contacts
-**Related:** [features-venue-enrichment-021](#features-venue-enrichment-021), [rgpd-contact-anonymization-049](#rgpd-contact-anonymization-049), [technical-cost-tracking-migration-024](#technical-cost-tracking-migration-024), [technical-semantic-search-032](#technical-semantic-search-032)
-
-### IMAGE_HANDLING_IMPROVEMENTS.md
-**Summary:** Fixes three critical image handling issues: IndexSizeError in cropping, white line bug with 'Free' aspect ratio, and incorrect aspect ratio display in carousel items.
-**Tags:** carousel, image-cropping, aspect-ratio, object-fit, bug-fix, image-display, react-easy-crop, ui-enhancement
-**Related:** [features-carousel-017](#features-carousel-017), [features-cv-enhancement-026](#features-cv-enhancement-026)
+**Summary:** Comprehensive technical guide for the geocoding system using Google Maps API. Covers reverse geocoding ($0.005/request), session-based vs standalone tracking, cost tracking in SessionUsage/ApiUsage collections, budget management, location data model (PII vs business context), GDPR compliance with anonymization, and integration with exchange contacts and venue enrichment. Includes complete API reference, usage examples, subscription tier limits, monitoring, debugging, and troubleshooting.
+**Tags:** geocoding, google-maps, reverse-geocoding, cost-tracking, location, gps, api, budget, subscription, gdpr, venue-enrichment, places-api, exchange-contacts, session-tracking
+**Related:** [features-venue-enrichment-021](#features-venue-enrichment-021), [rgpd-contact-anonymization-049](#rgpd-contact-anonymization-049), [technical-cost-tracking-migration-024](#technical-cost-tracking-migration-024), [technical-semantic-search-032](#technical-semantic-search-032), [SESSION_BASED_ENRICHMENT.md](#session-based-enrichment), [SESSION_VS_STANDALONE_TRACKING.md](#session-vs-standalone-tracking)
 
 ### LANDING_PAGE_REDESIGN.md
 **Summary:** Documents complete redesign of landing page with modern UI, feature highlights, and improved conversion.
 **Tags:** landing-page, ui-design, marketing, conversion-optimization
+
+### LOCATION_SERVICES_AUTO_TAGGING_SPEC.md
+**Summary:** Advanced location-based contact management system with automatic venue enrichment, session-based tracking, Redis caching (70% hit rate), event detection, and AI auto-tagging. Phase 1 complete: Two-step enrichment (geocoding + venue search) with budget tracking, graceful degradation, and user settings integration. Includes comprehensive architecture diagrams, cost optimization strategy, and implementation roadmap.
+**Tags:** location, gps, google-places, auto-tagging, event-detection, redis-cache, ai, gemini, premium-features, partially-implemented, session-tracking, venue-enrichment, auto-enrichment, cost-optimization
+**Related:** [SESSION_BASED_ENRICHMENT.md](#session-based-enrichment), [SESSION_VS_STANDALONE_TRACKING.md](#session-vs-standalone-tracking), [GEOCODING_SYSTEM_GUIDE.md](#geocoding-system-guide), [features-venue-enrichment-021](#features-venue-enrichment-021)
 
 ### MEDIA_FEATURES_ENHANCEMENT.md
 **Summary:** Comprehensive fixes for media upload features including image cropping bug (black images), server validation for modern media types, state management race conditions, and bidirectional deletion between appearance and links.
@@ -230,29 +229,25 @@
 **Tags:** roadmap, changelog, git-commits, github-issues, github-api, graph-visualization, svg, interactive-ui, category-tree, public-page, dashboard, caching, redis, production-fallback, serverless
 **Related:** [features-roadmap-production-spec-071](#features-roadmap-production-spec-071), [features-roadmap-checklist-072](#features-roadmap-checklist-072), [features-roadmap-gaps-073](#features-roadmap-gaps-073), [features-roadmap-summary-074](#features-roadmap-summary-074)
 
-### ROADMAP_IMPLEMENTATION_CHECKLIST.md
-**Summary:** Comprehensive implementation checklist covering all aspects of roadmap feature development, testing, and deployment. Updated 2025-11-20 with completed production deployment tasks including shared parsing utilities and GitHub API fallback implementation.
-**Tags:** roadmap, checklist, implementation, testing, deployment, project-management, production-ready
-**Related:** [features-roadmap-changelog-070](#features-roadmap-changelog-070), [features-roadmap-production-spec-071](#features-roadmap-production-spec-071)
+### ROADMAP_CHANGELOG_PRODUCTION_SPEC.md
+**Summary:** Detailed production specification for roadmap system including GitHub API configuration, environment variables setup, serverless deployment support, security considerations, performance optimizations, error handling strategies, and production deployment checklist. Updated 2025-11-20 with GitHub API fallback solution.
+**Tags:** roadmap, production, specification, security, performance, deployment, error-handling, monitoring, github-api, serverless, environment-variables
+**Related:** [features-roadmap-changelog-070](#features-roadmap-changelog-070), [features-roadmap-checklist-072](#features-roadmap-checklist-072)
 
 ### ROADMAP_GAPS_AND_RISKS.md
 **Summary:** Analysis of implementation gaps, known risks, and areas requiring future attention in the roadmap feature. Updated 2025-11-20: Risk 2 (Git unavailability in production) marked as RESOLVED with GitHub API fallback solution.
 **Tags:** roadmap, risks, gaps, analysis, future-work, technical-debt, mitigations
 **Related:** [features-roadmap-changelog-070](#features-roadmap-changelog-070), [features-roadmap-summary-074](#features-roadmap-summary-074)
 
-### ROADMAP_CHANGELOG_PRODUCTION_SPEC.md
-**Summary:** Detailed production specification for roadmap system including GitHub API configuration, environment variables setup, serverless deployment support, security considerations, performance optimizations, error handling strategies, and production deployment checklist. Updated 2025-11-20 with GitHub API fallback solution.
-**Tags:** roadmap, production, specification, security, performance, deployment, error-handling, monitoring, github-api, serverless, environment-variables
-**Related:** [features-roadmap-changelog-070](#features-roadmap-changelog-070), [features-roadmap-checklist-072](#features-roadmap-checklist-072)
+### ROADMAP_IMPLEMENTATION_CHECKLIST.md
+**Summary:** Comprehensive implementation checklist covering all aspects of roadmap feature development, testing, and deployment. Updated 2025-11-20 with completed production deployment tasks including shared parsing utilities and GitHub API fallback implementation.
+**Tags:** roadmap, checklist, implementation, testing, deployment, project-management, production-ready
+**Related:** [features-roadmap-changelog-070](#features-roadmap-changelog-070), [features-roadmap-production-spec-071](#features-roadmap-production-spec-071)
 
 ### ROADMAP_IMPLEMENTATION_SUMMARY.md
 **Summary:** Executive summary of roadmap feature implementation, key decisions, and final architecture. Updated 2025-11-20 with Production Deployment Fix section documenting GitHub API fallback solution for serverless environments.
 **Tags:** roadmap, summary, implementation, architecture, decisions, production-fix, github-api-fallback
 **Related:** [features-roadmap-changelog-070](#features-roadmap-changelog-070), [features-roadmap-gaps-073](#features-roadmap-gaps-073)
-
-### TUTORIAL_ACCOUNT_PAGE_STRUCTURE.md
-**Summary:** Documents restructured tutorial progression and account page with complete independence between Privacy Overview and Tutorial Progression sections. Tutorial now renders at page level, always visible regardless of active Privacy tab.
-**Tags:** tutorial, account, tabs, navigation, ui, structure, progressive-disclosure, independence, component-separation
 
 ### VENUE_ENRICHMENT_FEATURE.md
 **Summary:** Automatically enriches venue/location contacts with details from Google Maps API.
@@ -262,20 +257,22 @@
 **Summary:** Documents video embed feature allowing users to add YouTube, Vimeo, and custom videos to profiles.
 **Tags:** video, embeds, youtube, vimeo, features, responsive-design
 
----
+### IMAGE_HANDLING_IMPROVEMENTS.md
+**Summary:** Fixes three critical image handling issues: IndexSizeError in cropping, white line bug with 'Free' aspect ratio, and incorrect aspect ratio display in carousel items.
+**Tags:** carousel, image-cropping, aspect-ratio, object-fit, bug-fix, image-display, react-easy-crop, ui-enhancement
+**Related:** [features-carousel-017](#features-carousel-017), [features-cv-enhancement-026](#features-cv-enhancement-026)
+
+### TUTORIAL_ACCOUNT_PAGE_STRUCTURE.md
+**Summary:** Documents restructured tutorial progression and account page with complete independence between Privacy Overview and Tutorial Progression sections. Tutorial now renders at page level, always visible regardless of active Privacy tab.
+**Tags:** tutorial, account, tabs, navigation, ui, structure, progressive-disclosure, independence, component-separation
 
 ## Technical Infrastructure
-*Architecture, refactoring, and technical improvements*
+*Architecture, infrastructure, and technical documentation*
 
-### FIREBASE_AUDIT_LOG_MONITORING.md
-**Summary:** Automated 5-year audit log retention using Firestore TTL with monthly monitoring function for GDPR Article 5(2) accountability compliance.
-**Tags:** firebase, firestore-ttl, scheduled-functions, cloud-functions, gdpr, rgpd, audit-logging, retention-policy, accountability, monitoring, compliance
-**Related:** [FIREBASE_SCHEDULED_CLEANUP.md](#firebase-scheduled-cleanup-md), [RGPD_COMPLIANCE_MATRIX.md](#rgpd-compliance-matrix-md), [RGPD_ARCHITECTURE_COMPLIANCE.md](#rgpd-architecture-compliance-md), [ACCOUNT_PRIVACY_TESTING_GUIDE.md](#account-privacy-testing-guide-md)
-
-### FIREBASE_SCHEDULED_CLEANUP.md
-**Summary:** Automated daily cleanup of expired GDPR data export requests via Firebase Scheduled Functions for GDPR Article 5(1)(c) data minimization compliance.
-**Tags:** firebase, scheduled-functions, cloud-functions, gdpr, rgpd, data-minimization, retention-policy, automated-cleanup, cron, firestore, audit-logging
-**Related:** [RGPD_IMPLEMENTATION_SUMMARY.md](#rgpd-implementation-summary-md), [RGPD_ARCHITECTURE_COMPLIANCE.md](#rgpd-architecture-compliance-md), [ACCOUNT_PRIVACY_TESTING_GUIDE.md](#account-privacy-testing-guide-md), [SUBSCRIPTION_REVALIDATION_SETUP.md](#subscription-revalidation-setup-md)
+### SESSION_VS_STANDALONE_TRACKING.md
+**Summary:** Comprehensive comparison and decision guide for choosing between session-based and standalone cost tracking approaches
+**Tags:** session-tracking, cost-tracking, api-usage, architecture, decision-guide
+**Related:** [SESSION_BASED_ENRICHMENT.md](#session-based-enrichment), [SESSION_TRACKING_FIX.md](#session-tracking-fix), [COST_TRACKING_MIGRATION_GUIDE.md](#cost-tracking-migration-guide)
 
 ### BUDGET_AFFORDABILITY_CHECK_GUIDE.md
 **Summary:** Documents affordability checking system preventing users from exceeding subscription limits.
@@ -292,11 +289,6 @@
 **Tags:** budget, dashboard, ui-components, cost-tracking, subscription, real-time-display
 **Related:** [technical-budget-check-usage-027](#technical-budget-check-usage-027), [technical-cost-tracking-migration-024](#technical-cost-tracking-migration-024)
 
-### BUILD_FIX_IMPORT_PATHS.md
-**Summary:** Fixed critical build errors by correcting import paths in API routes and adding missing function exports in privacy services, enabling successful compilation.
-**Tags:** build-fix, imports, exports, path-alias, eslint, nextjs, gdpr, rgpd, privacy-services
-**Related:** [ADMIN_SECURITY_LAYERS_GUIDE.md](#admin-security-layers-guide-md), [RGPD_PHASE4_SUMMARY.md](#rgpd-phase4-summary-md)
-
 ### COMPREHENSIVE_REFACTORING_GUIDE.md
 **Summary:** Best practices and patterns reference for refactoring Next.js codebase covering components, services, API routes, and state management.
 **Tags:** refactoring, best-practices, architecture, nextjs, design-patterns, testing, code-quality
@@ -311,10 +303,15 @@
 **Summary:** Fixes dynamic field system for contacts with improved data validation and error handling.
 **Tags:** contacts, dynamic-fields, bug-fix, validation, data-integrity
 
-### GIT_DUAL_REMOTE_SETUP.md
-**Summary:** Complete setup guide for configuring repository to push to both GitHub and GitLab simultaneously. Covers initial setup, authentication (SSH for GitLab, HTTPS for GitHub), troubleshooting common issues including GitLab SSO/SAML messages, and integration with git-manager-skill.
-**Tags:** git, github, gitlab, repository, deployment, version-control, multi-remote, infrastructure, setup, ssh, authentication
-**Related:** [git-manager-skill](#git-manager-skill), [features-roadmap-changelog-070](#features-roadmap-changelog-070)
+### FIREBASE_AUDIT_LOG_MONITORING.md
+**Summary:** Automated 5-year audit log retention using Firestore TTL with monthly monitoring function for GDPR Article 5(2) accountability compliance.
+**Tags:** firebase, firestore-ttl, scheduled-functions, cloud-functions, gdpr, rgpd, audit-logging, retention-policy, accountability, monitoring, compliance
+**Related:** [FIREBASE_SCHEDULED_CLEANUP.md](#firebase-scheduled-cleanup), [RGPD_COMPLIANCE_MATRIX.md](#rgpd-compliance-matrix), [RGPD_ARCHITECTURE_COMPLIANCE.md](#rgpd-architecture-compliance), [ACCOUNT_PRIVACY_TESTING_GUIDE.md](#account-privacy-testing-guide)
+
+### FIREBASE_SCHEDULED_CLEANUP.md
+**Summary:** Automated daily cleanup of expired GDPR data export requests via Firebase Scheduled Functions for GDPR Article 5(1)(c) data minimization compliance.
+**Tags:** firebase, scheduled-functions, cloud-functions, gdpr, rgpd, data-minimization, retention-policy, automated-cleanup, cron, firestore, audit-logging
+**Related:** [RGPD_IMPLEMENTATION_SUMMARY.md](#rgpd-implementation-summary), [RGPD_ARCHITECTURE_COMPLIANCE.md](#rgpd-architecture-compliance), [ACCOUNT_PRIVACY_TESTING_GUIDE.md](#account-privacy-testing-guide), [SUBSCRIPTION_REVALIDATION_SETUP.md](#subscription-revalidation-setup)
 
 ### QUICK_START_INTEGRATION.md
 **Summary:** Quick 30-minute integration guide for new features and components.
@@ -324,16 +321,6 @@
 **Summary:** Major refactoring of cost tracking system supporting generalized API cost tracking, session-based tracking, and centralized cost constants.
 **Tags:** refactoring, cost-tracking, api-costs, sessions, architecture, service-layer
 **Related:** [technical-cost-tracking-migration-024](#technical-cost-tracking-migration-024), [technical-refactoring-guide-034](#technical-refactoring-guide-034)
-
-### REFACTORING_GUIDE.md
-**Summary:** Specific refactoring guide for cost tracking service.
-**Tags:** refactoring, cost-tracking, service-layer
-**Related:** [technical-cost-tracking-migration-024](#technical-cost-tracking-migration-024), [technical-comprehensive-refactoring-025](#technical-comprehensive-refactoring-025)
-
-### RGPD_ARCHITECTURE_COMPLIANCE.md
-**Summary:** Comprehensive refactoring report documenting architectural alignment of RGPD implementation with Weavink 5-layer pattern. Achieved 95% compliance (from 34%), eliminated 12 raw fetch() calls, implemented permission-based security, centralized constants management, and multilingual error translation system. Documents 21 files modified across client services, API routes, server services, translation files, and context layers.
-**Tags:** rgpd, gdpr, architecture, refactoring, compliance, 5-layer-pattern, security, constants, session-manager, contact-api-client, permissions, code-quality, translation, multilingual-errors, i18n
-**Related:** [rgpd-implementation-summary-042](#rgpd-implementation-summary-042), [rgpd-master-progress-043](#rgpd-master-progress-043), [rgpd-consent-guide-045](#rgpd-consent-guide-045), [technical-comprehensive-refactoring-025](#technical-comprehensive-refactoring-025), [admin-security-layers-007](#admin-security-layers-007)
 
 ### RULES_GROUPING_FIXES.md
 **Summary:** Fixes for rules grouping system.
@@ -354,45 +341,28 @@
 **Tags:** subscription, validation, security, tier-enforcement
 **Related:** [features-realtime-subscription-023](#features-realtime-subscription-023)
 
----
+### RGPD_ARCHITECTURE_COMPLIANCE.md
+**Summary:** Comprehensive refactoring report documenting architectural alignment of RGPD implementation with Weavink 5-layer pattern. Achieved 95% compliance (from 34%), eliminated 12 raw fetch() calls, implemented permission-based security, centralized constants management, and multilingual error translation system. Documents 21 files modified across client services, API routes, server services, translation files, and context layers.
+**Tags:** rgpd, gdpr, architecture, refactoring, compliance, 5-layer-pattern, security, constants, session-manager, contact-api-client, permissions, code-quality, translation, multilingual-errors, i18n
+**Related:** [rgpd-implementation-summary-042](#rgpd-implementation-summary-042), [rgpd-master-progress-043](#rgpd-master-progress-043), [rgpd-consent-guide-045](#rgpd-consent-guide-045), [technical-comprehensive-refactoring-025](#technical-comprehensive-refactoring-025), [admin-security-layers-007](#admin-security-layers-007)
+
+### GIT_DUAL_REMOTE_SETUP.md
+**Summary:** Complete setup guide for configuring repository to push to both GitHub and GitLab simultaneously. Covers initial setup, authentication (SSH for GitLab, HTTPS for GitHub), troubleshooting common issues including GitLab SSO/SAML messages, and integration with git-manager-skill.
+**Tags:** git, github, gitlab, repository, deployment, version-control, multi-remote, infrastructure, setup, ssh, authentication
+**Related:** [git-manager-skill](#git-manager-skill), [features-roadmap-changelog-070](#features-roadmap-changelog-070)
+
+### BUILD_FIX_IMPORT_PATHS.md
+**Summary:** Fixed critical build errors by correcting import paths in API routes and adding missing function exports in privacy services, enabling successful compilation.
+**Tags:** build-fix, imports, exports, path-alias, eslint, nextjs, gdpr, rgpd, privacy-services
+**Related:** [ADMIN_SECURITY_LAYERS_GUIDE.md](#admin-security-layers-guide), [RGPD_PHASE4_SUMMARY.md](#rgpd-phase4-summary)
+
+### REFACTORING_GUIDE.md
+**Summary:** Specific refactoring guide for cost tracking service.
+**Tags:** refactoring, cost-tracking, service-layer
+**Related:** [technical-cost-tracking-migration-024](#technical-cost-tracking-migration-024), [technical-comprehensive-refactoring-025](#technical-comprehensive-refactoring-025)
 
 ## Testing & QA
-*Testing guides and quality assurance*
-
-### ANONYMOUS_ANALYTICS_MANUAL_TEST_GUIDE.md
-**Summary:** Comprehensive manual testing guide for Phase 3.3 of anonymous analytics implementation. Covers 8 test categories with 35+ individual tests including consent withdrawal scenarios, Firestore verification, TTL validation, GDPR compliance, multi-language testing, rate limiting, edge cases, and client-side integration.
-**Tags:** testing, manual-testing, anonymous-analytics, gdpr, rgpd, consent-withdrawal, firestore-verification, ttl, rate-limiting, multi-language, troubleshooting
-**Related:** [rgpd-anonymous-analytics-046](#rgpd-anonymous-analytics-046), [testing-rgpd-guide-038](#testing-rgpd-guide-038), [testing-email-notifications-065](#testing-email-notifications-065), [analytics-implementation-012](#analytics-implementation-012)
-
-### CONTACT_ANONYMIZATION_MANUAL_TEST_GUIDE.md
-**Summary:** Comprehensive manual testing guide for contact anonymization system implementing GDPR Article 17 Right to be Forgotten. Covers 6 test scenarios including end-to-end anonymization flow, Firestore verification, Pinecone vector metadata verification, semantic search functionality, edge cases & idempotency, and multi-language UI testing across 5 languages.
-**Tags:** testing, manual-testing, contact-anonymization, gdpr, rgpd, right-to-be-forgotten, article-17, firestore-verification, pinecone-verification, semantic-search, multi-language, edge-cases, troubleshooting
-**Related:** [rgpd-contact-anonymization-049](#rgpd-contact-anonymization-049), [testing-rgpd-guide-038](#testing-rgpd-guide-038), [rgpd-account-deletion-flow-047](#rgpd-account-deletion-flow-047), [rgpd-contact-deletion-warning-048](#rgpd-contact-deletion-warning-048)
-
-### EMAIL_NOTIFICATION_BUG_FIXES.md
-**Summary:** Documents 3 bugs discovered during email notification system testing: completion email fetch-after-delete bug, Firebase composite index requirement, and contact deletion notifications not updating on completion. Includes root cause analysis, fixes, and verification.
-**Tags:** email, notifications, bug-fixes, rgpd, testing, account-deletion, firebase, debugging, root-cause-analysis, notification-update, notifications-collection, contacts-ui
-**Related:** [EMAIL_NOTIFICATION_MANUAL_TEST_GUIDE.md](#email-notification-manual-test-guide-md), [RGPD_ACCOUNT_DELETION_GUIDE.md](#rgpd-account-deletion-guide-md)
-
-### EMAIL_NOTIFICATION_MANUAL_TEST_GUIDE.md
-**Summary:** Comprehensive manual testing guide for multilingual email notification system covering i18n bug fixes, account deletion emails, and data export emails. Includes Test 2.2 results (immediate deletion variant).
-**Tags:** email, notifications, multilingual, i18n, rgpd, manual-testing, phase1, phase2, phase3, data-export, gdpr, brevo, troubleshooting, immediate-deletion
-**Related:** [RGPD_TESTING_GUIDE.md](#rgpd-testing-guide-md), [ACCOUNT_PRIVACY_TESTING_GUIDE.md](#account-privacy-testing-guide-md), [RGPD_IMPLEMENTATION_SUMMARY.md](#rgpd-implementation-summary-md), [EMAIL_INTEGRATION_GUIDE.md](#email-integration-guide-md), [EMAIL_NOTIFICATION_BUG_FIXES.md](#email-notification-bug-fixes-md)
-
-### RATE_LIMIT_TESTING.md
-**Summary:** Testing guide for rate limiting system with various attack scenarios and verification methods.
-**Tags:** testing, rate-limiting, security-testing, bot-simulation
-**Related:** [features-bot-detection-v2-015](#features-bot-detection-v2-015), [testing-rate-limits-collection-v2-041](#testing-rate-limits-collection-v2-041)
-
-### RATE_LIMITS_COLLECTION_GUIDE_V1_DEPRECATED.md
-**Summary:** Original rate limits collection guide (deprecated - use V2).
-**Tags:** rate-limiting, security, monitoring, firestore, logging, security-events
-**Related:** [testing-rate-limits-collection-v2-041](#testing-rate-limits-collection-v2-041), [features-bot-detection-v2-015](#features-bot-detection-v2-015), [analytics-implementation-012](#analytics-implementation-012)
-
-### RATE_LIMITS_COLLECTION_GUIDE_V2.md
-**Summary:** Complete reference guide to RateLimits Firestore collection with comprehensive field documentation, 21 event types across analytics/privacy/application, multi-threshold bot detection (200ms/500ms/1s windows), and detailed monitoring queries for security event analysis.
-**Tags:** rate-limiting, security, monitoring, firestore, logging, security-events, bot-detection
-**Related:** [features-bot-detection-v2-015](#features-bot-detection-v2-015), [analytics-implementation-012](#analytics-implementation-012), [testing-rate-limit-036](#testing-rate-limit-036)
+*Testing guides, QA procedures, and test plans*
 
 ### RGPD_TESTING_GUIDE.md
 **Summary:** Comprehensive testing documentation for RGPD Phase 1-4 implementation with 116 tests covering consent, privacy settings, and compliance features.
@@ -409,18 +379,57 @@
 **Tags:** testing, rgpd, test-results, compliance, 100-percent-pass, test-coverage
 **Related:** [testing-rgpd-guide-038](#testing-rgpd-guide-038), [testing-rgpd-quickstart-039](#testing-rgpd-quickstart-039), [rgpd-master-progress-043](#rgpd-master-progress-043)
 
----
+### ANONYMOUS_ANALYTICS_MANUAL_TEST_GUIDE.md
+**Summary:** Comprehensive manual testing guide for Phase 3.3 of anonymous analytics implementation. Covers 8 test categories with 35+ individual tests including consent withdrawal scenarios, Firestore verification, TTL validation, GDPR compliance, multi-language testing, rate limiting, edge cases, and client-side integration.
+**Tags:** testing, manual-testing, anonymous-analytics, gdpr, rgpd, consent-withdrawal, firestore-verification, ttl, rate-limiting, multi-language, troubleshooting
+**Related:** [rgpd-anonymous-analytics-046](#rgpd-anonymous-analytics-046), [testing-rgpd-guide-038](#testing-rgpd-guide-038), [testing-email-notifications-065](#testing-email-notifications-065), [analytics-implementation-012](#analytics-implementation-012)
+
+### CONTACT_ANONYMIZATION_MANUAL_TEST_GUIDE.md
+**Summary:** Comprehensive manual testing guide for contact anonymization system implementing GDPR Article 17 Right to be Forgotten. Covers 6 test scenarios including end-to-end anonymization flow, Firestore verification, Pinecone vector metadata verification, semantic search functionality, edge cases & idempotency, and multi-language UI testing across 5 languages.
+**Tags:** testing, manual-testing, contact-anonymization, gdpr, rgpd, right-to-be-forgotten, article-17, firestore-verification, pinecone-verification, semantic-search, multi-language, edge-cases, troubleshooting
+**Related:** [rgpd-contact-anonymization-049](#rgpd-contact-anonymization-049), [testing-rgpd-guide-038](#testing-rgpd-guide-038), [rgpd-account-deletion-flow-047](#rgpd-account-deletion-flow-047), [rgpd-contact-deletion-warning-048](#rgpd-contact-deletion-warning-048)
+
+### EMAIL_NOTIFICATION_BUG_FIXES.md
+**Summary:** Documents 3 bugs discovered during email notification system testing: completion email fetch-after-delete bug, Firebase composite index requirement, and contact deletion notifications not updating on completion. Includes root cause analysis, fixes, and verification.
+**Tags:** email, notifications, bug-fixes, rgpd, testing, account-deletion, firebase, debugging, root-cause-analysis, notification-update, notifications-collection, contacts-ui
+**Related:** [EMAIL_NOTIFICATION_MANUAL_TEST_GUIDE.md](#email-notification-manual-test-guide), [RGPD_ACCOUNT_DELETION_GUIDE.md](#rgpd-account-deletion-guide)
+
+### EMAIL_NOTIFICATION_MANUAL_TEST_GUIDE.md
+**Summary:** Comprehensive manual testing guide for multilingual email notification system covering i18n bug fixes, account deletion emails, and data export emails. Includes Test 2.2 results (immediate deletion variant).
+**Tags:** email, notifications, multilingual, i18n, rgpd, manual-testing, phase1, phase2, phase3, data-export, gdpr, brevo, troubleshooting, immediate-deletion
+**Related:** [RGPD_TESTING_GUIDE.md](#rgpd-testing-guide), [ACCOUNT_PRIVACY_TESTING_GUIDE.md](#account-privacy-testing-guide), [RGPD_IMPLEMENTATION_SUMMARY.md](#rgpd-implementation-summary), [EMAIL_INTEGRATION_GUIDE.md](#email-integration-guide), [EMAIL_NOTIFICATION_BUG_FIXES.md](#email-notification-bug-fixes)
+
+### LOCATION_SERVICES_PHASE3_TEST_PLAN.md
+**Summary:** Comprehensive testing guide for Phase 3 auto-enrichment implementation covering 80+ test scenarios including happy path, settings integration, budget tracking, Redis caching, error handling, subscription tiers, performance, data integrity, and graceful degradation with detailed verification procedures.
+**Tags:** location-services, auto-enrichment, phase-3, testing, qa, redis-cache, google-places, budget-tracking, exchange-contacts, venue-enrichment, manual-testing, integration-testing
+**Related:** [LOCATION_SERVICES_AUTO_TAGGING_SPEC.md](#location-services-auto-tagging-spec), [GEOCODING_SYSTEM_GUIDE.md](#geocoding-system-guide), [RATE_LIMIT_TESTING.md](#rate-limit-testing), [RGPD_TESTING_GUIDE.md](#rgpd-testing-guide)
+
+### RATE_LIMITS_COLLECTION_GUIDE_V2.md
+**Summary:** Complete reference guide to RateLimits Firestore collection with comprehensive field documentation, 21 event types across analytics/privacy/application, multi-threshold bot detection (200ms/500ms/1s windows), and detailed monitoring queries for security event analysis.
+**Tags:** rate-limiting, security, monitoring, firestore, logging, security-events, bot-detection
+**Related:** [features-bot-detection-v2-015](#features-bot-detection-v2-015), [analytics-implementation-012](#analytics-implementation-012), [testing-rate-limit-036](#testing-rate-limit-036)
+
+### RATE_LIMIT_TESTING.md
+**Summary:** Testing guide for rate limiting system with various attack scenarios and verification methods.
+**Tags:** testing, rate-limiting, security-testing, bot-simulation
+**Related:** [features-bot-detection-v2-015](#features-bot-detection-v2-015), [testing-rate-limits-collection-v2-041](#testing-rate-limits-collection-v2-041)
+
+### RATE_LIMITS_COLLECTION_GUIDE_V1_DEPRECATED.md
+**Summary:** Original rate limits collection guide (deprecated - use V2).
+**Tags:** rate-limiting, security, monitoring, firestore, logging, security-events
+**Related:** [testing-rate-limits-collection-v2-041](#testing-rate-limits-collection-v2-041), [features-bot-detection-v2-015](#features-bot-detection-v2-015), [analytics-implementation-012](#analytics-implementation-012)
 
 ## General Documentation
-*Project overview, setup, and general information*
+*General guides and documentation*
+
+### README.md
+**Summary:** Comprehensive README for Weavink enterprise-grade professional networking platform with AI-powered contact management, full GDPR compliance, complete tech stack documentation, installation guide, and proprietary licensing information.
+**Tags:** readme, setup, getting-started, overview, installation, weavink, enterprise, gdpr-compliant, ai-features, license, proprietary
+**Related:** [rgpd-implementation-summary-042](#rgpd-implementation-summary-042), [features-geocoding-system-082](#features-geocoding-system-082), [technical-cost-tracking-migration-024](#technical-cost-tracking-migration-024), [testing-rgpd-guide-038](#testing-rgpd-guide-038)
 
 ### Preview.md
 **Summary:** Preview/demo documentation.
 **Tags:** preview, demo, features
-
-### README.md
-**Summary:** Main project README with setup instructions and overview.
-**Tags:** readme, setup, getting-started, overview, installation
 
 ### RESTART_INSTRUCTIONS.md
 **Summary:** Server restart procedures and troubleshooting steps.
@@ -430,10 +439,8 @@
 **Summary:** Project changelog and update history.
 **Tags:** changelog, updates, version-history
 
----
-
 ## Tutorials & Guides
-*Implementation guides, tutorials, and how-tos*
+*Step-by-step tutorials and how-to guides*
 
 ### CONVERSATION_MANAGER_SKILL_GUIDE.md
 **Summary:** Design and implementation plan for a conversation-manager-skill that automatically saves conversation history from Claude Code sessions, linking them to git commits and enabling smart conversation continuation detection.
@@ -443,27 +450,26 @@
 ### EMAIL_INTEGRATION_GUIDE.md
 **Summary:** Step-by-step developer guide for adding new multilingual email notifications to the Weavink email system. Includes code examples, translation structure, testing checklist, best practices, and cross-reference to API error translation pattern.
 **Tags:** email, notifications, multilingual, i18n, rgpd, development, tutorial, integration, brevo, gdpr, developer-guide, api-errors, translation-service
-**Related:** [EMAIL_NOTIFICATION_MANUAL_TEST_GUIDE.md](#email-notification-manual-test-guide-md), [RGPD_IMPLEMENTATION_SUMMARY.md](#rgpd-implementation-summary-md), [RGPD_ARCHITECTURE_COMPLIANCE.md](#rgpd-architecture-compliance-md)
+**Related:** [EMAIL_NOTIFICATION_MANUAL_TEST_GUIDE.md](#email-notification-manual-test-guide), [RGPD_IMPLEMENTATION_SUMMARY.md](#rgpd-implementation-summary), [RGPD_ARCHITECTURE_COMPLIANCE.md](#rgpd-architecture-compliance)
 
 ### RATE_LIMIT_UI_PATTERN_GUIDE.md
 **Summary:** Comprehensive guide for implementing a reusable UI pattern for handling rate limit errors (HTTP 429) with real-time countdown timer, greyed-out button, localStorage persistence, multi-tab synchronization, and accurate timing using server's absolute resetTime.
 **Tags:** rate-limiting, ui-patterns, countdown-timer, localStorage, state-management, user-feedback, 429-handling, react, persistence, multi-tab-sync
-**Related:** [RATE_LIMIT_TESTING.md](#rate-limit-testing-md), [ACCOUNT_PRIVACY_TESTING_GUIDE.md](#account-privacy-testing-guide-md), [RATE_LIMITS_COLLECTION_GUIDE_V2.md](#rate-limits-collection-guide-v2-md), [CONSENT_IMPLEMENTATION_GUIDE.md](#consent-implementation-guide-md)
-
----
+**Related:** [RATE_LIMIT_TESTING.md](#rate-limit-testing), [ACCOUNT_PRIVACY_TESTING_GUIDE.md](#account-privacy-testing-guide), [RATE_LIMITS_COLLECTION_GUIDE_V2.md](#rate-limits-collection-guide-v2), [CONSENT_IMPLEMENTATION_GUIDE.md](#consent-implementation-guide)
 
 ## Meta Documentation
-*Project meta-documentation, reorganizations, and documentation about documentation*
-
-### DOCUMENTATION_REORGANIZATION_2025.md
-**Summary:** Complete reorganization of project documentation from root directory into structured documentation/ folder with 9 subfolders, updating all skills and tracking systems.
-**Tags:** documentation, reorganization, structure, skills, maintenance, meta
-**Related:** [rgpd-commit-summary-014](#rgpd-commit-summary-014)
+*Documentation about documentation*
 
 ### COMMIT_SUMMARY.md
 **Summary:** Complete implementation summary of RGPD Phase 1-2 with consent management, data export, account deletion, and cookie consent.
 **Tags:** gdpr, rgpd, compliance, commit-summary, implementation, privacy-center, cookies, data-export
 **Related:** [rgpd-conformite-tapit-013](#rgpd-conformite-tapit-013)
 
+### DOCUMENTATION_REORGANIZATION_2025.md
+**Summary:** Complete reorganization of project documentation from root directory into structured documentation/ folder with 9 subfolders, updating all skills and tracking systems.
+**Tags:** documentation, reorganization, structure, skills, maintenance, meta
+**Related:** [rgpd-commit-summary-014](#rgpd-commit-summary-014)
+
 ---
 
+*This index is auto-generated from docs-index.json*

@@ -1,8 +1,8 @@
 {
   "metadata": {
     "project": "Weavink Documentation",
-    "last_updated": "2025-11-21",
-    "total_guides": 83,
+    "last_updated": "2025-11-22",
+    "total_guides": 87,
     "version": "1.0.0"
   },
   "categories": {
@@ -75,7 +75,9 @@
         "features-roadmap-gaps-073",
         "features-roadmap-summary-074",
         "features-contact-deletion-status-api-075",
-        "features-geocoding-system-082"
+        "features-geocoding-system-082",
+        "features-session-enrichment-001",
+        "features-location-services-auto-tagging-080"
       ]
     },
     "technical": {
@@ -99,7 +101,8 @@
         "technical-rgpd-architecture-compliance-038",
         "infrastructure-firebase-cleanup-047",
         "infrastructure-audit-log-monitoring-048",
-        "technical-git-dual-remote-setup-049"
+        "technical-git-dual-remote-setup-049",
+        "infrastructure-session-comparison-001"
       ]
     },
     "testing": {
@@ -115,7 +118,8 @@
         "testing-email-notifications-065",
         "testing-email-notification-bugs-076",
         "testing-anonymous-analytics-077",
-        "testing-contact-anonymization-078"
+        "testing-contact-anonymization-078",
+        "testing-location-phase3-079"
       ]
     },
     "general": {
@@ -2595,7 +2599,7 @@
       "title": "Geocoding System - Complete Technical Guide",
       "filename": "documentation/features/GEOCODING_SYSTEM_GUIDE.md",
       "category": "features",
-      "summary": "Comprehensive technical guide for the geocoding system using Google Maps API. Covers reverse geocoding ($0.005/request), cost tracking, budget management, location data model (PII vs business context), GDPR compliance with anonymization, and integration with exchange contacts and venue enrichment. Includes complete API reference, usage examples, subscription tier limits, monitoring, debugging, and troubleshooting.",
+      "summary": "Comprehensive technical guide for the geocoding system using Google Maps API. Covers reverse geocoding ($0.005/request), session-based vs standalone tracking, cost tracking in SessionUsage/ApiUsage collections, budget management, location data model (PII vs business context), GDPR compliance with anonymization, and integration with exchange contacts and venue enrichment. Includes complete API reference, usage examples, subscription tier limits, monitoring, debugging, and troubleshooting.",
       "tags": [
         "geocoding",
         "google-maps",
@@ -2609,13 +2613,16 @@
         "gdpr",
         "venue-enrichment",
         "places-api",
-        "exchange-contacts"
+        "exchange-contacts",
+        "session-tracking"
       ],
       "related_guides": [
         "features-venue-enrichment-021",
         "rgpd-contact-anonymization-049",
         "technical-cost-tracking-migration-024",
-        "technical-semantic-search-032"
+        "technical-semantic-search-032",
+        "SESSION_BASED_ENRICHMENT.md",
+        "SESSION_VS_STANDALONE_TRACKING.md"
       ],
       "functions": [
         "reverseGeocode",
@@ -2633,7 +2640,7 @@
       ],
       "status": "active",
       "created": "2025-11-21",
-      "updated": "2025-11-21"
+      "updated": "2025-11-22"
     },
     {
       "id": "technical-git-dual-remote-setup-049",
@@ -2663,6 +2670,169 @@
       "status": "active",
       "created": "2025-11-21",
       "updated": "2025-11-21"
+    },
+    {
+      "id": "testing-location-phase3-079",
+      "title": "Location Services Phase 3 Test Plan - Auto-Enrichment",
+      "filename": "documentation/testing/LOCATION_SERVICES_PHASE3_TEST_PLAN.md",
+      "category": "testing",
+      "summary": "Comprehensive testing guide for Phase 3 auto-enrichment implementation covering 80+ test scenarios including happy path, settings integration, budget tracking, Redis caching, error handling, subscription tiers, performance, data integrity, and graceful degradation with detailed verification procedures.",
+      "tags": [
+        "location-services",
+        "auto-enrichment",
+        "phase-3",
+        "testing",
+        "qa",
+        "redis-cache",
+        "google-places",
+        "budget-tracking",
+        "exchange-contacts",
+        "venue-enrichment",
+        "manual-testing",
+        "integration-testing"
+      ],
+      "related_guides": [
+        "LOCATION_SERVICES_AUTO_TAGGING_SPEC.md",
+        "GEOCODING_SYSTEM_GUIDE.md",
+        "RATE_LIMIT_TESTING.md",
+        "RGPD_TESTING_GUIDE.md"
+      ],
+      "functions": [
+        "enrichContact",
+        "getVenueData",
+        "getCacheKey",
+        "isEnrichmentEnabled",
+        "searchNearbyVenue",
+        "getRandomTTL"
+      ],
+      "components": [
+        "LocationEnrichmentService",
+        "ExchangeService",
+        "PlacesService",
+        "CostTrackingService"
+      ],
+      "status": "active",
+      "created": "2025-11-21",
+      "updated": "2025-11-21"
+    },
+    {
+      "id": "features-session-enrichment-001",
+      "title": "Session-Based Location Enrichment",
+      "filename": "SESSION_BASED_ENRICHMENT.md",
+      "path": "documentation/features/SESSION_BASED_ENRICHMENT.md",
+      "category": "features",
+      "summary": "Multi-step location enrichment with session-based cost tracking combining reverse geocoding and venue search",
+      "tags": [
+        "session-tracking",
+        "location-enrichment",
+        "cost-tracking",
+        "geocoding",
+        "venue-search",
+        "location-services"
+      ],
+      "status": "active",
+      "created": "2025-11-22",
+      "updated": "2025-11-22",
+      "functions": [
+        "enrichContact",
+        "searchNearbyVenue",
+        "reverseGeocode",
+        "finalizeSession"
+      ],
+      "components": [
+        "LocationEnrichmentService",
+        "SessionTrackingService",
+        "CostTrackingService"
+      ],
+      "related_guides": [
+        "GEOCODING_SYSTEM_GUIDE.md",
+        "LOCATION_SERVICES_AUTO_TAGGING_SPEC.md",
+        "SESSION_TRACKING_FIX.md"
+      ]
+    },
+    {
+      "id": "infrastructure-session-comparison-001",
+      "title": "Session vs Standalone Cost Tracking - Decision Guide",
+      "filename": "SESSION_VS_STANDALONE_TRACKING.md",
+      "path": "documentation/infrastructure/SESSION_VS_STANDALONE_TRACKING.md",
+      "category": "technical",
+      "summary": "Comprehensive comparison and decision guide for choosing between session-based and standalone cost tracking approaches",
+      "tags": [
+        "session-tracking",
+        "cost-tracking",
+        "api-usage",
+        "architecture",
+        "decision-guide"
+      ],
+      "status": "active",
+      "created": "2025-11-22",
+      "updated": "2025-11-22",
+      "functions": [
+        "recordUsage",
+        "finalizeSession",
+        "canAffordOperation"
+      ],
+      "components": [
+        "SessionTrackingService",
+        "CostTrackingService"
+      ],
+      "related_guides": [
+        "SESSION_BASED_ENRICHMENT.md",
+        "SESSION_TRACKING_FIX.md",
+        "COST_TRACKING_MIGRATION_GUIDE.md"
+      ]
+    },
+    {
+      "id": "features-location-services-auto-tagging-080",
+      "title": "Intelligent Location Services & AI Auto-Tagging System",
+      "filename": "documentation/features/LOCATION_SERVICES_AUTO_TAGGING_SPEC.md",
+      "category": "features",
+      "summary": "Advanced location-based contact management system with automatic venue enrichment, session-based tracking, Redis caching (70% hit rate), event detection, and AI auto-tagging. Phase 1 complete: Two-step enrichment (geocoding + venue search) with budget tracking, graceful degradation, and user settings integration. Includes comprehensive architecture diagrams, cost optimization strategy, and implementation roadmap.",
+      "tags": [
+        "location",
+        "gps",
+        "google-places",
+        "auto-tagging",
+        "event-detection",
+        "redis-cache",
+        "ai",
+        "gemini",
+        "premium-features",
+        "partially-implemented",
+        "session-tracking",
+        "venue-enrichment",
+        "auto-enrichment",
+        "cost-optimization"
+      ],
+      "related_guides": [
+        "SESSION_BASED_ENRICHMENT.md",
+        "SESSION_VS_STANDALONE_TRACKING.md",
+        "GEOCODING_SYSTEM_GUIDE.md",
+        "features-venue-enrichment-021"
+      ],
+      "functions": [
+        "enrichContact",
+        "getVenueData",
+        "searchNearbyVenue",
+        "getCacheKey",
+        "getRandomTTL",
+        "isEnrichmentEnabled",
+        "searchPlaces",
+        "getPlaceDetails",
+        "searchNearbyVenues"
+      ],
+      "components": [
+        "LocationEnrichmentService",
+        "PlacesService",
+        "ExchangeService",
+        "SessionTrackingService",
+        "CostTrackingService",
+        "EventLocationSearch",
+        "LocationSelector"
+      ],
+      "status": "partial",
+      "created": "2025-11-21",
+      "updated": "2025-11-22"
     }
   ]
 }
