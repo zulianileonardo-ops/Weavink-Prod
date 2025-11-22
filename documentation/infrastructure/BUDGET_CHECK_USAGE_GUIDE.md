@@ -15,6 +15,8 @@ related:
 
 This guide explains how to use the new real-time budget tracking and permission checking system.
 
+**📌 Nov 2025 Update**: `getUserMonthlyUsage()` reads from `users/{userId}` document. Session operations update user counters during each step (not during finalization).
+
 ## Overview
 
 The system now maintains real-time cost and run tracking directly in the user document, enabling fast pre-flight permission checks before expensive API operations.

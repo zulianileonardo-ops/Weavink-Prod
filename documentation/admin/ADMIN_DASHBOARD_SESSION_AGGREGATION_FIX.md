@@ -19,11 +19,35 @@ related:
 
 ---
 
-## Executive Summary
+## ⚠️ ARCHITECTURE UPDATE (2025-11-22)
+
+**This document describes a PREVIOUS architecture that has been superseded.**
+
+**Current Architecture (as of 2025-11-22)**:
+- Session operations write to: `SessionUsage` + `users/{userId}` document
+- Budget queries read from: `users/{userId}` document (NOT monthly aggregation docs)
+- Monthly aggregation docs (`ApiUsage/{userId}/monthly/{YYYY-MM}`): **No longer written by session operations**
+
+**Why the change**:
+- Simpler architecture (no dual-write complexity)
+- Better performance (`getUserMonthlyUsage()` reads single doc vs collection query)
+- Single source of truth (users document)
+- Real-time accuracy (updated during step recording)
+
+**See instead**:
+- `SESSION_BASED_ENRICHMENT.md` - Current session architecture
+- `SESSION_TRACKING_FIX.md` - User document update implementation
+- `COST_TRACKING_MIGRATION_GUIDE.md` - getUserMonthlyUsage() current behavior
+
+---
+
+## Executive Summary (HISTORICAL)
 
 The admin dashboard was showing **zero API/AI usage data** despite having usage records in the database. This was caused by a fundamental architectural issue where session-based operations were only written to `SessionUsage` collection, but the analytics service expected monthly aggregation documents in `ApiUsage/{userId}/monthly/YYYY-MM` to exist.
 
-**Solution:** Implemented a **dual-write architecture** where session-based operations write to BOTH SessionUsage (for detailed audit trails) AND monthly aggregation documents (for fast dashboard queries).
+**Solution (HISTORICAL):** Implemented a **dual-write architecture** where session-based operations write to BOTH SessionUsage (for detailed audit trails) AND monthly aggregation documents (for fast dashboard queries).
+
+**Note**: This dual-write approach has since been replaced with a simpler user-document-based approach (see architecture update above).
 
 ---
 

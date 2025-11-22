@@ -112,6 +112,29 @@ if (sessionId) {
 4. **Conditional Logic**: Only updates for billable operations or operations with cost
 5. **Logging**: Clear console logs for debugging
 
+### ⏰ Timing: When Updates Happen
+
+**IMPORTANT**: User document updates happen **DURING step recording**, not during session finalization.
+
+```
+Session Lifecycle:
+1. Generate sessionId
+2. Execute Step 1 → recordUsage() → ✅ Updates SessionUsage + User Doc
+3. Execute Step 2 → recordUsage() → ✅ Updates SessionUsage + User Doc
+4. Execute Step N → recordUsage() → ✅ Updates SessionUsage + User Doc
+5. finalizeSession() → ✅ ONLY marks session as "completed"
+```
+
+**What `finalizeSession()` does**:
+- Sets `status: 'completed'`
+- Sets `completedAt` timestamp
+- **Does NOT** update user document (already updated in steps 2-4)
+
+**What `recordUsage()` does** (for each step):
+- Writes step to `SessionUsage/{userId}/sessions/{sessionId}`
+- Updates `users/{userId}` document counters atomically
+- Increments `monthlyTotalCost`, `monthlyBillableRunsAI`, or `monthlyBillableRunsAPI`
+
 ## Expected Behavior After Fix
 
 ### When Scanning a Business Card

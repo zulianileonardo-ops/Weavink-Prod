@@ -262,12 +262,13 @@ if (enrichedContact.metadata?.venue) {
 3. FINALIZE
    ├─ Update session status: "completed"
    ├─ Set completedAt timestamp
-   └─ Calculate final totalCost and totalRuns
+   └─ **Does NOT update user document** (already updated in step 2)
 
 4. USER BUDGET UPDATE
-   ├─ User document monthly counters updated
-   ├─ Happens during step recording
-   └─ Tracks against monthly limits
+   ├─ User document monthly counters updated **DURING STEP RECORDING**
+   ├─ Happens atomically with each recordUsage() call
+   ├─ Uses FieldValue.increment() for accuracy
+   └─ Tracks against monthly limits in real-time
 ```
 
 ## Cost Tracking Flow
@@ -281,14 +282,21 @@ Step 1: recordUsage({ sessionId: 'session_...' })
          ↓
 CostTrackingService checks: sessionId provided?
          ↓ YES
-SessionTrackingService.addStepToSession()
+┌────────────────────────────────────────────┐
+│ 1. SessionTrackingService.addStepToSession() │
+│    Writes to: SessionUsage/{userId}/sessions/{sessionId} │
+│    Updates: steps array, totalCost, totalRuns │
+├────────────────────────────────────────────┤
+│ 2. Update User Document (Real-time Budget) │
+│    Writes to: users/{userId} │
+│    Updates: monthlyTotalCost, monthlyBillableRunsAPI │
+│    Method: FieldValue.increment() (atomic) │
+└────────────────────────────────────────────┘
          ↓
-Writes to: SessionUsage/{userId}/sessions/{sessionId}
-         ↓
-Updates: steps array, totalCost, totalRuns
-         ↓
-Returns: { recordedIn: 'SessionUsage' }
+Returns: { recordedIn: 'SessionUsage+UserDoc' }
 ```
+
+**Key Point**: Session-based operations update **BOTH** SessionUsage (for audit trail) AND user document (for budget tracking) during each step.
 
 ### Without Session (Standalone)
 

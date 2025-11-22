@@ -14,10 +14,12 @@ related:
 # Budget & Affordability Check Implementation Guide
 
 **Version:** 1.0
-**Date:** October 2025
+**Date:** October 2025 (Updated: November 2025)
 **Author:** Claude Code
 
 This guide documents the complete implementation of budget tracking and affordability checks for features that consume AI or API resources. Use this as a reference when implementing similar checks for new features.
+
+**📌 Latest Update (Nov 2025)**: `getUserMonthlyUsage()` now reads from `users/{userId}` document (not monthly aggregation collections) for real-time budget tracking. Session-based operations update user document during step recording.
 
 ---
 

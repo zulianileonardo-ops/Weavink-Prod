@@ -14,6 +14,8 @@ related:
 
 # Session vs Standalone Cost Tracking - Decision Guide
 
+**📌 Key Architectural Note**: BOTH session-based and standalone operations now update `users/{userId}` document for real-time budget tracking. Budget queries (`getUserMonthlyUsage()`) read from this single source of truth.
+
 ## Quick Comparison
 
 | Aspect | Session-Based | Standalone |

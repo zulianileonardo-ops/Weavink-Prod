@@ -13,6 +13,8 @@ related:
 
 # Budget Display Implementation Summary
 
+**📌 Nov 2025 Update**: Budget data sourced from `users/{userId}` document for real-time accuracy. No collection queries needed.
+
 ## Overview
 
 Budget information is now displayed throughout the dashboard, showing users their monthly AI operation usage and cost budget in real-time.

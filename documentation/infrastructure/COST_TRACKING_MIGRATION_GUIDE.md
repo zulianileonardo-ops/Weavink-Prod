@@ -206,11 +206,13 @@ if (!affordability.canAfford) {
 
 ### Current Month Usage
 
+**⚠️ Updated Implementation**: `getUserMonthlyUsage()` now reads from the **`users/{userId}` document** for real-time accuracy and performance.
+
 ```javascript
 // Get AI usage for current month
 const aiUsage = await CostTrackingService.getUserMonthlyUsage(
   userId,
-  'AIUsage'
+  'AIUsage'  // or 'ApiUsage' for API operations
 );
 
 console.log(aiUsage);
@@ -219,27 +221,33 @@ console.log(aiUsage);
 //   subscriptionLevel: 'pro',
 //   usageType: 'AIUsage',
 //   usage: {
-//     totalCost: 2.45,
-//     totalRuns: 156,
-//     totalApiCalls: 203,
-//     featureBreakdown: {
-//       business_card_analysis: { cost: 1.89, apiCalls: 150, billableRuns: 120 },
-//       contact_enrichment: { cost: 0.56, apiCalls: 53, billableRuns: 36 }
-//     },
-//     providerBreakdown: {
-//       'openai-gpt4': { cost: 2.10, apiCalls: 180, billableRuns: 140 },
-//       'anthropic-claude': { cost: 0.35, apiCalls: 23, billableRuns: 16 }
-//     }
+//     totalCost: 2.45,           // Read from users/{userId}.monthlyTotalCost
+//     totalRuns: 156,            // Read from users/{userId}.monthlyBillableRunsAI
+//     totalApiCalls: 156,        // Same as totalRuns for compatibility
+//     featureBreakdown: {},      // ⚠️ Not available from user document (use getDetailedUsage for breakdowns)
+//     providerBreakdown: {},     // ⚠️ Not available from user document (use getDetailedUsage for breakdowns)
+//     lastUpdated: '2025-10-15T14:32:10.000Z'  // users/{userId}.monthlyUsageLastUpdated
 //   },
 //   limits: {
-//     maxCost: 10.00,
-//     maxRuns: 500
+//     maxCost: 10.00,           // From subscription limits
+//     maxRuns: 500              // From subscription limits
 //   },
-//   remainingBudget: 7.55,
-//   remainingRuns: 344,
-//   percentageUsed: 24.5
+//   remainingBudget: 7.55,     // Calculated: maxCost - totalCost
+//   remainingRuns: 344,        // Calculated: maxRuns - totalRuns
+//   percentageUsed: 24.5       // Calculated: (totalCost / maxCost) * 100
 // }
 ```
+
+**Data Source**: `users/{userId}` document fields:
+- `monthlyTotalCost` - Combined AI + API costs
+- `monthlyBillableRunsAI` - AI operation count
+- `monthlyBillableRunsAPI` - API operation count
+- `monthlyUsageMonth` - Current month (YYYY-MM format)
+- `monthlyUsageLastUpdated` - Last update timestamp
+
+**Performance**: Single document read (fast) vs collection query (slower).
+
+**Accuracy**: Real-time data from single source of truth, updated during each operation.
 
 ### Detailed Historical Usage
 
