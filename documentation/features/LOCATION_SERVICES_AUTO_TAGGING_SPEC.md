@@ -7,11 +7,17 @@ status: partial
 created: 2025-11-21
 updated: 2025-11-22
 phase_1_completed: 2025-11-22
-next_phase: phase-2-user-settings
+phase_2_completed: 2025-11-22
+phase_3_completed: 2025-11-22
+phase_5_in_progress: 2025-11-22
+next_phase: phase-5-ai-auto-tagging
 related:
   - SESSION_BASED_ENRICHMENT.md
   - SESSION_VS_STANDALONE_TRACKING.md
   - GEOCODING_SYSTEM_GUIDE.md
+  - PHASE5_AUTO_TAGGING_MIGRATION.md
+  - SEMANTIC_SEARCH_ARCHITECTURE_V2.md
+  - CONTACT_CREATION_ENRICHMENT_FLOW.md
   - features-venue-enrichment-021
   - technical-cost-tracking-migration-024
   - build-manager-skill
@@ -25,16 +31,17 @@ An advanced location-based contact management system that automatically enriches
 
 ## Implementation Status
 
-**Status:** Partially Implemented (Phase 1 Complete)
-- ✅ **Manual Location Search** - Fully implemented in GroupManagerModal
+**Status:** Phase 3 Complete, Phase 5 In Progress
+- ✅ **Phase 1: Manual Location Search** - Fully implemented in GroupManagerModal
+- ✅ **Phase 2: User Settings UI** - LocationServicesTab with granular controls (Complete)
+- ✅ **Phase 3: Auto-enrichment** - Geocoding + venue search with session tracking (Complete)
 - ✅ **PlacesService** - Autocomplete and place details working
 - ✅ **Budget Tracking** - Cost tracking with session-based tracking integrated
-- ✅ **Auto-enrichment** - Implemented with session-based tracking (geocoding + venue search)
 - ✅ **Redis Caching** - 100m grid caching with 70%+ hit rate
 - ✅ **Session Tracking** - Multi-step enrichment tracked in SessionUsage collection
-- ⏸️ **Event Detection** - Planned feature (Phase 2)
-- ⏸️ **AI Auto-tagging** - Planned feature (Phase 3)
-- ⏸️ **User Settings UI** - Settings toggle to be implemented (Phase 2)
+- ⏸️ **Phase 4: Event Detection** - Planned feature
+- 🚧 **Phase 5: AI Auto-tagging** - In Progress (Documentation complete, implementation pending)
+- ⏸️ **Phase 6: Polish & Testing** - Planned feature
 
 ## Access Points
 
@@ -1305,21 +1312,35 @@ Files to Create:
 - `app/api/user/contacts/location/suggest-event/route.js`
 - `app/dashboard/(dashboard pages)/contacts/components/EventSuggestionsPanel.jsx` (new)
 
-### Phase 5: AI Auto-Tagging (⏸️ PLANNED - 1 week)
-**Dependencies:** Phase 3 (needs enriched contacts)
+### Phase 5: AI Auto-Tagging (🚧 IN PROGRESS - Week 1-2 of 5)
+**Dependencies:** Phase 3 (needs enriched contacts) ✅ Complete
+**Migration Guide:** [PHASE5_AUTO_TAGGING_MIGRATION.md](../infrastructure/PHASE5_AUTO_TAGGING_MIGRATION.md)
+**Updated Architecture:** [SEMANTIC_SEARCH_ARCHITECTURE_V2.md](../infrastructure/SEMANTIC_SEARCH_ARCHITECTURE_V2.md)
+
+**Progress:** Documentation complete, implementation in progress
 
 Tasks:
+- [x] Create comprehensive migration documentation
+- [x] Design V2 semantic search architecture (tags replace query enhancement)
 - [ ] Integrate Gemini 2.5 Flash API
-- [ ] Create AutoTagService with tag generation logic
+- [ ] Create AutoTaggingService with tag generation logic (following LocationEnrichmentService pattern)
 - [ ] Add /api/user/contacts/tags/generate endpoint
-- [ ] Implement batch tag generation for existing contacts
+- [ ] Implement lazy tag generation for existing contacts (not batch)
 - [ ] Add Redis caching for generated tags (24h TTL)
 - [ ] Update contact model to support tags field
+- [ ] Add tags to document builder (for vector embeddings)
 - [ ] Add tag-based search to contact search
+- [ ] Update semantic search to use tags instead of query enhancement
 
 Files to Create:
-- `lib/services/serviceContact/server/AutoTagService.js`
-- `app/api/user/contacts/tags/generate/route.js`
+- [x] `documentation/infrastructure/PHASE5_AUTO_TAGGING_MIGRATION.md`
+- [x] `documentation/infrastructure/SEMANTIC_SEARCH_ARCHITECTURE_V2.md`
+- [x] `documentation/features/CONTACT_CREATION_ENRICHMENT_FLOW.md`
+- [ ] `lib/services/serviceContact/server/AutoTaggingService.js`
+- [ ] `app/api/user/contacts/tags/generate/route.js`
+- [ ] `lib/services/serviceContact/server/migrations/lazyTagMigration.js`
+- [ ] `app/dashboard/(dashboard pages)/contacts/components/TagFilter.jsx`
+- [ ] `app/dashboard/(dashboard pages)/contacts/components/TagBadge.jsx`
 
 ### Phase 6: Polish & Testing (⏸️ PLANNED - 1 week)
 **Dependencies:** All previous phases

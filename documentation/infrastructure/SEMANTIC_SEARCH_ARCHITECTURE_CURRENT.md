@@ -3,18 +3,25 @@ id: technical-semantic-search-032
 title: Semantic Search Architecture Current
 category: technical
 tags: [semantic-search, vector-database, pinecone, embeddings, ai-features]
-status: active
+status: superseded
 created: 2025-01-01
-updated: 2025-11-21
+updated: 2025-11-22
 related:
   - ADMIN_VECTOR_PANEL_REFACTOR_SUMMARY.md
   - CONTACT_ANONYMIZATION_BUGFIX.md
+  - SEMANTIC_SEARCH_ARCHITECTURE_V2.md
 ---
 
 # Semantic Search & Rerank System - Complete Architecture Documentation
 
-**Status**: Current Implementation (Analyzed 2025-01-XX)
-**Warning**: Documentation files are outdated. This document reflects the ACTUAL codebase.
+> **⚠️ SUPERSEDED:** This guide documents the original V1 architecture with STEP 0 query enhancement.
+> **See:** [SEMANTIC_SEARCH_ARCHITECTURE_V2.md](SEMANTIC_SEARCH_ARCHITECTURE_V2.md) for the current architecture with auto-tagging at save time (Phase 5).
+>
+> **Migration Date:** 2025-11-22
+> **Reason:** Query enhancement moved from search time to contact save time for better performance and cost savings.
+
+**Status**: V1 Implementation (Deprecated 2025-11-22)
+**Warning**: This document reflects the OLD architecture. Use V2 for new implementations.
 
 ---
 

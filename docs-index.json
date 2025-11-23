@@ -2,7 +2,7 @@
   "metadata": {
     "project": "Weavink Documentation",
     "last_updated": "2025-11-22",
-    "total_guides": 87,
+    "total_guides": 90,
     "version": "1.0.0"
   },
   "categories": {
@@ -77,7 +77,8 @@
         "features-contact-deletion-status-api-075",
         "features-geocoding-system-082",
         "features-session-enrichment-001",
-        "features-location-services-auto-tagging-080"
+        "features-location-services-auto-tagging-080",
+        "features-contact-enrichment-021"
       ]
     },
     "technical": {
@@ -102,7 +103,9 @@
         "infrastructure-firebase-cleanup-047",
         "infrastructure-audit-log-monitoring-048",
         "technical-git-dual-remote-setup-049",
-        "infrastructure-session-comparison-001"
+        "infrastructure-session-comparison-001",
+        "technical-auto-tagging-migration-033",
+        "technical-semantic-search-v2-034"
       ]
     },
     "testing": {
@@ -1019,13 +1022,15 @@
         "ai-features"
       ],
       "related_guides": [
-        "admin-vector-panel-refactor-004"
+        "admin-vector-panel-refactor-004",
+        "SEMANTIC_SEARCH_ARCHITECTURE_V2.md",
+        "PHASE5_AUTO_TAGGING_MIGRATION.md"
       ],
       "functions": [],
       "components": [],
-      "status": "active",
+      "status": "superseded",
       "created": "2025-01-01",
-      "updated": "2025-11-11"
+      "updated": "2025-11-22"
     },
     {
       "id": "technical-quick-start-integration-033",
@@ -2600,7 +2605,7 @@
       "title": "Geocoding System - Complete Technical Guide",
       "filename": "documentation/features/GEOCODING_SYSTEM_GUIDE.md",
       "category": "features",
-      "summary": "Comprehensive technical guide for the geocoding system using Google Maps API. Covers reverse geocoding ($0.005/request), session-based vs standalone tracking, cost tracking in SessionUsage/ApiUsage collections, budget management, location data model (PII vs business context), GDPR compliance with anonymization, and integration with exchange contacts and venue enrichment. Includes complete API reference, usage examples, subscription tier limits, monitoring, debugging, and troubleshooting. Updated 2025-11-22 with subscription tier validation bug fixes (accountType field, case sensitivity, undefined object assignment).",
+      "summary": "Comprehensive technical guide for the geocoding system using Google Maps API. Covers 3-step enrichment pipeline: Step 1 (Reverse Geocoding $0.005), Step 2 (Venue Search $0.032), Step 3 (AI Auto-Tagging $0.0000002). Includes session-based tracking, dual budget system (API + AI), cost tracking in SessionUsage/ApiUsage collections, budget management, location data model (PII vs business context), GDPR compliance with anonymization, subscription tier limits, monitoring, debugging, and troubleshooting. Updated 2025-11-22 with Phase 5 integration and tier validation bug fixes.",
       "tags": [
         "geocoding",
         "google-maps",
@@ -2618,7 +2623,9 @@
         "session-tracking",
         "troubleshooting",
         "bug-fixes",
-        "tier-validation"
+        "tier-validation",
+        "auto-tagging",
+        "phase-5"
       ],
       "related_guides": [
         "features-venue-enrichment-021",
@@ -2626,7 +2633,10 @@
         "technical-cost-tracking-migration-024",
         "technical-semantic-search-032",
         "SESSION_BASED_ENRICHMENT.md",
-        "SESSION_VS_STANDALONE_TRACKING.md"
+        "SESSION_VS_STANDALONE_TRACKING.md",
+        "PHASE5_AUTO_TAGGING_MIGRATION.md",
+        "SEMANTIC_SEARCH_ARCHITECTURE_V2.md",
+        "CONTACT_CREATION_ENRICHMENT_FLOW.md"
       ],
       "functions": [
         "reverseGeocode",
@@ -2725,7 +2735,7 @@
       "filename": "SESSION_BASED_ENRICHMENT.md",
       "path": "documentation/features/SESSION_BASED_ENRICHMENT.md",
       "category": "features",
-      "summary": "Multi-step location enrichment with session-based cost tracking combining reverse geocoding and venue search. Updated 2025-11-22 with corrected session creation logic: sessions only for multi-step operations, single-step uses ApiUsage.",
+      "summary": "Three-step location enrichment with session-based cost tracking: Step 1 (Reverse Geocoding), Step 2 (Venue Search), Step 3 (AI Auto-Tagging). Session tracking groups multi-step operations, single-step uses ApiUsage. Updated 2025-11-22 with Phase 5 auto-tagging integration showing dual budget system (API + AI budgets) and complete 3-step pipeline.",
       "tags": [
         "session-tracking",
         "location-enrichment",
@@ -2735,7 +2745,9 @@
         "location-services",
         "bug-fixes",
         "multi-step-detection",
-        "session-creation"
+        "session-creation",
+        "auto-tagging",
+        "phase-5"
       ],
       "status": "active",
       "created": "2025-11-22",
@@ -2754,7 +2766,9 @@
       "related_guides": [
         "GEOCODING_SYSTEM_GUIDE.md",
         "LOCATION_SERVICES_AUTO_TAGGING_SPEC.md",
-        "SESSION_TRACKING_FIX.md"
+        "SESSION_TRACKING_FIX.md",
+        "PHASE5_AUTO_TAGGING_MIGRATION.md",
+        "CONTACT_CREATION_ENRICHMENT_FLOW.md"
       ]
     },
     {
@@ -2797,7 +2811,7 @@
       "title": "Intelligent Location Services & AI Auto-Tagging System",
       "filename": "documentation/features/LOCATION_SERVICES_AUTO_TAGGING_SPEC.md",
       "category": "features",
-      "summary": "Advanced location-based contact management system with automatic venue enrichment, session-based tracking, Redis caching (70% hit rate), event detection, and AI auto-tagging. Phase 1 complete: Two-step enrichment (geocoding + venue search) with budget tracking, graceful degradation, and user settings integration. Includes comprehensive architecture diagrams, cost optimization strategy, implementation roadmap, and corrected tier validation implementation (2025-11-22 bug fixes).",
+      "summary": "Advanced location-based contact management system with automatic venue enrichment, session-based tracking, Redis caching (70% hit rate), event detection, and AI auto-tagging. Phases 1-3 complete: Three-step enrichment (geocoding + venue search + AI tagging) with budget tracking, graceful degradation, and user settings integration. Phase 5 in progress (2025-11-22): Moving tag generation to save time. Includes comprehensive architecture diagrams, cost optimization strategy, implementation roadmap, and tier validation fixes.",
       "tags": [
         "location",
         "gps",
@@ -2815,13 +2829,18 @@
         "cost-optimization",
         "tier-validation",
         "bug-fixes",
-        "settings-service"
+        "settings-service",
+        "phase-5",
+        "migration-guide"
       ],
       "related_guides": [
         "SESSION_BASED_ENRICHMENT.md",
         "SESSION_VS_STANDALONE_TRACKING.md",
         "GEOCODING_SYSTEM_GUIDE.md",
-        "features-venue-enrichment-021"
+        "features-venue-enrichment-021",
+        "PHASE5_AUTO_TAGGING_MIGRATION.md",
+        "SEMANTIC_SEARCH_ARCHITECTURE_V2.md",
+        "CONTACT_CREATION_ENRICHMENT_FLOW.md"
       ],
       "functions": [
         "enrichContact",
@@ -2845,6 +2864,129 @@
       ],
       "status": "partial",
       "created": "2025-11-21",
+      "updated": "2025-11-22"
+    },
+    {
+      "id": "technical-auto-tagging-migration-033",
+      "title": "Phase 5: AI Auto-Tagging Migration Guide",
+      "filename": "documentation/infrastructure/PHASE5_AUTO_TAGGING_MIGRATION.md",
+      "category": "technical",
+      "summary": "Comprehensive migration guide for moving AI tag generation from search time (STEP 0 query enhancement) to contact save time. Achieves 98.75% cost savings ($0.000008 → $0.0000002 per operation) and 50ms faster searches. Includes complete AutoTaggingService implementation, 7-phase rollout plan, lazy migration strategy, budget management (separate AI budget), Redis caching (24h TTL), and integration with existing LocationEnrichmentService pattern.",
+      "tags": [
+        "auto-tagging",
+        "migration",
+        "phase-5",
+        "semantic-search",
+        "cost-optimization",
+        "ai",
+        "gemini",
+        "session-tracking",
+        "redis-cache",
+        "location-services"
+      ],
+      "related_guides": [
+        "SEMANTIC_SEARCH_ARCHITECTURE_V2.md",
+        "SEMANTIC_SEARCH_ARCHITECTURE_CURRENT.md",
+        "CONTACT_CREATION_ENRICHMENT_FLOW.md",
+        "LOCATION_SERVICES_AUTO_TAGGING_SPEC.md",
+        "SESSION_BASED_ENRICHMENT.md"
+      ],
+      "functions": [
+        "tagContact",
+        "generateTagsWithAI",
+        "getTagCacheKey",
+        "isAutoTaggingEnabled",
+        "canAffordGeneric"
+      ],
+      "components": [
+        "AutoTaggingService",
+        "CostTrackingService",
+        "SessionTrackingService",
+        "LocationEnrichmentService"
+      ],
+      "status": "active",
+      "created": "2025-11-22",
+      "updated": "2025-11-22"
+    },
+    {
+      "id": "technical-semantic-search-v2-034",
+      "title": "Semantic Search Architecture V2 (Tag-Based)",
+      "filename": "documentation/infrastructure/SEMANTIC_SEARCH_ARCHITECTURE_V2.md",
+      "category": "technical",
+      "summary": "V2 semantic search architecture with pre-generated tags at contact save time. Removes STEP 0 query enhancement (now handled by auto-tagging), reducing pipeline from 12 to 11 steps. Tags included in vector embeddings for better search quality, 50ms faster searches, and 98.75% cost savings. Uses Pinecone vector database, Gemini 2.5 Flash for embeddings, and graceful degradation for budget limits.",
+      "tags": [
+        "semantic-search",
+        "vector-database",
+        "pinecone",
+        "embeddings",
+        "ai-features",
+        "auto-tagging",
+        "architecture-v2",
+        "performance-optimization",
+        "cost-optimization"
+      ],
+      "related_guides": [
+        "SEMANTIC_SEARCH_ARCHITECTURE_CURRENT.md",
+        "PHASE5_AUTO_TAGGING_MIGRATION.md",
+        "CONTACT_CREATION_ENRICHMENT_FLOW.md"
+      ],
+      "functions": [
+        "semanticSearch",
+        "embedQuery",
+        "queryPinecone",
+        "buildVectorDocument",
+        "processSearchResults"
+      ],
+      "components": [
+        "PineconeService",
+        "EmbeddingService",
+        "DocumentBuilder"
+      ],
+      "status": "active",
+      "created": "2025-11-22",
+      "updated": "2025-11-22"
+    },
+    {
+      "id": "features-contact-enrichment-021",
+      "title": "Contact Creation & Multi-Step Enrichment Flow",
+      "filename": "documentation/features/CONTACT_CREATION_ENRICHMENT_FLOW.md",
+      "category": "features",
+      "summary": "Complete end-to-end contact creation flow with 3-step enrichment pipeline: Step 1 (Reverse Geocoding $0.005) → Step 2 (Venue Search $0.032 API / $0 cached) → Step 3 (AI Auto-Tagging $0.0000002). Includes session-based tracking, dual budget system (API + AI), database schema, graceful degradation, and testing guide. Updated 2025-11-22 with Phase 5 auto-tagging integration.",
+      "tags": [
+        "contact-creation",
+        "enrichment-flow",
+        "multi-step-pipeline",
+        "session-tracking",
+        "geocoding",
+        "venue-search",
+        "auto-tagging",
+        "phase-5",
+        "cost-tracking",
+        "budget-management"
+      ],
+      "related_guides": [
+        "PHASE5_AUTO_TAGGING_MIGRATION.md",
+        "SESSION_BASED_ENRICHMENT.md",
+        "GEOCODING_SYSTEM_GUIDE.md",
+        "LOCATION_SERVICES_AUTO_TAGGING_SPEC.md"
+      ],
+      "functions": [
+        "createContact",
+        "enrichContact",
+        "reverseGeocode",
+        "searchNearbyVenue",
+        "tagContact",
+        "finalizeSession"
+      ],
+      "components": [
+        "ExchangeService",
+        "LocationEnrichmentService",
+        "AutoTaggingService",
+        "SessionTrackingService",
+        "CostTrackingService"
+      ],
+      "status": "active",
+      "created": "2025-11-22",
       "updated": "2025-11-22"
     }
   ]

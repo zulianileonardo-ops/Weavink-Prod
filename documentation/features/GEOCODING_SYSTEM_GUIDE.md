@@ -2,7 +2,7 @@
 id: features-geocoding-system-082
 title: Geocoding System - Complete Technical Guide
 category: features
-tags: [geocoding, google-maps, reverse-geocoding, cost-tracking, location, gps, api, budget, session-tracking]
+tags: [geocoding, google-maps, reverse-geocoding, cost-tracking, location, gps, api, budget, session-tracking, auto-tagging, phase-5]
 status: active
 created: 2025-11-21
 updated: 2025-11-22
@@ -11,6 +11,9 @@ related:
   - SESSION_VS_STANDALONE_TRACKING.md
   - VENUE_ENRICHMENT_FEATURE.md
   - LOCATION_SERVICES_AUTO_TAGGING_SPEC.md
+  - PHASE5_AUTO_TAGGING_MIGRATION.md
+  - SEMANTIC_SEARCH_ARCHITECTURE_V2.md
+  - CONTACT_CREATION_ENRICHMENT_FLOW.md
   - COST_TRACKING_MIGRATION_GUIDE.md
   - CONTACT_ANONYMIZATION_IMPLEMENTATION_GUIDE.md
 ---
@@ -1934,22 +1937,64 @@ static async _validateLocationFeaturesTier(userId, locationFeatures) {
 
 ---
 
-## Future Features
+## Future Features & Current Enhancements
 
-### Location Services Auto-Tagging
+### Phase 5: AI Auto-Tagging (🚧 In Progress)
 
-**File**: `/documentation/features/LOCATION_SERVICES_AUTO_TAGGING_SPEC.md`
+**Documentation**:
+- [PHASE5_AUTO_TAGGING_MIGRATION.md](../infrastructure/PHASE5_AUTO_TAGGING_MIGRATION.md) - Migration guide
+- [LOCATION_SERVICES_AUTO_TAGGING_SPEC.md](LOCATION_SERVICES_AUTO_TAGGING_SPEC.md) - Full specification
+- [SEMANTIC_SEARCH_ARCHITECTURE_V2.md](../infrastructure/SEMANTIC_SEARCH_ARCHITECTURE_V2.md) - Tag-based search
 
-Planned feature that will significantly expand geocoding usage:
+**Status**: Documentation complete, implementation in progress (Week 1-2 of 5)
 
-#### Features
+#### Integration with Geocoding
 
-1. **Reverse Location Search**
-   - Auto-enrich contacts with venue names
-   - "45.177, 5.721" → "Stade des Alpes"
-   - Cost: $0.005 per reverse geocode + $0.032 per nearby search
+Geocoding now serves as **Step 1** in a multi-step enrichment pipeline:
 
-2. **Smart Event Detection**
+```
+Step 1: Reverse Geocoding ($0.005)
+  → GPS coordinates → City, Country, Address
+
+Step 2: Venue Search ($0.032 API / $0 cached)
+  → GPS coordinates → Venue Name, Place ID
+
+Step 3: AI Auto-Tagging ($0.0000002)  ← NEW in Phase 5
+  → Full contact data → Semantic tags
+```
+
+#### AI Auto-Tagging Features
+
+1. **Context-Aware Tag Generation**
+   - Uses geocoded location data (city, country)
+   - Uses venue information (if available)
+   - Combines with contact data (name, company, job title)
+   - Example tags: ["coffee-shop-meeting", "grenoble", "french-contact", "tech-executive"]
+
+2. **Smart Caching**
+   - Redis cache (24h TTL) for tag generation
+   - Content-based cache keys (same contact data = same tags)
+   - 80%+ expected cache hit rate
+
+3. **Budget Management**
+   - Separate AI budget (not API budget)
+   - Cost: ~$0.0000002 per contact
+   - 98.75% cheaper than query-time tag generation
+
+4. **Search Enhancement**
+   - Tags indexed in vector embeddings
+   - Enables tag-based filtering
+   - Replaces query enhancement (50ms faster searches)
+
+**Cost Example** (Full Enrichment):
+- Geocoding: $0.005
+- Venue Search: $0.032 (or $0 cached)
+- Auto-Tagging: $0.0000002
+- **Total**: $0.0370002 (or $0.0050002 with venue cache hit)
+
+### Phase 4: Smart Event Detection (⏸️ Planned)
+
+1. **Smart Event Detection**
    - Detect when multiple contacts share location + time
    - Auto-create event groups
    - Cost: Minimal (uses existing geocoded data)

@@ -2,7 +2,7 @@
 id: features-session-enrichment-001
 title: Session-Based Location Enrichment
 category: features
-tags: [session-tracking, location-enrichment, cost-tracking, geocoding, venue-search, location-services]
+tags: [session-tracking, location-enrichment, cost-tracking, geocoding, venue-search, location-services, auto-tagging, phase-5]
 status: active
 created: 2025-11-22
 updated: 2025-11-22
@@ -10,13 +10,15 @@ related:
   - GEOCODING_SYSTEM_GUIDE.md
   - LOCATION_SERVICES_AUTO_TAGGING_SPEC.md
   - SESSION_TRACKING_FIX.md
+  - PHASE5_AUTO_TAGGING_MIGRATION.md
+  - CONTACT_CREATION_ENRICHMENT_FLOW.md
 ---
 
 # Session-Based Location Enrichment
 
 ## Overview
 
-Session-based location enrichment is a multi-step process that combines reverse geocoding (GPS → address) and venue search into a single tracked session. This architecture enables:
+Session-based location enrichment is a multi-step process that combines reverse geocoding (GPS → address), venue search, and AI-powered tagging into a single tracked session. This architecture enables:
 
 - **Atomic cost tracking** across multiple API calls
 - **Detailed step-by-step auditing** of enrichment operations
@@ -25,47 +27,67 @@ Session-based location enrichment is a multi-step process that combines reverse 
 
 **Key Benefit**: Instead of tracking each API call separately, multi-step enrichment operations are grouped into sessions, providing better cost visibility and audit trails.
 
+**Phase 5 Enhancement**: Auto-tagging added as Step 3 for comprehensive contact enrichment.
+
 ## Architecture
 
-### Two-Step Enrichment Flow
+### Multi-Step Enrichment Flow (Phase 3 + Phase 5)
 
 ```
 User submits contact with GPS coordinates
          ↓
-┌─────────────────────────────────────────┐
-│ Session: session_enrich_1234567890_abcd │
-├─────────────────────────────────────────┤
-│                                         │
-│ Step 1: Reverse Geocoding               │
-│   GPS (45.177, 5.721)                   │
-│   → "Grenoble, France"                  │
-│   Cost: $0.005                          │
-│   Provider: Google Maps Geocoding API  │
-│                                         │
-│ Step 2: Venue Search                    │
-│   Location: Grenoble coords             │
-│   → "Le Carré de la Source"             │
-│   Cost: $0 (cached) or $0.032 (API)    │
-│   Provider: Redis Cache or Google Places│
-│                                         │
-│ Total Cost: $0.005 - $0.037             │
-│ Status: completed                       │
-└─────────────────────────────────────────┘
+┌──────────────────────────────────────────┐
+│ Session: session_enrich_1234567890_abcd  │
+├──────────────────────────────────────────┤
+│                                          │
+│ Step 1: Reverse Geocoding                │
+│   GPS (45.177, 5.721)                    │
+│   → "Grenoble, France"                   │
+│   Cost: $0.005                           │
+│   Provider: Google Maps Geocoding API   │
+│   Budget: API                            │
+│                                          │
+│ Step 2: Venue Search                     │
+│   Location: Grenoble coords              │
+│   → "Le Carré de la Source"              │
+│   Cost: $0 (cached) or $0.032 (API)     │
+│   Provider: Redis Cache or Google Places │
+│   Budget: API                            │
+│                                          │
+│ Step 3: AI Auto-Tagging (Phase 5)        │
+│   Contact data → AI analysis             │
+│   → ["coffee-shop-meeting", "grenoble",  │
+│       "french-contact", "business"]      │
+│   Cost: $0 (cached) or $0.0000002 (AI)  │
+│   Provider: Redis Cache or Gemini Flash │
+│   Budget: AI                             │
+│                                          │
+│ Total Cost: $0.005 - $0.0370002          │
+│ Total Runs: 2-3 billable                │
+│ Status: completed                        │
+└──────────────────────────────────────────┘
          ↓
 Contact enriched with:
 - Address: "8 Rue Léo Lagrange, Grenoble"
 - Venue: "Le Carré de la Source"
+- Tags: ["coffee-shop-meeting", "grenoble", "french-contact", "business"]
 ```
 
 ### Cost Structure
 
-| Step | Operation | Cost (API Call) | Cost (Cached) | Billable |
-|------|-----------|-----------------|---------------|----------|
-| 1 | Reverse Geocoding | $0.005 | N/A (no cache) | Yes |
-| 2 | Venue Search | $0.032 | $0.000 | Yes/No |
-| **Total** | **Full Enrichment** | **$0.037** | **$0.005** | **1-2 runs** |
+| Step | Operation | Cost (API Call) | Cost (Cached) | Billable | Budget Type |
+|------|-----------|-----------------|---------------|----------|-------------|
+| 1 | Reverse Geocoding | $0.005 | N/A (no cache) | Yes | API |
+| 2 | Venue Search | $0.032 | $0.000 | Yes/No | API |
+| 3 | AI Auto-Tagging (Phase 5) | $0.0000002 | $0.000 | Yes/No | AI |
+| **Total** | **Full Enrichment** | **$0.0370002** | **$0.005** | **2-3 runs** |
 
-**Average Cost**: ~$0.015 per contact (assuming 70% cache hit rate on venue search)
+**Average Cost**: ~$0.015 per contact (assuming 70% cache hit rate on venue search and 80% on tagging)
+
+**Budget Notes:**
+- Steps 1 & 2 count against **API budget** (monthlyBillableRunsAPI)
+- Step 3 counts against **AI budget** (monthlyBillableRunsAI)
+- Separate budget pools allow independent scaling
 
 ## Database Structure
 
@@ -78,10 +100,10 @@ SessionUsage/
   {userId}/
     sessions/
       {sessionId}/
-        feature: "location"
+        feature: "location_enrichment"
         status: "completed" | "in-progress" | "failed"
-        totalCost: 0.037
-        totalRuns: 2
+        totalCost: 0.0370002      // Updated for Phase 5
+        totalRuns: 3              // Updated for Phase 5
         createdAt: Timestamp
         lastUpdatedAt: Timestamp
         completedAt: Timestamp
@@ -120,6 +142,24 @@ SessionUsage/
               cacheHit: true
               cachedAt: 1763804968073
             }
+          },
+          {
+            stepLabel: "Step 3: Auto Tag Generation"  // NEW in Phase 5
+            operationId: "usage_1763805373245_p2xk"
+            usageType: "AIUsage"                      // AI budget, not API
+            feature: "contact_auto_tagging"
+            provider: "gemini-2.5-flash"
+            cost: 0.0000002
+            isBillableRun: true
+            timestamp: "2025-11-22T09:56:13.245Z"
+            metadata: {
+              tagsGenerated: 4
+              tags: ["coffee-shop-meeting", "grenoble", "french-contact", "business"]
+              cacheHit: false
+              duration: 187
+              model: "gemini-2.5-flash"
+              temperature: 0.3
+            }
           }
         ]
 ```
@@ -151,38 +191,81 @@ ApiUsage/
 
 **File**: `lib/services/serviceContact/server/exchangeService.js` (lines 38-54)
 
-**Critical**: Sessions are ONLY created for multi-step operations (geocoding AND venue both enabled).
+**Critical**: Sessions are ONLY created for multi-step operations (2+ steps will actually run). Session detection checks BOTH feature enablement AND budget availability.
 
 ```javascript
-// ✅ CORRECTED: Only create session for MULTI-STEP operations
-const canGeocode = LocationEnrichmentService.isGeocodingEnabled(userData);
-const canEnrichVenue = LocationEnrichmentService.isVenueEnrichmentEnabled(userData);
-const isMultiStep = canGeocode && canEnrichVenue;
+// ✅ BUDGET-AWARE SESSION DETECTION
+// Check both enablement AND budget availability for each step
 
-// Generate session ID ONLY for multi-step operations
+// Step 1: Geocoding (API budget)
+const canGeocode = LocationEnrichmentService.isGeocodingEnabled(userData) &&
+  await CostTrackingService.canAffordGeneric(
+    userId, 'ApiUsage', 0.005, true
+  );
+
+// Step 2: Venue Search (API budget)
+const canVenue = LocationEnrichmentService.isVenueEnrichmentEnabled(userData) &&
+  await CostTrackingService.canAffordGeneric(
+    userId, 'ApiUsage', 0.032, true
+  );
+
+// Step 3: Auto-Tagging (AI budget) - Phase 5
+const canTag = AutoTaggingService.isAutoTaggingEnabled(userData) &&
+  AutoTaggingService.hasTaggableData(contact) &&
+  await CostTrackingService.canAffordGeneric(
+    userId, 'AIUsage', 0.0000002, true
+  );
+
+// Count actually runnable steps
+const runnableSteps = [canGeocode, canVenue, canTag].filter(Boolean).length;
+
+// Create session ONLY if 2+ steps will actually run
+const isMultiStep = runnableSteps >= 2;
+
 enrichmentSessionId = isMultiStep
   ? `session_enrich_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`
-  : null;  // Single-step operations tracked in ApiUsage
+  : null;  // Single-step operations tracked in ApiUsage or AIUsage
 
 console.log('🌍 [Exchange] Starting enrichment:', {
   canGeocode,
-  canEnrichVenue,
+  canVenue,
+  canTag,
+  runnableSteps,
   isMultiStep,
-  trackingMode: isMultiStep ? 'SessionUsage' : 'ApiUsage',
+  trackingMode: isMultiStep ? 'SessionUsage' : 'Standalone (ApiUsage/AIUsage)',
   sessionId: enrichmentSessionId || 'standalone'
 });
 ```
 
-**Decision Table**:
+**Decision Table (Feature Enablement)**:
 
-| Geocoding | Venue | sessionId | Tracking Mode |
-|-----------|-------|-----------|---------------|
-| ✅ Enabled | ✅ Enabled | Created | SessionUsage (multi-step) |
-| ✅ Enabled | ❌ Disabled | `null` | ApiUsage (standalone) |
-| ❌ Disabled | ✅ Enabled | `null` | ApiUsage (standalone) |
-| ❌ Disabled | ❌ Disabled | N/A | No enrichment |
+| Geocoding | Venue | Tagging | Steps | sessionId | Tracking Mode |
+|-----------|-------|---------|-------|-----------|---------------|
+| ✅ Enabled | ✅ Enabled | ✅ Enabled | 3 | Created | SessionUsage (multi-step) |
+| ✅ Enabled | ✅ Enabled | ❌ Disabled | 2 | Created | SessionUsage (multi-step) |
+| ✅ Enabled | ❌ Disabled | ✅ Enabled | 2 | Created | SessionUsage (multi-step) |
+| ❌ Disabled | ✅ Enabled | ✅ Enabled | 2 | Created | SessionUsage (multi-step) |
+| ✅ Enabled | ❌ Disabled | ❌ Disabled | 1 | `null` | ApiUsage (standalone) |
+| ❌ Disabled | ✅ Enabled | ❌ Disabled | 1 | `null` | ApiUsage (standalone) |
+| ❌ Disabled | ❌ Disabled | ✅ Enabled | 1 | `null` | AIUsage (standalone) |
+| ❌ Disabled | ❌ Disabled | ❌ Disabled | 0 | N/A | No enrichment |
 
-**Bug Fix (2025-11-22)**: Previously, sessionId was created whenever ANY enrichment was enabled, causing single-step operations to incorrectly save to SessionUsage. This has been fixed to only create sessions for true multi-step operations.
+**Budget Exhaustion Scenarios**:
+
+Even when features are enabled, budget constraints determine what actually runs:
+
+| API Budget | AI Budget | Geocode | Venue | Tag | Runnable Steps | Session? | Tracking |
+|------------|-----------|---------|-------|-----|----------------|----------|----------|
+| ✅ OK | ✅ OK | ✅ Runs | ✅ Runs | ✅ Runs | 3 | ✅ Yes | SessionUsage |
+| ✅ OK | ✅ OK | ✅ Runs | ✅ Runs | ❌ Skip | 2 | ✅ Yes | SessionUsage |
+| ✅ OK | ❌ Out | ✅ Runs | ✅ Runs | ❌ Skip | 2 | ✅ Yes | SessionUsage |
+| ❌ Out | ✅ OK | ❌ Skip | ❌ Skip | ✅ Runs | 1 | ❌ No | **AIUsage (standalone)** |
+| ✅ OK | ❌ Out | ✅ Runs | ❌ Skip | ❌ Skip | 1 | ❌ No | ApiUsage (standalone) |
+| ❌ Out | ❌ Out | ❌ Skip | ❌ Skip | ❌ Skip | 0 | ❌ No | No enrichment |
+
+**Key Insight**: When API budget is exceeded but AI budget available, auto-tagging still runs as a **standalone operation** (recorded in AIUsage, not SessionUsage).
+
+**Bug Fix (2025-11-22)**: Previously, sessionId was created whenever ANY enrichment was enabled, causing single-step operations to incorrectly save to SessionUsage. This has been fixed to only create sessions for true multi-step operations (2+ steps actually running).
 
 ### Step 1: Reverse Geocoding
 
