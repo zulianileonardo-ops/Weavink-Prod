@@ -5,7 +5,7 @@ category: technical
 tags: [semantic-search, vector-database, pinecone, embeddings, ai-features]
 status: superseded
 created: 2025-01-01
-updated: 2025-11-22
+updated: 2025-11-23
 related:
   - ADMIN_VECTOR_PANEL_REFACTOR_SUMMARY.md
   - CONTACT_ANONYMIZATION_BUGFIX.md

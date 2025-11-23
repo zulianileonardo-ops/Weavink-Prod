@@ -1,7 +1,7 @@
 # Weavink Documentation Index
 
-**Last Updated:** 2025-11-22
-**Total Guides:** 90
+**Last Updated:** 2025-11-23
+**Total Guides:** 91
 
 ## Quick Navigation
 - [Admin System](#admin-system) (9 guides)
@@ -9,7 +9,7 @@
 - [RGPD/GDPR Compliance](#rgpd-gdpr-compliance) (13 guides)
 - [Feature Implementations](#feature-implementations) (26 guides)
 - [Technical Infrastructure](#technical-infrastructure) (21 guides)
-- [Testing & QA](#testing-qa) (11 guides)
+- [Testing & QA](#testing-qa) (12 guides)
 - [General Documentation](#general-documentation) (4 guides)
 - [Tutorials & Guides](#tutorials-guides) (3 guides)
 - [Meta Documentation](#meta-documentation) (2 guides)
@@ -413,6 +413,11 @@
 **Summary:** Comprehensive testing guide for Phase 3 auto-enrichment implementation covering 80+ test scenarios including happy path, settings integration, budget tracking, Redis caching, error handling, subscription tiers, performance, data integrity, and graceful degradation with detailed verification procedures.
 **Tags:** location-services, auto-enrichment, phase-3, testing, qa, redis-cache, google-places, budget-tracking, exchange-contacts, venue-enrichment, manual-testing, integration-testing
 **Related:** [LOCATION_SERVICES_AUTO_TAGGING_SPEC.md](#location-services-auto-tagging-spec-md), [GEOCODING_SYSTEM_GUIDE.md](#geocoding-system-guide-md), [RATE_LIMIT_TESTING.md](#rate-limit-testing-md), [RGPD_TESTING_GUIDE.md](#rgpd-testing-guide-md)
+
+### PHASE5_MANUAL_TESTING_GUIDE.md
+**Summary:** Comprehensive manual testing guide for Phase 5 Auto-Tagging with 15+ test scenarios covering all feature combinations, budget states, cache tiers, and subscription tiers. Includes sections for server logs, database state, Pinecone data, and usage tracking validation.
+**Tags:** testing, manual-testing, phase-5, auto-tagging, ai, session-tracking, budget-validation, feature-combinations, firestore-verification, pinecone-verification
+**Related:** [technical-auto-tagging-migration-033](#technical-auto-tagging-migration-033), [features-session-enrichment-001](#features-session-enrichment-001), [features-geocoding-system-082](#features-geocoding-system-082), [features-location-services-auto-tagging-080](#features-location-services-auto-tagging-080), [features-contact-enrichment-021](#features-contact-enrichment-021)
 
 ### RATE_LIMIT_TESTING.md
 **Summary:** Testing guide for rate limiting system with various attack scenarios and verification methods.

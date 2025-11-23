@@ -2,10 +2,10 @@
 id: features-session-enrichment-001
 title: Session-Based Location Enrichment
 category: features
-tags: [session-tracking, location-enrichment, cost-tracking, geocoding, venue-search, location-services, auto-tagging, phase-5]
+tags: [session-tracking, location-enrichment, cost-tracking, geocoding, venue-search, location-services, auto-tagging, phase-5, vector-embedding]
 status: active
 created: 2025-11-22
-updated: 2025-11-22
+updated: 2025-11-23
 related:
   - GEOCODING_SYSTEM_GUIDE.md
   - LOCATION_SERVICES_AUTO_TAGGING_SPEC.md
@@ -27,7 +27,7 @@ Session-based location enrichment is a multi-step process that combines reverse 
 
 **Key Benefit**: Instead of tracking each API call separately, multi-step enrichment operations are grouped into sessions, providing better cost visibility and audit trails.
 
-**Phase 5 Enhancement**: Auto-tagging added as Step 3 for comprehensive contact enrichment.
+**Phase 5 Enhancements**: Auto-tagging added as Step 3, Vector Embedding added as Step 4 for comprehensive contact enrichment and semantic search.
 
 ## Architecture
 
@@ -62,7 +62,14 @@ User submits contact with GPS coordinates
 │   Provider: Redis Cache or Gemini Flash │
 │   Budget: AI                             │
 │                                          │
-│ Total Cost: $0.005 - $0.0370002          │
+│ Step 4: Vector Embedding (Phase 5)       │
+│   Contact document → 1024D vector        │
+│   → Enables semantic search              │
+│   Cost: ~$0.00001 per contact            │
+│   Provider: Pinecone Inference API       │
+│   Budget: API (cost-only, not billable)  │
+│                                          │
+│ Total Cost: $0.00501 - $0.0370102        │
 │ Total Runs: 2-3 billable                │
 │ Status: completed                        │
 └──────────────────────────────────────────┘
@@ -71,6 +78,7 @@ Contact enriched with:
 - Address: "8 Rue Léo Lagrange, Grenoble"
 - Venue: "Le Carré de la Source"
 - Tags: ["coffee-shop-meeting", "grenoble", "french-contact", "business"]
+- Vector: 1024D embedding for semantic search
 ```
 
 ### Cost Structure
@@ -80,13 +88,15 @@ Contact enriched with:
 | 1 | Reverse Geocoding | $0.005 | N/A (no cache) | Yes | API |
 | 2 | Venue Search | $0.032 | $0.000 | Yes/No | API |
 | 3 | AI Auto-Tagging (Phase 5) | $0.0000002 | $0.000 | Yes/No | AI |
-| **Total** | **Full Enrichment** | **$0.0370002** | **$0.005** | **2-3 runs** |
+| 4 | Vector Embedding (Phase 5) | $0.00001 | N/A (no cache) | No | API |
+| **Total** | **Full Enrichment** | **$0.0370102** | **$0.00501** | **2-3 runs** |
 
-**Average Cost**: ~$0.015 per contact (assuming 70% cache hit rate on venue search and 80% on tagging)
+**Average Cost**: ~$0.016 per contact (assuming 70% cache hit rate on venue search and 80% on tagging)
 
 **Budget Notes:**
-- Steps 1 & 2 count against **API budget** (monthlyBillableRunsAPI)
+- Steps 1, 2, & 4 count against **API budget** (monthlyBillableRunsAPI)
 - Step 3 counts against **AI budget** (monthlyBillableRunsAI)
+- Step 4 is **cost-only** (not billable run) - adds cost but not run count
 - Separate budget pools allow independent scaling
 
 ## Database Structure
@@ -102,8 +112,8 @@ SessionUsage/
       {sessionId}/
         feature: "location_enrichment"
         status: "completed" | "in-progress" | "failed"
-        totalCost: 0.0370002      // Updated for Phase 5
-        totalRuns: 3              // Updated for Phase 5
+        totalCost: 0.0370102      // Updated for Phase 5 (includes embedding)
+        totalRuns: 3              // Updated for Phase 5 (embedding is not billable)
         createdAt: Timestamp
         lastUpdatedAt: Timestamp
         completedAt: Timestamp
@@ -159,6 +169,23 @@ SessionUsage/
               duration: 187
               model: "gemini-2.5-flash"
               temperature: 0.3
+            }
+          },
+          {
+            stepLabel: "Step 4: Vector Embedding"     // NEW in Phase 5
+            operationId: "usage_1763805373456_x8qr"
+            usageType: "ApiUsage"                     // API budget, not AI
+            feature: "contact_vector_embedding"
+            provider: "pinecone_inference"
+            cost: 0.00001
+            isBillableRun: false                      // Cost-only, not billable
+            timestamp: "2025-11-22T09:56:13.456Z"
+            metadata: {
+              model: "multilingual-e5-large"
+              dimensions: 1024
+              tokens: 125
+              documentLength: 500
+              vectorMagnitude: 0.9998
             }
           }
         ]
@@ -216,8 +243,15 @@ const canTag = AutoTaggingService.isAutoTaggingEnabled(userData) &&
     userId, 'AIUsage', 0.0000002, true
   );
 
+// Step 4: Vector Embedding (API budget, cost-only) - Phase 5
+// Always runs for Premium+ users (budget permitting)
+const canEmbed = VectorStorageService.isEmbeddingEnabled(userData) &&
+  await CostTrackingService.canAffordGeneric(
+    userId, 'ApiUsage', 0.00001, false  // Not billable run
+  );
+
 // Count actually runnable steps
-const runnableSteps = [canGeocode, canVenue, canTag].filter(Boolean).length;
+const runnableSteps = [canGeocode, canVenue, canTag, canEmbed].filter(Boolean).length;
 
 // Create session ONLY if 2+ steps will actually run
 const isMultiStep = runnableSteps >= 2;
@@ -230,6 +264,7 @@ console.log('🌍 [Exchange] Starting enrichment:', {
   canGeocode,
   canVenue,
   canTag,
+  canEmbed,
   runnableSteps,
   isMultiStep,
   trackingMode: isMultiStep ? 'SessionUsage' : 'Standalone (ApiUsage/AIUsage)',
@@ -239,31 +274,45 @@ console.log('🌍 [Exchange] Starting enrichment:', {
 
 **Decision Table (Feature Enablement)**:
 
-| Geocoding | Venue | Tagging | Steps | sessionId | Tracking Mode |
-|-----------|-------|---------|-------|-----------|---------------|
-| ✅ Enabled | ✅ Enabled | ✅ Enabled | 3 | Created | SessionUsage (multi-step) |
-| ✅ Enabled | ✅ Enabled | ❌ Disabled | 2 | Created | SessionUsage (multi-step) |
-| ✅ Enabled | ❌ Disabled | ✅ Enabled | 2 | Created | SessionUsage (multi-step) |
-| ❌ Disabled | ✅ Enabled | ✅ Enabled | 2 | Created | SessionUsage (multi-step) |
-| ✅ Enabled | ❌ Disabled | ❌ Disabled | 1 | `null` | ApiUsage (standalone) |
-| ❌ Disabled | ✅ Enabled | ❌ Disabled | 1 | `null` | ApiUsage (standalone) |
-| ❌ Disabled | ❌ Disabled | ✅ Enabled | 1 | `null` | AIUsage (standalone) |
-| ❌ Disabled | ❌ Disabled | ❌ Disabled | 0 | N/A | No enrichment |
+| Geocoding | Venue | Tagging | Embedding | Steps | sessionId | Tracking Mode |
+|-----------|-------|---------|-----------|-------|-----------|---------------|
+| ✅ Enabled | ✅ Enabled | ✅ Enabled | ✅ Auto | 4 | Created | SessionUsage (multi-step) |
+| ✅ Enabled | ✅ Enabled | ❌ Disabled | ✅ Auto | 3 | Created | SessionUsage (multi-step) |
+| ✅ Enabled | ❌ Disabled | ✅ Enabled | ✅ Auto | 3 | Created | SessionUsage (multi-step) |
+| ❌ Disabled | ✅ Enabled | ✅ Enabled | ✅ Auto | 3 | Created | SessionUsage (multi-step) |
+| ✅ Enabled | ❌ Disabled | ❌ Disabled | ✅ Auto | 2 | Created | SessionUsage (multi-step) |
+| ❌ Disabled | ✅ Enabled | ❌ Disabled | ✅ Auto | 2 | Created | SessionUsage (multi-step) |
+| ❌ Disabled | ❌ Disabled | ✅ Enabled | ✅ Auto | 2 | Created | SessionUsage (multi-step) |
+| ✅ Enabled | ❌ Disabled | ❌ Disabled | ❌ Free | 1 | `null` | ApiUsage (standalone) |
+| ❌ Disabled | ✅ Enabled | ❌ Disabled | ❌ Free | 1 | `null` | ApiUsage (standalone) |
+| ❌ Disabled | ❌ Disabled | ✅ Enabled | ❌ Free | 1 | `null` | AIUsage (standalone) |
+| ❌ Disabled | ❌ Disabled | ❌ Disabled | ❌ N/A | 0 | N/A | No enrichment |
+
+**Note on Vector Embedding (Step 4)**:
+- Automatically enabled for **Premium+ subscribers** (Pro/Premium/Business tiers)
+- Runs as part of enrichment session when budget permits
+- **Cost-only operation**: Adds ~$0.00001 cost but does NOT count as billable run
+- Not available on Free tier
 
 **Budget Exhaustion Scenarios**:
 
 Even when features are enabled, budget constraints determine what actually runs:
 
-| API Budget | AI Budget | Geocode | Venue | Tag | Runnable Steps | Session? | Tracking |
-|------------|-----------|---------|-------|-----|----------------|----------|----------|
-| ✅ OK | ✅ OK | ✅ Runs | ✅ Runs | ✅ Runs | 3 | ✅ Yes | SessionUsage |
-| ✅ OK | ✅ OK | ✅ Runs | ✅ Runs | ❌ Skip | 2 | ✅ Yes | SessionUsage |
-| ✅ OK | ❌ Out | ✅ Runs | ✅ Runs | ❌ Skip | 2 | ✅ Yes | SessionUsage |
-| ❌ Out | ✅ OK | ❌ Skip | ❌ Skip | ✅ Runs | 1 | ❌ No | **AIUsage (standalone)** |
-| ✅ OK | ❌ Out | ✅ Runs | ❌ Skip | ❌ Skip | 1 | ❌ No | ApiUsage (standalone) |
-| ❌ Out | ❌ Out | ❌ Skip | ❌ Skip | ❌ Skip | 0 | ❌ No | No enrichment |
+| API Budget | AI Budget | Geocode | Venue | Tag | Embed | Runnable Steps | Session? | Tracking |
+|------------|-----------|---------|-------|-----|-------|----------------|----------|----------|
+| ✅ OK | ✅ OK | ✅ Runs | ✅ Runs | ✅ Runs | ✅ Runs | 4 | ✅ Yes | SessionUsage |
+| ✅ OK | ✅ OK | ✅ Runs | ✅ Runs | ❌ Skip | ✅ Runs | 3 | ✅ Yes | SessionUsage |
+| ✅ OK | ❌ Out | ✅ Runs | ✅ Runs | ❌ Skip | ✅ Runs | 3 | ✅ Yes | SessionUsage |
+| ✅ OK | ✅ OK | ✅ Runs | ❌ Skip | ✅ Runs | ✅ Runs | 3 | ✅ Yes | SessionUsage |
+| ✅ OK | ❌ Out | ✅ Runs | ❌ Skip | ❌ Skip | ✅ Runs | 2 | ✅ Yes | SessionUsage |
+| ❌ Out | ✅ OK | ❌ Skip | ❌ Skip | ✅ Runs | ❌ Skip | 1 | ❌ No | **AIUsage (standalone)** |
+| ✅ OK | ❌ Out | ✅ Runs | ❌ Skip | ❌ Skip | ❌ Skip | 1 | ❌ No | ApiUsage (standalone) |
+| ❌ Out | ❌ Out | ❌ Skip | ❌ Skip | ❌ Skip | ❌ Skip | 0 | ❌ No | No enrichment |
 
-**Key Insight**: When API budget is exceeded but AI budget available, auto-tagging still runs as a **standalone operation** (recorded in AIUsage, not SessionUsage).
+**Key Insights**:
+- When API budget is exceeded but AI budget available, auto-tagging still runs as a **standalone operation** (recorded in AIUsage, not SessionUsage)
+- **Embedding is cost-only**: Even when embedding runs, it adds cost but doesn't consume a billable run slot (isBillableRun: false)
+- For Premium+ users, embedding runs whenever API budget has sufficient funds (~$0.00001), regardless of run count limits
 
 **Bug Fix (2025-11-22)**: Previously, sessionId was created whenever ANY enrichment was enabled, causing single-step operations to incorrectly save to SessionUsage. This has been fixed to only create sessions for true multi-step operations (2+ steps actually running).
 
@@ -371,16 +420,28 @@ if (enrichedContact.metadata?.venue) {
    │  ├─ Record usage with sessionId
    │  └─ SessionUsage document created
    │
-   └─ Step 2: Venue search
-      ├─ Check Redis cache
-      ├─ Call Google Places API (if cache miss)
-      ├─ Record usage with sessionId
+   ├─ Step 2: Venue search
+   │  ├─ Check Redis cache
+   │  ├─ Call Google Places API (if cache miss)
+   │  ├─ Record usage with sessionId
+   │  └─ SessionUsage document updated
+   │
+   ├─ Step 3: Auto-Tagging (Phase 5)
+   │  ├─ Extract contact data
+   │  ├─ Call Gemini Flash API (if cache miss)
+   │  ├─ Record usage with sessionId
+   │  └─ SessionUsage document updated
+   │
+   └─ Step 4: Vector Embedding (Phase 5)
+      ├─ Generate contact document text
+      ├─ Call Pinecone Inference API
+      ├─ Record usage with sessionId (cost-only)
       └─ SessionUsage document updated
 
 3. FINALIZE
    ├─ Update session status: "completed"
    ├─ Set completedAt timestamp
-   └─ **Does NOT update user document** (already updated in step 2)
+   └─ **Does NOT update user document** (already updated during step recording)
 
 4. USER BUDGET UPDATE
    ├─ User document monthly counters updated **DURING STEP RECORDING**
@@ -621,10 +682,12 @@ POST /api/user/contacts/exchange/submit
   }
 }
 
-# Check SessionUsage - should show 2 steps:
+# Check SessionUsage - should show 4 steps (for Premium+ users):
 # - Step 1: location_reverse_geocoding ($0.005)
 # - Step 2: location_venue_search ($0.032)
-# Total: $0.037
+# - Step 3: contact_auto_tagging ($0.0000002)
+# - Step 4: contact_vector_embedding ($0.00001)
+# Total: $0.0370102
 
 # Second submission (same location within 30min) - cache hit
 POST /api/user/contacts/exchange/submit
@@ -639,10 +702,12 @@ POST /api/user/contacts/exchange/submit
   }
 }
 
-# Check SessionUsage - should show 2 steps:
+# Check SessionUsage - should show 4 steps (for Premium+ users):
 # - Step 1: location_reverse_geocoding ($0.005)
 # - Step 2: location_venue_search_cached ($0.000)
-# Total: $0.005
+# - Step 3: contact_auto_tagging (cached, $0.000)
+# - Step 4: contact_vector_embedding ($0.00001)
+# Total: $0.00501
 ```
 
 ### Verify No Duplicate Tracking
@@ -691,5 +756,5 @@ Session-based location enrichment provides:
 
 ---
 
-*Last Updated: 2025-11-22*
+*Last Updated: 2025-11-23*
 *Status: ✅ Active - Production Ready*

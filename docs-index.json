@@ -1,8 +1,8 @@
 {
   "metadata": {
     "project": "Weavink Documentation",
-    "last_updated": "2025-11-22",
-    "total_guides": 90,
+    "last_updated": "2025-11-23",
+    "total_guides": 91,
     "version": "1.0.0"
   },
   "categories": {
@@ -122,7 +122,8 @@
         "testing-email-notification-bugs-076",
         "testing-anonymous-analytics-077",
         "testing-contact-anonymization-078",
-        "testing-location-phase3-079"
+        "testing-location-phase3-079",
+        "testing-phase5-manual-080"
       ]
     },
     "general": {
@@ -2988,6 +2989,37 @@
       "status": "active",
       "created": "2025-11-22",
       "updated": "2025-11-22"
+    },
+    {
+      "id": "testing-phase5-manual-080",
+      "title": "Phase 5 AI Auto-Tagging Manual Testing Guide",
+      "filename": "documentation/testing/PHASE5_MANUAL_TESTING_GUIDE.md",
+      "category": "testing",
+      "summary": "Comprehensive manual testing guide for Phase 5 Auto-Tagging with 15+ test scenarios covering all feature combinations, budget states, cache tiers, and subscription tiers. Includes sections for server logs, database state, Pinecone data, and usage tracking validation.",
+      "tags": [
+        "testing",
+        "manual-testing",
+        "phase-5",
+        "auto-tagging",
+        "ai",
+        "session-tracking",
+        "budget-validation",
+        "feature-combinations",
+        "firestore-verification",
+        "pinecone-verification"
+      ],
+      "related_guides": [
+        "technical-auto-tagging-migration-033",
+        "features-session-enrichment-001",
+        "features-geocoding-system-082",
+        "features-location-services-auto-tagging-080",
+        "features-contact-enrichment-021"
+      ],
+      "functions": [],
+      "components": [],
+      "status": "active",
+      "created": "2025-11-23",
+      "updated": "2025-11-23"
     }
   ]
 }

@@ -2,10 +2,10 @@
 id: features-contact-enrichment-035
 title: Contact Creation & Enrichment Flow
 category: features
-tags: [contacts, enrichment, location, auto-tagging, exchange, session-tracking, venue, geocoding, ai-features]
+tags: [contacts, enrichment, location, auto-tagging, exchange, session-tracking, venue, geocoding, ai-features, vector-embedding]
 status: active
 created: 2025-11-22
-updated: 2025-11-22
+updated: 2025-11-23
 related:
   - SESSION_BASED_ENRICHMENT.md
   - LOCATION_SERVICES_AUTO_TAGGING_SPEC.md
@@ -207,6 +207,7 @@ Visitor → Public Profile → ExchangeButton → ExchangeModal
 │ 5a. Reverse Geocoding                │   │
 │ 5b. Venue Search                     │   │
 │ 5c. AI Auto-Tagging ← PHASE 5        │   │
+│ 5d. Vector Embedding ← PHASE 5       │   │
 └────────────────┬─────────────────────┘   │
                  │                         │
                  │    ┌────────────────────┘
@@ -270,9 +271,9 @@ Visitor → Public Profile → ExchangeButton → ExchangeModal
 │ SessionUsage/{userId}/sessions/{sessionId} {                        │
 │   feature: 'location_enrichment',                                   │
 │   status: 'completed',                                              │
-│   totalCost: 0.0370002,           // geocoding + venue + tags       │
-│   totalRuns: 3,                   // 3 billable operations          │
-│   steps: [Step 1, Step 2, Step 3],                                 │
+│   totalCost: 0.0370102,           // geocoding + venue + tags + embedding │
+│   totalRuns: 3,                   // 3 billable operations (embedding is cost-only) │
+│   steps: [Step 1, Step 2, Step 3, Step 4],                         │
 │   completedAt: Timestamp                                            │
 │ }                                                                    │
 └────────────────┬─────────────────────────────────────────────────────┘
@@ -292,7 +293,8 @@ Visitor → Public Profile → ExchangeButton → ExchangeModal
 │     geocodingSuccess: true,                                         │
 │     venueFound: true,                                               │
 │     tagsGenerated: 5,                                               │
-│     totalCost: 0.0370002,                                           │
+│     vectorEmbedded: true,                                           │
+│     totalCost: 0.0370102,                                           │
 │     sessionId: "session_enrich_1732567890_x7k2"                     │
 │   }                                                                 │
 │ }                                                                    │
@@ -326,7 +328,9 @@ Step 2: Venue Search ($0.032 API / $0 cached) → Venue Name, Place ID
   ↓
 Step 3: AI Auto-Tagging (token-based, ~$0.0000002-$0.000001) → Semantic Tags
   ↓
-Enriched Contact Saved
+Step 4: Vector Embedding (~$0.00001) → 1024D vector for semantic search
+  ↓
+Enriched Contact Saved + Vector Indexed
 ```
 
 ### Step-by-Step Breakdown
@@ -491,12 +495,12 @@ Auto-tagging uses the **AI budget** (separate from API budget). This means:
 
 **Example Scenarios:**
 
-| API Budget | AI Budget | Geocoding | Venue | Tagging | Result |
-|------------|-----------|-----------|-------|---------|--------|
-| ✅ OK | ✅ OK | ✅ Runs | ✅ Runs | ✅ Runs | Full enrichment |
-| ❌ Exceeded | ✅ OK | ❌ Skipped | ❌ Skipped | ✅ **Runs** | **Tags only** (from name/company) |
-| ✅ OK | ❌ Exceeded | ✅ Runs | ✅ Runs | ❌ Skipped | Location only, no tags |
-| ❌ Exceeded | ❌ Exceeded | ❌ Skipped | ❌ Skipped | ❌ Skipped | GPS only |
+| API Budget | AI Budget | Geocoding | Venue | Tagging | Embedding | Result |
+|------------|-----------|-----------|-------|---------|-----------|--------|
+| ✅ OK | ✅ OK | ✅ Runs | ✅ Runs | ✅ Runs | ✅ Runs | Full enrichment |
+| ❌ Exceeded | ✅ OK | ❌ Skipped | ❌ Skipped | ✅ **Runs** | ❌ Skipped | **Tags only** (from name/company) |
+| ✅ OK | ❌ Exceeded | ✅ Runs | ✅ Runs | ❌ Skipped | ✅ Runs | Location + vector, no tags |
+| ❌ Exceeded | ❌ Exceeded | ❌ Skipped | ❌ Skipped | ❌ Skipped | ❌ Skipped | GPS only |
 
 **Why This Matters:**
 - User with AI budget gets AI value, even without API budget
@@ -627,6 +631,123 @@ await CostTrackingService.recordUsage({
 return { ...contact, tags: result.tags, metadata: { cacheType: 'ai', cost: actualCost } };
 ```
 
+#### Step 4: Vector Embedding (NEW - Phase 5)
+
+**Service:** `VectorStorageService.indexContact()`
+**Provider:** Pinecone Inference API
+**Model:** multilingual-e5-large (1024 dimensions)
+**Cost:** ~$0.00001 per contact (~125 tokens × $0.08/million)
+**Time:** ~100-200ms
+**Budget:** API (cost-only, not billable run)
+
+**Input:**
+```javascript
+{
+  id: "contact_abc123",
+  name: "Jane Smith",
+  email: "jane@example.com",
+  company: "Tesla",
+  jobTitle: "Senior Engineer",
+  notes: "Met at AI conference",
+  location: {
+    city: "San Francisco",
+    country: "United States"
+  },
+  metadata: {
+    venue: {
+      name: "Starbucks Reserve"
+    }
+  },
+  tags: ["coffee-shop-meeting", "tesla-employee", "senior-engineer"]
+}
+```
+
+**Process:**
+1. Check if embedding enabled (`settings.vectorSearch.enabled` - Premium+ only)
+2. Budget pre-flight check (API budget, cost-only operation)
+3. Build contact document text from name, company, jobTitle, tags, location, venue
+4. Call Pinecone Inference API to generate 1024D embedding
+5. Upsert vector to Pinecone index with metadata
+6. Record cost:
+   - **Always part of session** (runs during enrichment pipeline)
+   - **Cost-only operation**: `isBillableRun: false` (adds cost but not run count)
+   - Tracked in `SessionUsage` collection
+
+**Document Text Generation:**
+```javascript
+const documentText = [
+  contact.name,
+  contact.company,
+  contact.jobTitle,
+  contact.notes,
+  contact.tags?.join(', '),
+  contact.location?.city,
+  contact.location?.country,
+  contact.metadata?.venue?.name
+].filter(Boolean).join(' ');
+
+// Example: "Jane Smith Tesla Senior Engineer Met at AI conference coffee-shop-meeting, tesla-employee, senior-engineer San Francisco United States Starbucks Reserve"
+```
+
+**Output:**
+```javascript
+{
+  vectorId: "contact_abc123",
+  dimensions: 1024,
+  magnitude: 0.9998,
+  tokens: 125,
+  indexed: true
+}
+```
+
+**Budget Check & Cost Tracking:**
+```javascript
+// Budget pre-flight check (cost-only, not billable run)
+const embeddingCost = VECTOR_EMBEDDING_COSTS.PINECONE_INFERENCE.PER_TOKEN * estimatedTokens;
+const affordabilityCheck = await CostTrackingService.canAffordGeneric(
+  userId,
+  'ApiUsage',  // API budget (not AI)
+  embeddingCost,
+  false        // NOT a billable run (cost-only)
+);
+
+if (!affordabilityCheck.canAfford) {
+  // Skip embedding, continue without vector
+  return contactWithBudgetTracking;
+}
+
+// Generate embedding and index
+const result = await VectorStorageService.indexContact(contact, userId);
+
+// Record ACTUAL cost (cost-only, not billable run)
+await CostTrackingService.recordUsage({
+  userId,
+  usageType: 'ApiUsage',  // API budget
+  feature: 'contact_vector_embedding',
+  cost: result.actualCost,  // Real token-based cost
+  isBillableRun: false,     // Cost-only operation
+  provider: 'pinecone_inference',
+  metadata: {
+    model: 'multilingual-e5-large',
+    dimensions: 1024,
+    tokens: result.tokensUsed,
+    documentLength: documentText.length,
+    vectorMagnitude: result.magnitude
+  },
+  sessionId,  // Always part of session
+  stepLabel: 'Step 4: Vector Embedding'
+});
+
+return { ...contact, vectorEmbedded: true, metadata: { ...contact.metadata, vectorId: result.vectorId } };
+```
+
+**Key Points:**
+- **Premium+ Only**: Embedding is automatically enabled for Pro, Premium, Business, and Enterprise tiers
+- **Cost-Only Operation**: Adds ~$0.00001 cost but does NOT count against monthlyBillableRunsAPI
+- **No Caching**: Each contact gets a unique embedding (no cache benefit)
+- **Budget Independent**: Runs even if API run limit reached (as long as cost budget available)
+- **Always Runs in Session**: Part of multi-step enrichment pipeline
+
 ---
 
 ## Session Tracking Strategy
@@ -636,18 +757,35 @@ return { ...contact, tags: result.tags, metadata: { cacheType: 'ai', cost: actua
 **Multi-Step Operations:**
 - Geocoding + Venue Search → Session
 - Geocoding + Venue Search + Tagging → Session
+- Geocoding + Venue Search + Tagging + Embedding → Session (Premium+ users)
+- Geocoding + Embedding → Session
+- Venue Search + Tagging → Session
 - Geocoding only → Standalone (no session)
 - Venue Search only → Standalone (no session)
 - Tagging only → Standalone (no session)
+- Embedding only → Standalone (no session)
 
 **Decision Logic:**
 ```javascript
-// Check if multi-step operation
-const canGeocode = LocationEnrichmentService.isGeocodingEnabled(userData);
-const canEnrichVenue = LocationEnrichmentService.isVenueEnrichmentEnabled(userData);
-const isMultiStep = canGeocode && canEnrichVenue;
+// Check if multi-step operation (budget-aware)
+const canGeocode = LocationEnrichmentService.isGeocodingEnabled(userData) &&
+  await CostTrackingService.canAffordGeneric(userId, 'ApiUsage', 0.005, true);
 
-// Generate session ID ONLY for multi-step
+const canEnrichVenue = LocationEnrichmentService.isVenueEnrichmentEnabled(userData) &&
+  await CostTrackingService.canAffordGeneric(userId, 'ApiUsage', 0.032, true);
+
+const canTag = AutoTaggingService.isAutoTaggingEnabled(userData) &&
+  AutoTaggingService.hasTaggableData(contact) &&
+  await CostTrackingService.canAffordGeneric(userId, 'AIUsage', 0.0000002, true);
+
+const canEmbed = VectorStorageService.isEmbeddingEnabled(userData) &&
+  await CostTrackingService.canAffordGeneric(userId, 'ApiUsage', 0.00001, false);
+
+// Count runnable steps
+const runnableSteps = [canGeocode, canEnrichVenue, canTag, canEmbed].filter(Boolean).length;
+
+// Generate session ID ONLY for multi-step (2+ steps)
+const isMultiStep = runnableSteps >= 2;
 const enrichmentSessionId = isMultiStep
   ? `session_enrich_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`
   : null;
@@ -662,8 +800,8 @@ const enrichmentSessionId = isMultiStep
 {
   feature: 'location_enrichment',
   status: 'in-progress',  // or 'completed', 'abandoned'
-  totalCost: 0.0370002,
-  totalRuns: 3,
+  totalCost: 0.0370102,
+  totalRuns: 3,  // Embedding is cost-only, not billable
   steps: [
     {
       stepLabel: 'Step 1: Reverse Geocoding',
@@ -714,6 +852,24 @@ const enrichmentSessionId = isMultiStep
         tags: ['coffee-shop-meeting', 'tech-executive', ...],
         cacheHit: false
       }
+    },
+    {
+      stepLabel: 'Step 4: Vector Embedding',
+      operationId: 'op_126ghi',
+      usageType: 'ApiUsage',
+      feature: 'contact_vector_embedding',
+      provider: 'pinecone_inference',
+      cost: 0.00001,
+      isBillableRun: false,  // Cost-only operation
+      timestamp: '2025-11-22T10:00:03Z',
+      duration: 150,
+      metadata: {
+        model: 'multilingual-e5-large',
+        dimensions: 1024,
+        tokens: 125,
+        documentLength: 500,
+        vectorMagnitude: 0.9998
+      }
     }
   ],
   createdAt: Timestamp,
@@ -753,9 +909,18 @@ users/{userId} {
   monthlyUsageMonth: "2025-11",
   monthlyUsageLastUpdated: Timestamp
 }
+
+// After Step 4 (Vector Embedding)
+users/{userId} {
+  monthlyTotalCost: 0.0370102,    // +0.00001 (cost-only)
+  monthlyBillableRunsAPI: 2,      // unchanged (not billable!)
+  monthlyBillableRunsAI: 1,       // unchanged
+  monthlyUsageMonth: "2025-11",
+  monthlyUsageLastUpdated: Timestamp
+}
 ```
 
-**Note:** API and AI budgets are tracked separately!
+**Note:** API and AI budgets are tracked separately! Embedding adds cost but NOT a billable run.
 
 ---
 
@@ -770,6 +935,7 @@ users/{userId} {
 | Venue Search (Cache) | Redis | $0 | No | N/A |
 | Auto-Tagging (API) | Gemini 2.5 Flash | $0.0000002 | Yes | AI |
 | Auto-Tagging (Cache) | Redis | $0 | No | N/A |
+| Vector Embedding | Pinecone Inference | $0.00001 | No (cost-only) | API |
 
 ### Subscription Limits
 
@@ -1005,8 +1171,8 @@ Multi-step operations (2+ steps) are tracked in SessionUsage collection:
   sessionId: "session_enrich_1732292590095_xyz",
   userId: "user_abc123",
   feature: "location_enrichment",
-  totalCost: 0.0370002,
-  totalRuns: 3,
+  totalCost: 0.0370102,
+  totalRuns: 3,  // Embedding is cost-only, not billable
   status: "completed",
   startedAt: Timestamp,
   completedAt: Timestamp,
@@ -1066,6 +1232,24 @@ Multi-step operations (2+ steps) are tracked in SessionUsage collection:
         tokensIn: 150,
         tokensOut: 30,
         duration: 200
+      }
+    },
+    {
+      stepNumber: 4,
+      stepLabel: "Step 4: Vector Embedding",
+      usageType: "ApiUsage",  // API budget (not AI)
+      feature: "contact_vector_embedding",
+      provider: "pinecone_inference",
+      cost: 0.00001,
+      isBillableRun: false,  // Cost-only operation
+      timestamp: "2025-11-22T16:43:10.695Z",
+      metadata: {
+        model: "multilingual-e5-large",
+        dimensions: 1024,
+        tokens: 125,
+        documentLength: 500,
+        vectorMagnitude: 0.9998,
+        duration: 150
       }
     }
   ]
@@ -1290,8 +1474,10 @@ describe('Contact Exchange Integration', () => {
    - `tags` array present
 9. Check SessionUsage:
    - `SessionUsage/testuser/sessions/{sessionId}` exists
-   - `steps` array has 3 entries
+   - `steps` array has 4 entries (geocoding, venue, tagging, embedding)
    - `status` = 'completed'
+   - `totalCost` ≈ $0.0370102
+   - `totalRuns` = 3 (embedding is cost-only, not billable)
 
 **Test Case 2: Budget Exceeded**
 
@@ -1330,8 +1516,8 @@ describe('Contact Exchange Integration', () => {
 
 ---
 
-**Last Updated:** 2025-11-22
-**Status:** 🟢 Active (Phase 3 Complete, Phase 5 In Progress)
+**Last Updated:** 2025-11-23
+**Status:** 🟢 Active (Phase 3 Complete, Phase 5 Complete)
 **Owner:** Leo
 
 ---

@@ -5,7 +5,7 @@ category: technical
 tags: [semantic-search, vector-database, pinecone, embeddings, ai-features, tags, v2, optimization]
 status: active
 created: 2025-11-22
-updated: 2025-11-22
+updated: 2025-11-23
 related:
   - SEMANTIC_SEARCH_ARCHITECTURE_CURRENT.md
   - PHASE5_AUTO_TAGGING_MIGRATION.md
