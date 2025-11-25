@@ -1150,6 +1150,9 @@ export const RATE_LIMITS = {
 // Tag cache (contact hash)
 // Key: tags:a1b2c3d4
 // TTL: 24 hours
+// Cache key: hash(company + jobTitle + notes)
+// Note: name intentionally excluded from cache key to increase hit rate
+// Same role at same company = same tags (regardless of person's name)
 {
   "tags": ["tech-executive", "automotive", "c-level"],
   "generatedAt": 1732185600000,

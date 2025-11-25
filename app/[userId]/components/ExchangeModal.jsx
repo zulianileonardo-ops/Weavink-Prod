@@ -954,12 +954,13 @@ useEffect(() => {
                             >
                                 {isSubmitting ? (
                                     <>
-                                        <Image 
-                                            src="https://linktree.sirv.com/Images/gif/loading.gif" 
-                                            width={16} 
-                                            height={16} 
-                                            alt="loading" 
-                                            className="filter invert" 
+                                        <Image
+                                            src="https://linktree.sirv.com/Images/gif/loading.gif"
+                                            width={16}
+                                            height={16}
+                                            alt="loading"
+                                            className="filter invert"
+                                            unoptimized
                                         />
                                         {t('exchange.submitting') || 'Submitting...'}
                                     </>

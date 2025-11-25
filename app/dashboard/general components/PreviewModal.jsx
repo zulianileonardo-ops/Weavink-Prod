@@ -139,6 +139,7 @@ export default function PreviewModal({ isOpen, onClose }) {
                                         height={25}
                                         alt="loading"
                                         className="mix-blend-screen"
+                                        unoptimized
                                     />
                                 </div>
 

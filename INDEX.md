@@ -1,7 +1,7 @@
 # Weavink Documentation Index
 
-**Last Updated:** 2025-11-23
-**Total Guides:** 91
+**Last Updated:** 2025-11-24
+**Total Guides:** 93
 
 ## Quick Navigation
 - [Admin System](#admin-system) (9 guides)
@@ -9,10 +9,11 @@
 - [RGPD/GDPR Compliance](#rgpd-gdpr-compliance) (13 guides)
 - [Feature Implementations](#feature-implementations) (26 guides)
 - [Technical Infrastructure](#technical-infrastructure) (21 guides)
-- [Testing & QA](#testing-qa) (12 guides)
+- [Testing & QA](#testing-qa) (13 guides)
 - [General Documentation](#general-documentation) (4 guides)
 - [Tutorials & Guides](#tutorials-guides) (3 guides)
 - [Meta Documentation](#meta-documentation) (2 guides)
+- [Security](#security) (1 guides)
 
 ---
 
@@ -217,7 +218,7 @@
 **Tags:** landing-page, ui-design, marketing, conversion-optimization
 
 ### LOCATION_SERVICES_AUTO_TAGGING_SPEC.md
-**Summary:** Advanced location-based contact management system with automatic venue enrichment, session-based tracking, Redis caching (70% hit rate), event detection, and AI auto-tagging. Phases 1-3 complete: Three-step enrichment (geocoding + venue search + AI tagging) with budget tracking, graceful degradation, and user settings integration. Phase 5 in progress (2025-11-22): Moving tag generation to save time. Includes comprehensive architecture diagrams, cost optimization strategy, implementation roadmap, and tier validation fixes.
+**Summary:** Advanced location-based contact management system with 4-step enrichment: geocoding → venue search → AI tagging → vector embedding. Features Redis caching with optimized cache key (name excluded for ~30% better hit rate), session-based tracking, metadata tracking for skip scenarios, budget independence (AI/API budgets separated), and graceful degradation. Phase 5 complete: Auto-tagging at save time with 3-tier caching.
 **Tags:** location, gps, google-places, auto-tagging, event-detection, redis-cache, ai, gemini, premium-features, partially-implemented, session-tracking, venue-enrichment, auto-enrichment, cost-optimization, tier-validation, bug-fixes, settings-service, phase-5, migration-guide
 **Related:** [SESSION_BASED_ENRICHMENT.md](#session-based-enrichment-md), [SESSION_VS_STANDALONE_TRACKING.md](#session-vs-standalone-tracking-md), [GEOCODING_SYSTEM_GUIDE.md](#geocoding-system-guide-md), [features-venue-enrichment-021](#features-venue-enrichment-021), [PHASE5_AUTO_TAGGING_MIGRATION.md](#phase5-auto-tagging-migration-md), [SEMANTIC_SEARCH_ARCHITECTURE_V2.md](#semantic-search-architecture-v2-md), [CONTACT_CREATION_ENRICHMENT_FLOW.md](#contact-creation-enrichment-flow-md)
 
@@ -298,7 +299,7 @@
 **Related:** [SESSION_BASED_ENRICHMENT.md](#session-based-enrichment-md), [SESSION_TRACKING_FIX.md](#session-tracking-fix-md), [COST_TRACKING_MIGRATION_GUIDE.md](#cost-tracking-migration-guide-md)
 
 ### PHASE5_AUTO_TAGGING_MIGRATION.md
-**Summary:** Comprehensive migration guide for moving AI tag generation from search time (STEP 0 query enhancement) to contact save time. Achieves 98.75% cost savings ($0.000008 → $0.0000002 per operation) and 50ms faster searches. Includes complete AutoTaggingService implementation, 7-phase rollout plan, lazy migration strategy, budget management (separate AI budget), Redis caching (24h TTL), and integration with existing LocationEnrichmentService pattern.
+**Summary:** Comprehensive migration guide for moving AI tag generation from search time to contact save time. Achieves 98.75% cost savings and 50ms faster searches. Includes AutoTaggingService with 3-tier caching (static → Redis → AI), cache key optimization (name excluded for ~30% better hit rate), metadata tracking for skip scenarios (budget_exceeded, no_taggable_data, disabled, error), budget management, and graceful degradation.
 **Tags:** auto-tagging, migration, phase-5, semantic-search, cost-optimization, ai, gemini, session-tracking, redis-cache, location-services
 **Related:** [SEMANTIC_SEARCH_ARCHITECTURE_V2.md](#semantic-search-architecture-v2-md), [SEMANTIC_SEARCH_ARCHITECTURE_CURRENT.md](#semantic-search-architecture-current-md), [CONTACT_CREATION_ENRICHMENT_FLOW.md](#contact-creation-enrichment-flow-md), [LOCATION_SERVICES_AUTO_TAGGING_SPEC.md](#location-services-auto-tagging-spec-md), [SESSION_BASED_ENRICHMENT.md](#session-based-enrichment-md)
 
@@ -409,6 +410,11 @@
 **Tags:** email, notifications, multilingual, i18n, rgpd, manual-testing, phase1, phase2, phase3, data-export, gdpr, brevo, troubleshooting, immediate-deletion
 **Related:** [RGPD_TESTING_GUIDE.md](#rgpd-testing-guide-md), [ACCOUNT_PRIVACY_TESTING_GUIDE.md](#account-privacy-testing-guide-md), [RGPD_IMPLEMENTATION_SUMMARY.md](#rgpd-implementation-summary-md), [EMAIL_INTEGRATION_GUIDE.md](#email-integration-guide-md), [EMAIL_NOTIFICATION_BUG_FIXES.md](#email-notification-bug-fixes-md)
 
+### EXCHANGE_SECURITY_TESTING_GUIDE.md
+**Summary:** Integration tests for ExchangeService security: rate limiting, fingerprinting, validation, and audit logging with real Firestore.
+**Tags:** testing, exchange-service, security, rate-limiting, fingerprinting, integration-tests
+**Related:** [security-exchange-service-001](#security-exchange-service-001), [testing-rate-limit-036](#testing-rate-limit-036)
+
 ### LOCATION_SERVICES_PHASE3_TEST_PLAN.md
 **Summary:** Comprehensive testing guide for Phase 3 auto-enrichment implementation covering 80+ test scenarios including happy path, settings integration, budget tracking, Redis caching, error handling, subscription tiers, performance, data integrity, and graceful degradation with detailed verification procedures.
 **Tags:** location-services, auto-enrichment, phase-3, testing, qa, redis-cache, google-places, budget-tracking, exchange-contacts, venue-enrichment, manual-testing, integration-testing
@@ -505,6 +511,15 @@
 **Summary:** Complete implementation summary of RGPD Phase 1-2 with consent management, data export, account deletion, and cookie consent.
 **Tags:** gdpr, rgpd, compliance, commit-summary, implementation, privacy-center, cookies, data-export
 **Related:** [rgpd-conformite-tapit-013](#rgpd-conformite-tapit-013)
+
+---
+
+## Security
+*Security architecture, authentication, authorization, and API protection*
+
+### EXCHANGE_SERVICE_SECURITY.md
+**Summary:** Comprehensive security documentation for the public contact exchange service, covering dual rate limiting (IP + fingerprint), CSRF protection, profile authorization, input validation, and audit logging.
+**Tags:** exchange, security, authentication, authorization, rate-limiting, CSRF, public-api, contact-exchange, fingerprinting
 
 ---
 

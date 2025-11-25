@@ -240,12 +240,13 @@ export default function ForgotPasswordForm() {
                         {!isLoading ? (
                             <span className="nopointer">{translations.sendRequest}</span>
                         ) : (
-                            <Image 
-                                src={"https://linktree.sirv.com/Images/gif/loading.gif"} 
-                                width={25} 
-                                height={25} 
-                                alt="loading" 
-                                className="mix-blend-screen" 
+                            <Image
+                                src={"https://linktree.sirv.com/Images/gif/loading.gif"}
+                                width={25}
+                                height={25}
+                                alt="loading"
+                                className="mix-blend-screen"
+                                unoptimized
                             />
                         )}
                     </button>

@@ -1,6 +1,7 @@
 // app/api/user/contacts/exchange/submit/route.js
 import { NextResponse } from 'next/server';
 import { ExchangeService } from '@/lib/services/serviceContact/server/exchangeService';
+import { RATE_LIMITS } from '@/lib/services/constants/rateLimits';
 
 /**
  * PUBLIC endpoint for contact exchange form submissions
@@ -34,14 +35,48 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Invalid origin' }, { status: 403 });
     }
 
-    // Rate limiting
+    // Extract request metadata for rate limiting
     const forwarded = request.headers.get("x-forwarded-for");
-    const ip = forwarded ? forwarded.split(",")[0] : request.headers.get("x-real-ip") || 'unknown';
+    const ip = forwarded ? forwarded.split(",")[0].trim() : request.headers.get("x-real-ip") || 'unknown';
+    const userAgent = request.headers.get('user-agent') || '';
+    const acceptLanguage = request.headers.get('accept-language') || '';
+    const acceptEncoding = request.headers.get('accept-encoding') || '';
 
+    // Generate fingerprint for enhanced rate limiting
+    const fingerprint = ExchangeService.generateExchangeFingerprint({
+      ip,
+      userAgent,
+      acceptLanguage,
+      acceptEncoding
+    });
+
+    // Dual rate limiting: IP-based AND fingerprint-based
+    // Both must pass to continue (defense in depth)
     try {
-      await ExchangeService.checkExchangeRateLimit(ip, 60, 60);
+      // Check 1: IP-based rate limit
+      await ExchangeService.checkExchangeRateLimit(
+        ip,
+        RATE_LIMITS.EXCHANGE.IP.MAX_REQUESTS,
+        RATE_LIMITS.EXCHANGE.IP.WINDOW_MINUTES
+      );
+
+      // Check 2: Fingerprint-based rate limit (stricter)
+      await ExchangeService.checkExchangeFingerprintRateLimit(
+        fingerprint,
+        RATE_LIMITS.EXCHANGE.FINGERPRINT.MAX_REQUESTS,
+        RATE_LIMITS.EXCHANGE.FINGERPRINT.WINDOW_MINUTES
+      );
     } catch (rateLimitError) {
-      console.warn(`🚨 Rate limit exceeded for IP: ${ip}`);
+      console.warn(`🚨 Rate limit exceeded - IP: ${ip}, Fingerprint: ${fingerprint}`);
+
+      // Log violation for security monitoring (non-blocking, fire and forget)
+      ExchangeService.logRateLimitViolation({
+        ip,
+        fingerprint,
+        limitType: rateLimitError.message.includes('device') ? 'fingerprint' : 'ip',
+        userAgent
+      }).catch(() => {});
+
       return NextResponse.json({
         error: rateLimitError.message,
         code: 'RATE_LIMIT_EXCEEDED'
@@ -51,15 +86,16 @@ export async function POST(request) {
     // Parse request body
     const body = await request.json();
 
-    // Enhance metadata with request info
+    // Enhance metadata with request info and fingerprint
     const submissionData = {
       ...body,
       metadata: {
         ...body.metadata,
         ip,
-        userAgent: body.metadata?.userAgent || request.headers.get('user-agent') || '',
+        fingerprint,
+        userAgent: body.metadata?.userAgent || userAgent,
         referrer: body.metadata?.referrer || request.headers.get('referer') || '',
-        language: body.metadata?.language || request.headers.get('accept-language')?.split(',')[0] || 'unknown',
+        language: body.metadata?.language || acceptLanguage?.split(',')[0] || 'unknown',
       }
     };
 

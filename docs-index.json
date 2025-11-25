@@ -1,8 +1,8 @@
 {
   "metadata": {
     "project": "Weavink Documentation",
-    "last_updated": "2025-11-23",
-    "total_guides": 91,
+    "last_updated": "2025-11-24",
+    "total_guides": 93,
     "version": "1.0.0"
   },
   "categories": {
@@ -123,7 +123,8 @@
         "testing-anonymous-analytics-077",
         "testing-contact-anonymization-078",
         "testing-location-phase3-079",
-        "testing-phase5-manual-080"
+        "testing-phase5-manual-080",
+        "testing-exchange-security-081"
       ]
     },
     "general": {
@@ -151,6 +152,13 @@
       "guides": [
         "rgpd-commit-summary-014",
         "meta-documentation-reorganization-001"
+      ]
+    },
+    "security": {
+      "name": "Security",
+      "description": "Security architecture, authentication, authorization, and API protection",
+      "guides": [
+        "security-exchange-service-001"
       ]
     }
   },
@@ -2812,7 +2820,7 @@
       "title": "Intelligent Location Services & AI Auto-Tagging System",
       "filename": "documentation/features/LOCATION_SERVICES_AUTO_TAGGING_SPEC.md",
       "category": "features",
-      "summary": "Advanced location-based contact management system with automatic venue enrichment, session-based tracking, Redis caching (70% hit rate), event detection, and AI auto-tagging. Phases 1-3 complete: Three-step enrichment (geocoding + venue search + AI tagging) with budget tracking, graceful degradation, and user settings integration. Phase 5 in progress (2025-11-22): Moving tag generation to save time. Includes comprehensive architecture diagrams, cost optimization strategy, implementation roadmap, and tier validation fixes.",
+      "summary": "Advanced location-based contact management system with 4-step enrichment: geocoding → venue search → AI tagging → vector embedding. Features Redis caching with optimized cache key (name excluded for ~30% better hit rate), session-based tracking, metadata tracking for skip scenarios, budget independence (AI/API budgets separated), and graceful degradation. Phase 5 complete: Auto-tagging at save time with 3-tier caching.",
       "tags": [
         "location",
         "gps",
@@ -2865,14 +2873,14 @@
       ],
       "status": "partial",
       "created": "2025-11-21",
-      "updated": "2025-11-22"
+      "updated": "2025-11-25"
     },
     {
       "id": "technical-auto-tagging-migration-033",
       "title": "Phase 5: AI Auto-Tagging Migration Guide",
       "filename": "documentation/infrastructure/PHASE5_AUTO_TAGGING_MIGRATION.md",
       "category": "technical",
-      "summary": "Comprehensive migration guide for moving AI tag generation from search time (STEP 0 query enhancement) to contact save time. Achieves 98.75% cost savings ($0.000008 → $0.0000002 per operation) and 50ms faster searches. Includes complete AutoTaggingService implementation, 7-phase rollout plan, lazy migration strategy, budget management (separate AI budget), Redis caching (24h TTL), and integration with existing LocationEnrichmentService pattern.",
+      "summary": "Comprehensive migration guide for moving AI tag generation from search time to contact save time. Achieves 98.75% cost savings and 50ms faster searches. Includes AutoTaggingService with 3-tier caching (static → Redis → AI), cache key optimization (name excluded for ~30% better hit rate), metadata tracking for skip scenarios (budget_exceeded, no_taggable_data, disabled, error), budget management, and graceful degradation.",
       "tags": [
         "auto-tagging",
         "migration",
@@ -2896,6 +2904,7 @@
         "tagContact",
         "generateTagsWithAI",
         "getTagCacheKey",
+        "_hashContactContent",
         "isAutoTaggingEnabled",
         "canAffordGeneric"
       ],
@@ -2907,7 +2916,7 @@
       ],
       "status": "active",
       "created": "2025-11-22",
-      "updated": "2025-11-22"
+      "updated": "2025-11-25"
     },
     {
       "id": "technical-semantic-search-v2-034",
@@ -3020,6 +3029,80 @@
       "status": "active",
       "created": "2025-11-23",
       "updated": "2025-11-23"
+    },
+    {
+      "id": "security-exchange-service-001",
+      "title": "Exchange Service Security Architecture",
+      "filename": "EXCHANGE_SERVICE_SECURITY.md",
+      "path": "documentation/security/EXCHANGE_SERVICE_SECURITY.md",
+      "category": "security",
+      "summary": "Comprehensive security documentation for the public contact exchange service, covering dual rate limiting (IP + fingerprint), CSRF protection, profile authorization, input validation, and audit logging.",
+      "tags": [
+        "exchange",
+        "security",
+        "authentication",
+        "authorization",
+        "rate-limiting",
+        "CSRF",
+        "public-api",
+        "contact-exchange",
+        "fingerprinting"
+      ],
+      "functions": [
+        "submitExchangeContact",
+        "checkExchangeRateLimit",
+        "verifyExchangeEnabled",
+        "validateSubmissionData",
+        "prepareContactData",
+        "addExchangeContactToProfile",
+        "logExchangeActivity",
+        "findRecentDuplicate",
+        "generateExchangeFingerprint",
+        "checkExchangeFingerprintRateLimit"
+      ],
+      "components": [
+        "ExchangeService",
+        "EnhancedExchangeService",
+        "ExchangeModal",
+        "ExchangeButton",
+        "House"
+      ],
+      "status": "active",
+      "created": "2025-11-24",
+      "updated": "2025-11-24",
+      "related_guides": []
+    },
+    {
+      "id": "testing-exchange-security-081",
+      "title": "Exchange Service Security Testing Guide",
+      "filename": "documentation/testing/EXCHANGE_SECURITY_TESTING_GUIDE.md",
+      "category": "testing",
+      "summary": "Integration tests for ExchangeService security: rate limiting, fingerprinting, validation, and audit logging with real Firestore.",
+      "tags": [
+        "testing",
+        "exchange-service",
+        "security",
+        "rate-limiting",
+        "fingerprinting",
+        "integration-tests"
+      ],
+      "functions": [
+        "generateExchangeFingerprint",
+        "checkExchangeRateLimit",
+        "checkExchangeFingerprintRateLimit",
+        "validateSubmissionData",
+        "logRateLimitViolation"
+      ],
+      "components": [
+        "ExchangeService"
+      ],
+      "related_guides": [
+        "security-exchange-service-001",
+        "testing-rate-limit-036"
+      ],
+      "status": "active",
+      "created": "2025-11-24",
+      "updated": "2025-11-24"
     }
   ]
 }

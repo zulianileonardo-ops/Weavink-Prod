@@ -94,9 +94,8 @@ Contact enriched with:
 **Average Cost**: ~$0.016 per contact (assuming 70% cache hit rate on venue search and 80% on tagging)
 
 **Budget Notes:**
-- Steps 1, 2, & 4 count against **API budget** (monthlyBillableRunsAPI)
+- Steps 1, 2, & 4 count against **API budget** as billable runs (monthlyBillableRunsAPI)
 - Step 3 counts against **AI budget** (monthlyBillableRunsAI)
-- Step 4 is **cost-only** (not billable run) - adds cost but not run count
 - Separate budget pools allow independent scaling
 
 ## Database Structure
@@ -113,7 +112,7 @@ SessionUsage/
         feature: "location_enrichment"
         status: "completed" | "in-progress" | "failed"
         totalCost: 0.0370102      // Updated for Phase 5 (includes embedding)
-        totalRuns: 3              // Updated for Phase 5 (embedding is not billable)
+        totalRuns: 4              // Updated for Phase 5 (includes embedding as billable)
         createdAt: Timestamp
         lastUpdatedAt: Timestamp
         completedAt: Timestamp
