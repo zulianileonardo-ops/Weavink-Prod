@@ -2,7 +2,7 @@
 // PendingRelationshipsPanel.jsx
 // Panel for reviewing pending discovered relationships
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import RelationshipReviewCard from './RelationshipReviewCard';
 
 /**
@@ -34,8 +34,11 @@ export default function PendingRelationshipsPanel({
   const [activeTab, setActiveTab] = useState('medium');
   const [selectedRelationships, setSelectedRelationships] = useState(new Set());
 
-  // Get relationships for active tab
-  const currentRelationships = pendingRelationships[activeTab] || [];
+  // Get relationships for active tab (memoized to prevent unnecessary re-renders)
+  const currentRelationships = useMemo(
+    () => pendingRelationships[activeTab] || [],
+    [pendingRelationships, activeTab]
+  );
 
   // Toggle selection for a relationship
   const toggleSelection = useCallback((rel) => {

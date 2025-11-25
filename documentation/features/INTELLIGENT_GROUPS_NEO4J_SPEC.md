@@ -745,6 +745,161 @@ export default function ContactGraph({
 }
 ```
 
+### 3D Visualization Mode
+
+The graph supports both 2D and 3D rendering modes, controlled via a toggle in the fullscreen control bar.
+
+**Libraries:**
+- `react-force-graph-2d` - Canvas 2D rendering (default)
+- `react-force-graph-3d` - WebGL/Three.js rendering
+
+**Dynamic Imports:**
+```jsx
+// 2D Graph (default)
+const ForceGraph2DWrapper = dynamic(
+  async () => {
+    const { default: ForceGraph2D } = await import('react-force-graph-2d');
+    return function ForceGraph2DWithRef({ graphRef, ...props }) {
+      return <ForceGraph2D ref={graphRef} {...props} />;
+    };
+  },
+  { ssr: false, loading: () => <GraphLoadingSpinner /> }
+);
+
+// 3D Graph (WebGL)
+const ForceGraph3DWrapper = dynamic(
+  async () => {
+    const { default: ForceGraph3D } = await import('react-force-graph-3d');
+    return function ForceGraph3DWithRef({ graphRef, ...props }) {
+      return <ForceGraph3D ref={graphRef} {...props} />;
+    };
+  },
+  { ssr: false, loading: () => <GraphLoadingSpinner /> }
+);
+```
+
+**View Mode State:**
+- State lifted from `ContactGraph` to `GraphExplorerTab`
+- Passed as prop: `viewMode = '2d' | '3d'`
+- Toggle button in fullscreen control bar
+
+**API Differences:**
+
+| Action | 2D Mode | 3D Mode |
+|--------|---------|---------|
+| Focus on node | `centerAt(x, y, ms)` + `zoom(level, ms)` | `cameraPosition({x, y, z}, node, ms)` |
+| Render method | Canvas 2D | WebGL/Three.js |
+| Node styling | `nodeCanvasObject` callback | `nodeColor` + `nodeVal` props |
+| Node opacity | Manual via `ctx.globalAlpha` | `nodeOpacity` prop |
+
+**Node Click Handler (viewMode-aware):**
+```jsx
+const handleNodeClick = useCallback((node) => {
+  if (onNodeClick) onNodeClick(node);
+
+  if (graphRef.current) {
+    if (viewMode === '2d') {
+      // 2D: use centerAt and zoom
+      graphRef.current.centerAt(node.x, node.y, 500);
+      graphRef.current.zoom(2, 500);
+    } else {
+      // 3D: use cameraPosition
+      const distance = 200;
+      graphRef.current.cameraPosition(
+        { x: node.x, y: node.y, z: distance },
+        node, // lookAt target
+        500   // transition ms
+      );
+    }
+  }
+}, [onNodeClick, viewMode]);
+```
+
+### Advanced Filters
+
+Beyond category-level filtering (Contact/Company/Tag), users can filter by specific values.
+
+**Filter State:**
+```javascript
+const [filters, setFilters] = useState({
+  // Category filters (existing)
+  nodeTypes: ['Contact', 'Company', 'Tag'],
+  relationshipTypes: ['WORKS_AT', 'HAS_TAG', 'SIMILAR_TO', 'KNOWS'],
+
+  // Advanced filters (NEW)
+  selectedCompanies: [],  // Filter by specific company names
+  selectedTags: []        // Filter by specific tag names
+});
+```
+
+**Extracting Unique Values:**
+```javascript
+// Extract unique companies from graph data
+const uniqueCompanies = useMemo(() => {
+  return [...new Set(
+    graphData?.nodes
+      ?.filter(n => n.type === 'Company')
+      .map(n => n.name)
+      .filter(Boolean)
+  )].sort();
+}, [graphData?.nodes]);
+
+// Extract unique tags from graph data
+const uniqueTags = useMemo(() => {
+  return [...new Set(
+    graphData?.nodes
+      ?.filter(n => n.type === 'Tag')
+      .map(n => n.name)
+      .filter(Boolean)
+  )].sort();
+}, [graphData?.nodes]);
+```
+
+**Toggle Functions:**
+```javascript
+const toggleCompanyFilter = useCallback((company) => {
+  setFilters(prev => {
+    const current = prev.selectedCompanies || [];
+    const isSelected = current.includes(company);
+    return {
+      ...prev,
+      selectedCompanies: isSelected
+        ? current.filter(c => c !== company)
+        : [...current, company]
+    };
+  });
+}, []);
+```
+
+**Graph Data Filtering (in ContactGraph.jsx):**
+```javascript
+// Filter by specific companies (advanced filter)
+if (filters.selectedCompanies && filters.selectedCompanies.length > 0) {
+  nodes = nodes.filter(n => {
+    if (n.type === 'Company') {
+      return filters.selectedCompanies.includes(n.name);
+    }
+    return true; // Keep non-company nodes
+  });
+}
+
+// Filter by specific tags (advanced filter)
+if (filters.selectedTags && filters.selectedTags.length > 0) {
+  nodes = nodes.filter(n => {
+    if (n.type === 'Tag') {
+      return filters.selectedTags.includes(n.name);
+    }
+    return true; // Keep non-tag nodes
+  });
+}
+```
+
+**UI Implementation:**
+- Expandable "Advanced Filters" section in filter panel
+- Chip-style selectable items (click to toggle)
+- Purple highlight for selected, gray for unselected
+- "Clear all" button to reset filters
+
 ### GraphExplorerTab.jsx (Integration Point)
 
 ```jsx
@@ -799,6 +954,7 @@ export default function GraphExplorerTab({
 
 ### UI Mockup
 
+**Standard View:**
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
 │  Graph Explorer                                             [?] [×]     │
@@ -826,6 +982,52 @@ export default function GraphExplorerTab({
 │  Legend:  ● Contact  ● Company  ● Event  ● Location                    │
 │           ─ WORKS_AT  ─ ATTENDED  ─ SIMILAR_TO  ─ KNOWS                 │
 └─────────────────────────────────────────────────────────────────────────┘
+```
+
+**Fullscreen View (with 3D toggle and Advanced Filters):**
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│  [Filter] [Suggestions] [Discover] [Refresh] [×Close] [2D/3D]          │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │                                                                   │   │
+│  │                     ●                                            │   │
+│  │                ●   ╱│╲   ●                                       │   │
+│  │               ╱   ● │ ● ╱                                        │   │
+│  │              ●─────●───●                                          │   │
+│  │               ╲   ╱ ╲ ╱                                          │   │
+│  │                ● ●   ●                                            │   │
+│  │                 ╲│╱                                               │   │
+│  │                  ●                                                │   │
+│  │                                                                   │   │
+│  │               [Fullscreen Interactive Graph]                      │   │
+│  │                                                                   │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+
+Advanced Filters Panel (when Filter button clicked):
+┌─────────────────────────────────────┐
+│  Node Types                         │
+│  [●Contact] [●Company] [●Tag]       │
+│                                     │
+│  Relationship Types                 │
+│  [WORKS_AT] [HAS_TAG] [SIMILAR_TO]  │
+│                                     │
+│  ▼ Advanced Filters                 │
+│  ┌─────────────────────────────────┐│
+│  │ Companies:                      ││
+│  │ [Tesla] [Google] [Microsoft]    ││
+│  │ [Apple] [Meta]                  ││
+│  │                                 ││
+│  │ Tags:                           ││
+│  │ [ai-ml] [sales] [engineering]   ││
+│  │ [marketing] [design]            ││
+│  └─────────────────────────────────┘│
+│                                     │
+│  [Clear All]                        │
+└─────────────────────────────────────┘
 ```
 
 ---
@@ -878,95 +1080,224 @@ export default function GraphExplorerTab({
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
-### GroupSuggestionService
+### Group Suggestion Types
+
+The system generates 4 types of group suggestions based on different relationship types:
+
+| Type | Relationship | Description | Confidence |
+|------|--------------|-------------|------------|
+| `company` | WORKS_AT | Contacts at the same company | 0.9 |
+| `tag` | HAS_TAG | Contacts sharing the same tag | 0.8 |
+| `semantic` | SIMILAR_TO | Contacts with similar profiles | 0.7 |
+| `knows` | KNOWS | Socially connected contacts | 0.75 |
+
+### Neo4j Cluster Queries
+
+#### findTagClusters - Tag-based grouping
+```javascript
+async findTagClusters(userId) {
+  const query = `
+    MATCH (c:Contact {userId: $userId})-[:HAS_TAG]->(t:Tag)
+    WITH t, collect(c) as contacts
+    WHERE size(contacts) >= 2
+    RETURN t.name as tag,
+           [c IN contacts | {id: c.id, name: c.name}] as members,
+           size(contacts) as memberCount
+    ORDER BY memberCount DESC
+    LIMIT 20
+  `;
+  return this.runQuery(query, { userId });
+}
+```
+
+#### findKnowsClusters - Social connection grouping
+```javascript
+async findKnowsClusters(userId) {
+  const query = `
+    MATCH (c1:Contact {userId: $userId})-[r:KNOWS]-(c2:Contact)
+    WITH c1, collect({contact: c2, strength: r.strength}) as connections
+    WHERE size(connections) >= 2
+    RETURN c1.id as contactId,
+           c1.name as contactName,
+           [conn IN connections | {id: conn.contact.id, name: conn.contact.name}] as connections
+    ORDER BY size(connections) DESC
+  `;
+  return this.runQuery(query, { userId });
+}
+```
+
+### getSuggestedGroups Implementation
+
+**File:** `lib/services/serviceContact/server/neo4j/RelationshipDiscoveryService.js`
 
 ```javascript
-// lib/services/serviceContact/server/neo4j/GroupSuggestionService.js
+static async getSuggestedGroups(userId, options = {}) {
+  const suggestions = [];
 
-class GroupSuggestionService {
-
-  /**
-   * Generate group suggestions from discovered clusters
-   */
-  static async generateSuggestions(userId, options = {}) {
-    const {
-      minClusterSize = 3,
-      maxSuggestions = 10,
-      includeTypes = ['company', 'event', 'semantic', 'location']
-    } = options;
-
-    const suggestions = [];
-
-    // 1. Get company clusters
-    if (includeTypes.includes('company')) {
-      const companyClusters = await this.getCompanyClusters(userId, minClusterSize);
-      for (const cluster of companyClusters) {
-        suggestions.push({
-          type: 'intelligent_company',
-          name: await this.generateGroupName('company', cluster),
-          contacts: cluster.members,
-          confidence: cluster.avgConfidence,
-          metadata: { company: cluster.companyName }
-        });
-      }
+  // 1. Company-based groups (WORKS_AT)
+  const companyClusters = await neo4jClient.findCompanyClusters(userId);
+  for (const cluster of companyClusters) {
+    if (cluster.memberCount >= 2) {
+      suggestions.push({
+        type: 'company',
+        name: `${cluster.company} Team`,  // Replaced by AI
+        reason: `${cluster.memberCount} contacts work at ${cluster.company}`,
+        members: cluster.members,
+        confidence: 0.9,
+        metadata: { company: cluster.company }
+      });
     }
-
-    // 2. Get event clusters
-    if (includeTypes.includes('event')) {
-      const eventClusters = await this.getEventClusters(userId, minClusterSize);
-      for (const cluster of eventClusters) {
-        suggestions.push({
-          type: 'intelligent_event',
-          name: await this.generateGroupName('event', cluster),
-          contacts: cluster.members,
-          confidence: cluster.avgConfidence,
-          metadata: { event: cluster.eventName, date: cluster.date }
-        });
-      }
-    }
-
-    // 3. Get semantic clusters
-    if (includeTypes.includes('semantic')) {
-      const semanticClusters = await this.getSemanticClusters(userId, minClusterSize);
-      for (const cluster of semanticClusters) {
-        suggestions.push({
-          type: 'intelligent_semantic',
-          name: await this.generateGroupName('semantic', cluster),
-          contacts: cluster.members,
-          confidence: cluster.avgSimilarity,
-          metadata: { commonTags: cluster.commonTags }
-        });
-      }
-    }
-
-    // 4. Rank and limit suggestions
-    return suggestions
-      .sort((a, b) => b.confidence - a.confidence)
-      .slice(0, maxSuggestions);
   }
 
-  /**
-   * Generate human-readable group name using Gemini
-   */
-  static async generateGroupName(clusterType, cluster) {
-    const prompt = this.buildNamingPrompt(clusterType, cluster);
-    const result = await geminiModel.generateContent(prompt);
-    return result.text.trim();
+  // 2. Tag-based groups (HAS_TAG)
+  const tagClusters = await neo4jClient.findTagClusters(userId);
+  for (const cluster of tagClusters) {
+    if (cluster.memberCount >= 2) {
+      suggestions.push({
+        type: 'tag',
+        name: `${cluster.tag} Group`,  // Replaced by AI
+        reason: `${cluster.memberCount} contacts tagged "${cluster.tag}"`,
+        members: cluster.members,
+        confidence: 0.8,
+        metadata: { tag: cluster.tag }
+      });
+    }
   }
 
-  static buildNamingPrompt(type, cluster) {
-    const templates = {
-      company: `Generate a group name for ${cluster.members.length} contacts who work at "${cluster.companyName}". Examples: "Acme Engineering Team", "Google Sales Contacts". Reply with just the name.`,
+  // 3. Semantic similarity groups (SIMILAR_TO)
+  const similarityClusters = await neo4jClient.findSimilarityClusters(userId, options.minSimilarity);
+  const processedContacts = new Set();
+  for (const cluster of similarityClusters) {
+    if (processedContacts.has(cluster.contactId)) continue;
+    const members = [
+      { id: cluster.contactId, name: cluster.contactName },
+      ...cluster.similarContacts
+    ];
+    if (members.length >= 3) {
+      suggestions.push({
+        type: 'semantic',
+        name: 'Similar Contacts',  // Replaced by AI
+        reason: `${members.length} contacts with similar profiles`,
+        members: members.slice(0, 10),
+        confidence: 0.7
+      });
+      members.forEach(m => processedContacts.add(m.id));
+    }
+  }
 
-      event: `Generate a group name for ${cluster.members.length} contacts who attended an event on ${cluster.date}${cluster.venueName ? ` at ${cluster.venueName}` : ''}. Examples: "TechConf 2024 Attendees", "AI Summit Connections". Reply with just the name.`,
+  // 4. Social connection groups (KNOWS)
+  const knowsClusters = await neo4jClient.findKnowsClusters(userId);
+  for (const cluster of knowsClusters) {
+    if (cluster.connections.length >= 2) {
+      const members = [
+        { id: cluster.contactId, name: cluster.contactName },
+        ...cluster.connections
+      ];
+      suggestions.push({
+        type: 'knows',
+        name: 'Connected Network',  // Replaced by AI
+        reason: `${members.length} socially connected contacts`,
+        members: members.slice(0, 10),
+        confidence: 0.75,
+        metadata: { centralContact: cluster.contactName }
+      });
+    }
+  }
 
-      semantic: `Generate a group name for ${cluster.members.length} contacts with common interests: ${cluster.commonTags.join(', ')}. Examples: "AI/ML Network", "Startup Founders", "Product Leaders". Reply with just the name.`
+  // 5. Enhance names with AI (optional)
+  if (options.generateAINames !== false) {
+    await Promise.all(suggestions.map(async (s) => {
+      s.name = await GroupNamingService.generateGroupName(s);
+    }));
+  }
+
+  return suggestions;
+}
+```
+
+### GroupNamingService - AI-Powered Naming
+
+**File:** `lib/services/serviceContact/server/GroupNamingService.js`
+
+Generates creative, contextual group names using Gemini AI with Redis caching.
+
+```javascript
+import { getAI, getGenerativeModel } from 'firebase/ai';
+import redisClient from './redisClient';
+import crypto from 'crypto';
+
+const CACHE_TTL = 3600; // 1 hour
+
+export class GroupNamingService {
+  static async generateGroupName(suggestion) {
+    const cacheKey = `group_name:${suggestion.type}:${this.hashMembers(suggestion)}`;
+
+    // Check Redis cache first
+    const cached = await redisClient.get(cacheKey);
+    if (cached) return cached;
+
+    try {
+      const name = await this.callGemini(suggestion);
+      await redisClient.set(cacheKey, name, CACHE_TTL);
+      return name;
+    } catch (error) {
+      console.error('[GroupNaming] AI failed, using fallback:', error.message);
+      return this.getFallbackName(suggestion);
+    }
+  }
+
+  static buildPrompt(suggestion) {
+    const memberNames = suggestion.members.map(m => m.name).join(', ');
+
+    const prompts = {
+      company: `Generate a creative, professional group name for contacts at ${suggestion.metadata?.company}.
+Members: ${memberNames}
+Examples: "Tesla Innovators", "Google Dream Team"
+Return ONLY the group name.`,
+
+      tag: `Generate a creative group name for contacts tagged "${suggestion.metadata?.tag}".
+Members: ${memberNames}
+Examples: "AI Pioneers", "Deal Closers", "Tech Leaders"
+Return ONLY the group name.`,
+
+      semantic: `Generate a creative group name for similar professionals:
+Members: ${memberNames}
+Reason: ${suggestion.reason}
+Examples: "Tech Visionaries", "Marketing Mavens"
+Return ONLY the group name.`,
+
+      knows: `Generate a creative group name for this social network cluster:
+Central person: ${suggestion.metadata?.centralContact}
+Connected to: ${memberNames}
+Examples: "Inner Circle", "Core Network", "Power Connectors"
+Return ONLY the group name.`
     };
 
-    return templates[type];
+    return prompts[suggestion.type] || prompts.semantic;
+  }
+
+  static getFallbackName(suggestion) {
+    const fallbacks = {
+      company: `${suggestion.metadata?.company || 'Company'} Team`,
+      tag: `${suggestion.metadata?.tag || 'Tagged'} Group`,
+      semantic: 'Similar Contacts',
+      knows: 'Connected Network'
+    };
+    return fallbacks[suggestion.type] || 'Contact Group';
+  }
+
+  static hashMembers(suggestion) {
+    const key = suggestion.members.map(m => m.id).sort().join('-');
+    return crypto.createHash('md5').update(key).digest('hex').slice(0, 12);
   }
 }
 ```
+
+**Key Features:**
+- **Redis Caching**: 1-hour TTL prevents redundant AI calls
+- **Hash-based Keys**: Same member set = same cached name
+- **Fallback Names**: Graceful degradation on AI errors
+- **Type-specific Prompts**: Contextual naming for each suggestion type
 
 ---
 
@@ -1095,7 +1426,11 @@ class GroupSuggestionService {
 
 ### GET /api/user/contacts/graph/suggestions
 
-**Purpose:** Get AI-generated group suggestions
+**Purpose:** Get AI-generated group suggestions with smart naming
+
+**Query Parameters:**
+- `generateAINames` (optional, default: true) - Whether to use Gemini AI for creative names
+- `minSimilarity` (optional, default: 0.75) - Minimum similarity score for semantic suggestions
 
 **Response:**
 ```json
@@ -1103,19 +1438,61 @@ class GroupSuggestionService {
   "success": true,
   "suggestions": [
     {
-      "id": "suggestion_1",
-      "type": "intelligent_company",
-      "name": "Acme Engineering Team",
-      "contacts": ["contact_1", "contact_2", "contact_3"],
-      "confidence": 0.95,
-      "metadata": {
-        "company": "Acme Inc",
-        "commonTags": ["software-engineer", "tech-industry"]
-      }
+      "type": "company",
+      "name": "Tesla Innovators",
+      "reason": "5 contacts work at Tesla, Inc.",
+      "members": [
+        { "id": "contact_1", "name": "John Doe" },
+        { "id": "contact_2", "name": "Jane Smith" }
+      ],
+      "confidence": 0.9,
+      "metadata": { "company": "Tesla, Inc." }
+    },
+    {
+      "type": "tag",
+      "name": "AI Pioneers",
+      "reason": "4 contacts tagged \"ai-ml\"",
+      "members": [
+        { "id": "contact_3", "name": "Alex Chen" }
+      ],
+      "confidence": 0.8,
+      "metadata": { "tag": "ai-ml" }
+    },
+    {
+      "type": "semantic",
+      "name": "Tech Visionaries",
+      "reason": "3 contacts with similar profiles",
+      "members": [
+        { "id": "contact_4", "name": "Sarah Johnson" }
+      ],
+      "confidence": 0.7
+    },
+    {
+      "type": "knows",
+      "name": "Leo's Inner Circle",
+      "reason": "4 socially connected contacts",
+      "members": [
+        { "id": "contact_5", "name": "Mike Brown" }
+      ],
+      "confidence": 0.75,
+      "metadata": { "centralContact": "Leo Martinez" }
     }
-  ]
+  ],
+  "metadata": {
+    "totalSuggestions": 4,
+    "aiNamingEnabled": true,
+    "timestamp": "2025-11-25T20:00:00Z"
+  }
 }
 ```
+
+**Suggestion Types:**
+| Type | Source | Minimum Members | Default Name (Fallback) |
+|------|--------|-----------------|-------------------------|
+| `company` | WORKS_AT relationships | 2 | "{Company} Team" |
+| `tag` | HAS_TAG relationships | 2 | "{Tag} Group" |
+| `semantic` | SIMILAR_TO relationships | 3 | "Similar Contacts" |
+| `knows` | KNOWS relationships | 3 | "Connected Network" |
 
 ---
 
@@ -1335,16 +1712,19 @@ SEMANTIC_SIMILARITY_QUERY: {
 
 **Quick Win:** Interactive graph visualization works ✅
 
-### Phase 4: Intelligent Groups (2 weeks) - *In Progress*
+### Phase 4: Intelligent Groups (2 weeks) ✅
 
 **Deliverables:**
-- [ ] `GroupSuggestionService.js`
-- [ ] `AIRelationshipInferenceService.js` (Business+)
-- [ ] `GroupSuggestionsPanel.jsx`
-- [ ] Group creation from suggestions
+- [x] 4 suggestion types: company, tag, semantic, knows
+- [x] `findTagClusters()` Neo4j query
+- [x] `findKnowsClusters()` Neo4j query
+- [x] `GroupNamingService.js` with Gemini AI
+- [x] Redis caching for AI names (1h TTL)
+- [x] `GroupSuggestionsPanel.jsx` with tabs
+- [x] Group creation from suggestions
 - [x] API route `/api/user/contacts/graph/suggestions`
 
-**Quick Win:** End-to-end flow: Discover → Review → Create Group
+**Quick Win:** End-to-end flow: Discover → Review → Create Group ✅
 
 ### Phase 5: Polish (1 week) - *In Progress*
 
@@ -1354,7 +1734,7 @@ SEMANTIC_SIMILARITY_QUERY: {
 - [x] Performance optimization (localStorage caching)
 - [ ] Cost tracking dashboard integration
 - [x] Documentation updates
-- [ ] Testing
+- [x] Testing guide updated
 
 **Quick Win:** Production-ready feature
 
@@ -1367,12 +1747,12 @@ SEMANTIC_SIMILARITY_QUERY: {
 ```
 lib/services/serviceContact/server/
 ├── DiscoveryJobManager.js            # In-memory job tracking (globalThis pattern)
+├── GroupNamingService.js             # AI-powered group naming with Redis cache
 └── neo4j/
-    ├── neo4jClient.js                # Connection singleton
+    ├── neo4jClient.js                # Connection singleton + cluster queries
     ├── Neo4jSyncService.js           # Firestore ↔ Neo4j sync
-    ├── RelationshipDiscoveryService.js # Discovery orchestration
-    ├── GroupSuggestionService.js     # Cluster → Suggestions
-    └── AIRelationshipInferenceService.js # Gemini inference
+    ├── RelationshipDiscoveryService.js # Discovery + suggestions orchestration
+    └── AIRelationshipInferenceService.js # Gemini inference (Business+)
 
 app/api/user/contacts/graph/
 ├── route.js                          # GET graph data
@@ -1410,7 +1790,7 @@ app/dashboard/(dashboard pages)/contacts/components/GraphVisualization/
 | `lib/services/serviceContact/client/constants/contactConstants.js` | Add feature flags |
 | `lib/services/constants/aiCosts.js` | Add cost configs |
 | `.env.local` | Add Neo4j credentials |
-| `package.json` | Add neo4j-driver, react-force-graph-2d |
+| `package.json` | Add neo4j-driver, react-force-graph-2d, react-force-graph-3d |
 
 ---
 
@@ -1450,13 +1830,29 @@ app/dashboard/(dashboard pages)/contacts/components/GraphVisualization/
 
 ---
 
-**Document Status:** In Progress
+**Document Status:** Active
 **Created:** 2025-11-25
 **Updated:** 2025-11-25
 **Author:** Claude + Leo
-**Version:** 1.1
+**Version:** 1.3
 
 ### Changelog
+
+**v1.3 (2025-11-25)**
+- Added 3D visualization mode with `react-force-graph-3d`
+- Added viewMode state lifting pattern (ContactGraph → GraphExplorerTab)
+- Documented 2D vs 3D API differences (centerAt/zoom vs cameraPosition)
+- Added Advanced Filters feature (filter by specific company/tag names)
+- Added `selectedCompanies` and `selectedTags` filter state
+- Updated UI mockup with fullscreen view showing 3D toggle and Advanced Filters panel
+
+**v1.2 (2025-11-25)**
+- Added 4 suggestion types: company, tag, semantic, knows
+- Added `findTagClusters()` and `findKnowsClusters()` Neo4j queries
+- Added `GroupNamingService.js` with Gemini AI for creative group names
+- Added Redis caching for AI-generated names (1h TTL)
+- Updated API specification for `/suggestions` endpoint with all 4 types
+- Marked Phase 4 (Intelligent Groups) as completed
 
 **v1.1 (2025-11-25)**
 - Changed caching from Redis to localStorage (client-side, 1h TTL)

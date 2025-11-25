@@ -48,7 +48,11 @@ const [stats, setStats] = useState({
     const [searchSessionId, setSearchSessionId] = useState(null); // Store sessionId for feedback
     const [isAiSearching, setIsAiSearching] = useState(false);
     const [searchStage, setSearchStage] = useState('idle');
-    
+
+    // Graph view state (for viewing search results in graph)
+    const [showGraphExplorer, setShowGraphExplorer] = useState(false);
+    const [graphHighlightContactIds, setGraphHighlightContactIds] = useState(null);
+
     // Pagination state
     const [pagination, setPagination] = useState({
         hasMore: false,
@@ -188,7 +192,19 @@ const [stats, setStats] = useState({
         setSearchTerm('');
         setSearchSessionId(null); // Clear sessionId when clearing search
     }, []);
-    
+
+    // Open graph explorer with specific contacts highlighted
+    const handleViewInGraph = useCallback((contactIds) => {
+        setGraphHighlightContactIds(contactIds);
+        setShowGraphExplorer(true);
+    }, []);
+
+    // Close graph explorer
+    const closeGraphExplorer = useCallback(() => {
+        setShowGraphExplorer(false);
+        setGraphHighlightContactIds(null);
+    }, []);
+
     // Create contact
     const createContact = useCallback(async (contactData) => {
         try {
@@ -379,7 +395,13 @@ const [stats, setStats] = useState({
         aiSearchResults,
         searchSessionId, // Expose sessionId for feedback button
         searchStage,
-        
+
+        // Graph explorer
+        showGraphExplorer,
+        graphHighlightContactIds,
+        handleViewInGraph,
+        closeGraphExplorer,
+
         // Pagination
         pagination,
         
@@ -411,8 +433,12 @@ const [stats, setStats] = useState({
         searchMode,
         aiSearchQuery,
         aiSearchResults,
-        searchSessionId, // Add sessionId to dependencies
+        searchSessionId,
         searchStage,
+        showGraphExplorer,
+        graphHighlightContactIds,
+        handleViewInGraph,
+        closeGraphExplorer,
         pagination,
         createContact,
         updateContact,

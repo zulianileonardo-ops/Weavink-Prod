@@ -2,6 +2,8 @@
 // GET - Graph statistics
 
 import { NextResponse } from 'next/server';
+
+export const dynamic = 'force-dynamic';
 import { createApiSession } from '@/lib/server/session';
 import RelationshipDiscoveryService from '@/lib/services/serviceContact/server/neo4j/RelationshipDiscoveryService';
 import Neo4jSyncService from '@/lib/services/serviceContact/server/neo4j/Neo4jSyncService';

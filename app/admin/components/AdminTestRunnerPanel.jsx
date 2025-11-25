@@ -2,7 +2,7 @@
 // app/admin/components/AdminTestRunnerPanel.jsx
 // Admin panel component for running integration tests
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 
 // Category colors for visual grouping
@@ -24,12 +24,7 @@ export default function AdminTestRunnerPanel() {
   const [selectedOutput, setSelectedOutput] = useState(null);
   const [runAllInProgress, setRunAllInProgress] = useState(false);
 
-  // Fetch available tests on mount
-  useEffect(() => {
-    fetchTests();
-  }, [currentUser]);
-
-  const fetchTests = async () => {
+  const fetchTests = useCallback(async () => {
     if (!currentUser) return;
 
     try {
@@ -49,7 +44,12 @@ export default function AdminTestRunnerPanel() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentUser]);
+
+  // Fetch available tests on mount
+  useEffect(() => {
+    fetchTests();
+  }, [fetchTests]);
 
   const runTest = async (testFile) => {
     if (!currentUser || runningTests[testFile]) return;

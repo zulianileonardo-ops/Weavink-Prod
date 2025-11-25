@@ -214,8 +214,8 @@
 **Related:** [features-carousel-017](#features-carousel-017), [features-cv-enhancement-026](#features-cv-enhancement-026)
 
 ### INTELLIGENT_GROUPS_NEO4J_SPEC.md
-**Summary:** AI-powered intelligent group creation using Neo4j graph database for relationship discovery, Pinecone for semantic similarity, Gemini AI for inference, and react-force-graph-2d for interactive visualization. Includes graph schema, relationship discovery algorithms, and UI specifications.
-**Tags:** neo4j, graph-database, intelligent-groups, pinecone, gemini, visualization, react-force-graph, relationship-discovery, ai-groups
+**Summary:** AI-powered intelligent group creation using Neo4j graph database for relationship discovery. Supports 4 suggestion types: company (WORKS_AT), tag (HAS_TAG), semantic (SIMILAR_TO), and knows (KNOWS). Includes GroupNamingService for Gemini-powered creative group names with Redis caching, 2D/3D visualization modes (react-force-graph-2d/3d), and Advanced Filters for filtering by specific company or tag names.
+**Tags:** neo4j, graph-database, intelligent-groups, pinecone, gemini, visualization, react-force-graph, react-force-graph-3d, 3d-visualization, advanced-filters, relationship-discovery, ai-groups, ai-naming, tag-suggestions, knows-suggestions, redis-cache
 **Related:** [SEMANTIC_SEARCH_ARCHITECTURE_V2.md](#semantic-search-architecture-v2-md), [PHASE5_AUTO_TAGGING_MIGRATION.md](#phase5-auto-tagging-migration-md), [LOCATION_SERVICES_AUTO_TAGGING_SPEC.md](#location-services-auto-tagging-spec-md)
 
 ### LANDING_PAGE_REDESIGN.md
@@ -446,8 +446,8 @@
 **Related:** [LOCATION_SERVICES_AUTO_TAGGING_SPEC.md](#location-services-auto-tagging-spec-md), [GEOCODING_SYSTEM_GUIDE.md](#geocoding-system-guide-md), [RATE_LIMIT_TESTING.md](#rate-limit-testing-md), [RGPD_TESTING_GUIDE.md](#rgpd-testing-guide-md)
 
 ### NEO4J_GRAPH_EXPLORER_TESTING_GUIDE.md
-**Summary:** End-to-end manual testing guide for Neo4j integration, Graph Explorer visualization, and Intelligent Group creation. 10 tests covering contact sync to Neo4j, graph API endpoints, visualization rendering, relationship discovery, and group creation from suggestions.
-**Tags:** testing, manual-testing, neo4j, graph-explorer, graph-visualization, intelligent-groups, relationship-discovery, contacts
+**Summary:** End-to-end manual testing guide for Neo4j integration, Graph Explorer visualization, and Intelligent Group creation. 16 tests covering contact sync to Neo4j, graph API endpoints, visualization rendering, relationship discovery, all 4 suggestion types (company, tag, semantic, knows), AI-generated group naming with Gemini, Redis caching, 3D mode toggle, and Advanced Filters (company/tag selection).
+**Tags:** testing, manual-testing, neo4j, graph-explorer, graph-visualization, intelligent-groups, relationship-discovery, contacts, ai-naming, tag-suggestions, knows-suggestions, redis-cache, 3d-visualization, advanced-filters, react-force-graph-3d
 **Related:** [testing-dual-system-guide-082](#testing-dual-system-guide-082), [testing-phase5-manual-080](#testing-phase5-manual-080), [features-intelligent-groups-neo4j-083](#features-intelligent-groups-neo4j-083), [infrastructure-semantic-search-v2-050](#infrastructure-semantic-search-v2-050)
 
 ### PHASE5_MANUAL_TESTING_GUIDE.md

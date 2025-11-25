@@ -19,6 +19,7 @@ import UsageCards from './components/UsageCards';
 import ContactModals from './components/contacts/ContactModals';
 import ContactsMap from './components/ContactsMap';
 import BudgetInfoCard from '../../general components/BudgetInfoCard';
+import GraphExplorerTab from './components/GraphVisualization/GraphExplorerTab';
 import { AnimatePresence } from 'framer-motion';
 
 // Wrapper component to provide context
@@ -65,7 +66,12 @@ function ContactsPage() {
         clearSearch,
         refreshData,
         refreshUsageInfo,
-        hasFeature
+        hasFeature,
+        // Graph explorer
+        showGraphExplorer,
+        graphHighlightContactIds,
+        handleViewInGraph,
+        closeGraphExplorer
     } = useContacts();
     
     // Local UI state (only for modals and temporary UI)
@@ -620,6 +626,7 @@ function ContactsPage() {
                             searchMode={searchMode}
                             searchSessionId={searchSessionId} // Pass sessionId for feedback button
                             onClearSearch={clearSearch}
+                            onViewInGraph={handleViewInGraph}
                             />
                         ) : (
                             <GroupList
@@ -776,6 +783,31 @@ function ContactsPage() {
                 hasFeature={hasFeature}
                 usageInfo={usageInfo}
             />
+
+            {/* Graph Explorer for Search Results */}
+            {showGraphExplorer && (
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 md:px-4 md:pt-20 md:pb-4">
+                    <div className="bg-white w-full h-full md:rounded-2xl md:shadow-2xl flex flex-col overflow-hidden relative md:border md:border-gray-200">
+                        {/* Close button */}
+                        <button
+                            onClick={closeGraphExplorer}
+                            className="absolute top-4 right-4 z-50 bg-red-500/90 backdrop-blur-md shadow-lg rounded-xl px-3 py-2 border border-red-400 inline-flex items-center text-sm font-medium text-white hover:bg-red-600"
+                            title="Close (ESC)"
+                        >
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+
+                        <GraphExplorerTab
+                            groups={groups}
+                            contacts={contacts}
+                            initialHighlightContactIds={graphHighlightContactIds}
+                            startInFullscreen={true}
+                        />
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

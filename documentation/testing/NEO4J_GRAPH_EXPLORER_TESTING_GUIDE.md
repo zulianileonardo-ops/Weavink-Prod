@@ -2,22 +2,41 @@
 id: testing-neo4j-graph-explorer-083
 title: Neo4j Graph Explorer Manual Testing Guide
 category: testing
-tags: [testing, manual-testing, neo4j, graph-explorer, graph-visualization, intelligent-groups, relationship-discovery, contacts]
+tags: [testing, manual-testing, neo4j, graph-explorer, graph-visualization, intelligent-groups, relationship-discovery, contacts, ai-naming, tag-suggestions, knows-suggestions, redis-cache, 3d-visualization, advanced-filters, react-force-graph-3d]
 status: active
 created: 2025-11-25
 updated: 2025-11-25
-version: 1.0.0
+version: 1.2.0
 related:
   - PHASE5_AUTO_TAGGING_MIGRATION.md
   - SEMANTIC_SEARCH_ARCHITECTURE_V2.md
   - DUAL_SYSTEM_TESTING_GUIDE.md
+  - INTELLIGENT_GROUPS_NEO4J_SPEC.md
 ---
 
 # Neo4j Graph Explorer - Manual Testing Guide
 
-**Version:** 1.0
+**Version:** 1.2
 **Date:** 2025-11-25
-**Purpose:** End-to-end validation of Neo4j integration, Graph Explorer visualization, and Intelligent Group creation
+**Purpose:** End-to-end validation of Neo4j integration, Graph Explorer visualization, Intelligent Group creation, 3D mode, and Advanced Filters
+
+### Changelog
+
+**v1.2 (2025-11-25)**
+- Added Test 14: 3D Mode Toggle
+- Added Test 15: Advanced Filters - Company Selection
+- Added Test 16: Advanced Filters - Tag Selection
+- Updated Master Validation Checklist with 3D mode and Advanced Filters sections
+- Added troubleshooting for 3D mode errors and Advanced Filters issues
+- Updated tags: 3d-visualization, advanced-filters, react-force-graph-3d
+
+**v1.1 (2025-11-25)**
+- Added Test 11: Tag-Based Suggestions
+- Added Test 12: Knows-Based Suggestions
+- Added Test 13: AI-Generated Group Names
+
+**v1.0 (2025-11-25)**
+- Initial version with 10 test cases
 
 ---
 
@@ -380,18 +399,22 @@ Tags visible: ___
 ### Test 8: Group Suggestions API
 
 **Priority:** P1
-**Goal:** Verify `/api/user/contacts/graph/suggestions` returns intelligent group suggestions
+**Goal:** Verify `/api/user/contacts/graph/suggestions` returns all 4 types of intelligent group suggestions
 
 **Steps:**
-1. In Graph Explorer, look at the "Suggested Groups" sidebar
+1. In Graph Explorer, look at the "Suggested Groups" floating panel
 2. Check network request to `/api/user/contacts/graph/suggestions`
-3. Verify suggestions based on companies
+3. Verify suggestions across all 4 tabs: Works At, Has Tag, Similar, Knows
 
 **Expected Behavior:**
-- ✅ Suggestions appear in sidebar
-- ✅ Company-based suggestions: "Tesla Team", "Google Team", etc.
+- ✅ Suggestions appear in floating panel
+- ✅ 4 suggestion types returned:
+  - `company` - From WORKS_AT relationships (e.g., "Tesla Innovators")
+  - `tag` - From HAS_TAG relationships (e.g., "AI Pioneers")
+  - `semantic` - From SIMILAR_TO relationships (e.g., "Tech Visionaries")
+  - `knows` - From KNOWS relationships (e.g., "Inner Circle")
 - ✅ Each suggestion shows member count
-- ✅ Each suggestion has type badge (company/semantic/tag)
+- ✅ Names are AI-generated (creative, not static)
 
 **📝 Paste Results Below:**
 
@@ -495,6 +518,278 @@ FPS during interaction: ___
 
 ---
 
+### Test 11: Tag-Based Suggestions
+
+**Priority:** P1
+**Goal:** Verify "Has Tag" tab shows tag cluster suggestions
+
+**Steps:**
+1. Ensure test contacts have tags (from test script or manual creation)
+2. Open Graph Explorer → Suggested Groups panel
+3. Click "Has Tag" tab
+4. Observe tag-based suggestions
+
+**Expected Behavior:**
+- ✅ "Has Tag" tab shows suggestions (not "No tag suggestions")
+- ✅ Each suggestion has `type: 'tag'`
+- ✅ Suggestion names reference the tag (e.g., "AI Pioneers", "Engineering Experts")
+- ✅ Member count shows contacts sharing that tag
+- ✅ Clicking "+" creates group with correct contacts
+
+**📝 Paste Results Below:**
+
+#### API Response (tag suggestions):
+```json
+{
+  "suggestions": [
+    {
+      "type": "tag",
+      "name": "___",
+      "reason": "___",
+      "members": [],
+      "metadata": { "tag": "___" }
+    }
+  ]
+}
+```
+
+#### UI Display:
+```
+Tag Suggestion 1: ___ (members: ___)
+Tag Suggestion 2: ___ (members: ___)
+```
+
+**✅ Validation Checklist:**
+- [ ] "Has Tag" tab shows suggestions
+- [ ] Suggestions have `type: 'tag'`
+- [ ] Names are AI-generated (creative, not just "Engineering Group")
+- [ ] Member counts are accurate
+
+---
+
+### Test 12: Knows-Based Suggestions
+
+**Priority:** P1
+**Goal:** Verify "Knows" tab shows social connection suggestions
+
+**Steps:**
+1. Ensure KNOWS relationships exist (run Discover Relationships first)
+2. Open Graph Explorer → Suggested Groups panel
+3. Click "Knows" tab
+4. Observe knows-based suggestions
+
+**Expected Behavior:**
+- ✅ "Knows" tab shows suggestions (not "No knows suggestions")
+- ✅ Each suggestion has `type: 'knows'`
+- ✅ Suggestion shows central contact and their connections
+- ✅ Names reflect social nature (e.g., "Inner Circle", "Core Network")
+- ✅ Clicking "+" creates group with connected contacts
+
+**📝 Paste Results Below:**
+
+#### API Response (knows suggestions):
+```json
+{
+  "suggestions": [
+    {
+      "type": "knows",
+      "name": "___",
+      "reason": "___",
+      "members": [],
+      "metadata": { "centralContact": "___" }
+    }
+  ]
+}
+```
+
+#### UI Display:
+```
+Knows Suggestion 1: ___ (members: ___)
+Knows Suggestion 2: ___ (members: ___)
+```
+
+**✅ Validation Checklist:**
+- [ ] "Knows" tab shows suggestions
+- [ ] Suggestions have `type: 'knows'`
+- [ ] Central contact identified in metadata
+- [ ] Connected contacts listed as members
+
+---
+
+### Test 13: AI-Generated Group Names
+
+**Priority:** P1
+**Goal:** Verify Gemini generates creative group names instead of static defaults
+
+**Steps:**
+1. Open Graph Explorer → Suggested Groups panel
+2. Observe suggestion names across all tabs
+3. Refresh the page and verify names are consistent (Redis cache)
+4. Check server logs for Gemini API calls
+
+**Expected Behavior:**
+- ✅ Names are creative, not static (e.g., "Tesla Innovators" not "Tesla Team")
+- ✅ Names match the suggestion type context:
+  - Company: Professional team names
+  - Tag: Theme-relevant names
+  - Semantic: Trait-based names
+  - Knows: Social connection names
+- ✅ Same suggestion = same name on refresh (cache hit)
+- ✅ Server logs show Gemini calls on first load
+
+**📝 Paste Results Below:**
+
+#### Name Examples Observed:
+```
+Company suggestion: ___ (expected creative name)
+Tag suggestion: ___ (expected theme-relevant name)
+Semantic suggestion: ___ (expected trait-based name)
+Knows suggestion: ___ (expected social name)
+```
+
+#### Cache Verification:
+```
+First load: [names observed]
+Second load (refresh): [same names? YES/NO]
+```
+
+#### Server Logs:
+```
+[PASTE GEMINI/NAMING LOGS HERE]
+```
+
+**✅ Validation Checklist:**
+- [ ] Names are creative (not static defaults)
+- [ ] Names match suggestion type context
+- [ ] Redis cache works (same names on refresh)
+- [ ] Fallback names work if Gemini fails
+
+---
+
+### Test 14: 3D Mode Toggle
+
+**Priority:** P1
+**Goal:** Verify 2D/3D toggle works correctly in fullscreen mode
+
+**Steps:**
+1. Open Graph Explorer in fullscreen mode
+2. Locate 3D toggle button in control bar (right side)
+3. Click to switch to 3D mode
+4. Observe graph re-renders in 3D (WebGL)
+5. Click on a node to verify camera focuses correctly
+6. Switch back to 2D mode
+7. Click on a node to verify centerAt/zoom works
+
+**Expected Behavior:**
+- ✅ Toggle button visible in fullscreen control bar
+- ✅ Clicking toggle switches viewMode state
+- ✅ 3D mode: Graph renders with WebGL/Three.js
+- ✅ 3D mode: Node click uses `cameraPosition()` to focus
+- ✅ 2D mode: Node click uses `centerAt()` + `zoom()` to focus
+- ✅ No console errors on mode switch
+- ✅ No "centerAt is not a function" error in 3D mode
+
+**📝 Paste Results Below:**
+
+#### Mode Switch Verification:
+```
+2D mode initial: Graph renders: YES/NO
+Switch to 3D: Graph renders: YES/NO
+3D node click: Camera focuses: YES/NO
+Switch to 2D: Graph renders: YES/NO
+2D node click: View centers: YES/NO
+Console errors: NONE / [error message]
+```
+
+**✅ Validation Checklist:**
+- [ ] Toggle button visible in fullscreen control bar
+- [ ] 3D mode renders without errors
+- [ ] Node click focuses correctly in both modes
+- [ ] No WebGL errors in console
+
+---
+
+### Test 15: Advanced Filters - Company Selection
+
+**Priority:** P1
+**Goal:** Verify filtering by specific company names works
+
+**Steps:**
+1. Open Graph Explorer in fullscreen mode
+2. Click "Filter" button to open filter panel
+3. Expand "Advanced Filters" section
+4. Observe list of company chips extracted from graph data
+5. Click on a specific company chip (e.g., "Tesla")
+6. Verify graph updates to show only that company and its connected contacts
+7. Click additional companies to add to filter
+8. Click selected chip again to deselect
+9. Click "Clear All" to reset filters
+
+**Expected Behavior:**
+- ✅ "Advanced Filters" section is collapsible/expandable
+- ✅ Company chips show all unique companies from graph
+- ✅ Clicking chip highlights it (purple) and filters graph
+- ✅ Only selected company nodes and their connected contacts visible
+- ✅ Multi-select: Can filter by multiple companies
+- ✅ Deselect: Clicking again removes from filter
+- ✅ Clear All: Resets filter, shows full graph
+
+**📝 Paste Results Below:**
+
+#### Advanced Filter Observations:
+```
+Companies listed: [list company names seen]
+Filter "Tesla": Contact count before: ___ / after: ___
+Multi-select works: YES/NO
+Deselect works: YES/NO
+Clear All works: YES/NO
+```
+
+**✅ Validation Checklist:**
+- [ ] Advanced Filters section expandable
+- [ ] Company chips display all unique companies
+- [ ] Single company filter works
+- [ ] Multi-company filter works
+- [ ] Clear All resets filters
+
+---
+
+### Test 16: Advanced Filters - Tag Selection
+
+**Priority:** P1
+**Goal:** Verify filtering by specific tag names works
+
+**Steps:**
+1. Open Graph Explorer in fullscreen mode
+2. Click "Filter" button to open filter panel
+3. Expand "Advanced Filters" section
+4. Scroll to Tags section
+5. Click on a specific tag chip (e.g., "ai-ml")
+6. Verify graph updates to show only that tag and its connected contacts
+7. Test multi-select and deselect functionality
+
+**Expected Behavior:**
+- ✅ Tag chips show all unique tags from graph
+- ✅ Clicking tag chip highlights it and filters graph
+- ✅ Only selected tag nodes and their connected contacts visible
+- ✅ Can combine with company filters (AND logic)
+
+**📝 Paste Results Below:**
+
+#### Tag Filter Observations:
+```
+Tags listed: [list tag names seen]
+Filter "ai-ml": Contact count before: ___ / after: ___
+Combined with company filter: YES/NO works
+```
+
+**✅ Validation Checklist:**
+- [ ] Tag chips display all unique tags
+- [ ] Tag filter works correctly
+- [ ] Combined filters work (company + tag)
+
+---
+
 ## ✅ Master Validation Checklist
 
 ### Neo4j Integration
@@ -510,6 +805,18 @@ FPS during interaction: ___
 - [ ] Graph renders with force-directed layout
 - [ ] Nodes color-coded by type
 - [ ] Zoom and pan work
+- [ ] 3D mode toggle works (fullscreen only)
+- [ ] 2D/3D mode switch without errors
+- [ ] Node click focuses correctly in both modes
+
+### Advanced Filters
+- [ ] Advanced Filters section expandable
+- [ ] Company chips extracted from graph data
+- [ ] Tag chips extracted from graph data
+- [ ] Single company/tag filter works
+- [ ] Multi-select filtering works
+- [ ] Combined company + tag filter works
+- [ ] Clear All resets all filters
 
 ### Relationship Discovery
 - [ ] "Discover Relationships" button works
@@ -518,10 +825,21 @@ FPS during interaction: ___
 - [ ] Stats update after discovery
 
 ### Intelligent Groups
-- [ ] Suggestions appear in sidebar
+- [ ] Suggestions appear in floating panel
+- [ ] All 4 suggestion types work:
+  - [ ] `company` suggestions in "Works At" tab
+  - [ ] `tag` suggestions in "Has Tag" tab
+  - [ ] `semantic` suggestions in "Similar" tab
+  - [ ] `knows` suggestions in "Knows" tab
 - [ ] "+" button creates group
 - [ ] Group contains correct contacts
 - [ ] Group type is `intelligent_*`
+
+### AI Group Naming
+- [ ] Names are creative (not static defaults)
+- [ ] Redis cache works (same names on refresh)
+- [ ] Fallback names work if Gemini fails
+- [ ] Server logs show Gemini API calls
 
 ### Performance
 - [ ] 100 contacts render smoothly
@@ -554,6 +872,12 @@ FPS during interaction: ___
 | 8. Group Suggestions | ✅/❌ | |
 | 9. Create Group | ✅/❌ | |
 | 10. 100 Contacts Scale | ✅/❌ | |
+| 11. Tag-Based Suggestions | ✅/❌ | |
+| 12. Knows-Based Suggestions | ✅/❌ | |
+| 13. AI-Generated Group Names | ✅/❌ | |
+| 14. 3D Mode Toggle | ✅/❌ | |
+| 15. Advanced Filters - Companies | ✅/❌ | |
+| 16. Advanced Filters - Tags | ✅/❌ | |
 
 ### Issues Found
 1. [Issue description]
@@ -631,6 +955,110 @@ const toNumber = (val) => {
   return Number(val) || 0;
 };
 ```
+
+### AI Naming Failed
+
+**Symptoms:** Suggestions show static names like "Tesla Team" instead of creative AI names
+
+**Solutions:**
+1. Check server logs for Gemini API errors:
+   ```
+   [GroupNamingService] Error: ...
+   ```
+2. Verify Firebase AI is configured correctly:
+   - Check `GOOGLE_AI_API_KEY` or Firebase AI setup
+   - Verify `gemini-2.0-flash-lite` model availability
+3. Check Redis connection for caching:
+   ```bash
+   redis-cli ping
+   # Should return PONG
+   ```
+4. Verify fallback names are working (static names = fallback mode)
+
+### Tag/Knows Suggestions Empty
+
+**Symptoms:** "Has Tag" or "Knows" tabs show "No suggestions"
+
+**Solutions:**
+1. Verify contacts have tags:
+   ```cypher
+   MATCH (c:Contact {userId: $userId})-[:HAS_TAG]->(t:Tag)
+   RETURN count(DISTINCT t) as tagCount
+   ```
+2. Verify KNOWS relationships exist:
+   ```cypher
+   MATCH (c1:Contact {userId: $userId})-[r:KNOWS]-(c2:Contact)
+   RETURN count(r) as knowsCount
+   ```
+3. Run "Discover Relationships" to generate KNOWS edges
+4. Check that `findTagClusters()` and `findKnowsClusters()` are implemented in neo4jClient.js
+
+### Redis Connection Issues
+
+**Symptoms:** AI names not caching, repeated Gemini calls on refresh
+
+**Solutions:**
+1. Verify Redis is running:
+   ```bash
+   redis-cli ping
+   ```
+2. Check Redis connection in server logs
+3. Verify `REDIS_URL` environment variable
+4. Check cache key format: `group_name:{type}:{hash}`
+5. Verify TTL is set (should be 3600 seconds / 1 hour)
+
+### 3D Mode Not Working
+
+**Symptoms:**
+- TypeError: `graphRef.current.centerAt is not a function` in 3D mode
+- 3D graph not rendering
+- Toggle button not visible
+
+**Solutions:**
+1. **centerAt error in 3D mode:**
+   - This happens when 2D-only methods are called in 3D mode
+   - Fix: Check `viewMode` state before calling graph methods:
+   ```javascript
+   if (viewMode === '2d') {
+     graphRef.current.centerAt(node.x, node.y, 500);
+     graphRef.current.zoom(2, 500);
+   } else {
+     graphRef.current.cameraPosition(
+       { x: node.x, y: node.y, z: 200 },
+       node,
+       500
+     );
+   }
+   ```
+
+2. **3D graph not rendering:**
+   - Verify `react-force-graph-3d` is installed
+   - Check browser WebGL support
+   - Look for Three.js errors in console
+
+3. **Toggle not visible:**
+   - 3D toggle only appears in fullscreen mode
+   - Verify fullscreen button was clicked
+
+### Advanced Filters Not Showing
+
+**Symptoms:** Advanced Filters section empty or not showing companies/tags
+
+**Solutions:**
+1. **No companies listed:**
+   - Verify graph data has Company nodes
+   - Check that `uniqueCompanies` useMemo is extracting correctly
+   - Ensure Company nodes have `type: 'Company'` property
+
+2. **No tags listed:**
+   - Verify graph data has Tag nodes
+   - Run "Discover Relationships" to populate HAS_TAG edges
+   - Check `uniqueTags` useMemo
+
+3. **Filters not affecting graph:**
+   - Check `filters.selectedCompanies` state updates
+   - Verify `filteredData()` function in ContactGraph handles advanced filters
+   - Check console for filter state changes
 
 ---
 

@@ -2,6 +2,8 @@
 // GET - Poll discovery job status
 
 import { NextResponse } from 'next/server';
+
+export const dynamic = 'force-dynamic';
 import { createApiSession } from '@/lib/server/session';
 import { DiscoveryJobManager } from '@/lib/services/serviceContact/server/DiscoveryJobManager';
 

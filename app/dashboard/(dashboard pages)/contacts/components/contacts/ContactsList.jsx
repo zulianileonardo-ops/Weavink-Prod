@@ -175,7 +175,8 @@ const ContactsList = memo(function ContactsList({
     isAiSearch = false,
     searchMode = 'standard',
     onClearSearch,
-    searchSessionId = null // Session ID from semantic search API response
+    searchSessionId = null, // Session ID from semantic search API response
+    onViewInGraph = null // Callback to view search results in graph view
 }) {
     const { t } = useTranslation();
 
@@ -270,14 +271,28 @@ const ContactsList = memo(function ContactsList({
                             />
                         </div>
                     </div>
-                    {onClearSearch && (
-                        <button
-                            onClick={onClearSearch}
-                            className="px-4 py-2 bg-white text-purple-700 border border-purple-200 rounded-lg hover:bg-purple-50 transition-colors text-sm font-medium"
-                        >
-                            Clear Search
-                        </button>
-                    )}
+                    <div className="flex items-center gap-2">
+                        {/* View in Graph button */}
+                        {onViewInGraph && contacts.length > 0 && (
+                            <button
+                                onClick={() => onViewInGraph(contacts.map(c => c.id))}
+                                className="px-4 py-2 bg-white text-purple-700 border border-purple-200 rounded-lg hover:bg-purple-50 transition-colors text-sm font-medium flex items-center gap-2"
+                            >
+                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5" />
+                                </svg>
+                                View in Graph
+                            </button>
+                        )}
+                        {onClearSearch && (
+                            <button
+                                onClick={onClearSearch}
+                                className="px-4 py-2 bg-white text-purple-700 border border-purple-200 rounded-lg hover:bg-purple-50 transition-colors text-sm font-medium"
+                            >
+                                Clear Search
+                            </button>
+                        )}
+                    </div>
                 </div>
             </div>
         );

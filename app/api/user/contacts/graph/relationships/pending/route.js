@@ -2,6 +2,8 @@
 // GET - Retrieve pending relationships for user review
 
 import { NextResponse } from 'next/server';
+
+export const dynamic = 'force-dynamic';
 import { createApiSession } from '@/lib/server/session';
 import { RelationshipReviewService } from '@/lib/services/serviceContact/server/neo4j/RelationshipReviewService';
 

@@ -3188,7 +3188,7 @@
       "title": "Neo4j Graph Explorer Manual Testing Guide",
       "filename": "documentation/testing/NEO4J_GRAPH_EXPLORER_TESTING_GUIDE.md",
       "category": "testing",
-      "summary": "End-to-end manual testing guide for Neo4j integration, Graph Explorer visualization, and Intelligent Group creation. 10 tests covering contact sync to Neo4j, graph API endpoints, visualization rendering, relationship discovery, and group creation from suggestions.",
+      "summary": "End-to-end manual testing guide for Neo4j integration, Graph Explorer visualization, and Intelligent Group creation. 16 tests covering contact sync to Neo4j, graph API endpoints, visualization rendering, relationship discovery, all 4 suggestion types (company, tag, semantic, knows), AI-generated group naming with Gemini, Redis caching, 3D mode toggle, and Advanced Filters (company/tag selection).",
       "tags": [
         "testing",
         "manual-testing",
@@ -3197,20 +3197,29 @@
         "graph-visualization",
         "intelligent-groups",
         "relationship-discovery",
-        "contacts"
+        "contacts",
+        "ai-naming",
+        "tag-suggestions",
+        "knows-suggestions",
+        "redis-cache",
+        "3d-visualization",
+        "advanced-filters",
+        "react-force-graph-3d"
       ],
       "functions": [
         "Neo4jSyncService.syncContact",
         "RelationshipDiscoveryService.discoverRelationships",
         "GroupSuggestionService.getSuggestions",
-        "GroupService.createGroup"
+        "GroupService.createGroup",
+        "GroupNamingService.generateGroupName"
       ],
       "components": [
         "GraphExplorerTab",
         "ContactGraph",
         "GraphControls",
         "GraphLegend",
-        "NodeTooltip"
+        "NodeTooltip",
+        "GroupNamingService"
       ],
       "related_guides": [
         "testing-dual-system-guide-082",
@@ -3227,7 +3236,7 @@
       "title": "Intelligent Group Creation with Neo4j Graph Database",
       "filename": "documentation/features/INTELLIGENT_GROUPS_NEO4J_SPEC.md",
       "category": "features",
-      "summary": "AI-powered intelligent group creation using Neo4j graph database for relationship discovery, Pinecone for semantic similarity, Gemini AI for inference, and react-force-graph-2d for interactive visualization. Includes graph schema, relationship discovery algorithms, and UI specifications.",
+      "summary": "AI-powered intelligent group creation using Neo4j graph database for relationship discovery. Supports 4 suggestion types: company (WORKS_AT), tag (HAS_TAG), semantic (SIMILAR_TO), and knows (KNOWS). Includes GroupNamingService for Gemini-powered creative group names with Redis caching, 2D/3D visualization modes (react-force-graph-2d/3d), and Advanced Filters for filtering by specific company or tag names.",
       "tags": [
         "neo4j",
         "graph-database",
@@ -3236,12 +3245,22 @@
         "gemini",
         "visualization",
         "react-force-graph",
+        "react-force-graph-3d",
+        "3d-visualization",
+        "advanced-filters",
         "relationship-discovery",
-        "ai-groups"
+        "ai-groups",
+        "ai-naming",
+        "tag-suggestions",
+        "knows-suggestions",
+        "redis-cache"
       ],
       "functions": [
         "RelationshipDiscoveryService.discoverAll",
-        "GroupSuggestionService.generateSuggestions",
+        "RelationshipDiscoveryService.getSuggestedGroups",
+        "Neo4jClient.findTagClusters",
+        "Neo4jClient.findKnowsClusters",
+        "GroupNamingService.generateGroupName",
         "Neo4jSyncService.syncContact",
         "AIRelationshipInferenceService.inferRelationships"
       ],
@@ -3250,14 +3269,15 @@
         "GraphExplorerTab",
         "GroupSuggestionsPanel",
         "Neo4jSyncService",
-        "RelationshipDiscoveryService"
+        "RelationshipDiscoveryService",
+        "GroupNamingService"
       ],
       "related_guides": [
         "SEMANTIC_SEARCH_ARCHITECTURE_V2.md",
         "PHASE5_AUTO_TAGGING_MIGRATION.md",
         "LOCATION_SERVICES_AUTO_TAGGING_SPEC.md"
       ],
-      "status": "draft",
+      "status": "active",
       "created": "2025-11-25",
       "updated": "2025-11-25"
     },

@@ -82,7 +82,8 @@ const GroupManagerModal = forwardRef(function GroupManagerModal({
         timeFramePreset: '',
         eventLocation: null,
         showCreateModal: false,
-        rulesOptions: {}
+        rulesOptions: {},
+        suggestionMetadata: null  // Store suggestion context for Gemini description
     });
 
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -94,6 +95,32 @@ const GroupManagerModal = forwardRef(function GroupManagerModal({
         setActiveTab: (tabId) => {
             console.log(`[Modal] Parent component set active tab to: ${tabId}`);
             setActiveTab(tabId);
+        },
+        // Pre-populate form with suggestion data and switch to create tab
+        openCreateWithSuggestion: (suggestion) => {
+            console.log('[Modal] Opening create tab with suggestion:', suggestion.name);
+            // Map suggestion type to group type
+            const typeMapping = {
+                company: 'company',
+                tag: 'custom',
+                semantic: 'custom',
+                knows: 'custom'
+            };
+
+            updateFormState({
+                newGroupName: suggestion.name,
+                newGroupType: typeMapping[suggestion.type] || 'custom',
+                newGroupDescription: suggestion.reason || '',
+                selectedContacts: suggestion.members?.map(m => m.id) || [],
+                // Store suggestion metadata for Gemini context
+                suggestionMetadata: {
+                    name: suggestion.name,
+                    type: suggestion.type,
+                    metadata: suggestion.metadata,
+                    members: suggestion.members
+                }
+            });
+            setActiveTab('create');
         }
     }));
 
@@ -127,38 +154,32 @@ const GroupManagerModal = forwardRef(function GroupManagerModal({
         console.log('Edit group:', group);
     };
 
-    // Handler for creating groups from Graph Explorer suggestions
-    const handleCreateGroupFromSuggestion = async (suggestionData) => {
-        try {
-            console.log('Creating intelligent group from suggestion:', suggestionData);
+    // Handler for navigating to create tab with pre-populated suggestion data
+    const handleOpenCreateWithSuggestion = (suggestion) => {
+        console.log('[Modal] Opening create tab with suggestion:', suggestion.name);
 
-            const groupData = {
-                name: suggestionData.name,
-                type: `intelligent_${suggestionData.type}`, // e.g., 'intelligent_company', 'intelligent_semantic'
-                description: suggestionData.reason || '',
-                contactIds: suggestionData.members?.map(m => m.id) || suggestionData.contactIds || [],
-                metadata: suggestionData.metadata || {
-                    source: 'graph_suggestion',
-                    suggestionType: suggestionData.type,
-                    confidence: suggestionData.confidence
-                }
-            };
+        // Map suggestion type to group type
+        const typeMapping = {
+            company: 'company',
+            tag: 'custom',
+            semantic: 'custom',
+            knows: 'custom'
+        };
 
-            await GroupService.createGroup({ groupData });
-
-            console.log('✅ Intelligent group created:', groupData.name);
-
-            // Refresh data
-            if (onRefreshData) {
-                await onRefreshData();
+        updateFormState({
+            newGroupName: suggestion.name,
+            newGroupType: typeMapping[suggestion.type] || 'custom',
+            newGroupDescription: suggestion.reason || '',
+            selectedContacts: suggestion.members?.map(m => m.id) || [],
+            // Store suggestion metadata for Gemini context
+            suggestionMetadata: {
+                name: suggestion.name,
+                type: suggestion.type,
+                metadata: suggestion.metadata,
+                members: suggestion.members
             }
-
-            // Switch to groups tab to see the new group
-            setActiveTab('groups');
-        } catch (error) {
-            console.error('Error creating intelligent group:', error);
-            alert(`Failed to create group: ${error.message || 'Unknown error'}`);
-        }
+        });
+        setActiveTab('create');
     };
 
     const handleCreateGroup = async (e) => {
@@ -196,7 +217,8 @@ const GroupManagerModal = forwardRef(function GroupManagerModal({
                 timeFramePreset: '',
                 eventLocation: null,
                 showCreateModal: false,
-                rulesOptions: {}
+                rulesOptions: {},
+                suggestionMetadata: null
             });
 
             // Refresh data
@@ -323,7 +345,8 @@ const GroupManagerModal = forwardRef(function GroupManagerModal({
                 timeFramePreset: '',
                 eventLocation: null,
                 showCreateModal: false,
-                rulesOptions: {}
+                rulesOptions: {},
+                suggestionMetadata: null
             });
             // Reset rules generation state
             setGeneratedRulesGroups(null);
@@ -484,7 +507,7 @@ const GroupManagerModal = forwardRef(function GroupManagerModal({
                             groups={groups}
                             contacts={contacts}
                             onTabChange={setActiveTab}
-                            onCreateGroup={handleCreateGroupFromSuggestion}
+                            onOpenCreateWithSuggestion={handleOpenCreateWithSuggestion}
                         />
                     )}
 
