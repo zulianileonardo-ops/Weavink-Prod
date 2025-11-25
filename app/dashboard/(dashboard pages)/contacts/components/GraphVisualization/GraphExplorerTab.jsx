@@ -14,6 +14,7 @@ import ContactGraph from './ContactGraph';
 import GraphControls from './GraphControls';
 import GraphLegend from './GraphLegend';
 import NodeTooltip from './NodeTooltip';
+import PendingRelationshipsPanel from './PendingRelationshipsPanel';
 import useGraphData from './hooks/useGraphData';
 
 /**
@@ -36,9 +37,12 @@ export default function GraphExplorerTab({
     suggestions,
     graphSettings,
     discoveryProgress,
+    pendingRelationships,
     isLoading,
     isDiscovering,
     isUpdatingSettings,
+    isReviewLoading,
+    assessingRelationshipId,
     error,
     fetchGraphData,
     fetchStats,
@@ -46,11 +50,19 @@ export default function GraphExplorerTab({
     updateSettings,
     discoverRelationships,
     cancelDiscovery,
-    refreshAll
+    refreshAll,
+    // Review workflow
+    approveRelationship,
+    rejectRelationship,
+    batchApproveRelationships,
+    batchRejectRelationships,
+    requestAssessment,
+    clearPendingRelationships
   } = useGraphData();
 
   const [selectedNode, setSelectedNode] = useState(null);
   const [hoveredNode, setHoveredNode] = useState(null);
+  const [showPendingPanel, setShowPendingPanel] = useState(false);
   const [filters, setFilters] = useState({
     nodeTypes: ['Contact', 'Company', 'Tag'],
     relationshipTypes: ['WORKS_AT', 'HAS_TAG', 'SIMILAR_TO', 'KNOWS']
@@ -71,14 +83,25 @@ export default function GraphExplorerTab({
     setHoveredNode(node);
   }, []);
 
+  // Show pending panel when discovery completes with pending relationships
+  useEffect(() => {
+    if (discoveryProgress.status === 'completed' && discoveryProgress.hasPendingRelationships) {
+      setShowPendingPanel(true);
+    }
+  }, [discoveryProgress.status, discoveryProgress.hasPendingRelationships]);
+
   // Handle discover relationships
   const handleDiscover = useCallback(async () => {
     const results = await discoverRelationships();
     if (results) {
-      // Success notification could be added here
       console.log('Discovery results:', results);
     }
   }, [discoverRelationships]);
+
+  // Handle closing the pending panel
+  const handleClosePendingPanel = useCallback(() => {
+    setShowPendingPanel(false);
+  }, []);
 
   // Handle create group from suggestion
   const handleCreateGroupFromSuggestion = useCallback((suggestion) => {
@@ -182,6 +205,35 @@ export default function GraphExplorerTab({
             />
           </div>
         </div>
+      )}
+
+      {/* Pending Relationships Review Panel */}
+      {showPendingPanel && (
+        <PendingRelationshipsPanel
+          pendingRelationships={pendingRelationships}
+          counts={discoveryProgress.relationshipCounts}
+          isLoading={isReviewLoading}
+          onApprove={approveRelationship}
+          onReject={rejectRelationship}
+          onBatchApprove={batchApproveRelationships}
+          onBatchReject={batchRejectRelationships}
+          onRequestAssessment={requestAssessment}
+          onClose={handleClosePendingPanel}
+          assessingRelationshipId={assessingRelationshipId}
+        />
+      )}
+
+      {/* Button to show pending panel if hidden but has pending */}
+      {!showPendingPanel && discoveryProgress.hasPendingRelationships && (
+        <button
+          onClick={() => setShowPendingPanel(true)}
+          className="w-full p-3 text-sm text-purple-700 bg-purple-50 border border-purple-200 rounded-lg hover:bg-purple-100 transition-colors flex items-center justify-center gap-2"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+          Review {(pendingRelationships.medium?.length || 0) + (pendingRelationships.low?.length || 0)} pending relationships
+        </button>
       )}
 
       {/* Stats bar */}

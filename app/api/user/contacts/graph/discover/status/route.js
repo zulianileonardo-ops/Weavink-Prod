@@ -39,8 +39,8 @@ export async function GET(request) {
       }, { status: 404 });
     }
 
-    // 4. Return job status
-    return NextResponse.json({
+    // 4. Return job status with tiered relationship counts
+    const response = {
       jobId: job.jobId,
       status: job.status,
       progress: job.progress,
@@ -48,8 +48,13 @@ export async function GET(request) {
       result: job.result,
       error: job.error,
       createdAt: job.createdAt,
-      updatedAt: job.updatedAt
-    });
+      updatedAt: job.updatedAt,
+      // Tiered relationship discovery fields
+      relationshipCounts: job.relationshipCounts || { high: 0, medium: 0, low: 0, total: 0 },
+      hasPendingRelationships: job.hasPendingRelationships || false
+    };
+
+    return NextResponse.json(response);
 
   } catch (error) {
     console.error('❌ API Error in GET /api/user/contacts/graph/discover/status:', error);

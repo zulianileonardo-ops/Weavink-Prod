@@ -90,8 +90,18 @@ export function useGraphData() {
     jobId: null,
     progress: 0,
     currentStep: '',
-    status: null
+    status: null,
+    relationshipCounts: { high: 0, medium: 0, low: 0, total: 0 },
+    hasPendingRelationships: false
   });
+
+  // Pending relationships for review workflow
+  const [pendingRelationships, setPendingRelationships] = useState({
+    medium: [],
+    low: []
+  });
+  const [isReviewLoading, setIsReviewLoading] = useState(false);
+  const [assessingRelationshipId, setAssessingRelationshipId] = useState(null);
 
   // Ref to store polling interval
   const pollIntervalRef = useRef(null);
@@ -282,7 +292,9 @@ export function useGraphData() {
         jobId,
         progress: data.progress || 0,
         currentStep: data.currentStep || '',
-        status: data.status
+        status: data.status,
+        relationshipCounts: data.relationshipCounts || { high: 0, medium: 0, low: 0, total: 0 },
+        hasPendingRelationships: data.hasPendingRelationships || false
       });
 
       // Check if job is complete or failed
@@ -303,6 +315,12 @@ export function useGraphData() {
           fetchSuggestions({ skipCache: true })
         ]);
 
+        // If there are pending relationships, fetch them for review
+        if (data.hasPendingRelationships) {
+          await fetchPendingRelationshipsInternal(jobId, 'medium');
+          await fetchPendingRelationshipsInternal(jobId, 'low');
+        }
+
         return data.result;
       } else if (data.status === 'failed') {
         // Stop polling
@@ -322,6 +340,27 @@ export function useGraphData() {
       return null;
     }
   }, [fetchGraphData, fetchStats, fetchSuggestions]);
+
+  /**
+   * Internal function to fetch pending relationships (no loading state)
+   */
+  const fetchPendingRelationshipsInternal = async (jobId, tier) => {
+    try {
+      const data = await ContactApiClient.get(
+        `/api/user/contacts/graph/relationships/pending?jobId=${jobId}&tier=${tier}`
+      );
+      if (data.success) {
+        setPendingRelationships(prev => ({
+          ...prev,
+          [tier]: data.relationships || []
+        }));
+      }
+      return data;
+    } catch (err) {
+      console.error(`Error fetching ${tier} pending relationships:`, err);
+      return null;
+    }
+  };
 
   /**
    * Trigger relationship discovery (background job pattern)
@@ -423,6 +462,260 @@ export function useGraphData() {
     graphCache.invalidate();
   }, []);
 
+  // ============================================================================
+  // RELATIONSHIP REVIEW METHODS
+  // ============================================================================
+
+  /**
+   * Fetch pending relationships for review
+   * @param {string} tier - Confidence tier ('medium' or 'low')
+   */
+  const fetchPendingRelationships = useCallback(async (tier = 'medium') => {
+    const jobId = discoveryProgress.jobId;
+    if (!jobId) {
+      console.warn('[useGraphData] No jobId available for fetching pending relationships');
+      return null;
+    }
+
+    setIsReviewLoading(true);
+    try {
+      const data = await fetchPendingRelationshipsInternal(jobId, tier);
+      return data;
+    } finally {
+      setIsReviewLoading(false);
+    }
+  }, [discoveryProgress.jobId]);
+
+  /**
+   * Approve a single relationship
+   * @param {object} relationship - Relationship to approve
+   */
+  const approveRelationship = useCallback(async (relationship) => {
+    const jobId = discoveryProgress.jobId;
+    if (!jobId) {
+      console.warn('[useGraphData] No jobId available for approving relationship');
+      return null;
+    }
+
+    try {
+      const data = await ContactApiClient.post('/api/user/contacts/graph/relationships/review', {
+        action: 'approve',
+        relationships: [relationship],
+        jobId
+      });
+
+      if (data.success) {
+        // Remove from pending list
+        setPendingRelationships(prev => ({
+          medium: prev.medium.filter(r =>
+            !(r.sourceId === relationship.sourceId && r.targetId === relationship.targetId)
+          ),
+          low: prev.low.filter(r =>
+            !(r.sourceId === relationship.sourceId && r.targetId === relationship.targetId)
+          )
+        }));
+
+        // Refresh graph to show new relationship
+        graphCache.invalidate();
+        fetchGraphData({ skipCache: true });
+        fetchStats({ skipCache: true });
+      }
+
+      return data;
+    } catch (err) {
+      console.error('Error approving relationship:', err);
+      setError(err.message);
+      return null;
+    }
+  }, [discoveryProgress.jobId, fetchGraphData, fetchStats]);
+
+  /**
+   * Reject a single relationship
+   * @param {object} relationship - Relationship to reject
+   */
+  const rejectRelationship = useCallback(async (relationship) => {
+    const jobId = discoveryProgress.jobId;
+    if (!jobId) {
+      console.warn('[useGraphData] No jobId available for rejecting relationship');
+      return null;
+    }
+
+    try {
+      const data = await ContactApiClient.post('/api/user/contacts/graph/relationships/review', {
+        action: 'reject',
+        relationships: [relationship],
+        jobId
+      });
+
+      if (data.success) {
+        // Remove from pending list
+        setPendingRelationships(prev => ({
+          medium: prev.medium.filter(r =>
+            !(r.sourceId === relationship.sourceId && r.targetId === relationship.targetId)
+          ),
+          low: prev.low.filter(r =>
+            !(r.sourceId === relationship.sourceId && r.targetId === relationship.targetId)
+          )
+        }));
+      }
+
+      return data;
+    } catch (err) {
+      console.error('Error rejecting relationship:', err);
+      setError(err.message);
+      return null;
+    }
+  }, [discoveryProgress.jobId]);
+
+  /**
+   * Batch approve multiple relationships
+   * @param {Array} relationships - Relationships to approve
+   */
+  const batchApproveRelationships = useCallback(async (relationships) => {
+    const jobId = discoveryProgress.jobId;
+    if (!jobId) {
+      console.warn('[useGraphData] No jobId available for batch approving');
+      return null;
+    }
+
+    setIsReviewLoading(true);
+    try {
+      const data = await ContactApiClient.post('/api/user/contacts/graph/relationships/review', {
+        action: 'approve',
+        relationships,
+        jobId
+      });
+
+      if (data.success) {
+        // Remove approved from pending list
+        const approvedKeys = new Set(
+          relationships.map(r => `${r.sourceId}-${r.targetId}`)
+        );
+
+        setPendingRelationships(prev => ({
+          medium: prev.medium.filter(r =>
+            !approvedKeys.has(`${r.sourceId}-${r.targetId}`)
+          ),
+          low: prev.low.filter(r =>
+            !approvedKeys.has(`${r.sourceId}-${r.targetId}`)
+          )
+        }));
+
+        // Refresh graph to show new relationships
+        graphCache.invalidate();
+        fetchGraphData({ skipCache: true });
+        fetchStats({ skipCache: true });
+      }
+
+      return data;
+    } catch (err) {
+      console.error('Error batch approving relationships:', err);
+      setError(err.message);
+      return null;
+    } finally {
+      setIsReviewLoading(false);
+    }
+  }, [discoveryProgress.jobId, fetchGraphData, fetchStats]);
+
+  /**
+   * Batch reject multiple relationships
+   * @param {Array} relationships - Relationships to reject
+   */
+  const batchRejectRelationships = useCallback(async (relationships) => {
+    const jobId = discoveryProgress.jobId;
+    if (!jobId) {
+      console.warn('[useGraphData] No jobId available for batch rejecting');
+      return null;
+    }
+
+    setIsReviewLoading(true);
+    try {
+      const data = await ContactApiClient.post('/api/user/contacts/graph/relationships/review', {
+        action: 'reject',
+        relationships,
+        jobId
+      });
+
+      if (data.success) {
+        // Remove rejected from pending list
+        const rejectedKeys = new Set(
+          relationships.map(r => `${r.sourceId}-${r.targetId}`)
+        );
+
+        setPendingRelationships(prev => ({
+          medium: prev.medium.filter(r =>
+            !rejectedKeys.has(`${r.sourceId}-${r.targetId}`)
+          ),
+          low: prev.low.filter(r =>
+            !rejectedKeys.has(`${r.sourceId}-${r.targetId}`)
+          )
+        }));
+      }
+
+      return data;
+    } catch (err) {
+      console.error('Error batch rejecting relationships:', err);
+      setError(err.message);
+      return null;
+    } finally {
+      setIsReviewLoading(false);
+    }
+  }, [discoveryProgress.jobId]);
+
+  /**
+   * Request LLM assessment for a relationship
+   * @param {object} relationship - Relationship to assess
+   */
+  const requestAssessment = useCallback(async (relationship) => {
+    const jobId = discoveryProgress.jobId;
+    if (!jobId) {
+      console.warn('[useGraphData] No jobId available for assessment');
+      return null;
+    }
+
+    const assessmentId = `${relationship.sourceId}-${relationship.targetId}`;
+    setAssessingRelationshipId(assessmentId);
+
+    try {
+      const data = await ContactApiClient.post('/api/user/contacts/graph/relationships/assess', {
+        sourceId: relationship.sourceId,
+        targetId: relationship.targetId,
+        jobId
+      });
+
+      if (data.success && data.assessment) {
+        // Update the relationship in pending list with assessment
+        setPendingRelationships(prev => ({
+          medium: prev.medium.map(r =>
+            r.sourceId === relationship.sourceId && r.targetId === relationship.targetId
+              ? { ...r, llmAssessment: data.assessment }
+              : r
+          ),
+          low: prev.low.map(r =>
+            r.sourceId === relationship.sourceId && r.targetId === relationship.targetId
+              ? { ...r, llmAssessment: data.assessment }
+              : r
+          )
+        }));
+      }
+
+      return data;
+    } catch (err) {
+      console.error('Error requesting assessment:', err);
+      setError(err.message);
+      return null;
+    } finally {
+      setAssessingRelationshipId(null);
+    }
+  }, [discoveryProgress.jobId]);
+
+  /**
+   * Clear pending relationships state
+   */
+  const clearPendingRelationships = useCallback(() => {
+    setPendingRelationships({ medium: [], low: [] });
+  }, []);
+
   // Cleanup polling on unmount
   useEffect(() => {
     return () => {
@@ -439,11 +732,14 @@ export function useGraphData() {
     suggestions,
     graphSettings,
     discoveryProgress,
+    pendingRelationships,
 
     // Loading states
     isLoading,
     isDiscovering,
     isUpdatingSettings,
+    isReviewLoading,
+    assessingRelationshipId,
     error,
 
     // Actions
@@ -456,7 +752,16 @@ export function useGraphData() {
     cancelDiscovery,
     refreshAll,
     clearData,
-    clearCache
+    clearCache,
+
+    // Review workflow actions
+    fetchPendingRelationships,
+    approveRelationship,
+    rejectRelationship,
+    batchApproveRelationships,
+    batchRejectRelationships,
+    requestAssessment,
+    clearPendingRelationships
   };
 }
 

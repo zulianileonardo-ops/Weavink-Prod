@@ -25,6 +25,15 @@ async function runDiscoveryInBackground(jobId, userId, contacts, options) {
       { ...options, onProgress }
     );
 
+    // Store tiered relationship results for review workflow
+    if (results.relationships && results.counts) {
+      DiscoveryJobManager.updateRelationshipResults(
+        jobId,
+        results.relationships,
+        results.counts
+      );
+    }
+
     // Mark job as completed
     DiscoveryJobManager.completeJob(jobId, results);
 
