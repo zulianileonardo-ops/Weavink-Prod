@@ -2,7 +2,7 @@
   "metadata": {
     "project": "Weavink Documentation",
     "last_updated": "2025-11-25",
-    "total_guides": 95,
+    "total_guides": 99,
     "version": "1.0.0"
   },
   "categories": {
@@ -78,7 +78,9 @@
         "features-geocoding-system-082",
         "features-session-enrichment-001",
         "features-location-services-auto-tagging-080",
-        "features-contact-enrichment-021"
+        "features-contact-enrichment-021",
+        "features-intelligent-groups-neo4j-083",
+        "features-tiered-confidence-021"
       ]
     },
     "technical": {
@@ -106,7 +108,8 @@
         "infrastructure-session-comparison-001",
         "technical-auto-tagging-migration-033",
         "technical-semantic-search-v2-034",
-        "technical-query-tagging-035"
+        "technical-query-tagging-035",
+        "technical-discovery-job-manager-039"
       ]
     },
     "testing": {
@@ -126,7 +129,8 @@
         "testing-location-phase3-079",
         "testing-phase5-manual-080",
         "testing-exchange-security-081",
-        "testing-dual-system-guide-082"
+        "testing-dual-system-guide-082",
+        "testing-neo4j-graph-explorer-083"
       ]
     },
     "general": {
@@ -3176,6 +3180,160 @@
         "infrastructure-semantic-search-v2-050"
       ],
       "status": "active",
+      "created": "2025-11-25",
+      "updated": "2025-11-25"
+    },
+    {
+      "id": "testing-neo4j-graph-explorer-083",
+      "title": "Neo4j Graph Explorer Manual Testing Guide",
+      "filename": "documentation/testing/NEO4J_GRAPH_EXPLORER_TESTING_GUIDE.md",
+      "category": "testing",
+      "summary": "End-to-end manual testing guide for Neo4j integration, Graph Explorer visualization, and Intelligent Group creation. 10 tests covering contact sync to Neo4j, graph API endpoints, visualization rendering, relationship discovery, and group creation from suggestions.",
+      "tags": [
+        "testing",
+        "manual-testing",
+        "neo4j",
+        "graph-explorer",
+        "graph-visualization",
+        "intelligent-groups",
+        "relationship-discovery",
+        "contacts"
+      ],
+      "functions": [
+        "Neo4jSyncService.syncContact",
+        "RelationshipDiscoveryService.discoverRelationships",
+        "GroupSuggestionService.getSuggestions",
+        "GroupService.createGroup"
+      ],
+      "components": [
+        "GraphExplorerTab",
+        "ContactGraph",
+        "GraphControls",
+        "GraphLegend",
+        "NodeTooltip"
+      ],
+      "related_guides": [
+        "testing-dual-system-guide-082",
+        "testing-phase5-manual-080",
+        "features-intelligent-groups-neo4j-083",
+        "infrastructure-semantic-search-v2-050"
+      ],
+      "status": "active",
+      "created": "2025-11-25",
+      "updated": "2025-11-25"
+    },
+    {
+      "id": "features-intelligent-groups-neo4j-083",
+      "title": "Intelligent Group Creation with Neo4j Graph Database",
+      "filename": "documentation/features/INTELLIGENT_GROUPS_NEO4J_SPEC.md",
+      "category": "features",
+      "summary": "AI-powered intelligent group creation using Neo4j graph database for relationship discovery, Pinecone for semantic similarity, Gemini AI for inference, and react-force-graph-2d for interactive visualization. Includes graph schema, relationship discovery algorithms, and UI specifications.",
+      "tags": [
+        "neo4j",
+        "graph-database",
+        "intelligent-groups",
+        "pinecone",
+        "gemini",
+        "visualization",
+        "react-force-graph",
+        "relationship-discovery",
+        "ai-groups"
+      ],
+      "functions": [
+        "RelationshipDiscoveryService.discoverAll",
+        "GroupSuggestionService.generateSuggestions",
+        "Neo4jSyncService.syncContact",
+        "AIRelationshipInferenceService.inferRelationships"
+      ],
+      "components": [
+        "ContactGraph",
+        "GraphExplorerTab",
+        "GroupSuggestionsPanel",
+        "Neo4jSyncService",
+        "RelationshipDiscoveryService"
+      ],
+      "related_guides": [
+        "SEMANTIC_SEARCH_ARCHITECTURE_V2.md",
+        "PHASE5_AUTO_TAGGING_MIGRATION.md",
+        "LOCATION_SERVICES_AUTO_TAGGING_SPEC.md"
+      ],
+      "status": "draft",
+      "created": "2025-11-25",
+      "updated": "2025-11-25"
+    },
+    {
+      "id": "technical-discovery-job-manager-039",
+      "title": "DiscoveryJobManager - In-Memory Background Job Storage",
+      "filename": "documentation/technical/DISCOVERY_JOB_MANAGER_GUIDE.md",
+      "category": "technical",
+      "summary": "Comprehensive technical guide for the in-memory job storage system that enables background relationship discovery operations. Covers singleton Map pattern, job lifecycle, progress tracking, security considerations, and integration with Neo4j discovery services.",
+      "tags": [
+        "background-jobs",
+        "job-manager",
+        "in-memory-storage",
+        "progress-tracking",
+        "discovery",
+        "neo4j",
+        "polling",
+        "singleton",
+        "api-pattern"
+      ],
+      "functions": [
+        "DiscoveryJobManager.createJob",
+        "DiscoveryJobManager.updateProgress",
+        "DiscoveryJobManager.completeJob",
+        "DiscoveryJobManager.failJob",
+        "DiscoveryJobManager.getJob",
+        "DiscoveryJobManager.getJobForUser",
+        "DiscoveryJobManager.cleanup",
+        "DiscoveryJobManager.getJobsForUser",
+        "DiscoveryJobManager.getJobCount"
+      ],
+      "components": [],
+      "related_guides": [
+        "INTELLIGENT_GROUPS_NEO4J_SPEC.md",
+        "NEO4J_GRAPH_EXPLORER_TESTING_GUIDE.md"
+      ],
+      "status": "active",
+      "created": "2025-11-25",
+      "updated": "2025-11-25"
+    },
+    {
+      "id": "features-tiered-confidence-021",
+      "title": "Tiered Confidence Relationship Discovery System",
+      "filename": "documentation/features/TIERED_CONFIDENCE_DISCOVERY_GUIDE.md",
+      "category": "features",
+      "summary": "Three-tier confidence system for relationship discovery: HIGH (auto-save), MEDIUM (review with LLM), LOW (potential). Reduces false positives by classifying relationships based on semantic similarity scores and tag overlap, with user review for uncertain matches.",
+      "tags": [
+        "neo4j",
+        "graph",
+        "relationships",
+        "discovery",
+        "confidence",
+        "llm",
+        "review",
+        "pinecone",
+        "semantic-similarity"
+      ],
+      "functions": [
+        "discoverSemanticSimilarity()",
+        "discoverTagRelationships()",
+        "assessMediumConfidenceRelationship()",
+        "approveRelationship()",
+        "rejectRelationship()",
+        "batchApprove()",
+        "batchReject()"
+      ],
+      "components": [
+        "PendingRelationshipsPanel",
+        "RelationshipReviewCard",
+        "GraphExplorerTab"
+      ],
+      "related_guides": [
+        "INTELLIGENT_GROUPS_NEO4J_SPEC.md",
+        "NEO4J_GRAPH_EXPLORER_TESTING_GUIDE.md"
+      ],
+      "status": "draft",
       "created": "2025-11-25",
       "updated": "2025-11-25"
     }

@@ -16,6 +16,7 @@ import CreateGroupTab from './GroupModalComponents/CreateGroupTab';
 // import AIGenerateTab from './GroupModalComponents/AIGenerateTab';
 import RulesGenerateTab from './GroupModalComponents/rulesGenerate/RulesGenerateTab';
 import RulesReviewTabEnhanced from './GroupModalComponents/rulesGenerate/RulesReviewTabEnhanced';
+import GraphExplorerTab from './GraphVisualization/GraphExplorerTab';
 // import AIGroupsTab from './GroupModalComponents/AIGroupsTab';
 // import GroupEditModal from './GroupModalComponents/GroupEditModal';
 // import { BackgroundJobToast } from './BackgroundJobToast';
@@ -124,6 +125,40 @@ const GroupManagerModal = forwardRef(function GroupManagerModal({
     const handleEditGroup = (group) => {
         // TODO: Implement edit group functionality
         console.log('Edit group:', group);
+    };
+
+    // Handler for creating groups from Graph Explorer suggestions
+    const handleCreateGroupFromSuggestion = async (suggestionData) => {
+        try {
+            console.log('Creating intelligent group from suggestion:', suggestionData);
+
+            const groupData = {
+                name: suggestionData.name,
+                type: `intelligent_${suggestionData.type}`, // e.g., 'intelligent_company', 'intelligent_semantic'
+                description: suggestionData.reason || '',
+                contactIds: suggestionData.members?.map(m => m.id) || suggestionData.contactIds || [],
+                metadata: suggestionData.metadata || {
+                    source: 'graph_suggestion',
+                    suggestionType: suggestionData.type,
+                    confidence: suggestionData.confidence
+                }
+            };
+
+            await GroupService.createGroup({ groupData });
+
+            console.log('✅ Intelligent group created:', groupData.name);
+
+            // Refresh data
+            if (onRefreshData) {
+                await onRefreshData();
+            }
+
+            // Switch to groups tab to see the new group
+            setActiveTab('groups');
+        } catch (error) {
+            console.error('Error creating intelligent group:', error);
+            alert(`Failed to create group: ${error.message || 'Unknown error'}`);
+        }
     };
 
     const handleCreateGroup = async (e) => {
@@ -260,6 +295,7 @@ const GroupManagerModal = forwardRef(function GroupManagerModal({
     const hasAdvancedGroups = hasFeature(CONTACT_FEATURES.ADVANCED_GROUPS);
     const hasAIGroups = hasFeature(CONTACT_FEATURES.AI_GROUPS);
     const hasRulesBasedGroups = hasFeature(CONTACT_FEATURES.RULES_BASED_GROUPS);
+    const hasGraphVisualization = hasFeature(CONTACT_FEATURES.GRAPH_VISUALIZATION);
 
     // Calculate group statistics
     const groupStats = {
@@ -356,6 +392,15 @@ const GroupManagerModal = forwardRef(function GroupManagerModal({
                         />
                     )}
 
+                    {hasGraphVisualization && (
+                        <TabButton
+                            id="graph-explorer"
+                            label="Graph Explorer"
+                            activeTab={activeTab}
+                            setActiveTab={setActiveTab}
+                        />
+                    )}
+
                     {/* {hasAIGroups && (
                         <>
                             <TabButton
@@ -432,6 +477,15 @@ const GroupManagerModal = forwardRef(function GroupManagerModal({
                                 />
                             )}
                         </>
+                    )}
+
+                    {activeTab === 'graph-explorer' && (
+                        <GraphExplorerTab
+                            groups={groups}
+                            contacts={contacts}
+                            onTabChange={setActiveTab}
+                            onCreateGroup={handleCreateGroupFromSuggestion}
+                        />
                     )}
 
                     {/* Add other tabs back progressively */}

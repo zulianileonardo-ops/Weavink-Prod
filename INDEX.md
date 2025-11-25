@@ -1,15 +1,15 @@
 # Weavink Documentation Index
 
 **Last Updated:** 2025-11-25
-**Total Guides:** 95
+**Total Guides:** 99
 
 ## Quick Navigation
 - [Admin System](#admin-system) (9 guides)
 - [Analytics & Tracking](#analytics-tracking) (3 guides)
 - [RGPD/GDPR Compliance](#rgpd-gdpr-compliance) (13 guides)
-- [Feature Implementations](#feature-implementations) (26 guides)
-- [Technical Infrastructure](#technical-infrastructure) (22 guides)
-- [Testing & QA](#testing-qa) (14 guides)
+- [Feature Implementations](#feature-implementations) (28 guides)
+- [Technical Infrastructure](#technical-infrastructure) (23 guides)
+- [Testing & QA](#testing-qa) (15 guides)
 - [General Documentation](#general-documentation) (4 guides)
 - [Tutorials & Guides](#tutorials-guides) (3 guides)
 - [Meta Documentation](#meta-documentation) (2 guides)
@@ -213,6 +213,11 @@
 **Tags:** carousel, image-cropping, aspect-ratio, object-fit, bug-fix, image-display, react-easy-crop, ui-enhancement
 **Related:** [features-carousel-017](#features-carousel-017), [features-cv-enhancement-026](#features-cv-enhancement-026)
 
+### INTELLIGENT_GROUPS_NEO4J_SPEC.md
+**Summary:** AI-powered intelligent group creation using Neo4j graph database for relationship discovery, Pinecone for semantic similarity, Gemini AI for inference, and react-force-graph-2d for interactive visualization. Includes graph schema, relationship discovery algorithms, and UI specifications.
+**Tags:** neo4j, graph-database, intelligent-groups, pinecone, gemini, visualization, react-force-graph, relationship-discovery, ai-groups
+**Related:** [SEMANTIC_SEARCH_ARCHITECTURE_V2.md](#semantic-search-architecture-v2-md), [PHASE5_AUTO_TAGGING_MIGRATION.md](#phase5-auto-tagging-migration-md), [LOCATION_SERVICES_AUTO_TAGGING_SPEC.md](#location-services-auto-tagging-spec-md)
+
 ### LANDING_PAGE_REDESIGN.md
 **Summary:** Documents complete redesign of landing page with modern UI, feature highlights, and improved conversion.
 **Tags:** landing-page, ui-design, marketing, conversion-optimization
@@ -265,6 +270,11 @@
 **Summary:** Three-step location enrichment with session-based cost tracking: Step 1 (Reverse Geocoding), Step 2 (Venue Search), Step 3 (AI Auto-Tagging). Session tracking groups multi-step operations, single-step uses ApiUsage. Updated 2025-11-22 with Phase 5 auto-tagging integration showing dual budget system (API + AI budgets) and complete 3-step pipeline.
 **Tags:** session-tracking, location-enrichment, cost-tracking, geocoding, venue-search, location-services, bug-fixes, multi-step-detection, session-creation, auto-tagging, phase-5
 **Related:** [GEOCODING_SYSTEM_GUIDE.md](#geocoding-system-guide-md), [LOCATION_SERVICES_AUTO_TAGGING_SPEC.md](#location-services-auto-tagging-spec-md), [SESSION_TRACKING_FIX.md](#session-tracking-fix-md), [PHASE5_AUTO_TAGGING_MIGRATION.md](#phase5-auto-tagging-migration-md), [CONTACT_CREATION_ENRICHMENT_FLOW.md](#contact-creation-enrichment-flow-md)
+
+### TIERED_CONFIDENCE_DISCOVERY_GUIDE.md
+**Summary:** Three-tier confidence system for relationship discovery: HIGH (auto-save), MEDIUM (review with LLM), LOW (potential). Reduces false positives by classifying relationships based on semantic similarity scores and tag overlap, with user review for uncertain matches.
+**Tags:** neo4j, graph, relationships, discovery, confidence, llm, review, pinecone, semantic-similarity
+**Related:** [INTELLIGENT_GROUPS_NEO4J_SPEC.md](#intelligent-groups-neo4j-spec-md), [NEO4J_GRAPH_EXPLORER_TESTING_GUIDE.md](#neo4j-graph-explorer-testing-guide-md)
 
 ### TUTORIAL_ACCOUNT_PAGE_STRUCTURE.md
 **Summary:** Documents restructured tutorial progression and account page with complete independence between Privacy Overview and Tutorial Progression sections. Tutorial now renders at page level, always visible regardless of active Privacy tab.
@@ -332,6 +342,11 @@
 **Summary:** Complete migration guide for refactored CostTrackingService supporting multiple resource types (AI, API) with backward compatibility.
 **Tags:** cost-tracking, migration, ai-usage, api-usage, firestore, backward-compatibility, subscription-limits
 **Related:** [technical-budget-check-usage-027](#technical-budget-check-usage-027), [technical-budget-display-026](#technical-budget-display-026), [admin-analytics-integration-001](#admin-analytics-integration-001)
+
+### DISCOVERY_JOB_MANAGER_GUIDE.md
+**Summary:** Comprehensive technical guide for the in-memory job storage system that enables background relationship discovery operations. Covers singleton Map pattern, job lifecycle, progress tracking, security considerations, and integration with Neo4j discovery services.
+**Tags:** background-jobs, job-manager, in-memory-storage, progress-tracking, discovery, neo4j, polling, singleton, api-pattern
+**Related:** [INTELLIGENT_GROUPS_NEO4J_SPEC.md](#intelligent-groups-neo4j-spec-md), [NEO4J_GRAPH_EXPLORER_TESTING_GUIDE.md](#neo4j-graph-explorer-testing-guide-md)
 
 ### DYNAMICFIELDS_FIX_SUMMARY.md
 **Summary:** Fixes dynamic field system for contacts with improved data validation and error handling.
@@ -429,6 +444,11 @@
 **Summary:** Comprehensive testing guide for Phase 3 auto-enrichment implementation covering 80+ test scenarios including happy path, settings integration, budget tracking, Redis caching, error handling, subscription tiers, performance, data integrity, and graceful degradation with detailed verification procedures.
 **Tags:** location-services, auto-enrichment, phase-3, testing, qa, redis-cache, google-places, budget-tracking, exchange-contacts, venue-enrichment, manual-testing, integration-testing
 **Related:** [LOCATION_SERVICES_AUTO_TAGGING_SPEC.md](#location-services-auto-tagging-spec-md), [GEOCODING_SYSTEM_GUIDE.md](#geocoding-system-guide-md), [RATE_LIMIT_TESTING.md](#rate-limit-testing-md), [RGPD_TESTING_GUIDE.md](#rgpd-testing-guide-md)
+
+### NEO4J_GRAPH_EXPLORER_TESTING_GUIDE.md
+**Summary:** End-to-end manual testing guide for Neo4j integration, Graph Explorer visualization, and Intelligent Group creation. 10 tests covering contact sync to Neo4j, graph API endpoints, visualization rendering, relationship discovery, and group creation from suggestions.
+**Tags:** testing, manual-testing, neo4j, graph-explorer, graph-visualization, intelligent-groups, relationship-discovery, contacts
+**Related:** [testing-dual-system-guide-082](#testing-dual-system-guide-082), [testing-phase5-manual-080](#testing-phase5-manual-080), [features-intelligent-groups-neo4j-083](#features-intelligent-groups-neo4j-083), [infrastructure-semantic-search-v2-050](#infrastructure-semantic-search-v2-050)
 
 ### PHASE5_MANUAL_TESTING_GUIDE.md
 **Summary:** Comprehensive manual testing guide for Phase 5 Auto-Tagging with 15+ test scenarios covering all feature combinations, budget states, cache tiers, and subscription tiers. Includes sections for server logs, database state, Pinecone data, and usage tracking validation.
