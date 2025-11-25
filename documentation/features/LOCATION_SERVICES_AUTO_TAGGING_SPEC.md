@@ -2,10 +2,10 @@
 id: features-location-services-auto-tagging-080
 title: Intelligent Location Services & AI Auto-Tagging System
 category: features
-tags: [location, gps, google-places, auto-tagging, event-detection, redis-cache, ai, gemini, premium-features, partially-implemented, session-tracking]
+tags: [location, gps, google-places, auto-tagging, event-detection, redis-cache, ai, gemini, premium-features, partially-implemented, session-tracking, query-tagging]
 status: partial
 created: 2025-11-21
-updated: 2025-11-22
+updated: 2025-11-25
 phase_1_completed: 2025-11-22
 phase_2_completed: 2025-11-22
 phase_3_completed: 2025-11-22
@@ -18,6 +18,7 @@ related:
   - PHASE5_AUTO_TAGGING_MIGRATION.md
   - SEMANTIC_SEARCH_ARCHITECTURE_V2.md
   - CONTACT_CREATION_ENRICHMENT_FLOW.md
+  - QUERY_TAGGING_ARCHITECTURE.md
   - features-venue-enrichment-021
   - technical-cost-tracking-migration-024
   - build-manager-skill
@@ -1319,8 +1320,12 @@ Files to Create:
 **Dependencies:** Phase 3 (needs enriched contacts) ✅ Complete
 **Migration Guide:** [PHASE5_AUTO_TAGGING_MIGRATION.md](../infrastructure/PHASE5_AUTO_TAGGING_MIGRATION.md)
 **Updated Architecture:** [SEMANTIC_SEARCH_ARCHITECTURE_V2.md](../infrastructure/SEMANTIC_SEARCH_ARCHITECTURE_V2.md)
+**Query Tagging (Complementary):** [QUERY_TAGGING_ARCHITECTURE.md](../infrastructure/QUERY_TAGGING_ARCHITECTURE.md)
 
 **Progress:** Documentation complete, implementation in progress
+
+**Query Tagging Enhancement:**
+Auto-tagging generates tags for **contacts** at save time. Query Tagging is a complementary feature that generates tags for **search queries** at search time, using the same semantic vocabulary. This creates alignment between query embeddings and contact embeddings for better search accuracy.
 
 Tasks:
 - [x] Create comprehensive migration documentation

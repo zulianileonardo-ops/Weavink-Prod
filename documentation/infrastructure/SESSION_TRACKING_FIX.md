@@ -164,7 +164,7 @@ When ANY step in a session exceeds budget, the session document records this:
 
 #### Step-Level Tracking
 
-Each step in the session includes budget check information:
+Each step in the session includes budget check information. The `budgetCheck` object from the initial affordability check is propagated through all steps:
 
 ```javascript
 {
@@ -179,13 +179,16 @@ Each step in the session includes budget check information:
   budgetExceededReason: null,
 
   metadata: {
+    // budgetCheck from initial affordability check (propagated to all steps)
     budgetCheck: {
-      passed: true,
-      currentCost: 2.95,
-      maxCost: 3.0,
-      currentRuns: 12,
-      maxRuns: 100
-    }
+      canAfford: true,
+      reason: "within_limits",
+      remainingBudget: 2.95660556,
+      remainingRuns: 28
+    },
+    // Additional metadata specific to this step
+    operationId: 'usage_xxx',
+    // ... other step-specific data
   }
 }
 ```
@@ -285,6 +288,115 @@ Budget exceeded events are also recorded in usage collections:
 2. **User Transparency**: Users see exactly why features were skipped
 3. **Analytics**: Can analyze budget hit patterns
 4. **Debugging**: Clear indicators of limit issues
+
+### budgetCheck Propagation Pattern
+
+The `budgetCheck` object from the initial affordability check is propagated through all steps of multi-step operations (like semantic search). This provides full budget visibility at every step.
+
+#### Data Structure
+
+```javascript
+// budgetCheck object structure
+{
+  canAfford: boolean,              // Can user afford more operations?
+  reason: "within_limits",         // 'within_limits' | 'budget_exceeded' | 'runs_exceeded'
+  remainingBudget: 2.95660556,     // USD remaining this month
+  remainingRuns: 28                // AI/API runs remaining this month
+}
+```
+
+#### How It's Stored in SessionUsage Steps
+
+```json
+// Each step in SessionUsage includes budgetCheck in metadata
+{
+  "sessionId": "session_search_xxx",
+  "steps": [
+    {
+      "stepLabel": "Query Enhancement",
+      "stepNumber": 2,
+      "feature": "query_enhancement",
+      "cost": 0,
+      "metadata": {
+        "budgetCheck": {
+          "canAfford": true,
+          "reason": "within_limits",
+          "remainingBudget": 2.95660556,
+          "remainingRuns": 28
+        },
+        "cacheType": "redis",
+        "enhancedQuery": "..."
+      }
+    },
+    {
+      "stepLabel": "Embedding Generation",
+      "stepNumber": 3,
+      "feature": "semantic_search_embedding",
+      "cost": 0.0000038,
+      "metadata": {
+        "budgetCheck": {
+          "canAfford": true,
+          "reason": "within_limits",
+          "remainingBudget": 2.95660556,
+          "remainingRuns": 28
+        },
+        "model": "multilingual-e5-large",
+        "dimension": 1024
+      }
+    }
+  ]
+}
+```
+
+#### Recording budgetCheck via StepTracker
+
+```javascript
+// StepTracker.recordStep accepts budgetCheck parameter
+await StepTracker.recordStep({
+  userId,
+  sessionId,
+  stepNumber: 2,
+  stepLabel: 'Query Enhancement',
+  feature: 'query_enhancement',
+  provider: 'redis',
+  cost: 0,
+  duration: 257,
+  isBillableRun: false,
+  budgetCheck,  // ← Include the budgetCheck object
+  metadata: {
+    cacheType: 'redis',
+    enhancedQuery: '...'
+  }
+});
+```
+
+#### Recording budgetCheck via CostTrackingService
+
+```javascript
+// CostTrackingService.recordUsage also accepts budgetCheck
+await CostTrackingService.recordUsage({
+  userId,
+  usageType: 'ApiUsage',
+  feature: 'semantic_search_embedding',
+  cost: 0.0000038,
+  isBillableRun: true,
+  provider: 'pinecone-inference',
+  sessionId,
+  stepLabel: 'Embedding Generation',
+  budgetCheck,  // ← Include the budgetCheck object
+  metadata: {
+    model: 'multilingual-e5-large',
+    dimension: 1024
+  }
+});
+```
+
+#### Benefits of budgetCheck Propagation
+
+- ✅ **Debugging**: See exactly what budget state was at each step
+- ✅ **Monitoring**: Track budget consumption throughout pipelines
+- ✅ **Consistency**: Same pattern across all multi-step operations
+- ✅ **Auditability**: Full budget context preserved in SessionUsage
 
 ## Expected Behavior After Fix
 

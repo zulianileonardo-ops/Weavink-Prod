@@ -10,6 +10,7 @@ import { SemanticSearchService } from '@/lib/services/serviceContact/server/sema
 import { CostTrackingService } from '@/lib/services/serviceContact/server/costTrackingService';
 import { SEMANTIC_SEARCH_CONFIG, CONTACT_FEATURES } from '@/lib/services/constants';
 import { StepTracker } from '@/lib/services/serviceContact/server/costTracking/stepTracker';
+import { adminDb } from '@/lib/firebaseAdmin';
 
 /**
  * POST /api/user/contacts/semantic-search
@@ -49,6 +50,24 @@ export async function POST(request) {
 
     console.log(`✅ [API /semantic-search] [${searchId}] Feature access granted for ${session.subscriptionLevel}`);
 
+    // Step 1.75: Fetch user settings for search features
+    let enableQueryEnhancement = true; // Default: enabled for backwards compatibility
+    try {
+      const userDoc = await adminDb.collection('users').doc(userId).get();
+      if (userDoc.exists) {
+        const userData = userDoc.data();
+        // Check if user has explicitly set queryEnhancement setting
+        // Default to true if not set (backwards compatibility)
+        enableQueryEnhancement = userData?.settings?.searchFeatures?.queryEnhancement !== false;
+        console.log(`⚙️ [API /semantic-search] [${searchId}] Query enhancement setting:`, {
+          enabled: enableQueryEnhancement,
+          source: userData?.settings?.searchFeatures?.queryEnhancement !== undefined ? 'user_setting' : 'default'
+        });
+      }
+    } catch (settingsError) {
+      console.warn(`⚠️ [API /semantic-search] [${searchId}] Failed to fetch user settings, using default:`, settingsError.message);
+    }
+
     // Step 2: Validate input
     const {
       query,
@@ -75,6 +94,9 @@ export async function POST(request) {
     // Get subscription level for cost calculations
     const subscriptionLevel = session.subscriptionLevel;
 
+    // Declare affordabilityCheck outside the if block so it's accessible later
+    let affordabilityCheck = null;
+
     // Step 3: Check affordability (STEP 1 - Cost Affordability Check)
     if (trackCosts) {
       console.log(`💰 [API /semantic-search] [${searchId}] Checking affordability...`);
@@ -84,7 +106,7 @@ export async function POST(request) {
 
       console.log(`💰 [API /semantic-search] [${searchId}] Estimated cost: $${costEstimate.totalCost.toFixed(6)}`);
 
-      const affordabilityCheck = await CostTrackingService.canAffordOperation(
+      affordabilityCheck = await CostTrackingService.canAffordOperation(
         userId,
         costEstimate.totalCost,
         1 // Semantic search counts as 1 successful run if it returns results
@@ -102,7 +124,7 @@ export async function POST(request) {
           userId,
           sessionId,
           stepNumber: 1,
-          stepLabel: 'Step 1: Cost Affordability Check',
+          stepLabel: 'Cost Affordability Check',
           feature: 'semantic_search_affordability',
           provider: 'internal',
           cost: 0,
@@ -149,7 +171,9 @@ export async function POST(request) {
       minVectorScore, // Pass threshold to service
       subscriptionLevel,
       sessionId, // Session ID for tracking
-      trackSteps: trackCosts // Enable granular step tracking when cost tracking is enabled
+      trackSteps: trackCosts, // Enable granular step tracking when cost tracking is enabled
+      enhanceQuery: enableQueryEnhancement, // Configurable via user settings
+      budgetCheck: trackCosts ? affordabilityCheck : null // Pass affordability check for step tracking
     });
 
     // NOTE: Cost recording removed from this location

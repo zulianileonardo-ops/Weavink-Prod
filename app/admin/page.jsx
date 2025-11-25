@@ -23,6 +23,7 @@ import AccountTypesBreakdown from './components/AccountTypesBreakdown';
 import AdminEnterprisePanel from './components/AdminEnterprisePanel';
 import TopLevelSecurityLogs from './components/TopLevelSecurityLogs';
 import SessionUsageViewer from './components/SessionUsageViewer';
+import AdminTestRunnerPanel from './components/AdminTestRunnerPanel';
 
 export default function AdminDashboard() {
     const { currentUser } = useAuth();
@@ -48,6 +49,7 @@ export default function AdminDashboard() {
     const [showEnterprisePanel, setShowEnterprisePanel] = useState(false);
     const [showSecurityLogs, setShowSecurityLogs] = useState(false);
     const [showSessionsPanel, setShowSessionsPanel] = useState(false); // NEW - Session Usage Viewer
+    const [showTestRunner, setShowTestRunner] = useState(false); // Integration Test Runner
 
     const [stats, setStats] = useState({
         total: 0,
@@ -362,6 +364,19 @@ useEffect(() => {
                     )}
                 </h2>
                 <div className="flex items-center gap-3">
+                    {/* Test Runner Toggle - Available for all admins */}
+                    <button
+                        onClick={() => setShowTestRunner(!showTestRunner)}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors font-medium ${
+                            showTestRunner
+                                ? 'bg-emerald-100 border border-emerald-300 text-emerald-800 hover:bg-emerald-200'
+                                : 'bg-emerald-600 text-white hover:bg-emerald-700'
+                        }`}
+                    >
+                        <span>🧪</span>
+                        {showTestRunner ? 'Hide Tests' : 'Run Tests'}
+                    </button>
+
                     {/* Security Logs Toggle - Available for all admins */}
                     <button
                         onClick={() => setShowSecurityLogs(!showSecurityLogs)}
@@ -443,6 +458,11 @@ useEffect(() => {
                     </Link>
                 </div>
             </div>
+
+            {/* Test Runner Panel */}
+            {showTestRunner && (
+                <AdminTestRunnerPanel />
+            )}
 
             {/* Security Logs Panel */}
             {showSecurityLogs && (

@@ -2,14 +2,15 @@
 id: technical-semantic-search-v2-034
 title: Semantic Search Architecture V2 (Tag-Based)
 category: technical
-tags: [semantic-search, vector-database, pinecone, embeddings, ai-features, tags, v2, optimization]
+tags: [semantic-search, vector-database, pinecone, embeddings, ai-features, tags, v2, optimization, query-tagging]
 status: active
 created: 2025-11-22
-updated: 2025-11-23
+updated: 2025-11-25
 related:
   - SEMANTIC_SEARCH_ARCHITECTURE_CURRENT.md
   - PHASE5_AUTO_TAGGING_MIGRATION.md
   - CONTACT_CREATION_ENRICHMENT_FLOW.md
+  - QUERY_TAGGING_ARCHITECTURE.md
 ---
 
 # Semantic Search Architecture V2 - Tag-Based Optimization
@@ -83,7 +84,30 @@ User Query → Embedding → Vector Search → Reranking → AI Enhancement → 
 - **Cost-conscious:** Tracks costs per-step with subscription-based limits
 - **Session-based tracking:** Groups multi-step operations for analytics
 - **Adaptive filtering:** Different thresholds per subscription tier
-- **No Query Enhancement:** Tags replace need for query expansion
+- **Query Tagging:** Queries tagged with same vocabulary as contacts (DEFAULT ON)
+
+### Query Tagging Enhancement (V2.1)
+
+V2.1 introduces **Query Tagging** - tagging the search query using the same semantic vocabulary as contact auto-tagging. This creates better alignment between query embeddings and contact document embeddings.
+
+**Problem Solved:**
+```
+Contact document: "[Semantic Tags]: tesla-employee, automotive-industry"
+Query (V2):       "Who works at Tesla?" (no tags - semantic gap)
+Query (V2.1):     "Who works at Tesla? [Query Tags]: tesla-employee, automotive" (aligned!)
+```
+
+**How It Works:**
+```
+Query → QueryTaggingService → Generate tags → Append to query → Embed enhanced query
+```
+
+**Performance:**
+- 3-tier caching (same as AutoTaggingService): Static → Redis → Gemini
+- 80% cache hit rate → minimal latency impact (~12ms average)
+- Cost: ~$0.0000016/query (accounting for cache hits)
+
+**See:** [QUERY_TAGGING_ARCHITECTURE.md](QUERY_TAGGING_ARCHITECTURE.md) for full details.
 
 ### Unified Contact Intelligence System
 
@@ -410,6 +434,99 @@ static async search(userId, query, options = {}) {
 - ✅ **Better tag quality** (full contact context vs query)
 - ✅ **Permanent tags** (used for filtering, grouping, analytics)
 - ✅ **Simpler pipeline** (11 steps vs 12)
+
+### budgetCheck Propagation
+
+Every step in the semantic search pipeline now tracks budget context through a `budgetCheck` object. This enables full visibility into the user's budget status at each step for monitoring and debugging.
+
+**How It Works:**
+
+1. **Route Layer Creates budgetCheck:**
+```javascript
+// app/api/user/contacts/semantic-search/route.js
+let affordabilityCheck = null;
+if (trackCosts) {
+  affordabilityCheck = await CostTrackingService.canAffordOperation(
+    userId, costEstimate.totalCost, 1
+  );
+}
+
+// Pass to service layer
+const searchResult = await SemanticSearchService.search(userId, query, {
+  budgetCheck: trackCosts ? affordabilityCheck : null
+});
+```
+
+2. **Service Layer Propagates to Sub-services:**
+```javascript
+// lib/services/serviceContact/server/semanticSearchService.js
+static async search(userId, query, options = {}) {
+  const { budgetCheck } = options;
+
+  // Pass to each sub-service
+  await QueryEnhancementService.enhanceQuery(query, { budgetCheck });
+  await QueryTaggingService.tagQuery(query, { budgetCheck });
+  await EmbeddingService.generateEmbedding(text, { budgetCheck });
+
+  // Pass to StepTracker for steps 4-6
+  await StepTracker.recordStep({ budgetCheck, ... });
+}
+```
+
+3. **Each Step Records budgetCheck in SessionUsage:**
+```javascript
+// lib/services/serviceContact/server/costTracking/stepTracker.js
+static async recordStep({
+  userId, sessionId, stepNumber, stepLabel,
+  budgetCheck = null,  // ← Accepted parameter
+  ...
+}) {
+  const stepData = {
+    stepNumber, stepLabel,
+    budgetCheck,  // ← Stored in step data
+    metadata
+  };
+  await SessionTrackingService.addStepToSession({ userId, sessionId, stepData });
+}
+```
+
+**budgetCheck Data Structure:**
+```javascript
+{
+  canAfford: true,              // Can user afford more operations?
+  reason: "within_limits",      // Why: 'within_limits' | 'budget_exceeded' | 'runs_exceeded'
+  remainingBudget: 2.95660556,  // USD remaining this month
+  remainingRuns: 28             // AI runs remaining this month
+}
+```
+
+**SessionUsage Step Example:**
+```json
+{
+  "stepLabel": "Query Enhancement",
+  "stepNumber": 2,
+  "feature": "query_enhancement",
+  "provider": "redis",
+  "cost": 0,
+  "isBillableRun": false,
+  "metadata": {
+    "budgetCheck": {
+      "canAfford": true,
+      "reason": "within_limits",
+      "remainingBudget": 2.95660556,
+      "remainingRuns": 28
+    },
+    "cacheType": "redis",
+    "enhancedQuery": "Tesla, Tesla Inc., employees..."
+  }
+}
+```
+
+**Benefits:**
+- ✅ Full budget visibility at every step
+- ✅ Debug budget issues by inspecting SessionUsage
+- ✅ Monitor budget consumption in real-time
+- ✅ Consistent tracking across all pipeline steps
 
 ---
 

@@ -370,7 +370,144 @@ For session-based operations, budget exceeded status is tracked at both session 
 }
 ```
 
-### 6. Diagnostic Logging
+### 6. Propagating Budget Context to Sub-Services
+
+For multi-step operations like semantic search, the initial affordability check result (`budgetCheck`) should be passed through to all sub-services. This enables full budget visibility at every step for monitoring and debugging.
+
+#### Pattern: Create Once, Pass to All
+
+```javascript
+// Route layer: Create affordabilityCheck once
+// app/api/user/contacts/semantic-search/route.js
+
+let affordabilityCheck = null;
+if (trackCosts) {
+  affordabilityCheck = await CostTrackingService.canAffordOperation(
+    userId, costEstimate.totalCost, 1
+  );
+}
+
+// Pass to main service
+const searchResult = await SemanticSearchService.search(userId, query, {
+  budgetCheck: trackCosts ? affordabilityCheck : null
+});
+```
+
+```javascript
+// Service layer: Accept and propagate to sub-services
+// lib/services/serviceContact/server/semanticSearchService.js
+
+static async search(userId, query, options = {}) {
+  const { budgetCheck = null } = options;
+
+  // Pass to each sub-service
+  const enhancement = await QueryEnhancementService.enhanceQuery(query, {
+    userId, sessionId, trackSteps, budgetCheck  // ← Propagate
+  });
+
+  const tagResult = await QueryTaggingService.tagQuery(query, {
+    userId, sessionId, trackSteps, budgetCheck  // ← Propagate
+  });
+
+  const embedding = await EmbeddingService.generateEmbedding(text, {
+    userId, sessionId, trackSteps, budgetCheck  // ← Propagate
+  });
+
+  // Record steps with budgetCheck
+  await StepTracker.recordStep({
+    userId, sessionId, stepNumber: 4,
+    budgetCheck,  // ← Include in step data
+    metadata: { ... }
+  });
+}
+```
+
+#### Sub-service: Accept and Include in Step Recording
+
+```javascript
+// lib/services/serviceContact/server/queryEnhancementService.js
+
+static async enhanceQuery(query, options = {}) {
+  const { budgetCheck = null } = options;
+
+  // ... do work ...
+
+  // Record step with budgetCheck
+  await StepTracker.recordStep({
+    userId,
+    sessionId,
+    stepNumber: 2,
+    stepLabel: 'Query Enhancement',
+    budgetCheck,  // ← Include in step data
+    metadata: {
+      cacheType: 'redis',
+      enhancedQuery: '...'
+    }
+  });
+}
+```
+
+#### Result: Every Step Has Budget Context
+
+```json
+// SessionUsage document after semantic search
+{
+  "sessionId": "session_search_xxx",
+  "steps": [
+    {
+      "stepLabel": "Cost Affordability Check",
+      "stepNumber": 1,
+      "metadata": { "budgetCheck": null }  // This IS the check itself
+    },
+    {
+      "stepLabel": "Query Enhancement",
+      "stepNumber": 2,
+      "metadata": {
+        "budgetCheck": {
+          "canAfford": true,
+          "reason": "within_limits",
+          "remainingBudget": 2.95660556,
+          "remainingRuns": 28
+        }
+      }
+    },
+    {
+      "stepLabel": "Embedding Generation",
+      "stepNumber": 3,
+      "metadata": {
+        "budgetCheck": {
+          "canAfford": true,
+          "reason": "within_limits",
+          "remainingBudget": 2.95660556,
+          "remainingRuns": 28
+        }
+      }
+    }
+    // ... all steps have budgetCheck ...
+  ]
+}
+```
+
+#### Benefits
+
+- ✅ **Debugging**: See exactly what budget state was at each step
+- ✅ **Monitoring**: Track budget consumption throughout pipelines
+- ✅ **Consistency**: Same pattern across all multi-step operations
+- ✅ **Auditability**: Full budget context preserved in SessionUsage
+
+#### Key Files for budgetCheck Propagation
+
+| File | Role |
+|------|------|
+| `app/api/user/contacts/semantic-search/route.js` | Creates `affordabilityCheck`, passes as `budgetCheck` |
+| `lib/services/serviceContact/server/semanticSearchService.js` | Propagates to all sub-services |
+| `lib/services/serviceContact/server/queryEnhancementService.js` | Accepts and records with `StepTracker` |
+| `lib/services/serviceContact/server/QueryTaggingService.js` | Accepts and records with `CostTrackingService` |
+| `lib/services/serviceContact/server/embeddingService.js` | Accepts and records with `CostTrackingService` |
+| `lib/services/serviceContact/server/costTracking/stepTracker.js` | Accepts `budgetCheck` parameter, stores in stepData |
+| `lib/services/serviceContact/server/costTracking/sessionService.js` | Stores `budgetCheck` in `metadata.budgetCheck` |
+
+### 7. Diagnostic Logging
 
 The affordability check system includes comprehensive logging for debugging:
 

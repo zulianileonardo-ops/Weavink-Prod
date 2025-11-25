@@ -1,15 +1,15 @@
 # Weavink Documentation Index
 
-**Last Updated:** 2025-11-24
-**Total Guides:** 93
+**Last Updated:** 2025-11-25
+**Total Guides:** 95
 
 ## Quick Navigation
 - [Admin System](#admin-system) (9 guides)
 - [Analytics & Tracking](#analytics-tracking) (3 guides)
 - [RGPD/GDPR Compliance](#rgpd-gdpr-compliance) (13 guides)
 - [Feature Implementations](#feature-implementations) (26 guides)
-- [Technical Infrastructure](#technical-infrastructure) (21 guides)
-- [Testing & QA](#testing-qa) (13 guides)
+- [Technical Infrastructure](#technical-infrastructure) (22 guides)
+- [Testing & QA](#testing-qa) (14 guides)
 - [General Documentation](#general-documentation) (4 guides)
 - [Tutorials & Guides](#tutorials-guides) (3 guides)
 - [Meta Documentation](#meta-documentation) (2 guides)
@@ -342,6 +342,11 @@
 **Tags:** git, github, gitlab, repository, deployment, version-control, multi-remote, infrastructure, setup, ssh, authentication
 **Related:** [git-manager-skill](#git-manager-skill), [features-roadmap-changelog-070](#features-roadmap-changelog-070)
 
+### QUERY_TAGGING_ARCHITECTURE.md
+**Summary:** Query Tagging enhancement for semantic search that generates tags for search queries using the same vocabulary as contact auto-tagging. Creates better alignment between query embeddings and contact document embeddings. Uses 3-tier caching (Static → Redis → Gemini), default ON, with 80% cache hit rate and minimal latency impact (~12ms average). Includes Rerank Tag Integration (Option B) for Cohere.
+**Tags:** query-tagging, semantic-search, vector-embedding, ai-features, gemini, caching, search-optimization, reranking
+**Related:** [SEMANTIC_SEARCH_ARCHITECTURE_V2.md](#semantic-search-architecture-v2-md), [PHASE5_AUTO_TAGGING_MIGRATION.md](#phase5-auto-tagging-migration-md), [LOCATION_SERVICES_AUTO_TAGGING_SPEC.md](#location-services-auto-tagging-spec-md)
+
 ### QUICK_START_INTEGRATION.md
 **Summary:** Quick 30-minute integration guide for new features and components.
 **Tags:** integration, quick-start, onboarding, documentation
@@ -399,6 +404,11 @@
 **Summary:** Comprehensive manual testing guide for contact anonymization system implementing GDPR Article 17 Right to be Forgotten. Covers 6 test scenarios including end-to-end anonymization flow, Firestore verification, Pinecone vector metadata verification, semantic search functionality, edge cases & idempotency, and multi-language UI testing across 5 languages.
 **Tags:** testing, manual-testing, contact-anonymization, gdpr, rgpd, right-to-be-forgotten, article-17, firestore-verification, pinecone-verification, semantic-search, multi-language, edge-cases, troubleshooting
 **Related:** [rgpd-contact-anonymization-049](#rgpd-contact-anonymization-049), [testing-rgpd-guide-038](#testing-rgpd-guide-038), [rgpd-account-deletion-flow-047](#rgpd-account-deletion-flow-047), [rgpd-contact-deletion-warning-048](#rgpd-contact-deletion-warning-048)
+
+### DUAL_SYSTEM_TESTING_GUIDE.md
+**Summary:** Comprehensive manual testing guide for both Auto-Tagging (contact save) and Query Tagging (semantic search) systems. 10 general tests with dual sections per test capturing server logs, Firestore state, Pinecone vectors, and SessionUsage tracking.
+**Tags:** testing, auto-tagging, query-tagging, semantic-search, dual-system, manual-testing
+**Related:** [testing-phase5-manual-080](#testing-phase5-manual-080), [infrastructure-query-tagging-079](#infrastructure-query-tagging-079), [infrastructure-phase5-auto-tagging-077](#infrastructure-phase5-auto-tagging-077), [infrastructure-semantic-search-v2-050](#infrastructure-semantic-search-v2-050)
 
 ### EMAIL_NOTIFICATION_BUG_FIXES.md
 **Summary:** Documents 3 bugs discovered during email notification system testing: completion email fetch-after-delete bug, Firebase composite index requirement, and contact deletion notifications not updating on completion. Includes root cause analysis, fixes, and verification.

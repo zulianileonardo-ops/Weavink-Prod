@@ -17,7 +17,7 @@
  * - Server running on localhost:3000 (or update BASE_URL)
  */
 
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
 // Test results tracking
 const results = {

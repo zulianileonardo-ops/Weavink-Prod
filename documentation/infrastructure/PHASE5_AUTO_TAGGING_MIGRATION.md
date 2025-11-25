@@ -2,15 +2,16 @@
 id: technical-auto-tagging-migration-033
 title: Phase 5 AI Auto-Tagging Migration Guide
 category: technical
-tags: [auto-tagging, migration, semantic-search, optimization, phase-5, ai-features, gemini, performance, cost-reduction]
+tags: [auto-tagging, migration, semantic-search, optimization, phase-5, ai-features, gemini, performance, cost-reduction, query-tagging]
 status: active
 created: 2025-11-22
-updated: 2025-11-23
+updated: 2025-11-25
 related:
   - SEMANTIC_SEARCH_ARCHITECTURE_V2.md
   - SESSION_BASED_ENRICHMENT.md
   - LOCATION_SERVICES_AUTO_TAGGING_SPEC.md
   - CONTACT_CREATION_ENRICHMENT_FLOW.md
+  - QUERY_TAGGING_ARCHITECTURE.md
 ---
 
 # Phase 5: AI Auto-Tagging Migration Guide
@@ -189,6 +190,33 @@ Tier 3: AI Generation
 - ✅ **Reusable:** Used for filtering, grouping, analytics
 - ✅ **Searchable:** Indexed in vector embeddings
 - ✅ **Categorization:** Enables smart features (auto-grouping, recommendations)
+
+### Complementary Feature: Query Tagging
+
+While Auto-Tagging generates tags for **contacts**, **Query Tagging** generates tags for **search queries** using the SAME vocabulary:
+
+| Feature | Auto-Tagging | Query Tagging |
+|---------|--------------|---------------|
+| **Target** | Contacts | Search queries |
+| **When** | Save time | Search time |
+| **Purpose** | Categorize contacts | Align query with contacts |
+| **Caching** | Same 3-tier | Same 3-tier |
+| **Tags** | Same vocabulary | Same vocabulary |
+
+**How They Work Together:**
+```
+Contact: "John Doe, Tesla, Engineer"
+  → Auto-Tagging → tags: ["tesla-employee", "engineer", "automotive"]
+  → Vector Document: "... [Semantic Tags]: tesla-employee, engineer, automotive"
+
+Query: "Who works at Tesla?"
+  → Query Tagging → tags: ["tesla-employee", "automotive"]
+  → Enhanced Query: "Who works at Tesla? [Query Tags]: tesla-employee, automotive"
+
+Result: Better embedding alignment = more accurate search results
+```
+
+**See:** [QUERY_TAGGING_ARCHITECTURE.md](QUERY_TAGGING_ARCHITECTURE.md) for implementation details.
 
 ---
 
@@ -768,7 +796,16 @@ Total Session:
       cost: 0.005,
       isBillableRun: true,
       timestamp: '2025-11-22T10:00:00Z',
-      metadata: { city: 'San Francisco', country: 'US' }
+      metadata: {
+        city: 'San Francisco',
+        country: 'US',
+        budgetCheck: {
+          canAfford: true,
+          reason: 'within_limits',
+          remainingBudget: 2.95,
+          remainingRuns: 28
+        }
+      }
     },
     {
       stepLabel: 'Step 2: Venue Search (API)',
@@ -777,22 +814,90 @@ Total Session:
       cost: 0.032,
       isBillableRun: true,
       timestamp: '2025-11-22T10:00:01Z',
-      metadata: { venueName: 'Starbucks Reserve', placeId: 'ChIJ...' }
+      metadata: {
+        venueName: 'Starbucks Reserve',
+        placeId: 'ChIJ...',
+        budgetCheck: {
+          canAfford: true,
+          reason: 'within_limits',
+          remainingBudget: 2.95,
+          remainingRuns: 28
+        }
+      }
     },
     {
-      stepLabel: 'Step 3: Auto Tag Generation',  // NEW
+      stepLabel: 'Auto-Tagging (Static Cache)',  // NEW
       operationId: 'op_125',
       feature: 'contact_auto_tagging',
-      cost: 0.0000002,
-      isBillableRun: true,
+      cost: 0,
+      isBillableRun: false,
       timestamp: '2025-11-22T10:00:02Z',
-      metadata: { tagsGenerated: 5, tags: ['coffee-shop-meeting', 'tech-executive', ...] }
+      metadata: {
+        tagsGenerated: 4,
+        tagsParsed: ['automotive-industry', 'tesla-employee', 'electric-vehicles', 'technology'],
+        cacheType: 'static',
+        budgetCheck: {
+          canAfford: true,
+          reason: 'within_limits',
+          remainingBudget: 2.95,
+          remainingRuns: 28
+        }
+      }
     }
   ],
   createdAt: Timestamp,
   completedAt: Timestamp
 }
 ```
+
+### budgetCheck Propagation in Auto-Tagging
+
+The `budgetCheck` object from the initial affordability check is propagated to all steps, including auto-tagging. This provides full budget visibility across the entire enrichment pipeline.
+
+**How budgetCheck is Passed:**
+
+```javascript
+// In exchangeService.js or LocationEnrichmentService.js
+const affordabilityCheck = await CostTrackingService.canAffordGeneric(
+  userId, 'AIUsage', estimatedCost, true
+);
+
+// Pass to AutoTaggingService
+const taggedContact = await AutoTaggingService.tagContact(
+  contact,
+  userId,
+  userData,
+  sessionId,
+  { budgetCheck: affordabilityCheck }  // ← Pass budget context
+);
+```
+
+**In AutoTaggingService, record with budgetCheck:**
+
+```javascript
+await CostTrackingService.recordUsage({
+  userId,
+  usageType: 'AIUsage',
+  feature: 'contact_auto_tagging',
+  cost: actualCost,
+  isBillableRun: true,
+  provider: 'static_cache',  // or 'redis_cache' or 'gemini-firebase'
+  budgetCheck,  // ← Stored in step metadata
+  metadata: {
+    tagsGenerated: result.tags.length,
+    tagsParsed: result.tags,
+    cacheType: 'static'
+  },
+  sessionId,
+  stepLabel: 'Auto-Tagging (Static Cache)'
+});
+```
+
+**Benefits:**
+- ✅ Full budget visibility at each enrichment step
+- ✅ Debug budget issues by inspecting SessionUsage
+- ✅ Consistent tracking across location services and tagging
+- ✅ Audit trail of budget state throughout enrichment
 
 ---
 
