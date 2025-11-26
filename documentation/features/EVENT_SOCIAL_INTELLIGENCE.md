@@ -491,8 +491,8 @@ When user requests data deletion:
 - `app/api/events/[eventId]/attendees/route.js` - GET with visibility filtering
 - `firestore.indexes.json` - Added events indexes
 
-**Test Coverage (55 tests, 100% pass rate):**
-- `runEventTests.mjs` - Test runner for all 55 tests
+**Test Coverage (65 tests, 100% pass rate):**
+- `runEventTests.mjs` - Test runner for all 65 tests
 - `lib/services/serviceEvent/tests/eventServiceTests.js` (15 tests)
   - CRUD: Create, Get, Update, Delete events
   - Validation: Missing fields, invalid dates
@@ -505,10 +505,30 @@ When user requests data deletion:
 - `test-loader.mjs` + `test-resolver.mjs` (ESM loader for @/ alias)
 
 ### Sprint 3: Frontend - Event Panel
-- [ ] Create `EventPanel.jsx` component
-- [ ] Integrate with `ContactsMap.jsx`
-- [ ] Add RSVP interface
-- [ ] Add intent selection UI
+- [x] Create `EventPanel.jsx` component
+- [x] Integrate with `ContactsMap.jsx`
+- [x] Add RSVP interface
+- [x] Add intent selection UI
+
+**Completed Files:**
+- `app/dashboard/(dashboard pages)/contacts/components/EventPanel.jsx` (550 lines)
+  - RSVP status buttons (Attending, Maybe, Not Going)
+  - Primary intent dropdown + secondary intents multi-select (max 3)
+  - 4-tier visibility mode selection with descriptions
+  - Looking for / Offering selections (collapsible)
+  - API integration with attendance endpoints
+- `app/dashboard/(dashboard pages)/contacts/components/ContactsMap.jsx` (modified)
+  - Event markers (purple calendar icons) on map
+  - Right-side sliding EventPanel integration
+  - Event marker click handler
+
+**Test Coverage (10 new tests):**
+- `lib/services/serviceEvent/tests/eventPanelApiTests.js` (10 tests)
+  - RSVP statuses (confirmed, maybe, declined)
+  - Primary + secondary intents
+  - All 4 visibility modes
+  - Looking for / offering options
+  - Update and remove RSVP
 
 ### Sprint 4: AI Matching Service
 - [ ] Create `matchingService.js`
@@ -552,7 +572,7 @@ When user requests data deletion:
 
 ---
 
-**Status**: 🚧 In Progress - Sprint 2 Complete (Backend Services + Tests)
+**Status**: 🚧 In Progress - Sprint 3 Complete (Frontend Event Panel)
 **Last Updated**: 2025-11-27
 **Author**: Claude Code
-**Progress**: 2/7 Sprints Complete (with full test coverage - 55 tests passing)
+**Progress**: 3/7 Sprints Complete (65 tests passing)

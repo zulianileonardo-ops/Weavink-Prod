@@ -3386,7 +3386,8 @@
         "getUpcomingEvents",
         "getEventStats",
         "runEventServiceTests",
-        "runVisibilityServiceClassTests"
+        "runVisibilityServiceClassTests",
+        "runEventPanelApiTests"
       ],
       "components": [
         "EventPanel",

@@ -5,6 +5,7 @@ import { Loader } from '@googlemaps/js-api-loader';
 import GroupClusterManager from './ContactsMap/GroupClusterManager';
 import ContactProfileModal from './ContactsMap/ContactProfileModal';
 import { MapLegend } from './ContactsMap/MapLegend';
+import EventPanel from './EventPanel';
 import { useTranslation } from '@/lib/translation/useTranslation';
 
 // Modern minimalist map styles - Light theme
@@ -64,7 +65,14 @@ export default function ContacctsMap({
     groups = [],
     selectedContactId = null,
     onContactUpdate = null,
-    focusLocation = null
+    focusLocation = null,
+    // Event-related props (Sprint 3)
+    events = [],
+    selectedEvent = null,
+    onEventSelect = null,
+    onEventAttendanceUpdate = null,
+    userContactId = null,
+    subscriptionLevel = 'pro'
 }) {
     // Map refs
     const mapRef = useRef(null);
@@ -85,6 +93,12 @@ export default function ContacctsMap({
     const [selectedContact, setSelectedContact] = useState(null);
     const [showContactProfile, setShowContactProfile] = useState(false);
     const [selectedGroupIds, setSelectedGroupIds] = useState([]);
+
+    // Event panel state (Sprint 3)
+    const [showEventPanel, setShowEventPanel] = useState(false);
+    const [selectedEventForPanel, setSelectedEventForPanel] = useState(null);
+    const [eventParticipation, setEventParticipation] = useState(null);
+    const eventMarkersRef = useRef([]);
 
     const { t } = useTranslation();
 
@@ -269,6 +283,44 @@ export default function ContacctsMap({
             }
         });
     }, []);
+
+    // Handle event marker click (Sprint 3)
+    const handleEventMarkerClick = useCallback((event) => {
+        console.log(`📅 Event marker clicked: ${event.name || event.title}`);
+
+        const map = mapInstanceRef.current;
+        if (map && event.location) {
+            const lat = event.location.latitude || event.location.lat;
+            const lng = event.location.longitude || event.location.lng;
+            if (lat && lng) {
+                map.panTo({ lat, lng });
+                if (map.getZoom() < 14) {
+                    map.setZoom(14);
+                }
+            }
+        }
+
+        // Find existing participation for this event
+        const participation = event.participations?.find(
+            p => p.contactId === userContactId
+        ) || null;
+
+        setSelectedEventForPanel(event);
+        setEventParticipation(participation);
+        setShowEventPanel(true);
+
+        if (onEventSelect) {
+            onEventSelect(event);
+        }
+    }, [userContactId, onEventSelect]);
+
+    // Handle event panel save
+    const handleEventPanelSave = useCallback((participation) => {
+        if (onEventAttendanceUpdate && selectedEventForPanel) {
+            onEventAttendanceUpdate(selectedEventForPanel.id, participation);
+        }
+        setEventParticipation(participation);
+    }, [selectedEventForPanel, onEventAttendanceUpdate]);
 
     // Initialize Google Map once per open; avoid feeding readiness state back into dependencies
     useEffect(() => {
@@ -518,6 +570,76 @@ export default function ContacctsMap({
             }
         }
     }, [isMapReady, focusLocation]);
+
+    // Effect to create event markers (Sprint 3)
+    useEffect(() => {
+        if (!isMapReady || !mapInstanceRef.current || !events || events.length === 0) return;
+
+        const map = mapInstanceRef.current;
+
+        // Clean up existing event markers
+        eventMarkersRef.current.forEach(marker => {
+            if (marker) marker.setMap(null);
+        });
+        eventMarkersRef.current = [];
+
+        // Filter events with valid location data
+        const eventsWithLocation = events.filter(event => {
+            const loc = event.location;
+            if (!loc) return false;
+            const lat = loc.latitude || loc.lat;
+            const lng = loc.longitude || loc.lng;
+            return lat && lng && typeof lat === 'number' && typeof lng === 'number';
+        });
+
+        console.log(`📅 Creating ${eventsWithLocation.length} event markers`);
+
+        // Create markers for each event
+        eventsWithLocation.forEach(event => {
+            const loc = event.location;
+            const lat = loc.latitude || loc.lat;
+            const lng = loc.longitude || loc.lng;
+
+            // Create event marker with calendar icon style
+            const marker = new google.maps.Marker({
+                position: { lat, lng },
+                map: map,
+                title: event.name || event.title || 'Event',
+                icon: {
+                    path: 'M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z',
+                    fillColor: '#8B5CF6', // Purple color for events
+                    fillOpacity: 1,
+                    strokeColor: '#ffffff',
+                    strokeWeight: 2,
+                    scale: 1.2,
+                    anchor: new google.maps.Point(12, 22)
+                },
+                animation: google.maps.Animation.DROP,
+                zIndex: 1000 // Higher than contact markers
+            });
+
+            // Add click handler
+            marker.addListener('click', () => {
+                handleEventMarkerClick(event);
+            });
+
+            eventMarkersRef.current.push(marker);
+        });
+
+        // Cleanup on unmount
+        return () => {
+            eventMarkersRef.current.forEach(marker => {
+                if (marker) marker.setMap(null);
+            });
+        };
+    }, [isMapReady, events, handleEventMarkerClick]);
+
+    // Open event panel if selectedEvent prop is passed
+    useEffect(() => {
+        if (selectedEvent && isMapReady) {
+            handleEventMarkerClick(selectedEvent);
+        }
+    }, [selectedEvent, isMapReady, handleEventMarkerClick]);
 
     // Navigation functions
     const fitToAllContacts = useCallback(() => {
@@ -824,6 +946,21 @@ export default function ContacctsMap({
                     contact={selectedContact}
                     groups={groups}
                     onContactUpdate={onContactUpdate}
+                />
+
+                {/* Event Panel (Sprint 3) */}
+                <EventPanel
+                    isOpen={showEventPanel}
+                    onClose={() => {
+                        setShowEventPanel(false);
+                        setSelectedEventForPanel(null);
+                        setEventParticipation(null);
+                    }}
+                    event={selectedEventForPanel}
+                    contactId={userContactId}
+                    existingParticipation={eventParticipation}
+                    onSave={handleEventPanelSave}
+                    subscriptionLevel={subscriptionLevel}
                 />
             </div>
         </div>

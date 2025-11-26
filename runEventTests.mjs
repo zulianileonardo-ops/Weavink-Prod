@@ -1,12 +1,13 @@
 /**
  * Event Social Intelligence Test Runner
  *
- * Runs all 55 tests across 5 test suites:
+ * Runs all 65 tests across 6 test suites:
  * - Neo4j Event Methods (12 tests)
  * - Visibility System (8 tests)
  * - AI Matching (10 tests)
  * - EventService Firestore (15 tests)
  * - VisibilityService Class (10 tests)
+ * - EventPanel API Integration (10 tests) - Sprint 3
  *
  * All tests connect to REAL databases (Neo4j + Firestore) - no mocks!
  *
@@ -22,11 +23,12 @@ import { runEventVisibilityTests } from './lib/services/serviceEvent/tests/event
 import { runEventMatchingTests } from './lib/services/serviceEvent/tests/eventMatchingTests.js';
 import { runEventServiceTests } from './lib/services/serviceEvent/tests/eventServiceTests.js';
 import { runVisibilityServiceClassTests } from './lib/services/serviceEvent/tests/visibilityServiceClassTests.js';
+import { runEventPanelApiTests } from './lib/services/serviceEvent/tests/eventPanelApiTests.js';
 
 console.log('\n========================================');
 console.log('🎯 EVENT SOCIAL INTELLIGENCE TEST RUNNER');
 console.log('========================================');
-console.log('Running all 55 tests across 5 suites\n');
+console.log('Running all 65 tests across 6 suites\n');
 console.log('Prerequisites:');
 console.log('  - NEO4J_URI set in .env');
 console.log('  - NEO4J_USERNAME set in .env');
@@ -125,6 +127,22 @@ try {
   console.log(`${visibilityClassResults.success ? '✅' : '❌'} VisibilityService: ${visibilityClassResults.passed}/${visibilityClassResults.passed + visibilityClassResults.failed} passed`);
 
   // ================================================================
+  // Suite 6: EventPanel API Integration (10 tests) - Sprint 3
+  // ================================================================
+  console.log('\n📱 Running EventPanel API Integration Tests (10 tests)...');
+  const eventPanelResults = await runEventPanelApiTests(`test-panel-${Date.now()}`);
+  results.suites.eventPanel = {
+    name: 'EventPanel API Integration',
+    passed: eventPanelResults.passed,
+    failed: eventPanelResults.failed,
+    total: eventPanelResults.passed + eventPanelResults.failed,
+    success: eventPanelResults.success
+  };
+  results.totalPassed += eventPanelResults.passed;
+  results.totalFailed += eventPanelResults.failed;
+  console.log(`${eventPanelResults.success ? '✅' : '❌'} EventPanel: ${eventPanelResults.passed}/${eventPanelResults.passed + eventPanelResults.failed} passed`);
+
+  // ================================================================
   // Final Summary
   // ================================================================
   results.totalTests = results.totalPassed + results.totalFailed;
@@ -151,7 +169,7 @@ try {
   console.log('\n========================================\n');
 
   if (results.totalFailed === 0) {
-    console.log('🎉 ALL 55 TESTS PASSED! EVENT SOCIAL INTELLIGENCE VERIFIED!\n');
+    console.log('🎉 ALL 65 TESTS PASSED! EVENT SOCIAL INTELLIGENCE VERIFIED!\n');
     process.exit(0);
   } else {
     console.log(`❌ ${results.totalFailed} test(s) failed. Please review the logs above.\n`);
