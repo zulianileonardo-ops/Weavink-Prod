@@ -1,7 +1,7 @@
 {
   "metadata": {
     "project": "Weavink Documentation",
-    "last_updated": "2025-11-26",
+    "last_updated": "2025-11-27",
     "total_guides": 100,
     "version": "1.0.0"
   },
@@ -3373,7 +3373,8 @@
         "meeting-zones",
         "neo4j",
         "map",
-        "visibility"
+        "visibility",
+        "testing"
       ],
       "functions": [
         "upsertEvent",
@@ -3383,16 +3384,18 @@
         "getGhostModeAttendees",
         "findEventMatches",
         "getUpcomingEvents",
-        "getEventStats"
+        "getEventStats",
+        "runEventServiceTests",
+        "runVisibilityServiceClassTests"
       ],
       "components": [
         "EventPanel",
         "MeetingZones",
         "ContactsMap"
       ],
-      "status": "draft",
+      "status": "in-progress",
       "created": "2025-11-26",
-      "updated": "2025-11-26",
+      "updated": "2025-11-27",
       "related_guides": [
         "features-intelligent-groups-neo4j-083",
         "rgpd-compliance-matrix-001"

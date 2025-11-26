@@ -1,13 +1,13 @@
 # Weavink Documentation Index
 
-**Last Updated:** 2025-11-25
-**Total Guides:** 99
+**Last Updated:** 2025-11-27
+**Total Guides:** 100
 
 ## Quick Navigation
 - [Admin System](#admin-system) (9 guides)
 - [Analytics & Tracking](#analytics-tracking) (3 guides)
 - [RGPD/GDPR Compliance](#rgpd-gdpr-compliance) (13 guides)
-- [Feature Implementations](#feature-implementations) (28 guides)
+- [Feature Implementations](#feature-implementations) (29 guides)
 - [Technical Infrastructure](#technical-infrastructure) (23 guides)
 - [Testing & QA](#testing-qa) (15 guides)
 - [General Documentation](#general-documentation) (4 guides)
@@ -202,6 +202,11 @@
 **Summary:** Enhances contact timeline by grouping related events (exchanges, follow-ups, meetings) for better readability and context.
 **Tags:** contacts, timeline, event-grouping, ui-enhancement, ux-improvement
 **Related:** [features-enhanced-reviews-019](#features-enhanced-reviews-019)
+
+### EVENT_SOCIAL_INTELLIGENCE.md
+**Summary:** Comprehensive guide to the Event Social Intelligence system including Ghost Mode, AI matching, meeting zones, and the 4-tier visibility system for professional events.
+**Tags:** events, social-intelligence, ghost-mode, ai-matching, meeting-zones, neo4j, map, visibility, testing
+**Related:** [features-intelligent-groups-neo4j-083](#features-intelligent-groups-neo4j-083), [rgpd-compliance-matrix-001](#rgpd-compliance-matrix-001)
 
 ### GEOCODING_SYSTEM_GUIDE.md
 **Summary:** Comprehensive technical guide for the geocoding system using Google Maps API. Covers 3-step enrichment pipeline: Step 1 (Reverse Geocoding $0.005), Step 2 (Venue Search $0.032), Step 3 (AI Auto-Tagging $0.0000002). Includes session-based tracking, dual budget system (API + AI), cost tracking in SessionUsage/ApiUsage collections, budget management, location data model (PII vs business context), GDPR compliance with anonymization, subscription tier limits, monitoring, debugging, and troubleshooting. Updated 2025-11-22 with Phase 5 integration and tier validation bug fixes.

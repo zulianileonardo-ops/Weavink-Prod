@@ -1,12 +1,14 @@
 /**
  * Event Social Intelligence Test Runner
  *
- * Runs all 30 tests across 3 test suites:
+ * Runs all 55 tests across 5 test suites:
  * - Neo4j Event Methods (12 tests)
  * - Visibility System (8 tests)
  * - AI Matching (10 tests)
+ * - EventService Firestore (15 tests)
+ * - VisibilityService Class (10 tests)
  *
- * All tests connect to REAL Neo4j database - no mocks!
+ * All tests connect to REAL databases (Neo4j + Firestore) - no mocks!
  *
  * Run with: node -r dotenv/config runEventTests.mjs
  */
@@ -18,15 +20,19 @@ config();
 import { runEventNeo4jTests } from './lib/services/serviceEvent/tests/eventNeo4jTests.js';
 import { runEventVisibilityTests } from './lib/services/serviceEvent/tests/eventVisibilityTests.js';
 import { runEventMatchingTests } from './lib/services/serviceEvent/tests/eventMatchingTests.js';
+import { runEventServiceTests } from './lib/services/serviceEvent/tests/eventServiceTests.js';
+import { runVisibilityServiceClassTests } from './lib/services/serviceEvent/tests/visibilityServiceClassTests.js';
 
 console.log('\n========================================');
 console.log('🎯 EVENT SOCIAL INTELLIGENCE TEST RUNNER');
 console.log('========================================');
-console.log('Running all 30 tests across 3 suites\n');
+console.log('Running all 55 tests across 5 suites\n');
 console.log('Prerequisites:');
 console.log('  - NEO4J_URI set in .env');
 console.log('  - NEO4J_USERNAME set in .env');
 console.log('  - NEO4J_PASSWORD set in .env');
+console.log('  - FIREBASE_PROJECT_ID set in .env');
+console.log('  - GOOGLE_APPLICATION_CREDENTIALS set');
 console.log('========================================\n');
 
 const startTime = Date.now();
@@ -87,6 +93,38 @@ try {
   console.log(`${matchingResults.success ? '✅' : '❌'} Matching: ${matchingResults.passed}/${matchingResults.passed + matchingResults.failed} passed`);
 
   // ================================================================
+  // Suite 4: EventService Firestore (15 tests)
+  // ================================================================
+  console.log('\n🔥 Running EventService Firestore Tests (15 tests)...');
+  const eventServiceResults = await runEventServiceTests(`test-evtsvc-${Date.now()}`);
+  results.suites.eventService = {
+    name: 'EventService Firestore',
+    passed: eventServiceResults.passed,
+    failed: eventServiceResults.failed,
+    total: eventServiceResults.passed + eventServiceResults.failed,
+    success: eventServiceResults.success
+  };
+  results.totalPassed += eventServiceResults.passed;
+  results.totalFailed += eventServiceResults.failed;
+  console.log(`${eventServiceResults.success ? '✅' : '❌'} EventService: ${eventServiceResults.passed}/${eventServiceResults.passed + eventServiceResults.failed} passed`);
+
+  // ================================================================
+  // Suite 5: VisibilityService Class (10 tests)
+  // ================================================================
+  console.log('\n🔐 Running VisibilityService Class Tests (10 tests)...');
+  const visibilityClassResults = await runVisibilityServiceClassTests(`test-vissvc-${Date.now()}`);
+  results.suites.visibilityClass = {
+    name: 'VisibilityService Class',
+    passed: visibilityClassResults.passed,
+    failed: visibilityClassResults.failed,
+    total: visibilityClassResults.passed + visibilityClassResults.failed,
+    success: visibilityClassResults.success
+  };
+  results.totalPassed += visibilityClassResults.passed;
+  results.totalFailed += visibilityClassResults.failed;
+  console.log(`${visibilityClassResults.success ? '✅' : '❌'} VisibilityService: ${visibilityClassResults.passed}/${visibilityClassResults.passed + visibilityClassResults.failed} passed`);
+
+  // ================================================================
   // Final Summary
   // ================================================================
   results.totalTests = results.totalPassed + results.totalFailed;
@@ -113,7 +151,7 @@ try {
   console.log('\n========================================\n');
 
   if (results.totalFailed === 0) {
-    console.log('🎉 ALL 30 TESTS PASSED! EVENT SOCIAL INTELLIGENCE VERIFIED!\n');
+    console.log('🎉 ALL 55 TESTS PASSED! EVENT SOCIAL INTELLIGENCE VERIFIED!\n');
     process.exit(0);
   } else {
     console.log(`❌ ${results.totalFailed} test(s) failed. Please review the logs above.\n`);
