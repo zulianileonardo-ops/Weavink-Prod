@@ -1,6 +1,7 @@
 // app/dashboard/(dashboard pages)/contacts/components/GroupModalComponents/CreateGroupTab.jsx
 "use client"
 import { useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import ContactSelector from './creategroup/ContactSelector';
 import TimeFrameSelector from './creategroup/TimeFrameSelector';
 import LocationSelector from './creategroup/LocationSelector'; // TODO: Uncomment when LocationSelector is refactored
@@ -136,15 +137,20 @@ function GroupTypeSelector({ value, onChange, isSubmitting }) {
 
 function GroupDescriptionInput({ value, onChange, isSubmitting, suggestionMetadata, groupName }) {
     const [isGenerating, setIsGenerating] = useState(false);
+    const { currentUser } = useAuth();
 
     const generateDescription = async () => {
-        if (!suggestionMetadata) return;
+        if (!suggestionMetadata || !currentUser) return;
 
         setIsGenerating(true);
         try {
+            const token = await currentUser.getIdToken();
             const response = await fetch('/api/user/contacts/graph/generate-description', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify({
                     groupName: groupName || suggestionMetadata?.name,
                     type: suggestionMetadata?.type,

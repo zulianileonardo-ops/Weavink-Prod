@@ -1,8 +1,8 @@
 {
   "metadata": {
     "project": "Weavink Documentation",
-    "last_updated": "2025-11-25",
-    "total_guides": 99,
+    "last_updated": "2025-11-26",
+    "total_guides": 100,
     "version": "1.0.0"
   },
   "categories": {
@@ -80,7 +80,8 @@
         "features-location-services-auto-tagging-080",
         "features-contact-enrichment-021",
         "features-intelligent-groups-neo4j-083",
-        "features-tiered-confidence-021"
+        "features-tiered-confidence-021",
+        "features-event-social-intelligence-084"
       ]
     },
     "technical": {
@@ -3356,6 +3357,46 @@
       "status": "draft",
       "created": "2025-11-25",
       "updated": "2025-11-25"
+    },
+    {
+      "id": "features-event-social-intelligence-084",
+      "title": "Event Social Intelligence System",
+      "filename": "EVENT_SOCIAL_INTELLIGENCE.md",
+      "path": "documentation/features/EVENT_SOCIAL_INTELLIGENCE.md",
+      "category": "features",
+      "summary": "Comprehensive guide to the Event Social Intelligence system including Ghost Mode, AI matching, meeting zones, and the 4-tier visibility system for professional events.",
+      "tags": [
+        "events",
+        "social-intelligence",
+        "ghost-mode",
+        "ai-matching",
+        "meeting-zones",
+        "neo4j",
+        "map",
+        "visibility"
+      ],
+      "functions": [
+        "upsertEvent",
+        "createAttendsRelationship",
+        "createMatchedAtRelationship",
+        "getEventAttendees",
+        "getGhostModeAttendees",
+        "findEventMatches",
+        "getUpcomingEvents",
+        "getEventStats"
+      ],
+      "components": [
+        "EventPanel",
+        "MeetingZones",
+        "ContactsMap"
+      ],
+      "status": "draft",
+      "created": "2025-11-26",
+      "updated": "2025-11-26",
+      "related_guides": [
+        "features-intelligent-groups-neo4j-083",
+        "rgpd-compliance-matrix-001"
+      ]
     }
   ]
 }
