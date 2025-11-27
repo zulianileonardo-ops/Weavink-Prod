@@ -300,10 +300,10 @@ export default function ContacctsMap({
             }
         }
 
-        // Find existing participation for this event
-        const participation = event.participations?.find(
-            p => p.contactId === userContactId
-        ) || null;
+        // Find existing participation - check myParticipation first (from API)
+        const participation = event.myParticipation ||
+            event.participations?.find(p => p.contactId === userContactId) ||
+            null;
 
         setSelectedEventForPanel(event);
         setEventParticipation(participation);

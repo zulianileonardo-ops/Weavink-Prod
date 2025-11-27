@@ -138,6 +138,36 @@ function ContactsPage() {
         fetchEvents();
     }, [currentUser]);
 
+    // Handle event attendance update
+    const handleEventAttendanceUpdate = useCallback((eventId, participation) => {
+        setEvents(prevEvents => prevEvents.map(event => {
+            if (event.id !== eventId) return event;
+
+            // Update or add participation
+            const existingParticipations = event.participations || [];
+            const participationIndex = existingParticipations.findIndex(
+                p => p.contactId === participation?.contactId
+            );
+
+            let newParticipations;
+            if (!participation) {
+                // Remove participation
+                newParticipations = existingParticipations.filter(
+                    p => p.contactId !== currentUser?.uid
+                );
+            } else if (participationIndex >= 0) {
+                // Update existing
+                newParticipations = [...existingParticipations];
+                newParticipations[participationIndex] = participation;
+            } else {
+                // Add new
+                newParticipations = [...existingParticipations, participation];
+            }
+
+            return { ...event, participations: newParticipations, myParticipation: participation };
+        }));
+    }, [currentUser?.uid]);
+
     // Translations
     const translations = useMemo(() => {
         if (!isInitialized) return {};
@@ -808,6 +838,8 @@ function ContactsPage() {
                 // Common props
                 hasFeature={hasFeature}
                 usageInfo={usageInfo}
+                userContactId={currentUser?.uid}
+                onEventAttendanceUpdate={handleEventAttendanceUpdate}
             />
 
             {/* Graph Explorer for Search Results */}

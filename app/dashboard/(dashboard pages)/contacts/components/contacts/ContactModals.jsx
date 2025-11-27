@@ -67,7 +67,9 @@ export default function ContactModals({
 
     // Common props
     hasFeature,
-    usageInfo
+    usageInfo,
+    userContactId,
+    onEventAttendanceUpdate
 }) {
     return (
         <>
@@ -124,6 +126,8 @@ export default function ContactModals({
                 selectedContactId={selectedContactForMap?.id}
                 focusLocation={focusLocation}
                 onContactUpdate={onRefreshData}
+                userContactId={userContactId}
+                onEventAttendanceUpdate={onEventAttendanceUpdate}
             />
 
             {/* Share Contacts Modal 

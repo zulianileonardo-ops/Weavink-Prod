@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { toast } from 'react-hot-toast';
+import { useAuth } from '@/contexts/AuthContext';
 import {
   Globe,
   Users,
@@ -85,6 +86,9 @@ export default function EventPanel({
   onSave = null,
   subscriptionLevel = 'pro'
 }) {
+  // Auth
+  const { currentUser } = useAuth();
+
   // Form state
   const [status, setStatus] = useState('confirmed');
   const [visibility, setVisibility] = useState(EVENT_VISIBILITY_MODES.FRIENDS);
@@ -179,9 +183,13 @@ export default function EventPanel({
       // Determine if creating or updating
       const method = existingParticipation ? 'PUT' : 'POST';
 
+      const token = await currentUser.getIdToken();
       const response = await fetch(`/api/events/${event.id}/attendance`, {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify(participationData)
       });
 
@@ -215,9 +223,13 @@ export default function EventPanel({
     setIsLoading(true);
 
     try {
+      const token = await currentUser.getIdToken();
       const response = await fetch(`/api/events/${event.id}/attendance`, {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({ contactId })
       });
 
@@ -267,7 +279,7 @@ export default function EventPanel({
 
   return (
     <div
-      className={`fixed top-0 right-0 h-full w-full md:w-96 bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out ${
+      className={`absolute top-4 right-4 bottom-4 w-full md:w-96 bg-white shadow-2xl z-40 rounded-2xl transform transition-transform duration-300 ease-in-out ${
         isOpen ? 'translate-x-0' : 'translate-x-full'
       } overflow-hidden flex flex-col`}
     >

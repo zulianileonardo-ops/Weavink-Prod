@@ -984,6 +984,11 @@ node --experimental-loader ./loader.mjs -r dotenv/config runEventTests.mjs
 - [x] Wire events data flow (page.jsx → ContactModals → ContactsMap)
 - [x] Add authenticated event fetching with Firebase headers
 - [x] Configure event marker size (scale: 2.0) for visibility
+- [x] Add Firebase auth to EventPanel attendance API calls
+- [x] Wire `userContactId` prop chain for RSVP identification
+- [x] Implement real-time state updates via `onEventAttendanceUpdate` callback
+- [x] Add `myParticipation` field to API response for persistent registration status
+- [x] Style EventPanel with rounded corners and proper positioning
 
 **Completed Files:**
 - `app/dashboard/(dashboard pages)/contacts/components/EventPanel.jsx` (550 lines)
@@ -992,26 +997,76 @@ node --experimental-loader ./loader.mjs -r dotenv/config runEventTests.mjs
   - 4-tier visibility mode selection with descriptions
   - Looking for / Offering selections (collapsible)
   - API integration with attendance endpoints
+  - **Firebase auth**: `useAuth` hook, `currentUser.getIdToken()` for Bearer token
+  - **Auth headers**: Authorization header on POST/PUT/DELETE attendance calls
+  - **Props**: `userContactId` for identifying RSVP user, `onSave` callback
+  - **Styling**: Rounded corners (`rounded-2xl`), margin from edges (`top-4 right-4 bottom-4`)
 - `app/dashboard/(dashboard pages)/contacts/components/ContactsMap.jsx` (modified)
   - Event markers (purple calendar icons, scale: 2.0 for visibility)
   - Right-side sliding EventPanel integration
   - Event marker click handler
   - Events prop wired from page → ContactModals → ContactsMap
+  - **Props**: `userContactId`, `onEventAttendanceUpdate` callback
+  - **Participation lookup**: Checks `event.myParticipation` first (from API), then `participations` array
 - `app/dashboard/(dashboard pages)/contacts/page.jsx` (modified)
   - Added `events` state and fetch with Firebase auth headers
   - Passes `events` prop to ContactModals
+  - **New callback**: `handleEventAttendanceUpdate(eventId, participation)`
+  - **State updates**: Updates both `participations` array AND `myParticipation` field
+  - **Props to ContactModals**: `userContactId={currentUser?.uid}`, `onEventAttendanceUpdate`
 - `app/dashboard/(dashboard pages)/contacts/components/contacts/ContactModals.jsx` (modified)
   - Accepts `events` prop and passes to ContactsMap
+  - **New props**: `userContactId`, `onEventAttendanceUpdate` - passed through to ContactsMap
+- `lib/services/serviceEvent/server/eventService.js` (modified)
+  - **New method**: `getUserParticipation({ eventId, userId })` - queries `participants` subcollection
+  - **Modified**: `getUserEvents()` now returns `myParticipation` for each event
+  - Enables persistent registration status across page refreshes
 
 **Event Map Data Flow:**
 ```
 1. page.jsx mounts
 2. useEffect fetches /api/events?limit=100 with Firebase auth headers
 3. API returns user's events + all public events (isPublic: true)
+   - Each event includes `myParticipation` field (user's registration status)
 4. Events state passed: page.jsx → ContactModals → ContactsMap
+   - Also passes: userContactId={currentUser?.uid}
+   - Also passes: onEventAttendanceUpdate callback
 5. ContactsMap creates markers for events with valid lat/lng
 6. Purple calendar markers (scale: 2.0) rendered with DROP animation
 7. Click marker → opens EventPanel with event details
+8. EventPanel checks event.myParticipation to show current registration status
+```
+
+**RSVP Authentication Flow:**
+```
+1. User clicks "Confirm RSVP" in EventPanel
+2. EventPanel gets token: currentUser.getIdToken()
+3. EventPanel sends POST /api/events/{id}/attendance
+   - Headers: { Authorization: Bearer ${token} }
+   - Body: { contactId, visibility, intent, ... }
+4. API validates Firebase token and processes RSVP
+5. EventPanel calls onSave(eventId, participation) callback
+6. Callback chain: EventPanel → ContactsMap → page.jsx
+7. page.jsx updates events state with new participation
+   - Updates both `participations` array AND `myParticipation`
+8. UI reflects new state immediately (no page refresh needed)
+```
+
+**State Update Callback Chain:**
+```
+EventPanel.handleSave()
+    ↓
+onSave(eventId, participation)
+    ↓
+ContactsMap passes to onEventAttendanceUpdate
+    ↓
+page.jsx handleEventAttendanceUpdate()
+    ↓
+setEvents() updates state:
+    - participations: [..., newParticipation]
+    - myParticipation: newParticipation
+    ↓
+EventPanel re-renders with updated status
 ```
 
 **Test Coverage (10 new tests):**
@@ -1333,11 +1388,12 @@ MEETUP_API_KEY=xxx
 
 ---
 
-**Status**: 🚧 In Progress - Sprint 5.5 Complete (Public Events & Bulk Import + Map Integration)
+**Status**: 🚧 In Progress - Sprint 5.5 Complete (Public Events & Bulk Import + Map Integration + Auth)
 **Last Updated**: 2025-11-27
 **Author**: Claude Code
 **Progress**: 5.5/7 Sprints Complete (115 tests passing - 100%)
 **Map Integration**: Events now display on ContactsMap with purple calendar markers (scale 2.0)
+**RSVP System**: Full authentication flow with Firebase tokens, real-time state updates, persistent registration status
 
 ### Test Suite Summary (115 total)
 | Suite | Tests | Status |
