@@ -3364,7 +3364,7 @@
       "filename": "EVENT_SOCIAL_INTELLIGENCE.md",
       "path": "documentation/features/EVENT_SOCIAL_INTELLIGENCE.md",
       "category": "features",
-      "summary": "Comprehensive guide to the Event Social Intelligence system including Ghost Mode, AI matching, meeting zones, and the 4-tier visibility system for professional events.",
+      "summary": "Comprehensive guide to the Event Social Intelligence system including Ghost Mode, AI matching, meeting zones, public events with admin-only creation, and bulk import API for importing multiple events.",
       "tags": [
         "events",
         "social-intelligence",
@@ -3374,7 +3374,10 @@
         "neo4j",
         "map",
         "visibility",
-        "testing"
+        "testing",
+        "public-events",
+        "bulk-import",
+        "admin"
       ],
       "functions": [
         "upsertEvent",
@@ -3410,7 +3413,9 @@
         "saveZones",
         "getExistingZones",
         "shouldRegenerateZones",
-        "runMeetingZoneServiceTests"
+        "runMeetingZoneServiceTests",
+        "validateEventData",
+        "bulkCreateEvents"
       ],
       "components": [
         "EventPanel",

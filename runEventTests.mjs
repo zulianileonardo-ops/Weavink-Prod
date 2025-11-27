@@ -1,7 +1,7 @@
 /**
  * Event Social Intelligence Test Runner
  *
- * Runs all 95+ tests across 8 test suites:
+ * Runs all 115+ tests across 10 test suites:
  * - Neo4j Event Methods (12 tests)
  * - Visibility System (8 tests)
  * - AI Matching (10 tests)
@@ -10,10 +10,12 @@
  * - EventPanel API Integration (10 tests) - Sprint 3
  * - MatchingService (15 tests) - Sprint 4
  * - MeetingZoneService (15 tests) - Sprint 5
+ * - Public Events (8 tests) - Sprint 5.5
+ * - Bulk Import (12 tests) - Sprint 5.5
  *
  * All tests connect to REAL databases (Neo4j + Firestore) - no mocks!
  *
- * Run with: node -r dotenv/config runEventTests.mjs
+ * Run with: node --experimental-loader ./loader.mjs -r dotenv/config runEventTests.mjs
  */
 
 // Load environment variables
@@ -28,11 +30,13 @@ import { runVisibilityServiceClassTests } from './lib/services/serviceEvent/test
 import { runEventPanelApiTests } from './lib/services/serviceEvent/tests/eventPanelApiTests.js';
 import { runMatchingServiceTests } from './lib/services/serviceEvent/tests/matchingServiceTests.js';
 import { runMeetingZoneServiceTests } from './lib/services/serviceEvent/tests/meetingZoneServiceTests.js';
+import { runPublicEventTests } from './lib/services/serviceEvent/tests/publicEventTests.js';
+import { runBulkImportTests } from './lib/services/serviceEvent/tests/bulkImportTests.js';
 
 console.log('\n========================================');
 console.log('🎯 EVENT SOCIAL INTELLIGENCE TEST RUNNER');
 console.log('========================================');
-console.log('Running all 95+ tests across 8 suites\n');
+console.log('Running all 115+ tests across 10 suites\n');
 console.log('Prerequisites:');
 console.log('  - NEO4J_URI set in .env');
 console.log('  - NEO4J_USERNAME set in .env');
@@ -177,6 +181,38 @@ try {
   results.totalPassed += meetingZoneResults.summary.passed;
   results.totalFailed += meetingZoneResults.summary.failed;
   console.log(`${meetingZoneResults.success ? '✅' : '❌'} MeetingZoneService: ${meetingZoneResults.summary.passed}/${meetingZoneResults.summary.passed + meetingZoneResults.summary.failed} passed`);
+
+  // ================================================================
+  // Suite 9: Public Events (8 tests) - Sprint 5.5
+  // ================================================================
+  console.log('\n🌐 Running Public Events Tests (8 tests)...');
+  const publicEventResults = await runPublicEventTests(`test-pubevt-${Date.now()}`);
+  results.suites.publicEvents = {
+    name: 'Public Events (Sprint 5.5)',
+    passed: publicEventResults.passed,
+    failed: publicEventResults.failed,
+    total: publicEventResults.passed + publicEventResults.failed,
+    success: publicEventResults.success
+  };
+  results.totalPassed += publicEventResults.passed;
+  results.totalFailed += publicEventResults.failed;
+  console.log(`${publicEventResults.success ? '✅' : '❌'} Public Events: ${publicEventResults.passed}/${publicEventResults.passed + publicEventResults.failed} passed`);
+
+  // ================================================================
+  // Suite 10: Bulk Import (12 tests) - Sprint 5.5
+  // ================================================================
+  console.log('\n📦 Running Bulk Import Tests (12 tests)...');
+  const bulkImportResults = await runBulkImportTests(`test-bulk-${Date.now()}`);
+  results.suites.bulkImport = {
+    name: 'Bulk Import (Sprint 5.5)',
+    passed: bulkImportResults.passed,
+    failed: bulkImportResults.failed,
+    total: bulkImportResults.passed + bulkImportResults.failed,
+    success: bulkImportResults.success
+  };
+  results.totalPassed += bulkImportResults.passed;
+  results.totalFailed += bulkImportResults.failed;
+  console.log(`${bulkImportResults.success ? '✅' : '❌'} Bulk Import: ${bulkImportResults.passed}/${bulkImportResults.passed + bulkImportResults.failed} passed`);
 
   // ================================================================
   // Final Summary
