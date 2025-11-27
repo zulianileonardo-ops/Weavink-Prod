@@ -52,3 +52,7 @@ exports.cleanupExpiredExports = cleanupExpiredExports;
 // Scheduled function: Monitor audit log retention (5-year TTL enforcement)
 const {monitorAuditLogRetention} = require("./auditLogMonitoring");
 exports.monitorAuditLogRetention = monitorAuditLogRetention;
+
+// Scheduled function: Daily Google Calendar sync (Sprint 6)
+const {scheduledCalendarSync} = require("./scheduledCalendarSync");
+exports.scheduledCalendarSync = scheduledCalendarSync;

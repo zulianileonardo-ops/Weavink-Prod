@@ -204,8 +204,8 @@
 **Related:** [features-enhanced-reviews-019](#features-enhanced-reviews-019)
 
 ### EVENT_SOCIAL_INTELLIGENCE.md
-**Summary:** Comprehensive guide to the Event Social Intelligence system including Ghost Mode, AI matching, meeting zones, and the 4-tier visibility system for professional events.
-**Tags:** events, social-intelligence, ghost-mode, ai-matching, meeting-zones, neo4j, map, visibility, testing
+**Summary:** Comprehensive guide to the Event Social Intelligence system including Ghost Mode, AI matching, meeting zones, Google Calendar OAuth2 integration, Eventbrite discovery, geocoding service, Firebase Cloud Function for daily sync, and subscription-based feature gating.
+**Tags:** events, social-intelligence, ghost-mode, ai-matching, meeting-zones, neo4j, map, visibility, testing, public-events, bulk-import, admin, google-calendar, oauth2, eventbrite, geocoding, discovery, firebase-functions
 **Related:** [features-intelligent-groups-neo4j-083](#features-intelligent-groups-neo4j-083), [rgpd-compliance-matrix-001](#rgpd-compliance-matrix-001)
 
 ### GEOCODING_SYSTEM_GUIDE.md

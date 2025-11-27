@@ -1310,52 +1310,573 @@ When a user calls `GET /api/events`:
 4. Sort by `startDate` and apply limit
 
 ### Sprint 6: Event Discovery & Automation
-- [ ] Google Calendar OAuth2 flow
-- [ ] Google Calendar sync service (read-only)
-- [ ] Geocoding service for location parsing
-- [ ] Eventbrite API integration
-- [ ] Meetup.com API integration (optional)
-- [ ] Event discovery UI (`/dashboard/events/discover`)
-- [ ] User preferences for auto-import
-- [ ] Scheduled sync (daily cron job)
+- [x] Google Calendar OAuth2 flow
+- [x] Google Calendar sync service (read-only)
+- [x] Geocoding service for location parsing
+- [x] Eventbrite API integration
+- [ ] Meetup.com API integration (optional - future)
+- [x] Event discovery UI (`/dashboard/events/discover`)
+- [x] User preferences for auto-import
+- [x] Scheduled sync (Firebase Cloud Function - daily at 3 AM UTC)
 
-**Files to Create:**
-- `lib/services/serviceCalendar/googleOAuthService.js` - OAuth2 flow
-- `lib/services/serviceCalendar/googleCalendarSyncService.js` - Event sync
-- `lib/services/serviceCalendar/eventbriteService.js` - Eventbrite discovery
-- `lib/services/serviceCalendar/meetupService.js` - Meetup discovery
-- `lib/services/serviceCalendar/geocodingService.js` - Location parsing
-- `app/api/auth/google/calendar/route.js` - OAuth initiation
-- `app/api/auth/google/callback/route.js` - OAuth callback
-- `app/api/events/import/google/route.js` - Manual sync trigger
-- `app/api/events/import/eventbrite/route.js` - Eventbrite import
-- `app/api/events/discover/route.js` - Discover nearby events
-- `app/dashboard/events/discover/page.jsx` - Discovery UI
-- `app/dashboard/events/components/CalendarConnectButton.jsx` - Connect button
+#### Architecture Overview
 
-**Firestore Collections:**
-- `calendar_tokens/{userId}` - Store OAuth refresh tokens
-- `users/{userId}/event_preferences` - User import preferences
-
-**Environment Variables:**
-```bash
-GOOGLE_CLIENT_ID=xxx
-GOOGLE_CLIENT_SECRET=xxx
-GOOGLE_REDIRECT_URI=http://localhost:3000/api/auth/google/callback
-GOOGLE_MAPS_API_KEY=xxx
-EVENTBRITE_TOKEN=xxx
-MEETUP_API_KEY=xxx
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        EVENT DISCOVERY FLOW                              │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  ┌──────────────┐     ┌──────────────┐     ┌──────────────┐            │
+│  │   Google     │     │  Eventbrite  │     │   Manual     │            │
+│  │  Calendar    │     │     API      │     │    Entry     │            │
+│  └──────┬───────┘     └──────┬───────┘     └──────┬───────┘            │
+│         │ OAuth2             │ API Key           │                      │
+│         ▼                    ▼                   ▼                      │
+│  ┌─────────────────────────────────────────────────────────┐           │
+│  │              serviceCalendar (Server)                    │           │
+│  │  ┌────────────────┐  ┌────────────────┐                 │           │
+│  │  │ OAuth Service  │  │ Eventbrite Svc │                 │           │
+│  │  │ - Auth URL     │  │ - Discovery    │                 │           │
+│  │  │ - Token Mgmt   │  │ - Import       │                 │           │
+│  │  │ - Refresh      │  │ - Dedup        │                 │           │
+│  │  └───────┬────────┘  └───────┬────────┘                 │           │
+│  │          │                   │                          │           │
+│  │          ▼                   ▼                          │           │
+│  │  ┌────────────────────────────────────────────┐         │           │
+│  │  │           GeocodingService                  │         │           │
+│  │  │  - Address → Lat/Lng                        │         │           │
+│  │  │  - Online event detection                   │         │           │
+│  │  │  - Rate limiting (50 req/sec)               │         │           │
+│  │  └───────────────────┬────────────────────────┘         │           │
+│  └──────────────────────┼──────────────────────────────────┘           │
+│                         ▼                                               │
+│  ┌─────────────────────────────────────────────────────────┐           │
+│  │                    EventService                          │           │
+│  │        Creates events in Firestore + Neo4j               │           │
+│  └─────────────────────────────────────────────────────────┘           │
+│                         │                                               │
+│                         ▼                                               │
+│  ┌─────────────────────────────────────────────────────────┐           │
+│  │                   ContactsMap                            │           │
+│  │      Purple calendar markers (scale 2.0)                 │           │
+│  └─────────────────────────────────────────────────────────┘           │
+└─────────────────────────────────────────────────────────────────────────┘
 ```
 
-**Key Features:**
-- Auto-import from Google Calendar (daily sync)
-- Manual sync button for immediate updates
-- Geocode locations to lat/lng for map display
-- Auto-tag events based on keywords
-- Discover public events nearby via Eventbrite/Meetup
-- User can review before importing
-- Skip personal events (only import with locations)
-- Two-way sync (future): RSVP in Weavink → Update Google Calendar
+#### Service Documentation
+
+##### 1. Calendar Constants (`calendarConstants.js`)
+
+Configuration constants for all calendar/discovery features:
+
+```javascript
+// Calendar Providers
+CALENDAR_PROVIDERS: { GOOGLE, OUTLOOK, ICAL }
+
+// Event Sources
+EVENT_SOURCES: { MANUAL, GOOGLE_CALENDAR, OUTLOOK, ICAL_IMPORT, EVENTBRITE, MEETUP }
+
+// Sync Configuration
+SYNC_CONFIG: {
+  MAX_EVENTS_PER_SYNC: 100,
+  SYNC_WINDOW_DAYS: 90,           // Sync 90 days ahead
+  MIN_SYNC_INTERVAL_MS: 5 * 60 * 1000,  // 5 min cooldown
+  TOKEN_REFRESH_BUFFER_MS: 5 * 60 * 1000 // Refresh 5 min before expiry
+}
+
+// Auto-tagging Keywords
+TAG_KEYWORDS: {
+  tech: ['tech', 'software', 'coding', 'developer', 'programming'],
+  startup: ['startup', 'founder', 'entrepreneurship', 'pitch'],
+  networking: ['networking', 'meetup', 'mixer', 'afterwork'],
+  conference: ['conference', 'summit', 'expo', 'forum'],
+  workshop: ['workshop', 'training', 'seminar', 'bootcamp'],
+  ai: ['ai', 'machine learning', 'ml', 'deep learning', 'llm']
+}
+
+// Subscription Feature Gating
+CALENDAR_LIMITS: {
+  base: { features: [], maxImportsPerMonth: 0 },
+  pro: { features: ['google_calendar_sync'], maxImportsPerMonth: 50 },
+  premium: { features: ['google_calendar_sync', 'eventbrite_discovery', 'auto_sync'], maxImportsPerMonth: 200 },
+  business: { features: ['...all...'], maxImportsPerMonth: -1 } // Unlimited
+}
+
+// Helper Functions
+hasCalendarFeature(subscriptionLevel, feature) → boolean
+getMaxImportsPerMonth(subscriptionLevel) → number
+```
+
+##### 2. Geocoding Service (`geocodingService.js`)
+
+Converts addresses to coordinates using Google Geocoding API:
+
+```javascript
+class GeocodingService {
+  // Convert address string to lat/lng
+  static async geocodeAddress(addressString) → GeocodeResult
+  // Returns: { success, location: { latitude, longitude, city, country, placeId } }
+
+  // Convert coordinates to address
+  static async reverseGeocode(latitude, longitude) → GeocodeResult
+
+  // Detect online/virtual events
+  static isOnlineLocation(locationString) → boolean
+  // Checks for: 'zoom', 'teams', 'google meet', 'https://', 'virtual', etc.
+
+  // Batch geocode multiple addresses
+  static async batchGeocode(addresses) → Map<string, GeocodeResult>
+
+  // Check if address looks geocodable
+  static looksGeocodable(address) → boolean
+}
+
+// Rate Limiting: 50 requests/second (Google API limit)
+// Rate limiter: MIN_REQUEST_INTERVAL = 20ms between requests
+```
+
+##### 3. Google Calendar OAuth Service (`googleCalendarOAuthService.js`)
+
+Full OAuth2 flow implementation:
+
+```javascript
+class GoogleCalendarOAuthService {
+  // Generate OAuth URL with state encoding
+  static generateAuthUrl(userId, scopes?) → string
+  // State contains: { userId, timestamp } (base64 encoded)
+  // Default scope: 'calendar.readonly'
+
+  // Parse and validate state from callback
+  static parseState(state) → { userId, timestamp } | null
+  // Validates: state not older than 1 hour
+
+  // Exchange auth code for tokens
+  static async exchangeCodeForTokens(code, userId) → {
+    success: boolean,
+    tokens?: CalendarToken,  // Saved to Firestore
+    error?: string
+  }
+
+  // Get stored tokens
+  static async getStoredTokens(userId) → CalendarToken | null
+
+  // Refresh access token (auto-called before expiry)
+  static async refreshAccessToken(userId) → TokenRefreshResult
+  // Auto-refreshes 5 minutes before expiry
+
+  // Get authenticated client for API calls
+  static async getAuthenticatedClient(userId) → {
+    success: boolean,
+    client?: OAuth2Client
+  }
+
+  // Revoke access and delete tokens
+  static async revokeAccess(userId) → { success: boolean }
+
+  // Check connection status
+  static async getConnectionStatus(userId) → {
+    connected: boolean,
+    status: 'connected' | 'disconnected' | 'token_expired' | 'error',
+    email?: string,
+    lastSyncAt?: Date
+  }
+
+  // Get all connected users (for scheduled sync)
+  static async getConnectedUserIds() → string[]
+}
+```
+
+##### 4. Google Calendar Sync Service (`googleCalendarSyncService.js`)
+
+Syncs events from Google Calendar:
+
+```javascript
+class GoogleCalendarSyncService {
+  // Sync events for a user
+  static async syncEvents(userId, options?) → SyncResult
+  // Options: { startDate, endDate, maxResults, skipDuplicates }
+  // Returns: { success, imported, skipped, failed, errors[] }
+
+  // Import single event
+  static async importEvent(userId, googleEvent, options?) → {
+    success: boolean,
+    eventId?: string,
+    skipped?: boolean
+  }
+
+  // Extract auto-tags from event title/description
+  static extractTags(googleEvent) → string[]
+  // Uses TAG_KEYWORDS to detect: tech, startup, networking, etc.
+
+  // Sync all connected users (for scheduled function)
+  static async syncAllUsers() → BatchSyncResult
+}
+
+// Sync Window: 90 days ahead
+// Max events per sync: 100
+// Duplicate detection: by sourceId (Google event ID)
+```
+
+##### 5. Eventbrite Service (`eventbriteService.js`)
+
+Discovers and imports events from Eventbrite:
+
+```javascript
+class EventbriteService {
+  // Check if API is configured
+  static isConfigured() → boolean
+
+  // Discover events near location
+  static async discoverEvents(query) → DiscoveryResult
+  // Query: { latitude, longitude, radius, categories?, keyword?, limit? }
+  // Returns: { success, events[], total, hasMore, source: 'eventbrite' }
+
+  // Convert Eventbrite event to our format
+  static convertToDiscoveredEvent(ebEvent) → DiscoveredEvent
+
+  // Parse venue to location format
+  static parseVenue(venue) → Location | null
+
+  // Extract tags from event
+  static extractTags(ebEvent) → string[]
+
+  // Import discovered event to Weavink
+  static async importEvent(userId, discoveredEvent, isPublic?) → {
+    success: boolean,
+    eventId?: string,
+    alreadyExists?: boolean
+  }
+
+  // Check which events already imported
+  static async checkAlreadyImported(userId, eventbriteIds) → Set<string>
+
+  // Search events by keyword
+  static async searchEvents(keyword, options?) → DiscoveryResult
+}
+
+// Default search radius: 25km
+// Default categories: Business (101), Science & Tech (102)
+// API: https://www.eventbriteapi.com/v3
+```
+
+#### API Routes
+
+##### OAuth Flow
+
+```bash
+# 1. Initiate Google Calendar OAuth
+GET /api/auth/google/calendar
+# Redirects to Google OAuth consent screen
+# Query params: none (uses current user session)
+
+# 2. OAuth Callback (Google redirects here)
+GET /api/auth/google/callback?code=xxx&state=xxx
+# Exchanges code for tokens, saves to Firestore
+# Redirects to: /dashboard/events/discover?success=connected
+
+# 3. Disconnect Google Calendar
+DELETE /api/auth/google/disconnect
+Authorization: Bearer <firebase-token>
+# Response: { success: true }
+```
+
+##### Calendar Sync
+
+```bash
+# Get connection status
+GET /api/events/import/google
+Authorization: Bearer <firebase-token>
+# Response: {
+#   connected: true,
+#   status: "connected",
+#   email: "user@gmail.com",
+#   lastSyncAt: "2025-11-27T10:00:00Z"
+# }
+
+# Trigger manual sync
+POST /api/events/import/google
+Authorization: Bearer <firebase-token>
+# Response: {
+#   success: true,
+#   imported: 5,
+#   skipped: 10,
+#   failed: 0
+# }
+```
+
+##### Event Discovery
+
+```bash
+# Discover nearby events
+GET /api/events/discover?lat=45.1885&lng=5.7245&radius=25&keyword=tech
+Authorization: Bearer <firebase-token>
+# Response: {
+#   success: true,
+#   events: [
+#     {
+#       id: "123456",
+#       source: "eventbrite",
+#       name: "Tech Meetup Grenoble",
+#       startDate: "2025-12-01T18:00:00Z",
+#       location: { address: "...", latitude: 45.19, longitude: 5.72 },
+#       url: "https://eventbrite.com/e/123456",
+#       tags: ["tech", "networking"],
+#       alreadyImported: false
+#     }
+#   ],
+#   total: 15,
+#   hasMore: false
+# }
+
+# Import Eventbrite event
+POST /api/events/import/eventbrite
+Authorization: Bearer <firebase-token>
+Content-Type: application/json
+{
+  "event": { /* DiscoveredEvent object */ },
+  "isPublic": false
+}
+# Response: { success: true, eventId: "abc123" }
+```
+
+##### User Preferences
+
+```bash
+# Get calendar preferences
+GET /api/user/calendar-preferences
+Authorization: Bearer <firebase-token>
+# Response: {
+#   autoSyncEnabled: false,
+#   syncInterval: "daily",
+#   excludedCalendars: [],
+#   autoDiscoverRadius: 25,
+#   preferredCategories: ["tech", "networking", "startup"],
+#   requireLocation: true
+# }
+
+# Update preferences
+PUT /api/user/calendar-preferences
+Authorization: Bearer <firebase-token>
+Content-Type: application/json
+{
+  "autoSyncEnabled": true,
+  "syncInterval": "daily",
+  "autoDiscoverRadius": 50
+}
+```
+
+#### Firestore Schema
+
+##### calendar_tokens/{userId}
+
+```javascript
+{
+  provider: 'google',                    // Calendar provider
+  accessToken: 'ya29.xxx',               // OAuth access token
+  refreshToken: '1//xxx',                // OAuth refresh token (for renewal)
+  expiryDate: 1732712400000,             // Token expiry (Unix ms)
+  scope: 'calendar.readonly',            // Granted scopes
+  email: 'user@gmail.com',               // Connected account email
+  connectedAt: Timestamp,                // When first connected
+  lastSyncAt: Timestamp | null,          // Last successful sync
+  status: 'connected' | 'syncing' | 'error' | 'token_expired'
+}
+```
+
+##### users/{userId}/calendar_preferences/settings
+
+```javascript
+{
+  autoSyncEnabled: false,                // Enable automatic sync
+  syncInterval: 'daily',                 // 'manual' | 'hourly' | 'daily' | 'weekly'
+  excludedCalendars: [],                 // Calendar IDs to skip
+  autoDiscoverRadius: 25,                // Discovery radius in km
+  preferredCategories: ['tech', 'networking', 'startup'],
+  requireLocation: true,                 // Skip events without location
+  importOnlyWithLocation: true,          // Only import geocodable events
+  skipPersonalEvents: true               // Skip personal calendar entries
+}
+```
+
+##### sync_logs
+
+```javascript
+{
+  type: 'calendar_sync',                 // Log type
+  total: 50,                             // Total users processed
+  synced: 48,                            // Successfully synced
+  failed: 2,                             // Failed syncs
+  totalImported: 125,                    // Total events imported
+  errors: [                              // Error details
+    { userId: 'xxx', error: 'Token expired' }
+  ],
+  completedAt: Timestamp                 // Completion time
+}
+```
+
+#### Environment Variables
+
+```bash
+# Google OAuth (Required for Calendar sync)
+GOOGLE_CLIENT_ID="xxx.apps.googleusercontent.com"
+GOOGLE_CLIENT_SECRET="GOCSPX-xxx"
+GOOGLE_CALENDAR_REDIRECT_URI="http://localhost:3000/api/auth/google/callback"
+# Note: REDIRECT_URI auto-constructed from NEXTAUTH_URL if not set
+
+# Google Geocoding (Required for address → coordinates)
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY="AIzaSyxxx"
+
+# Eventbrite (Optional - for event discovery)
+EVENTBRITE_API_KEY="xxx"
+# Get from: https://www.eventbrite.com/platform/api-keys
+```
+
+#### Google OAuth Verification Warning
+
+> **"Google hasn't verified this app"** - This warning is normal during development.
+
+**For Development/Testing:**
+1. Click **"Advanced"** (or "Hide Advanced" to reveal it)
+2. Click **"Go to [App Name] (unsafe)"**
+
+This is safe - it's YOUR app. The warning appears because:
+- You're using sensitive scopes (calendar access)
+- Google hasn't reviewed the app for production use
+
+**For Production (Public Launch):**
+1. Submit your app for [Google OAuth verification](https://support.google.com/cloud/answer/9110914)
+2. Add a privacy policy URL and terms of service
+3. Wait for Google's review (can take several weeks)
+4. Once verified, users won't see the warning
+
+#### Firebase Cloud Function
+
+**File:** `functions/scheduledCalendarSync.js`
+
+```javascript
+// Schedule: Daily at 3 AM UTC
+// Region: europe-west1
+// Memory: 256MiB
+// Timeout: 9 minutes (540 seconds)
+
+exports.scheduledCalendarSync = onSchedule({
+  schedule: '0 3 * * *',  // Cron: 3 AM UTC daily
+  timeZone: 'UTC',
+  memory: '256MiB',
+  timeoutSeconds: 540,
+  region: 'europe-west1'
+}, async (event) => {
+  // 1. Query all users with status='connected'
+  // 2. For each user:
+  //    - Refresh token if needed
+  //    - Fetch Google Calendar events (90 days ahead)
+  //    - Import new events (skip duplicates by sourceId)
+  //    - Update lastSyncAt timestamp
+  // 3. Log results to sync_logs collection
+  // 4. Small delay between users (500ms) to avoid rate limits
+});
+```
+
+**Deployment:**
+```bash
+cd functions
+npm install
+firebase deploy --only functions:scheduledCalendarSync
+```
+
+#### UI Components
+
+##### Event Discovery Page (`/dashboard/events/discover`)
+
+```jsx
+// Features:
+// - CalendarConnectButton: Connect/disconnect Google Calendar
+// - Search controls: keyword, radius (10/25/50/100 km), location
+// - Auto-detect user location via browser geolocation
+// - EventDiscoveryList: Grid of discovered events with import buttons
+// - How It Works: 3-step guide for users
+
+// State:
+// - calendarStatus: Connection status
+// - events: Discovered events array
+// - searchLocation: { lat, lng }
+// - radius: Search radius in km
+// - keyword: Search keyword
+```
+
+##### CalendarConnectButton
+
+```jsx
+// States:
+// - Disconnected: "Connect Google Calendar" button
+// - Connected: Shows email, "Sync Now" and "Disconnect" buttons
+// - Syncing: Loading spinner, disabled buttons
+// - Error: Error message with retry option
+// - Token Expired: "Reconnect" button
+
+// Props:
+// - onStatusChange: Callback when status changes
+```
+
+##### EventDiscoveryList
+
+```jsx
+// Props:
+// - events: DiscoveredEvent[]
+// - loading: boolean
+// - onImport: (event, eventId) => void
+// - onRefresh: () => void
+
+// Features:
+// - Event cards with image, title, date, location, tags
+// - Import button (disabled if already imported)
+// - Link to original event (Eventbrite)
+// - Empty state when no events found
+```
+
+#### Subscription Feature Gating
+
+| Feature | BASE | PRO | PREMIUM | BUSINESS |
+|---------|------|-----|---------|----------|
+| Google Calendar Sync | ❌ | ✅ | ✅ | ✅ |
+| Eventbrite Discovery | ❌ | ❌ | ✅ | ✅ |
+| Auto-Sync | ❌ | ❌ | ✅ | ✅ |
+| Max Imports/Month | 0 | 50 | 200 | Unlimited |
+
+**Completed Files:**
+- `lib/services/serviceCalendar/client/constants/calendarConstants.js` - Calendar constants, feature flags
+- `lib/services/serviceCalendar/shared/calendarTypes.js` - JSDoc type definitions
+- `lib/services/serviceCalendar/server/geocodingService.js` - Google Geocoding API wrapper
+- `lib/services/serviceCalendar/server/googleCalendarOAuthService.js` - OAuth2 flow (tokens, refresh)
+- `lib/services/serviceCalendar/server/googleCalendarSyncService.js` - Event sync from Google Calendar
+- `lib/services/serviceCalendar/server/eventbriteService.js` - Eventbrite discovery & import
+- `app/api/auth/google/calendar/route.js` - OAuth initiation (redirects to Google)
+- `app/api/auth/google/callback/route.js` - OAuth callback (exchanges code for tokens)
+- `app/api/auth/google/disconnect/route.js` - Revoke access & delete tokens
+- `app/api/events/import/google/route.js` - Manual sync trigger, connection status
+- `app/api/events/import/eventbrite/route.js` - Import single Eventbrite event
+- `app/api/events/discover/route.js` - Discover nearby events from Eventbrite
+- `app/api/user/calendar-preferences/route.js` - User sync preferences
+- `app/dashboard/events/discover/page.jsx` - Event Discovery page
+- `app/dashboard/events/components/CalendarConnectButton.jsx` - Google Calendar connection UI
+- `app/dashboard/events/components/EventDiscoveryList.jsx` - Discovered events list
+- `functions/scheduledCalendarSync.js` - Firebase Cloud Function for daily sync
+
+**Dependencies Added:**
+```bash
+npm install googleapis
+```
+
+**Key Features Implemented:**
+- Google Calendar OAuth2 with refresh token handling
+- Auto-import from Google Calendar (manual + scheduled daily sync)
+- Geocoding service to convert addresses to lat/lng
+- Eventbrite event discovery by location/keyword
+- Event Discovery page with search controls
+- CalendarConnectButton component for connection management
+- User preferences for sync interval, excluded calendars, radius
+- Firebase Cloud Function runs daily at 3 AM UTC
+- Subscription-based feature gating (Pro: Calendar, Premium: Eventbrite)
 
 ### Sprint 7: Testing & Polish
 - [ ] Unit tests for all services
@@ -1385,15 +1906,25 @@ MEETUP_API_KEY=xxx
 | Public Events | Events with isPublic=true, visible to ALL users (admin-only creation) |
 | Bulk Import | API endpoint to import multiple events at once (max 100 per request) |
 | Admin-Only | Features restricted to users in process.env.ADMIN_EMAILS |
+| OAuth2 Flow | Authorization protocol for secure third-party access (Google Calendar) |
+| Access Token | Short-lived token for API calls (~1 hour validity) |
+| Refresh Token | Long-lived token to obtain new access tokens without re-authentication |
+| Token Expiry | Unix timestamp when access token becomes invalid |
+| Connection Status | Calendar connection state: connected, syncing, error, token_expired |
+| Auto-Tagging | Automatic tag assignment based on event title/description keywords |
+| Rate Limiting | Throttling API requests to prevent quota exhaustion (50 req/sec for geocoding) |
+| Firebase Cloud Function | Serverless function triggered on schedule (daily sync at 3 AM UTC) |
+| Online Event | Virtual/remote event detected by keywords (zoom, teams, webinar, https://) |
 
 ---
 
-**Status**: 🚧 In Progress - Sprint 5.5 Complete (Public Events & Bulk Import + Map Integration + Auth)
+**Status**: 🚧 In Progress - Sprint 6 Complete (Event Discovery & Automation)
 **Last Updated**: 2025-11-27
 **Author**: Claude Code
-**Progress**: 5.5/7 Sprints Complete (115 tests passing - 100%)
+**Progress**: 6/7 Sprints Complete (115 tests passing - 100%)
 **Map Integration**: Events now display on ContactsMap with purple calendar markers (scale 2.0)
 **RSVP System**: Full authentication flow with Firebase tokens, real-time state updates, persistent registration status
+**Calendar Sync**: Google Calendar OAuth2 integration, Eventbrite discovery, Firebase Cloud Function for daily sync
 
 ### Test Suite Summary (115 total)
 | Suite | Tests | Status |

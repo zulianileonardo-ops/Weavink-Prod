@@ -3364,7 +3364,7 @@
       "filename": "EVENT_SOCIAL_INTELLIGENCE.md",
       "path": "documentation/features/EVENT_SOCIAL_INTELLIGENCE.md",
       "category": "features",
-      "summary": "Comprehensive guide to the Event Social Intelligence system including Ghost Mode, AI matching, meeting zones, public events with admin-only creation, and bulk import API for importing multiple events.",
+      "summary": "Comprehensive guide to the Event Social Intelligence system including Ghost Mode, AI matching, meeting zones, Google Calendar OAuth2 integration, Eventbrite discovery, geocoding service, Firebase Cloud Function for daily sync, and subscription-based feature gating.",
       "tags": [
         "events",
         "social-intelligence",
@@ -3377,7 +3377,13 @@
         "testing",
         "public-events",
         "bulk-import",
-        "admin"
+        "admin",
+        "google-calendar",
+        "oauth2",
+        "eventbrite",
+        "geocoding",
+        "discovery",
+        "firebase-functions"
       ],
       "functions": [
         "upsertEvent",
@@ -3415,14 +3421,37 @@
         "shouldRegenerateZones",
         "runMeetingZoneServiceTests",
         "validateEventData",
-        "bulkCreateEvents"
+        "bulkCreateEvents",
+        "generateAuthUrl",
+        "exchangeCodeForTokens",
+        "refreshAccessToken",
+        "revokeAccess",
+        "getConnectionStatus",
+        "getConnectedUserIds",
+        "geocodeAddress",
+        "reverseGeocode",
+        "isOnlineLocation",
+        "batchGeocode",
+        "looksGeocodable",
+        "discoverEvents",
+        "importEvent",
+        "checkAlreadyImported",
+        "hasCalendarFeature",
+        "getMaxImportsPerMonth",
+        "scheduledCalendarSync"
       ],
       "components": [
         "EventPanel",
         "MeetingZones",
         "ContactsMap",
         "MatchingService",
-        "MeetingZoneService"
+        "MeetingZoneService",
+        "GoogleCalendarOAuthService",
+        "GoogleCalendarSyncService",
+        "GeocodingService",
+        "EventbriteService",
+        "CalendarConnectButton",
+        "EventDiscoveryList"
       ],
       "status": "in-progress",
       "created": "2025-11-26",
