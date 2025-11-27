@@ -1,13 +1,15 @@
 /**
  * Event Social Intelligence Test Runner
  *
- * Runs all 65 tests across 6 test suites:
+ * Runs all 95+ tests across 8 test suites:
  * - Neo4j Event Methods (12 tests)
  * - Visibility System (8 tests)
  * - AI Matching (10 tests)
  * - EventService Firestore (15 tests)
  * - VisibilityService Class (10 tests)
  * - EventPanel API Integration (10 tests) - Sprint 3
+ * - MatchingService (15 tests) - Sprint 4
+ * - MeetingZoneService (15 tests) - Sprint 5
  *
  * All tests connect to REAL databases (Neo4j + Firestore) - no mocks!
  *
@@ -24,11 +26,13 @@ import { runEventMatchingTests } from './lib/services/serviceEvent/tests/eventMa
 import { runEventServiceTests } from './lib/services/serviceEvent/tests/eventServiceTests.js';
 import { runVisibilityServiceClassTests } from './lib/services/serviceEvent/tests/visibilityServiceClassTests.js';
 import { runEventPanelApiTests } from './lib/services/serviceEvent/tests/eventPanelApiTests.js';
+import { runMatchingServiceTests } from './lib/services/serviceEvent/tests/matchingServiceTests.js';
+import { runMeetingZoneServiceTests } from './lib/services/serviceEvent/tests/meetingZoneServiceTests.js';
 
 console.log('\n========================================');
 console.log('🎯 EVENT SOCIAL INTELLIGENCE TEST RUNNER');
 console.log('========================================');
-console.log('Running all 65 tests across 6 suites\n');
+console.log('Running all 95+ tests across 8 suites\n');
 console.log('Prerequisites:');
 console.log('  - NEO4J_URI set in .env');
 console.log('  - NEO4J_USERNAME set in .env');
@@ -143,6 +147,38 @@ try {
   console.log(`${eventPanelResults.success ? '✅' : '❌'} EventPanel: ${eventPanelResults.passed}/${eventPanelResults.passed + eventPanelResults.failed} passed`);
 
   // ================================================================
+  // Suite 7: MatchingService (15 tests) - Sprint 4
+  // ================================================================
+  console.log('\n🎯 Running MatchingService Tests (15 tests)...');
+  const matchingServiceResults = await runMatchingServiceTests(`test-matchsvc-${Date.now()}`);
+  results.suites.matchingService = {
+    name: 'MatchingService (Sprint 4)',
+    passed: matchingServiceResults.summary.passed,
+    failed: matchingServiceResults.summary.failed,
+    total: matchingServiceResults.summary.passed + matchingServiceResults.summary.failed,
+    success: matchingServiceResults.success
+  };
+  results.totalPassed += matchingServiceResults.summary.passed;
+  results.totalFailed += matchingServiceResults.summary.failed;
+  console.log(`${matchingServiceResults.success ? '✅' : '❌'} MatchingService: ${matchingServiceResults.summary.passed}/${matchingServiceResults.summary.passed + matchingServiceResults.summary.failed} passed`);
+
+  // ================================================================
+  // Suite 8: MeetingZoneService (15 tests) - Sprint 5
+  // ================================================================
+  console.log('\n🗺️  Running MeetingZoneService Tests (15 tests)...');
+  const meetingZoneResults = await runMeetingZoneServiceTests(`test-mzsvc-${Date.now()}`);
+  results.suites.meetingZone = {
+    name: 'MeetingZoneService (Sprint 5)',
+    passed: meetingZoneResults.summary.passed,
+    failed: meetingZoneResults.summary.failed,
+    total: meetingZoneResults.summary.passed + meetingZoneResults.summary.failed,
+    success: meetingZoneResults.success
+  };
+  results.totalPassed += meetingZoneResults.summary.passed;
+  results.totalFailed += meetingZoneResults.summary.failed;
+  console.log(`${meetingZoneResults.success ? '✅' : '❌'} MeetingZoneService: ${meetingZoneResults.summary.passed}/${meetingZoneResults.summary.passed + meetingZoneResults.summary.failed} passed`);
+
+  // ================================================================
   // Final Summary
   // ================================================================
   results.totalTests = results.totalPassed + results.totalFailed;
@@ -169,7 +205,7 @@ try {
   console.log('\n========================================\n');
 
   if (results.totalFailed === 0) {
-    console.log('🎉 ALL 65 TESTS PASSED! EVENT SOCIAL INTELLIGENCE VERIFIED!\n');
+    console.log('🎉 ALL 95+ TESTS PASSED! EVENT SOCIAL INTELLIGENCE VERIFIED!\n');
     process.exit(0);
   } else {
     console.log(`❌ ${results.totalFailed} test(s) failed. Please review the logs above.\n`);

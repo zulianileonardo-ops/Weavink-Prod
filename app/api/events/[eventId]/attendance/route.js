@@ -11,6 +11,7 @@ import { NextResponse } from 'next/server';
 import { createApiSession } from '@/lib/server/session';
 import { EventService } from '@/lib/services/serviceEvent/server/eventService';
 import { VisibilityService } from '@/lib/services/serviceEvent/server/visibilityService';
+import { MatchingService } from '@/lib/services/serviceEvent/server/matchingService';
 import {
   hasEventFeature,
   EVENT_FEATURES,
@@ -89,8 +90,59 @@ export async function POST(request, { params }) {
 
     console.log('[API] Attendance registered:', body.contactId);
 
+    // Trigger AI matching if available (fire-and-forget for performance)
+    let matches = [];
+    if (hasEventFeature(session.subscriptionLevel, EVENT_FEATURES.AI_MATCHMAKING)) {
+      try {
+        console.log('[API] Triggering AI matching for new RSVP');
+        const potentialMatches = await MatchingService.findMatchesForUser({
+          userId: session.userId,
+          eventId,
+          contactId: body.contactId,
+          session,
+        });
+
+        // Create matches and send notifications
+        for (const potential of potentialMatches) {
+          try {
+            const contact1 = await MatchingService.getContactData(session.userId, body.contactId);
+            const contact2 = await MatchingService.getContactData(session.userId, potential.contactId);
+
+            const match = await MatchingService.createMatch({
+              userId: session.userId,
+              eventId,
+              contact1Id: body.contactId,
+              contact2Id: potential.contactId,
+              score: potential.score,
+              reasons: potential.reasons,
+              session,
+            });
+
+            await MatchingService.sendNewMatchNotifications(match, contact1, contact2);
+            matches.push(match);
+          } catch (matchError) {
+            console.error('[API] Error creating match:', matchError.message);
+          }
+        }
+
+        console.log('[API] Created matches:', matches.length);
+      } catch (matchingError) {
+        // Don't fail the RSVP if matching fails
+        console.error('[API] Matching error (non-blocking):', matchingError.message);
+      }
+    }
+
     return NextResponse.json(
-      { success: true, participation },
+      {
+        success: true,
+        participation,
+        matchesFound: matches.length,
+        matches: matches.length > 0 ? matches.map(m => ({
+          id: m.id,
+          score: m.compatibilityScore,
+          reasons: m.reasons,
+        })) : undefined,
+      },
       { status: 201 }
     );
 
