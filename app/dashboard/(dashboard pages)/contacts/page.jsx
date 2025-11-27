@@ -34,7 +34,7 @@ export default function ContactsPageWrapper() {
 function ContactsPage() {
     const { t, isInitialized } = useTranslation();
     const router = useRouter();
-    const { isLoading: isSessionLoading, subscriptionLevel, budgetInfo, budgetLoading, consents } = useDashboard();
+    const { isLoading: isSessionLoading, subscriptionLevel, budgetInfo, budgetLoading, consents, currentUser } = useDashboard();
     const isPremium = subscriptionLevel === 'premium' || subscriptionLevel === 'business' || subscriptionLevel === 'enterprise';
     const { setIsMapOpen } = useMapVisibility();
 
@@ -90,6 +90,9 @@ function ContactsPage() {
     const [focusLocation, setFocusLocation] = useState(null);
     const [showScannerConsentPopover, setShowScannerConsentPopover] = useState(false);
 
+    // Events state for map markers
+    const [events, setEvents] = useState([]);
+
     // View mode and focus state for interactive filtering
     const [viewMode, setViewMode] = useState('contacts'); // 'contacts' | 'groups'
     const [focus, setFocus] = useState(null); // null | { type: 'contact', id: string } | { type: 'group', id: string }
@@ -112,6 +115,28 @@ function ContactsPage() {
         // Set the context to true if either the map OR the scanner OR the review modal is open
         setIsMapOpen(showMap || showScanner || showReviewModal);
     }, [showMap, showScanner, showReviewModal, setIsMapOpen]);
+
+    // Fetch events for map markers
+    useEffect(() => {
+        const fetchEvents = async () => {
+            if (!currentUser) return;
+            try {
+                const token = await currentUser.getIdToken();
+                const response = await fetch('/api/events?limit=100', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const data = await response.json();
+                if (data.events) {
+                    setEvents(data.events);
+                }
+            } catch (error) {
+                console.error('Failed to fetch events:', error);
+            }
+        };
+        fetchEvents();
+    }, [currentUser]);
 
     // Translations
     const translations = useMemo(() => {
@@ -769,6 +794,7 @@ function ContactsPage() {
                 focusLocation={focusLocation}
                 contacts={contacts}
                 groups={groups}
+                events={events}
                 
                 // Share modal props
                 showShareModal={showShareModal}

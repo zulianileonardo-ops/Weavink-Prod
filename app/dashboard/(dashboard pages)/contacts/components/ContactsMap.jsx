@@ -611,7 +611,7 @@ export default function ContacctsMap({
                     fillOpacity: 1,
                     strokeColor: '#ffffff',
                     strokeWeight: 2,
-                    scale: 1.2,
+                    scale: 2.0,
                     anchor: new google.maps.Point(12, 22)
                 },
                 animation: google.maps.Animation.DROP,

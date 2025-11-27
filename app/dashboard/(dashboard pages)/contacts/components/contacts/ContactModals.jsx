@@ -58,6 +58,7 @@ export default function ContactModals({
     focusLocation,
     contacts,
     groups,
+    events = [],
 
     // Share Modal
     showShareModal,
@@ -119,6 +120,7 @@ export default function ContactModals({
                 onClose={onCloseMap}
                 contacts={contacts}
                 groups={groups}
+                events={events}
                 selectedContactId={selectedContactForMap?.id}
                 focusLocation={focusLocation}
                 onContactUpdate={onRefreshData}

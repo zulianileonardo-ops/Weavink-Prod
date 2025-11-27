@@ -976,11 +976,14 @@ node --experimental-loader ./loader.mjs -r dotenv/config runEventTests.mjs
 - `lib/services/serviceEvent/tests/testHelpers.js` (Firestore helpers added)
 - `test-loader.mjs` + `test-resolver.mjs` (ESM loader for @/ alias)
 
-### Sprint 3: Frontend - Event Panel
+### Sprint 3: Frontend - Event Panel & Map Integration
 - [x] Create `EventPanel.jsx` component
 - [x] Integrate with `ContactsMap.jsx`
 - [x] Add RSVP interface
 - [x] Add intent selection UI
+- [x] Wire events data flow (page.jsx → ContactModals → ContactsMap)
+- [x] Add authenticated event fetching with Firebase headers
+- [x] Configure event marker size (scale: 2.0) for visibility
 
 **Completed Files:**
 - `app/dashboard/(dashboard pages)/contacts/components/EventPanel.jsx` (550 lines)
@@ -990,9 +993,26 @@ node --experimental-loader ./loader.mjs -r dotenv/config runEventTests.mjs
   - Looking for / Offering selections (collapsible)
   - API integration with attendance endpoints
 - `app/dashboard/(dashboard pages)/contacts/components/ContactsMap.jsx` (modified)
-  - Event markers (purple calendar icons) on map
+  - Event markers (purple calendar icons, scale: 2.0 for visibility)
   - Right-side sliding EventPanel integration
   - Event marker click handler
+  - Events prop wired from page → ContactModals → ContactsMap
+- `app/dashboard/(dashboard pages)/contacts/page.jsx` (modified)
+  - Added `events` state and fetch with Firebase auth headers
+  - Passes `events` prop to ContactModals
+- `app/dashboard/(dashboard pages)/contacts/components/contacts/ContactModals.jsx` (modified)
+  - Accepts `events` prop and passes to ContactsMap
+
+**Event Map Data Flow:**
+```
+1. page.jsx mounts
+2. useEffect fetches /api/events?limit=100 with Firebase auth headers
+3. API returns user's events + all public events (isPublic: true)
+4. Events state passed: page.jsx → ContactModals → ContactsMap
+5. ContactsMap creates markers for events with valid lat/lng
+6. Purple calendar markers (scale: 2.0) rendered with DROP animation
+7. Click marker → opens EventPanel with event details
+```
 
 **Test Coverage (10 new tests):**
 - `lib/services/serviceEvent/tests/eventPanelApiTests.js` (10 tests)
@@ -1313,10 +1333,11 @@ MEETUP_API_KEY=xxx
 
 ---
 
-**Status**: 🚧 In Progress - Sprint 5.5 Complete (Public Events & Bulk Import)
+**Status**: 🚧 In Progress - Sprint 5.5 Complete (Public Events & Bulk Import + Map Integration)
 **Last Updated**: 2025-11-27
 **Author**: Claude Code
 **Progress**: 5.5/7 Sprints Complete (115 tests passing - 100%)
+**Map Integration**: Events now display on ContactsMap with purple calendar markers (scale 2.0)
 
 ### Test Suite Summary (115 total)
 | Suite | Tests | Status |
