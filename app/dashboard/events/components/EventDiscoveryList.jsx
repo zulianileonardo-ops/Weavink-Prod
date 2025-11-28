@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 
 /**
@@ -106,10 +107,13 @@ export default function EventDiscoveryList({ events = [], loading, onImport, onR
                     <div className="flex gap-4">
                         {/* Event Image */}
                         {event.imageUrl ? (
-                            <img
+                            <Image
                                 src={event.imageUrl}
                                 alt={event.name}
+                                width={96}
+                                height={96}
                                 className="w-24 h-24 object-cover rounded-lg flex-shrink-0"
+                                unoptimized
                             />
                         ) : (
                             <div className="w-24 h-24 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-lg flex-shrink-0 flex items-center justify-center">

@@ -21,6 +21,7 @@ export default function CalendarConnectButton({ onStatusChange }) {
     // Fetch connection status on mount
     useEffect(() => {
         fetchStatus();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentUser]);
 
     const fetchStatus = async () => {
