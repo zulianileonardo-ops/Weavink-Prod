@@ -11,15 +11,57 @@ import dotenv from 'dotenv';
 // Load environment variables
 dotenv.config();
 
-// Validate required environment variables
-if (!process.env.QDRANT_URL) {
-  console.error('❌ ERROR: QDRANT_URL not found in .env file');
-  process.exit(1);
+// Determine the correct Qdrant URL based on execution context
+function getQdrantUrl() {
+  // Priority 1: Environment variable override for manual migrations
+  if (process.env.QDRANT_URL_MIGRATION) {
+    return process.env.QDRANT_URL_MIGRATION;
+  }
+
+  // Priority 2: Check if running with Docker hostname (needs IP fallback)
+  if (process.env.QDRANT_URL && process.env.QDRANT_URL.includes('qdrant-')) {
+    console.log('⚠️  Detected Docker hostname. Using direct IP fallback...');
+    return 'http://10.0.4.2:6333';  // Direct IP works from VPS host
+  }
+
+  // Priority 3: Use .env value as-is
+  if (process.env.QDRANT_URL) {
+    return process.env.QDRANT_URL;
+  }
+
+  // Fallback: Use direct IP
+  console.log('⚠️  QDRANT_URL not found in .env, using default: http://10.0.4.2:6333');
+  return 'http://10.0.4.2:6333';
+}
+
+const QDRANT_URL = getQdrantUrl();
+console.log(`🔗 [Migration] Using Qdrant URL: ${QDRANT_URL}\n`);
+
+// Test connection before proceeding
+async function testConnection() {
+  try {
+    const response = await fetch(`${QDRANT_URL}/healthz`);
+    if (!response.ok) {
+      throw new Error(`Health check failed: ${response.status}`);
+    }
+    console.log('✅ [Migration] Qdrant connection successful');
+    return true;
+  } catch (error) {
+    console.error('❌ [Migration] Cannot connect to Qdrant:', error.message);
+    console.error('\n💡 Troubleshooting:');
+    console.error('   1. Check if Qdrant container is running: docker ps | grep qdrant');
+    console.error('   2. Verify network connectivity: curl http://10.0.4.2:6333/healthz');
+    console.error('   3. Try alternative URLs:');
+    console.error('      - Direct IP: http://10.0.4.2:6333');
+    console.error('      - Docker hostname: http://qdrant-qkkkc8kskocgwo0o8c444cgo:6333');
+    console.error('   4. Set QDRANT_URL_MIGRATION env var to override\n');
+    process.exit(1);
+  }
 }
 
 // Initialize Qdrant client
 const qdrantClient = new QdrantClient({
-  url: process.env.QDRANT_URL,
+  url: QDRANT_URL,
 });
 
 // Configuration
@@ -33,8 +75,11 @@ async function migrateToQdrant() {
   console.log('🚀 [Migration] Starting Pinecone → Qdrant migration...\n');
 
   try {
+    // Step 0: Test Qdrant connection first
+    await testConnection();
+
     // Step 1: Load exported Pinecone data
-    console.log('📂 [Migration] Step 1: Loading pinecone_export.json...');
+    console.log('\n📂 [Migration] Step 1: Loading pinecone_export.json...');
     const exportData = JSON.parse(readFileSync('./pinecone_export.json', 'utf-8'));
     console.log(`✅ [Migration] Loaded ${exportData.length} vectors from export file\n`);
 
