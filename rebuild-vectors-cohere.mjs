@@ -1,17 +1,10 @@
 #!/usr/bin/env node
-// scripts/rebuild-vectors-cohere.mjs
+// rebuild-vectors-cohere.mjs
 // Rebuild all vectors with Cohere embeddings (correct inputType)
-// This fixes the inputType mismatch that causes negative similarity scores
+// Run from project root: node rebuild-vectors-cohere.mjs
 
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-// Dynamic imports with absolute paths
-const { VectorStorageService } = await import(join(__dirname, '../lib/services/serviceContact/server/vectorStorageService.js'));
-const { adminDb } = await import(join(__dirname, '../lib/firebaseAdmin.js'));
+import { VectorStorageService } from './lib/services/serviceContact/server/vectorStorageService.js';
+import { adminDb } from './lib/firebaseAdmin.js';
 
 const USER_IDS = [
   'IFxPCgSA8NapEq5W8jh6yHrtJGJ2',  // 102 vectors
@@ -52,6 +45,7 @@ async function rebuildAllVectors() {
 
     } catch (error) {
       console.error(`❌ Failed to rebuild vectors for user ${userId}:`, error.message);
+      console.error(error.stack);
     }
   }
 
