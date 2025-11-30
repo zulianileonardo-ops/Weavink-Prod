@@ -681,8 +681,9 @@
       "links": "Enlaces",
       "appearance": "Apariencia",
       "analytics": "Analíticas",
-      "settings": "Ajustes",
-      "contacts": "Contactos"
+      "contacts": "Contactos",
+      "events": "Eventos",
+      "settings": "Ajustes"
     },
     "settings": {
       "controls": {

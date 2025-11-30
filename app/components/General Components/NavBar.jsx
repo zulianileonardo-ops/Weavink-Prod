@@ -57,6 +57,7 @@ export default function NavBar() {
             analytics: t('dashboard.navigation.analytics'),
             settings: t('dashboard.navigation.settings'),
             contacts: t('dashboard.navigation.contacts'),
+            events: t('dashboard.navigation.events'),
             admin: t('dashboard.navigation.admin') || 'Admin Panel'
         };
     }, [t, isInitialized]);
@@ -378,6 +379,8 @@ export default function NavBar() {
             case "/admin":
             case "/admin/users":
             case "/admin/analytics": setActivePage(5); break;
+            case "/dashboard/events":
+            case "/dashboard/events/discover": setActivePage(6); break;
             default: setActivePage(0); break;
         }
     }, [router]);

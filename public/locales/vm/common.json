@@ -681,8 +681,9 @@
       "links": "Liên kết",
       "appearance": "Giao diện",
       "analytics": "Phân tích",
-      "settings": "Cài đặt",
-      "contacts": "Danh bạ"
+      "contacts": "Danh bạ",
+      "events": "Sự kiện",
+      "settings": "Cài đặt"
     },
     "settings": {
       "controls": {

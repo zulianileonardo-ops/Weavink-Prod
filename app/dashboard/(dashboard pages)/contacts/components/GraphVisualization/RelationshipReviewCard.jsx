@@ -30,7 +30,7 @@ export default function RelationshipReviewCard({
   const scorePercent = Math.round((relationship.score || 0) * 100);
 
   // Get method label
-  const methodLabel = relationship.method === 'pinecone_embedding'
+  const methodLabel = relationship.method === 'qdrant_embedding'
     ? 'Semantic'
     : relationship.method === 'tags'
     ? 'Tags'

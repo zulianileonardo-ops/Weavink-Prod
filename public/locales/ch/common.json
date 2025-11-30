@@ -650,8 +650,9 @@
       "links": "链接",
       "appearance": "外观",
       "analytics": "分析",
-      "settings": "设置",
-      "contacts": "联系人"
+      "contacts": "联系人",
+      "events": "活动",
+      "settings": "设置"
     },
     "settings": {
       "controls": {

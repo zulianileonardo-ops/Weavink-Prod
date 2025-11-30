@@ -753,8 +753,9 @@
       "links": "Liens",
       "appearance": "Apparence",
       "analytics": "Statistiques",
-      "settings": "Paramètres",
-      "contacts": "Contacts"
+      "contacts": "Contacts",
+      "events": "Événements",
+      "settings": "Paramètres"
     },
     "settings": {
       "controls": {

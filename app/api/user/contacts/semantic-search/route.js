@@ -229,7 +229,7 @@ export async function POST(request) {
       }, { status: 401 });
     }
 
-    if (error.message?.includes('Pinecone')) {
+    if (error.message?.includes('Qdrant')) {
       return NextResponse.json({
         error: 'Search service temporarily unavailable. Please try again in a moment.'
       }, { status: 503 });
