@@ -1,8 +1,8 @@
 {
   "metadata": {
     "project": "Weavink Documentation",
-    "last_updated": "2025-11-27",
-    "total_guides": 100,
+    "last_updated": "2025-11-30",
+    "total_guides": 101,
     "version": "1.0.0"
   },
   "categories": {
@@ -110,7 +110,8 @@
         "technical-auto-tagging-migration-033",
         "technical-semantic-search-v2-034",
         "technical-query-tagging-035",
-        "technical-discovery-job-manager-039"
+        "technical-discovery-job-manager-039",
+        "technical-pinecone-qdrant-migration-050"
       ]
     },
     "testing": {
@@ -3459,6 +3460,43 @@
       "related_guides": [
         "features-intelligent-groups-neo4j-083",
         "rgpd-compliance-matrix-001"
+      ]
+    },
+    {
+      "id": "technical-pinecone-qdrant-migration-050",
+      "title": "Pinecone → Qdrant Migration: Complete Technical Guide",
+      "filename": "pinecone-to-qdrant-migration-complete-guide.md",
+      "path": "documentation/refractoring/",
+      "category": "technical",
+      "summary": "Complete migration guide from Pinecone to self-hosted Qdrant including detailed troubleshooting of build-time errors, network isolation, and Docker networking issues. Documents all connection problems encountered and their solutions.",
+      "tags": [
+        "migration",
+        "qdrant",
+        "pinecone",
+        "docker",
+        "troubleshooting",
+        "networking",
+        "vector-database",
+        "self-hosted",
+        "infrastructure",
+        "deployment"
+      ],
+      "functions": [
+        "getQdrantUrl",
+        "testConnection",
+        "migrateToQdrant"
+      ],
+      "components": [
+        "QdrantClient",
+        "Proxy pattern"
+      ],
+      "status": "active",
+      "created": "2025-11-30",
+      "updated": "2025-11-30",
+      "related_guides": [
+        "qdrant-self-hosted-guide.md",
+        "redis-self-hosted-guide.md",
+        "weavink-infrastructure-benchmarks.md"
       ]
     }
   ]

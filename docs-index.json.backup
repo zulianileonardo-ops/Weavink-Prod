@@ -1,8 +1,8 @@
 {
   "metadata": {
     "project": "Weavink Documentation",
-    "last_updated": "2025-11-22",
-    "total_guides": 87,
+    "last_updated": "2025-11-27",
+    "total_guides": 100,
     "version": "1.0.0"
   },
   "categories": {
@@ -77,7 +77,11 @@
         "features-contact-deletion-status-api-075",
         "features-geocoding-system-082",
         "features-session-enrichment-001",
-        "features-location-services-auto-tagging-080"
+        "features-location-services-auto-tagging-080",
+        "features-contact-enrichment-021",
+        "features-intelligent-groups-neo4j-083",
+        "features-tiered-confidence-021",
+        "features-event-social-intelligence-084"
       ]
     },
     "technical": {
@@ -102,7 +106,11 @@
         "infrastructure-firebase-cleanup-047",
         "infrastructure-audit-log-monitoring-048",
         "technical-git-dual-remote-setup-049",
-        "infrastructure-session-comparison-001"
+        "infrastructure-session-comparison-001",
+        "technical-auto-tagging-migration-033",
+        "technical-semantic-search-v2-034",
+        "technical-query-tagging-035",
+        "technical-discovery-job-manager-039"
       ]
     },
     "testing": {
@@ -119,7 +127,11 @@
         "testing-email-notification-bugs-076",
         "testing-anonymous-analytics-077",
         "testing-contact-anonymization-078",
-        "testing-location-phase3-079"
+        "testing-location-phase3-079",
+        "testing-phase5-manual-080",
+        "testing-exchange-security-081",
+        "testing-dual-system-guide-082",
+        "testing-neo4j-graph-explorer-083"
       ]
     },
     "general": {
@@ -147,6 +159,13 @@
       "guides": [
         "rgpd-commit-summary-014",
         "meta-documentation-reorganization-001"
+      ]
+    },
+    "security": {
+      "name": "Security",
+      "description": "Security architecture, authentication, authorization, and API protection",
+      "guides": [
+        "security-exchange-service-001"
       ]
     }
   },
@@ -940,7 +959,7 @@
       "components": [],
       "status": "active",
       "created": "2025-01-01",
-      "updated": "2025-11-11"
+      "updated": "2025-11-25"
     },
     {
       "id": "technical-dynamicfields-fix-029",
@@ -972,7 +991,8 @@
         "sessions",
         "bug-fix",
         "tracking",
-        "lifecycle-management"
+        "lifecycle-management",
+        "budget-tracking"
       ],
       "related_guides": [
         "admin-dashboard-session-fix-009"
@@ -981,7 +1001,7 @@
       "components": [],
       "status": "active",
       "created": "2025-01-01",
-      "updated": "2025-11-11"
+      "updated": "2025-11-25"
     },
     {
       "id": "technical-subscription-revalidation-031",
@@ -1018,13 +1038,15 @@
         "ai-features"
       ],
       "related_guides": [
-        "admin-vector-panel-refactor-004"
+        "admin-vector-panel-refactor-004",
+        "SEMANTIC_SEARCH_ARCHITECTURE_V2.md",
+        "PHASE5_AUTO_TAGGING_MIGRATION.md"
       ],
       "functions": [],
       "components": [],
-      "status": "active",
+      "status": "superseded",
       "created": "2025-01-01",
-      "updated": "2025-11-11"
+      "updated": "2025-11-22"
     },
     {
       "id": "technical-quick-start-integration-033",
@@ -2599,7 +2621,7 @@
       "title": "Geocoding System - Complete Technical Guide",
       "filename": "documentation/features/GEOCODING_SYSTEM_GUIDE.md",
       "category": "features",
-      "summary": "Comprehensive technical guide for the geocoding system using Google Maps API. Covers reverse geocoding ($0.005/request), session-based vs standalone tracking, cost tracking in SessionUsage/ApiUsage collections, budget management, location data model (PII vs business context), GDPR compliance with anonymization, and integration with exchange contacts and venue enrichment. Includes complete API reference, usage examples, subscription tier limits, monitoring, debugging, and troubleshooting. Updated 2025-11-22 with subscription tier validation bug fixes (accountType field, case sensitivity, undefined object assignment).",
+      "summary": "Comprehensive technical guide for the geocoding system using Google Maps API. Covers 3-step enrichment pipeline: Step 1 (Reverse Geocoding $0.005), Step 2 (Venue Search $0.032), Step 3 (AI Auto-Tagging $0.0000002). Includes session-based tracking, dual budget system (API + AI), cost tracking in SessionUsage/ApiUsage collections, budget management, location data model (PII vs business context), GDPR compliance with anonymization, subscription tier limits, monitoring, debugging, and troubleshooting. Updated 2025-11-22 with Phase 5 integration and tier validation bug fixes.",
       "tags": [
         "geocoding",
         "google-maps",
@@ -2617,7 +2639,9 @@
         "session-tracking",
         "troubleshooting",
         "bug-fixes",
-        "tier-validation"
+        "tier-validation",
+        "auto-tagging",
+        "phase-5"
       ],
       "related_guides": [
         "features-venue-enrichment-021",
@@ -2625,7 +2649,10 @@
         "technical-cost-tracking-migration-024",
         "technical-semantic-search-032",
         "SESSION_BASED_ENRICHMENT.md",
-        "SESSION_VS_STANDALONE_TRACKING.md"
+        "SESSION_VS_STANDALONE_TRACKING.md",
+        "PHASE5_AUTO_TAGGING_MIGRATION.md",
+        "SEMANTIC_SEARCH_ARCHITECTURE_V2.md",
+        "CONTACT_CREATION_ENRICHMENT_FLOW.md"
       ],
       "functions": [
         "reverseGeocode",
@@ -2724,14 +2751,19 @@
       "filename": "SESSION_BASED_ENRICHMENT.md",
       "path": "documentation/features/SESSION_BASED_ENRICHMENT.md",
       "category": "features",
-      "summary": "Multi-step location enrichment with session-based cost tracking combining reverse geocoding and venue search",
+      "summary": "Three-step location enrichment with session-based cost tracking: Step 1 (Reverse Geocoding), Step 2 (Venue Search), Step 3 (AI Auto-Tagging). Session tracking groups multi-step operations, single-step uses ApiUsage. Updated 2025-11-22 with Phase 5 auto-tagging integration showing dual budget system (API + AI budgets) and complete 3-step pipeline.",
       "tags": [
         "session-tracking",
         "location-enrichment",
         "cost-tracking",
         "geocoding",
         "venue-search",
-        "location-services"
+        "location-services",
+        "bug-fixes",
+        "multi-step-detection",
+        "session-creation",
+        "auto-tagging",
+        "phase-5"
       ],
       "status": "active",
       "created": "2025-11-22",
@@ -2750,7 +2782,9 @@
       "related_guides": [
         "GEOCODING_SYSTEM_GUIDE.md",
         "LOCATION_SERVICES_AUTO_TAGGING_SPEC.md",
-        "SESSION_TRACKING_FIX.md"
+        "SESSION_TRACKING_FIX.md",
+        "PHASE5_AUTO_TAGGING_MIGRATION.md",
+        "CONTACT_CREATION_ENRICHMENT_FLOW.md"
       ]
     },
     {
@@ -2759,13 +2793,16 @@
       "filename": "SESSION_VS_STANDALONE_TRACKING.md",
       "path": "documentation/infrastructure/SESSION_VS_STANDALONE_TRACKING.md",
       "category": "technical",
-      "summary": "Comprehensive comparison and decision guide for choosing between session-based and standalone cost tracking approaches",
+      "summary": "Comprehensive comparison and decision guide for choosing between session-based and standalone cost tracking approaches. Includes troubleshooting section for single-step vs multi-step detection bug (fixed 2025-11-22).",
       "tags": [
         "session-tracking",
         "cost-tracking",
         "api-usage",
         "architecture",
-        "decision-guide"
+        "decision-guide",
+        "bug-fixes",
+        "troubleshooting",
+        "multi-step-detection"
       ],
       "status": "active",
       "created": "2025-11-22",
@@ -2790,7 +2827,7 @@
       "title": "Intelligent Location Services & AI Auto-Tagging System",
       "filename": "documentation/features/LOCATION_SERVICES_AUTO_TAGGING_SPEC.md",
       "category": "features",
-      "summary": "Advanced location-based contact management system with automatic venue enrichment, session-based tracking, Redis caching (70% hit rate), event detection, and AI auto-tagging. Phase 1 complete: Two-step enrichment (geocoding + venue search) with budget tracking, graceful degradation, and user settings integration. Includes comprehensive architecture diagrams, cost optimization strategy, implementation roadmap, and corrected tier validation implementation (2025-11-22 bug fixes).",
+      "summary": "Advanced location-based contact management system with 4-step enrichment: geocoding → venue search → AI tagging → vector embedding. Features Redis caching with optimized cache key (name excluded for ~30% better hit rate), session-based tracking, metadata tracking for skip scenarios, budget independence (AI/API budgets separated), and graceful degradation. Phase 5 complete: Auto-tagging at save time with 3-tier caching.",
       "tags": [
         "location",
         "gps",
@@ -2808,13 +2845,18 @@
         "cost-optimization",
         "tier-validation",
         "bug-fixes",
-        "settings-service"
+        "settings-service",
+        "phase-5",
+        "migration-guide"
       ],
       "related_guides": [
         "SESSION_BASED_ENRICHMENT.md",
         "SESSION_VS_STANDALONE_TRACKING.md",
         "GEOCODING_SYSTEM_GUIDE.md",
-        "features-venue-enrichment-021"
+        "features-venue-enrichment-021",
+        "PHASE5_AUTO_TAGGING_MIGRATION.md",
+        "SEMANTIC_SEARCH_ARCHITECTURE_V2.md",
+        "CONTACT_CREATION_ENRICHMENT_FLOW.md"
       ],
       "functions": [
         "enrichContact",
@@ -2838,7 +2880,586 @@
       ],
       "status": "partial",
       "created": "2025-11-21",
+      "updated": "2025-11-25"
+    },
+    {
+      "id": "technical-auto-tagging-migration-033",
+      "title": "Phase 5: AI Auto-Tagging Migration Guide",
+      "filename": "documentation/infrastructure/PHASE5_AUTO_TAGGING_MIGRATION.md",
+      "category": "technical",
+      "summary": "Comprehensive migration guide for moving AI tag generation from search time to contact save time. Achieves 98.75% cost savings and 50ms faster searches. Includes AutoTaggingService with 3-tier caching (static → Redis → AI), cache key optimization (name excluded for ~30% better hit rate), metadata tracking for skip scenarios (budget_exceeded, no_taggable_data, disabled, error), budget management, and graceful degradation.",
+      "tags": [
+        "auto-tagging",
+        "migration",
+        "phase-5",
+        "semantic-search",
+        "cost-optimization",
+        "ai",
+        "gemini",
+        "session-tracking",
+        "redis-cache",
+        "location-services"
+      ],
+      "related_guides": [
+        "SEMANTIC_SEARCH_ARCHITECTURE_V2.md",
+        "SEMANTIC_SEARCH_ARCHITECTURE_CURRENT.md",
+        "CONTACT_CREATION_ENRICHMENT_FLOW.md",
+        "LOCATION_SERVICES_AUTO_TAGGING_SPEC.md",
+        "SESSION_BASED_ENRICHMENT.md"
+      ],
+      "functions": [
+        "tagContact",
+        "generateTagsWithAI",
+        "getTagCacheKey",
+        "_hashContactContent",
+        "isAutoTaggingEnabled",
+        "canAffordGeneric"
+      ],
+      "components": [
+        "AutoTaggingService",
+        "CostTrackingService",
+        "SessionTrackingService",
+        "LocationEnrichmentService"
+      ],
+      "status": "active",
+      "created": "2025-11-22",
+      "updated": "2025-11-25"
+    },
+    {
+      "id": "technical-semantic-search-v2-034",
+      "title": "Semantic Search Architecture V2 (Tag-Based)",
+      "filename": "documentation/infrastructure/SEMANTIC_SEARCH_ARCHITECTURE_V2.md",
+      "category": "technical",
+      "summary": "V2 semantic search architecture with pre-generated tags at contact save time. Removes STEP 0 query enhancement (now handled by auto-tagging), reducing pipeline from 12 to 11 steps. Tags included in vector embeddings for better search quality, 50ms faster searches, and 98.75% cost savings. Uses Pinecone vector database, Gemini 2.5 Flash for embeddings, and graceful degradation for budget limits.",
+      "tags": [
+        "semantic-search",
+        "vector-database",
+        "pinecone",
+        "embeddings",
+        "ai-features",
+        "auto-tagging",
+        "architecture-v2",
+        "performance-optimization",
+        "cost-optimization"
+      ],
+      "related_guides": [
+        "SEMANTIC_SEARCH_ARCHITECTURE_CURRENT.md",
+        "PHASE5_AUTO_TAGGING_MIGRATION.md",
+        "CONTACT_CREATION_ENRICHMENT_FLOW.md"
+      ],
+      "functions": [
+        "semanticSearch",
+        "embedQuery",
+        "queryPinecone",
+        "buildVectorDocument",
+        "processSearchResults"
+      ],
+      "components": [
+        "PineconeService",
+        "EmbeddingService",
+        "DocumentBuilder"
+      ],
+      "status": "active",
+      "created": "2025-11-22",
+      "updated": "2025-11-25"
+    },
+    {
+      "id": "technical-query-tagging-035",
+      "title": "Query Tagging Architecture - Semantic Search Enhancement",
+      "filename": "documentation/infrastructure/QUERY_TAGGING_ARCHITECTURE.md",
+      "category": "technical",
+      "summary": "Query Tagging enhancement for semantic search that generates tags for search queries using the same vocabulary as contact auto-tagging. Creates better alignment between query embeddings and contact document embeddings. Uses 3-tier caching (Static → Redis → Gemini), default ON, with 80% cache hit rate and minimal latency impact (~12ms average). Includes Rerank Tag Integration (Option B) for Cohere.",
+      "tags": [
+        "query-tagging",
+        "semantic-search",
+        "vector-embedding",
+        "ai-features",
+        "gemini",
+        "caching",
+        "search-optimization",
+        "reranking"
+      ],
+      "related_guides": [
+        "SEMANTIC_SEARCH_ARCHITECTURE_V2.md",
+        "PHASE5_AUTO_TAGGING_MIGRATION.md",
+        "LOCATION_SERVICES_AUTO_TAGGING_SPEC.md"
+      ],
+      "functions": [
+        "tagQuery",
+        "_checkStaticCache",
+        "_checkRedisCache",
+        "_generateTagsWithAI",
+        "_buildQueryTaggingPrompt",
+        "getQueryCacheKey"
+      ],
+      "components": [
+        "QueryTaggingService",
+        "SemanticSearchService",
+        "RerankService"
+      ],
+      "status": "active",
+      "created": "2025-11-25",
+      "updated": "2025-11-25"
+    },
+    {
+      "id": "features-contact-enrichment-021",
+      "title": "Contact Creation & Multi-Step Enrichment Flow",
+      "filename": "documentation/features/CONTACT_CREATION_ENRICHMENT_FLOW.md",
+      "category": "features",
+      "summary": "Complete end-to-end contact creation flow with 3-step enrichment pipeline: Step 1 (Reverse Geocoding $0.005) → Step 2 (Venue Search $0.032 API / $0 cached) → Step 3 (AI Auto-Tagging $0.0000002). Includes session-based tracking, dual budget system (API + AI), database schema, graceful degradation, and testing guide. Updated 2025-11-22 with Phase 5 auto-tagging integration.",
+      "tags": [
+        "contact-creation",
+        "enrichment-flow",
+        "multi-step-pipeline",
+        "session-tracking",
+        "geocoding",
+        "venue-search",
+        "auto-tagging",
+        "phase-5",
+        "cost-tracking",
+        "budget-management"
+      ],
+      "related_guides": [
+        "PHASE5_AUTO_TAGGING_MIGRATION.md",
+        "SESSION_BASED_ENRICHMENT.md",
+        "GEOCODING_SYSTEM_GUIDE.md",
+        "LOCATION_SERVICES_AUTO_TAGGING_SPEC.md"
+      ],
+      "functions": [
+        "createContact",
+        "enrichContact",
+        "reverseGeocode",
+        "searchNearbyVenue",
+        "tagContact",
+        "finalizeSession"
+      ],
+      "components": [
+        "ExchangeService",
+        "LocationEnrichmentService",
+        "AutoTaggingService",
+        "SessionTrackingService",
+        "CostTrackingService"
+      ],
+      "status": "active",
+      "created": "2025-11-22",
       "updated": "2025-11-22"
+    },
+    {
+      "id": "testing-phase5-manual-080",
+      "title": "Phase 5 AI Auto-Tagging Manual Testing Guide",
+      "filename": "documentation/testing/PHASE5_MANUAL_TESTING_GUIDE.md",
+      "category": "testing",
+      "summary": "Comprehensive manual testing guide for Phase 5 Auto-Tagging with 15+ test scenarios covering all feature combinations, budget states, cache tiers, and subscription tiers. Includes sections for server logs, database state, Pinecone data, and usage tracking validation.",
+      "tags": [
+        "testing",
+        "manual-testing",
+        "phase-5",
+        "auto-tagging",
+        "ai",
+        "session-tracking",
+        "budget-validation",
+        "feature-combinations",
+        "firestore-verification",
+        "pinecone-verification"
+      ],
+      "related_guides": [
+        "technical-auto-tagging-migration-033",
+        "features-session-enrichment-001",
+        "features-geocoding-system-082",
+        "features-location-services-auto-tagging-080",
+        "features-contact-enrichment-021"
+      ],
+      "functions": [],
+      "components": [],
+      "status": "active",
+      "created": "2025-11-23",
+      "updated": "2025-11-23"
+    },
+    {
+      "id": "security-exchange-service-001",
+      "title": "Exchange Service Security Architecture",
+      "filename": "EXCHANGE_SERVICE_SECURITY.md",
+      "path": "documentation/security/EXCHANGE_SERVICE_SECURITY.md",
+      "category": "security",
+      "summary": "Comprehensive security documentation for the public contact exchange service, covering dual rate limiting (IP + fingerprint), CSRF protection, profile authorization, input validation, and audit logging.",
+      "tags": [
+        "exchange",
+        "security",
+        "authentication",
+        "authorization",
+        "rate-limiting",
+        "CSRF",
+        "public-api",
+        "contact-exchange",
+        "fingerprinting"
+      ],
+      "functions": [
+        "submitExchangeContact",
+        "checkExchangeRateLimit",
+        "verifyExchangeEnabled",
+        "validateSubmissionData",
+        "prepareContactData",
+        "addExchangeContactToProfile",
+        "logExchangeActivity",
+        "findRecentDuplicate",
+        "generateExchangeFingerprint",
+        "checkExchangeFingerprintRateLimit"
+      ],
+      "components": [
+        "ExchangeService",
+        "EnhancedExchangeService",
+        "ExchangeModal",
+        "ExchangeButton",
+        "House"
+      ],
+      "status": "active",
+      "created": "2025-11-24",
+      "updated": "2025-11-24",
+      "related_guides": []
+    },
+    {
+      "id": "testing-exchange-security-081",
+      "title": "Exchange Service Security Testing Guide",
+      "filename": "documentation/testing/EXCHANGE_SECURITY_TESTING_GUIDE.md",
+      "category": "testing",
+      "summary": "Integration tests for ExchangeService security: rate limiting, fingerprinting, validation, and audit logging with real Firestore.",
+      "tags": [
+        "testing",
+        "exchange-service",
+        "security",
+        "rate-limiting",
+        "fingerprinting",
+        "integration-tests"
+      ],
+      "functions": [
+        "generateExchangeFingerprint",
+        "checkExchangeRateLimit",
+        "checkExchangeFingerprintRateLimit",
+        "validateSubmissionData",
+        "logRateLimitViolation"
+      ],
+      "components": [
+        "ExchangeService"
+      ],
+      "related_guides": [
+        "security-exchange-service-001",
+        "testing-rate-limit-036"
+      ],
+      "status": "active",
+      "created": "2025-11-24",
+      "updated": "2025-11-24"
+    },
+    {
+      "id": "testing-dual-system-guide-082",
+      "title": "Dual-System Testing Guide: Auto-Tagging + Query Tagging",
+      "filename": "documentation/testing/DUAL_SYSTEM_TESTING_GUIDE.md",
+      "category": "testing",
+      "summary": "Comprehensive manual testing guide for both Auto-Tagging (contact save) and Query Tagging (semantic search) systems. 10 general tests with dual sections per test capturing server logs, Firestore state, Pinecone vectors, and SessionUsage tracking.",
+      "tags": [
+        "testing",
+        "auto-tagging",
+        "query-tagging",
+        "semantic-search",
+        "dual-system",
+        "manual-testing"
+      ],
+      "functions": [
+        "AutoTaggingService.generateTags",
+        "QueryTaggingService.tagQuery",
+        "SemanticSearchService.search"
+      ],
+      "components": [
+        "AutoTaggingService",
+        "QueryTaggingService",
+        "SemanticSearchService",
+        "RerankService"
+      ],
+      "related_guides": [
+        "testing-phase5-manual-080",
+        "infrastructure-query-tagging-079",
+        "infrastructure-phase5-auto-tagging-077",
+        "infrastructure-semantic-search-v2-050"
+      ],
+      "status": "active",
+      "created": "2025-11-25",
+      "updated": "2025-11-25"
+    },
+    {
+      "id": "testing-neo4j-graph-explorer-083",
+      "title": "Neo4j Graph Explorer Manual Testing Guide",
+      "filename": "documentation/testing/NEO4J_GRAPH_EXPLORER_TESTING_GUIDE.md",
+      "category": "testing",
+      "summary": "End-to-end manual testing guide for Neo4j integration, Graph Explorer visualization, and Intelligent Group creation. 16 tests covering contact sync to Neo4j, graph API endpoints, visualization rendering, relationship discovery, all 4 suggestion types (company, tag, semantic, knows), AI-generated group naming with Gemini, Redis caching, 3D mode toggle, and Advanced Filters (company/tag selection).",
+      "tags": [
+        "testing",
+        "manual-testing",
+        "neo4j",
+        "graph-explorer",
+        "graph-visualization",
+        "intelligent-groups",
+        "relationship-discovery",
+        "contacts",
+        "ai-naming",
+        "tag-suggestions",
+        "knows-suggestions",
+        "redis-cache",
+        "3d-visualization",
+        "advanced-filters",
+        "react-force-graph-3d"
+      ],
+      "functions": [
+        "Neo4jSyncService.syncContact",
+        "RelationshipDiscoveryService.discoverRelationships",
+        "GroupSuggestionService.getSuggestions",
+        "GroupService.createGroup",
+        "GroupNamingService.generateGroupName"
+      ],
+      "components": [
+        "GraphExplorerTab",
+        "ContactGraph",
+        "GraphControls",
+        "GraphLegend",
+        "NodeTooltip",
+        "GroupNamingService"
+      ],
+      "related_guides": [
+        "testing-dual-system-guide-082",
+        "testing-phase5-manual-080",
+        "features-intelligent-groups-neo4j-083",
+        "infrastructure-semantic-search-v2-050"
+      ],
+      "status": "active",
+      "created": "2025-11-25",
+      "updated": "2025-11-25"
+    },
+    {
+      "id": "features-intelligent-groups-neo4j-083",
+      "title": "Intelligent Group Creation with Neo4j Graph Database",
+      "filename": "documentation/features/INTELLIGENT_GROUPS_NEO4J_SPEC.md",
+      "category": "features",
+      "summary": "AI-powered intelligent group creation using Neo4j graph database for relationship discovery. Supports 4 suggestion types: company (WORKS_AT), tag (HAS_TAG), semantic (SIMILAR_TO), and knows (KNOWS). Includes GroupNamingService for Gemini-powered creative group names with Redis caching, 2D/3D visualization modes (react-force-graph-2d/3d), and Advanced Filters for filtering by specific company or tag names.",
+      "tags": [
+        "neo4j",
+        "graph-database",
+        "intelligent-groups",
+        "pinecone",
+        "gemini",
+        "visualization",
+        "react-force-graph",
+        "react-force-graph-3d",
+        "3d-visualization",
+        "advanced-filters",
+        "relationship-discovery",
+        "ai-groups",
+        "ai-naming",
+        "tag-suggestions",
+        "knows-suggestions",
+        "redis-cache"
+      ],
+      "functions": [
+        "RelationshipDiscoveryService.discoverAll",
+        "RelationshipDiscoveryService.getSuggestedGroups",
+        "Neo4jClient.findTagClusters",
+        "Neo4jClient.findKnowsClusters",
+        "GroupNamingService.generateGroupName",
+        "Neo4jSyncService.syncContact",
+        "AIRelationshipInferenceService.inferRelationships"
+      ],
+      "components": [
+        "ContactGraph",
+        "GraphExplorerTab",
+        "GroupSuggestionsPanel",
+        "Neo4jSyncService",
+        "RelationshipDiscoveryService",
+        "GroupNamingService"
+      ],
+      "related_guides": [
+        "SEMANTIC_SEARCH_ARCHITECTURE_V2.md",
+        "PHASE5_AUTO_TAGGING_MIGRATION.md",
+        "LOCATION_SERVICES_AUTO_TAGGING_SPEC.md"
+      ],
+      "status": "active",
+      "created": "2025-11-25",
+      "updated": "2025-11-25"
+    },
+    {
+      "id": "technical-discovery-job-manager-039",
+      "title": "DiscoveryJobManager - In-Memory Background Job Storage",
+      "filename": "documentation/technical/DISCOVERY_JOB_MANAGER_GUIDE.md",
+      "category": "technical",
+      "summary": "Comprehensive technical guide for the in-memory job storage system that enables background relationship discovery operations. Covers singleton Map pattern, job lifecycle, progress tracking, security considerations, and integration with Neo4j discovery services.",
+      "tags": [
+        "background-jobs",
+        "job-manager",
+        "in-memory-storage",
+        "progress-tracking",
+        "discovery",
+        "neo4j",
+        "polling",
+        "singleton",
+        "api-pattern"
+      ],
+      "functions": [
+        "DiscoveryJobManager.createJob",
+        "DiscoveryJobManager.updateProgress",
+        "DiscoveryJobManager.completeJob",
+        "DiscoveryJobManager.failJob",
+        "DiscoveryJobManager.getJob",
+        "DiscoveryJobManager.getJobForUser",
+        "DiscoveryJobManager.cleanup",
+        "DiscoveryJobManager.getJobsForUser",
+        "DiscoveryJobManager.getJobCount"
+      ],
+      "components": [],
+      "related_guides": [
+        "INTELLIGENT_GROUPS_NEO4J_SPEC.md",
+        "NEO4J_GRAPH_EXPLORER_TESTING_GUIDE.md"
+      ],
+      "status": "active",
+      "created": "2025-11-25",
+      "updated": "2025-11-25"
+    },
+    {
+      "id": "features-tiered-confidence-021",
+      "title": "Tiered Confidence Relationship Discovery System",
+      "filename": "documentation/features/TIERED_CONFIDENCE_DISCOVERY_GUIDE.md",
+      "category": "features",
+      "summary": "Three-tier confidence system for relationship discovery: HIGH (auto-save), MEDIUM (review with LLM), LOW (potential). Reduces false positives by classifying relationships based on semantic similarity scores and tag overlap, with user review for uncertain matches.",
+      "tags": [
+        "neo4j",
+        "graph",
+        "relationships",
+        "discovery",
+        "confidence",
+        "llm",
+        "review",
+        "pinecone",
+        "semantic-similarity"
+      ],
+      "functions": [
+        "discoverSemanticSimilarity()",
+        "discoverTagRelationships()",
+        "assessMediumConfidenceRelationship()",
+        "approveRelationship()",
+        "rejectRelationship()",
+        "batchApprove()",
+        "batchReject()"
+      ],
+      "components": [
+        "PendingRelationshipsPanel",
+        "RelationshipReviewCard",
+        "GraphExplorerTab"
+      ],
+      "related_guides": [
+        "INTELLIGENT_GROUPS_NEO4J_SPEC.md",
+        "NEO4J_GRAPH_EXPLORER_TESTING_GUIDE.md"
+      ],
+      "status": "draft",
+      "created": "2025-11-25",
+      "updated": "2025-11-25"
+    },
+    {
+      "id": "features-event-social-intelligence-084",
+      "title": "Event Social Intelligence System",
+      "filename": "EVENT_SOCIAL_INTELLIGENCE.md",
+      "path": "documentation/features/EVENT_SOCIAL_INTELLIGENCE.md",
+      "category": "features",
+      "summary": "Comprehensive guide to the Event Social Intelligence system including Ghost Mode, AI matching, meeting zones, Google Calendar OAuth2 integration, Eventbrite discovery, geocoding service, Firebase Cloud Function for daily sync, and subscription-based feature gating.",
+      "tags": [
+        "events",
+        "social-intelligence",
+        "ghost-mode",
+        "ai-matching",
+        "meeting-zones",
+        "neo4j",
+        "map",
+        "visibility",
+        "testing",
+        "public-events",
+        "bulk-import",
+        "admin",
+        "google-calendar",
+        "oauth2",
+        "eventbrite",
+        "geocoding",
+        "discovery",
+        "firebase-functions"
+      ],
+      "functions": [
+        "upsertEvent",
+        "createAttendsRelationship",
+        "createMatchedAtRelationship",
+        "getEventAttendees",
+        "getGhostModeAttendees",
+        "findEventMatches",
+        "getUpcomingEvents",
+        "getEventStats",
+        "calculateCompatibilityScore",
+        "calculateComplementaryScore",
+        "calculateIntentScore",
+        "calculateSemanticScore",
+        "findMatchesForUser",
+        "createMatch",
+        "respondToMatch",
+        "getPendingMatches",
+        "runMatchingForEvent",
+        "expireOldMatches",
+        "runEventServiceTests",
+        "runVisibilityServiceClassTests",
+        "runEventPanelApiTests",
+        "runMatchingServiceTests",
+        "generateZonesForEvent",
+        "getZonesForEvent",
+        "buildCompatibilityMatrix",
+        "clusterParticipants",
+        "growCluster",
+        "splitLargeClusters",
+        "generateZoneNames",
+        "buildZoneCharacteristics",
+        "saveZones",
+        "getExistingZones",
+        "shouldRegenerateZones",
+        "runMeetingZoneServiceTests",
+        "validateEventData",
+        "bulkCreateEvents",
+        "generateAuthUrl",
+        "exchangeCodeForTokens",
+        "refreshAccessToken",
+        "revokeAccess",
+        "getConnectionStatus",
+        "getConnectedUserIds",
+        "geocodeAddress",
+        "reverseGeocode",
+        "isOnlineLocation",
+        "batchGeocode",
+        "looksGeocodable",
+        "discoverEvents",
+        "importEvent",
+        "checkAlreadyImported",
+        "hasCalendarFeature",
+        "getMaxImportsPerMonth",
+        "scheduledCalendarSync"
+      ],
+      "components": [
+        "EventPanel",
+        "MeetingZones",
+        "ContactsMap",
+        "MatchingService",
+        "MeetingZoneService",
+        "GoogleCalendarOAuthService",
+        "GoogleCalendarSyncService",
+        "GeocodingService",
+        "EventbriteService",
+        "CalendarConnectButton",
+        "EventDiscoveryList"
+      ],
+      "status": "in-progress",
+      "created": "2025-11-26",
+      "updated": "2025-11-27",
+      "related_guides": [
+        "features-intelligent-groups-neo4j-083",
+        "rgpd-compliance-matrix-001"
+      ]
     }
   ]
 }

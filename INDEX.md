@@ -1,14 +1,14 @@
 # Weavink Documentation Index
 
-**Last Updated:** 2025-11-27
-**Total Guides:** 100
+**Last Updated:** 2025-11-30
+**Total Guides:** 101
 
 ## Quick Navigation
 - [Admin System](#admin-system) (9 guides)
 - [Analytics & Tracking](#analytics-tracking) (3 guides)
 - [RGPD/GDPR Compliance](#rgpd-gdpr-compliance) (13 guides)
 - [Feature Implementations](#feature-implementations) (29 guides)
-- [Technical Infrastructure](#technical-infrastructure) (23 guides)
+- [Technical Infrastructure](#technical-infrastructure) (24 guides)
 - [Testing & QA](#testing-qa) (15 guides)
 - [General Documentation](#general-documentation) (4 guides)
 - [Tutorials & Guides](#tutorials-guides) (3 guides)
@@ -361,6 +361,11 @@
 **Summary:** Complete setup guide for configuring repository to push to both GitHub and GitLab simultaneously. Covers initial setup, authentication (SSH for GitLab, HTTPS for GitHub), troubleshooting common issues including GitLab SSO/SAML messages, and integration with git-manager-skill.
 **Tags:** git, github, gitlab, repository, deployment, version-control, multi-remote, infrastructure, setup, ssh, authentication
 **Related:** [git-manager-skill](#git-manager-skill), [features-roadmap-changelog-070](#features-roadmap-changelog-070)
+
+### pinecone-to-qdrant-migration-complete-guide.md
+**Summary:** Complete migration guide from Pinecone to self-hosted Qdrant including detailed troubleshooting of build-time errors, network isolation, and Docker networking issues. Documents all connection problems encountered and their solutions.
+**Tags:** migration, qdrant, pinecone, docker, troubleshooting, networking, vector-database, self-hosted, infrastructure, deployment
+**Related:** [qdrant-self-hosted-guide.md](#qdrant-self-hosted-guide-md), [redis-self-hosted-guide.md](#redis-self-hosted-guide-md), [weavink-infrastructure-benchmarks.md](#weavink-infrastructure-benchmarks-md)
 
 ### QUERY_TAGGING_ARCHITECTURE.md
 **Summary:** Query Tagging enhancement for semantic search that generates tags for search queries using the same vocabulary as contact auto-tagging. Creates better alignment between query embeddings and contact document embeddings. Uses 3-tier caching (Static → Redis → Gemini), default ON, with 80% cache hit rate and minimal latency impact (~12ms average). Includes Rerank Tag Integration (Option B) for Cohere.

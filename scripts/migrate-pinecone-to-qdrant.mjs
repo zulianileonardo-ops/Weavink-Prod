@@ -68,6 +68,42 @@ const qdrantClient = new QdrantClient({
 const EMBEDDING_DIMENSION = 1024;  // embed-multilingual-v3.0 dimensions
 const BATCH_SIZE = 50;             // Upsert 50 vectors at a time
 
+// Check if migration has already been run
+async function checkExistingData() {
+  try {
+    const collections = await qdrantClient.getCollections();
+    const userCollections = collections.collections.filter(c =>
+      c.name === 'IFxPCgSA8NapEq5W8jh6yHrtJGJ2' ||
+      c.name === 'ScmVq6p8ubQ9JFbniF2Vg5ocmbv2'
+    );
+
+    if (userCollections.length > 0) {
+      console.error('\n⚠️  WARNING: Collections already exist!');
+      console.error('Migration appears to have already run.');
+      console.error('\nExisting collections:');
+      for (const collection of userCollections) {
+        const info = await qdrantClient.getCollection(collection.name);
+        console.error(`  - ${collection.name}: ${info.points_count} vectors`);
+      }
+      console.error('\n💡 To re-run migration:');
+      console.error('   1. Delete collections first: bash scripts/fix-duplicate-vectors.sh');
+      console.error('   2. Or use --force flag: FORCE_MIGRATION=true node migrate-pinecone-to-qdrant.mjs\n');
+
+      // Allow force override
+      if (process.env.FORCE_MIGRATION !== 'true') {
+        process.exit(1);
+      } else {
+        console.log('⚠️  FORCE_MIGRATION=true detected. Proceeding with migration (will create duplicates)...\n');
+      }
+    } else {
+      console.log('✅ [Migration] No existing collections found. Safe to proceed.\n');
+    }
+  } catch (error) {
+    // Collections don't exist, safe to proceed
+    console.log('✅ [Migration] No existing collections found. Safe to proceed.\n');
+  }
+}
+
 /**
  * Main migration function
  */
@@ -77,6 +113,9 @@ async function migrateToQdrant() {
   try {
     // Step 0: Test Qdrant connection first
     await testConnection();
+
+    // Step 0.5: Check if migration already ran (prevent duplicates)
+    await checkExistingData();
 
     // Step 1: Load exported Pinecone data
     console.log('\n📂 [Migration] Step 1: Loading pinecone_export.json...');
