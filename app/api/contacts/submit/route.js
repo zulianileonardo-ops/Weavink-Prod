@@ -2,6 +2,7 @@
 import { NextResponse } from 'next/server';
 import { adminDb } from '@/lib/firebaseAdmin';
 import { rateLimit } from '@/lib/rateLimiter';
+import { AutoTaggingService } from '@/lib/services/serviceContact/server/AutoTaggingService'; // NEW: Auto-tagging support
 
 // --- Validation Functions ---
 function validateContactSubmission(contactData) {
@@ -202,6 +203,47 @@ export async function POST(request) {
 
         // Validate contact data
         const validatedContact = validateContactSubmission(contact);
+
+        // --- 3.5. Auto-tag contact (NEW) ---
+        // Tag the contact before finding the target user to save time
+        try {
+            console.log('[PublicSubmit] 🏷️ Auto-tagging public submission:', validatedContact.name);
+
+            // Build temp contact object for tagging
+            const tempContact = {
+                name: validatedContact.name,
+                company: validatedContact.company,
+                jobTitle: validatedContact.jobTitle || '',
+                email: validatedContact.email,
+                notes: validatedContact.message || ''
+            };
+
+            // We'll fetch userData after we know the target user
+            // For now, use empty userData (auto-tagging will check feature flags)
+            const userData = {}; // Empty userData = auto-tagging disabled by default
+
+            // Call AutoTaggingService (will likely use static or Redis cache)
+            const taggedContact = await AutoTaggingService.tagContact(
+                tempContact,
+                null,  // userId: null for public submission (will track costs under target user later if needed)
+                userData,
+                null,  // sessionId: null for public submission (standalone operation)
+                null   // budgetCheck: null
+            );
+
+            // Add tags to validated contact
+            if (taggedContact.tags && Array.isArray(taggedContact.tags)) {
+                validatedContact.tags = taggedContact.tags;
+                console.log('[PublicSubmit] ✅ Tags added to public submission:', taggedContact.tags);
+            } else {
+                console.log('[PublicSubmit] ⏭️ No tags generated for public submission');
+                validatedContact.tags = []; // Ensure tags array exists
+            }
+        } catch (error) {
+            // Graceful degradation: continue without tags
+            console.error('[PublicSubmit] ⚠️ Auto-tagging failed, continuing without tags:', error.message);
+            validatedContact.tags = []; // Ensure tags array exists
+        }
 
         // --- 4. Find Target User ---
         let targetUserId;
