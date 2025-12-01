@@ -4,8 +4,7 @@
 
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
-import { getVertexAI } from 'firebase/vertexai';
-import { initializeApp as initializeClientApp } from 'firebase/app';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 // ============================================
 // Firebase Admin Setup (inline to avoid @/ imports)
@@ -29,22 +28,19 @@ function initFirebaseAdmin() {
 }
 
 // ============================================
-// Firebase Client Setup (for Vertex AI / Gemini)
+// Gemini Setup (using @google/generative-ai)
 // ============================================
-let vertexAI;
+let genAI;
+let geminiModel;
 
-function initFirebaseClient() {
-  const firebaseConfig = {
-    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  };
-
-  const app = initializeClientApp(firebaseConfig);
-  return getVertexAI(app);
+function initGemini() {
+  const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_AI_API_KEY;
+  if (!apiKey) {
+    console.warn('⚠️ No GEMINI_API_KEY found, will use static cache only');
+    return null;
+  }
+  genAI = new GoogleGenerativeAI(apiKey);
+  return genAI.getGenerativeModel({ model: 'gemini-2.0-flash-exp' });
 }
 
 // ============================================
@@ -89,7 +85,7 @@ function checkStaticCache(contact) {
   return null;
 }
 
-async function generateTagsWithGemini(contact, model) {
+async function generateTagsWithGemini(contact) {
   const contactInfo = [
     contact.name && `Name: ${contact.name}`,
     contact.jobTitle && `Job Title: ${contact.jobTitle}`,
@@ -115,7 +111,7 @@ RESPOND WITH VALID JSON ONLY:
 {"tags": ["tag1", "tag2", ...]}`;
 
   try {
-    const result = await model.generateContent(prompt);
+    const result = await geminiModel.generateContent(prompt);
     const text = result.response.text();
 
     // Parse JSON from response
@@ -154,13 +150,9 @@ async function backfillContactTags(userId, options = {}) {
   adminDb = initFirebaseAdmin();
 
   // Initialize Gemini model
-  let geminiModel = null;
-  try {
-    vertexAI = initFirebaseClient();
-    geminiModel = vertexAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+  geminiModel = initGemini();
+  if (geminiModel) {
     console.log('✅ Gemini model initialized');
-  } catch (error) {
-    console.error('⚠️ Gemini init failed, will use static cache only:', error.message);
   }
 
   try {
@@ -208,7 +200,7 @@ async function backfillContactTags(userId, options = {}) {
 
         // Fall back to Gemini if no cache hit
         if (!tags && geminiModel) {
-          tags = await generateTagsWithGemini(contact, geminiModel);
+          tags = await generateTagsWithGemini(contact);
         }
 
         if (!tags || tags.length === 0) {
