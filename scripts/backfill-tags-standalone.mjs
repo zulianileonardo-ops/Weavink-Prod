@@ -184,15 +184,18 @@ async function backfillContactTags(userId, options = {}) {
     let failed = 0;
     let skipped = 0;
 
-    console.log(`\n🚀 Starting parallel tagging of ${contactsToProcess.length} contacts...`);
+    console.log(`\n🚀 Starting sequential tagging of ${contactsToProcess.length} contacts (3s delay to avoid rate limits)...`);
+    console.log(`⏱️  Estimated time: ${Math.ceil(contactsToProcess.length * 3 / 60)} minutes\n`);
 
-    // 2. Process contacts in parallel
-    await Promise.allSettled(contactsToProcess.map(async (contact) => {
+    // 2. Process contacts SEQUENTIALLY with delay to avoid rate limits
+    for (let i = 0; i < contactsToProcess.length; i++) {
+      const contact = contactsToProcess[i];
+
       try {
         // Skip if already has tags (unless --force is used)
         if (!force && contact.tags && contact.tags.length > 0) {
           skipped++;
-          return;
+          continue;
         }
 
         // Try static cache first
@@ -201,24 +204,34 @@ async function backfillContactTags(userId, options = {}) {
         // Fall back to Gemini if no cache hit
         if (!tags && geminiModel) {
           tags = await generateTagsWithGemini(contact);
+
+          // Add delay after Gemini call to avoid rate limits (3 seconds = 20 req/min, under 25 limit)
+          if (i < contactsToProcess.length - 1) {
+            await new Promise(resolve => setTimeout(resolve, 3000));
+          }
         }
 
         if (!tags || tags.length === 0) {
           skipped++;
-          console.log(`⏭️  ${contact.name || contact.email}: No tags generated`);
-          return;
+          console.log(`⏭️  [${i + 1}/${contactsToProcess.length}] ${contact.name || contact.email}: No tags generated`);
+          continue;
         }
 
         // Update contact in-memory
         contact.tags = tags;
         succeeded++;
-        console.log(`✅ ${contact.name || contact.email}: ${tags.join(', ')}`);
+        console.log(`✅ [${i + 1}/${contactsToProcess.length}] ${contact.name || contact.email}: ${tags.join(', ')}`);
 
       } catch (error) {
         failed++;
-        console.error(`❌ ${contact.name || contact.email}:`, error.message);
+        console.error(`❌ [${i + 1}/${contactsToProcess.length}] ${contact.name || contact.email}:`, error.message);
+
+        // Still add delay on error to avoid hammering the API
+        if (i < contactsToProcess.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 3000));
+        }
       }
-    }));
+    }
 
     const duration = ((Date.now() - startTime) / 1000).toFixed(2);
 
