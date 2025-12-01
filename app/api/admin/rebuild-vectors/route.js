@@ -6,6 +6,9 @@ import { VectorStorageService } from '@/lib/services/serviceContact/server/vecto
 import { adminDb } from '@/lib/firebaseAdmin';
 import { NextResponse } from 'next/server';
 
+// CRITICAL: Prevent static generation - this route needs runtime Qdrant connection
+export const dynamic = 'force-dynamic';
+
 const USER_IDS = [
   'IFxPCgSA8NapEq5W8jh6yHrtJGJ2',  // 102 vectors
   'ScmVq6p8ubQ9JFbniF2Vg5ocmbv2'   // 1 vector
@@ -13,6 +16,20 @@ const USER_IDS = [
 
 export async function GET() {
   try {
+    // Check if Qdrant is available before attempting rebuild
+    try {
+      const { qdrantClient } = await import('@/lib/qdrant.js');
+      await qdrantClient.getCollections();
+      console.log('✅ Qdrant connection verified');
+    } catch (error) {
+      console.error('❌ Qdrant not available:', error.message);
+      return NextResponse.json({
+        success: false,
+        error: 'Qdrant vector database is not available. This route only works in production runtime.',
+        details: error.message
+      }, { status: 503 });
+    }
+
     console.log('🔄 Starting vector rebuild with Cohere embeddings...');
     const results = [];
 
