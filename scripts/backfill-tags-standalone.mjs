@@ -134,14 +134,14 @@ RESPOND WITH VALID JSON ONLY:
 // ============================================
 
 async function backfillContactTags(userId, options = {}) {
-  const { dryRun = false, onlyEmpty = false } = options;
+  const { dryRun = false, onlyEmpty = false, force = false } = options;
 
   console.log(`\n╔════════════════════════════════════════════════════════════════╗`);
   console.log(`║  BACKFILL CONTACT TAGS                                         ║`);
   console.log(`╠════════════════════════════════════════════════════════════════╣`);
   console.log(`║  User ID:         ${userId.slice(-20).padEnd(42)}║`);
   console.log(`║  Dry Run:         ${(dryRun ? 'YES (no updates)' : 'NO (will update)').padEnd(42)}║`);
-  console.log(`║  Only Empty:      ${(onlyEmpty ? 'YES (skip tagged)' : 'NO (all contacts)').padEnd(42)}║`);
+  console.log(`║  Force Re-tag:    ${(force ? 'YES (replace existing)' : 'NO (skip tagged)').padEnd(42)}║`);
   console.log(`╚════════════════════════════════════════════════════════════════╝\n`);
 
   const startTime = Date.now();
@@ -189,8 +189,8 @@ async function backfillContactTags(userId, options = {}) {
     // 2. Process contacts in parallel
     await Promise.allSettled(contactsToProcess.map(async (contact) => {
       try {
-        // Skip if already has tags
-        if (!onlyEmpty && contact.tags && contact.tags.length > 0) {
+        // Skip if already has tags (unless --force is used)
+        if (!force && contact.tags && contact.tags.length > 0) {
           skipped++;
           return;
         }
@@ -261,17 +261,23 @@ const args = process.argv.slice(2);
 const userId = args.find(a => !a.startsWith('--'));
 const dryRun = args.includes('--dry-run');
 const onlyEmpty = args.includes('--only-empty');
+const force = args.includes('--force');
 
 if (!userId) {
-  console.log('Usage: node scripts/backfill-tags-standalone.mjs <userId> [--dry-run] [--only-empty]');
+  console.log('Usage: node scripts/backfill-tags-standalone.mjs <userId> [options]');
+  console.log('');
+  console.log('Options:');
+  console.log('  --dry-run     Test without saving');
+  console.log('  --only-empty  Only tag contacts without tags');
+  console.log('  --force       Re-tag ALL contacts (even those with existing tags)');
   console.log('');
   console.log('Examples:');
-  console.log('  node scripts/backfill-tags-standalone.mjs IFxPCgSA8NapEq5W8jh6yHrtJGJ2');
-  console.log('  node scripts/backfill-tags-standalone.mjs IFxPCgSA8NapEq5W8jh6yHrtJGJ2 --dry-run');
+  console.log('  node scripts/backfill-tags-standalone.mjs IFxPCgSA8NapEq5W8jh6yHrtJGJ2 --force');
+  console.log('  node scripts/backfill-tags-standalone.mjs IFxPCgSA8NapEq5W8jh6yHrtJGJ2 --dry-run --force');
   process.exit(1);
 }
 
-backfillContactTags(userId, { dryRun, onlyEmpty })
+backfillContactTags(userId, { dryRun, onlyEmpty, force })
   .then(() => process.exit(0))
   .catch((err) => {
     console.error(err);
