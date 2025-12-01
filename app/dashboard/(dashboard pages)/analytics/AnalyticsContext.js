@@ -12,8 +12,8 @@
 
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { useDashboard } from '@/app/dashboard/DashboardContext';
-import { getFirestore, doc, onSnapshot } from 'firebase/firestore';
-import { app } from '@/important/firebase';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { fireApp } from '@/important/firebase';
 
 // Global cache object - persists across component mounts
 const analyticsCache = new Map();
@@ -226,8 +226,6 @@ export function useAnalytics() {
     return context;
 }
 
-const db = getFirestore(app);
-
 export function AnalyticsProvider({ children, impersonatedUserId }) {
     const { currentUser } = useDashboard();
     const [analyticsData, setAnalyticsData] = useState(null);
@@ -276,7 +274,7 @@ export function AnalyticsProvider({ children, impersonatedUserId }) {
         // Step 2: Set up real-time listener (always, even if we have cache)
         console.log(`[AnalyticsProvider] 👂 Setting up real-time listener for user: ${targetUserId}`);
         
-        const analyticsDocRef = doc(db, "Analytics", targetUserId);
+        const analyticsDocRef = doc(fireApp, "Analytics", targetUserId);
 
         const unsubscribe = onSnapshot(analyticsDocRef, (docSnap) => {
             if (docSnap.exists()) {

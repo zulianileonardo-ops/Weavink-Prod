@@ -17,7 +17,7 @@
  */
 
 import crypto from 'crypto';
-import { initializeApp, cert, getApps } from 'firebase-admin/app';
+import { initializeApp, cert, getApps, getApp } from 'firebase-admin/app';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 
 // Initialize Firebase Admin if not already initialized
@@ -31,7 +31,9 @@ if (getApps().length === 0) {
   });
 }
 
-const db = getFirestore();
+// Use named database if specified, otherwise fall back to default
+const databaseId = process.env.FIRESTORE_DATABASE_ID || '(default)';
+const db = getFirestore(getApp(), databaseId);
 
 // Test configuration
 const TEST_PREFIX = 'TEST_';

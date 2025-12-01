@@ -1,5 +1,6 @@
 const {onSchedule} = require("firebase-functions/v2/scheduler");
 const {getFirestore, FieldValue} = require("firebase-admin/firestore");
+const {getApp} = require("firebase-admin/app");
 
 /**
  * Scheduled Cloud Function to clean up expired data export requests
@@ -24,7 +25,8 @@ exports.cleanupExpiredExports = onSchedule({
     maxRetryDuration: "600s",
   },
 }, async (event) => {
-  const db = getFirestore();
+  const databaseId = process.env.FIRESTORE_DATABASE_ID || "(default)";
+  const db = getFirestore(getApp(), databaseId);
   const startTime = Date.now();
 
   console.log("🧹 [Cleanup] Starting scheduled cleanup of expired export requests");

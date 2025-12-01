@@ -26,7 +26,9 @@ if (!getApps().length) {
 }
 
 // Initialize Client Services
-export const fireApp = getFirestore(app);
+// Use named database if specified, otherwise fall back to default
+const databaseId = process.env.NEXT_PUBLIC_FIRESTORE_DATABASE_ID || '(default)';
+export const fireApp = getFirestore(app, databaseId);
 export const appStorage = getStorage(app);
 export const auth = getAuth(app);
 // ✅ ADD THIS LINE TO FIX THE EXPORT PROBLEM

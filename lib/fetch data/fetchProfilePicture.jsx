@@ -6,7 +6,7 @@
  */
 
 import { getFirestore } from 'firebase-admin/firestore';
-import { initializeApp, getApps, cert } from 'firebase-admin/app';
+import { initializeApp, getApps, getApp, cert } from 'firebase-admin/app';
 if (!getApps().length) {
     initializeApp({
         credential: cert({
@@ -16,7 +16,9 @@ if (!getApps().length) {
         }),
     });
 }
-const adminDb = getFirestore();
+// Use named database if specified, otherwise fall back to default
+const databaseId = process.env.FIRESTORE_DATABASE_ID || '(default)';
+const adminDb = getFirestore(getApp(), databaseId);
 
 export async function fetchProfileByUsername(identifier) {
     try {

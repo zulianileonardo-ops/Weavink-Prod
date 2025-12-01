@@ -7,7 +7,11 @@ const {
 } = require("./subscriptionChangeHandler");
 
 exports.onUserSubscriptionChange = onDocumentUpdated(
-    "users/{userId}",
+    {
+      document: "users/{userId}",
+      database: process.env.FIRESTORE_DATABASE_ID || "(default)",
+      region: "europe-west9",
+    },
     async (event) => {
       // Get the data before and after the change
       const beforeData = event.data.before.data();

@@ -2,7 +2,7 @@
 // scripts/backfill-tags-standalone.mjs
 // Standalone backfill script with no @/ imports
 
-import { initializeApp, cert, getApps } from 'firebase-admin/app';
+import { initializeApp, cert, getApps, getApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
@@ -24,7 +24,9 @@ function initFirebaseAdmin() {
     });
     console.log('✅ Firebase Admin initialized');
   }
-  return getFirestore();
+  // Use named database if specified, otherwise fall back to default
+  const databaseId = process.env.FIRESTORE_DATABASE_ID || '(default)';
+  return getFirestore(getApp(), databaseId);
 }
 
 // ============================================

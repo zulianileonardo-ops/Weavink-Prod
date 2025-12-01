@@ -7,8 +7,8 @@ import { useDashboard } from '@/app/dashboard/DashboardContext';
 import { ContactsService } from '@/lib/services/serviceContact/client/services/ContactService';
 import { SemanticSearchService } from '@/lib/services/serviceContact/client/services/SemanticSearchService';
 import { CONTACT_FEATURES } from '@/lib/services/constants';
-import { getFirestore, doc, onSnapshot } from 'firebase/firestore';
-import { app } from '@/important/firebase';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { fireApp } from '@/important/firebase';
 import { useTranslation } from '@/lib/translation/useTranslation';
 
 const ContactsContext = createContext(null);
@@ -310,8 +310,7 @@ const [stats, setStats] = useState({
     useEffect(() => {
         if (!currentUser) return;
 
-        const db = getFirestore(app);
-        const contactsDocRef = doc(db, 'Contacts', currentUser.uid);
+        const contactsDocRef = doc(fireApp, 'Contacts', currentUser.uid);
         const id = componentId.current;
 
         console.log(`🔥 [${id}] Setting up Firestore real-time listener for contacts`);

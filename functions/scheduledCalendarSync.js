@@ -6,7 +6,7 @@
  */
 
 const { onSchedule } = require('firebase-functions/v2/scheduler');
-const { initializeApp, getApps, cert } = require('firebase-admin/app');
+const { initializeApp, getApps, getApp, cert } = require('firebase-admin/app');
 const { getFirestore, Timestamp } = require('firebase-admin/firestore');
 const { google } = require('googleapis');
 
@@ -21,7 +21,9 @@ if (!getApps().length) {
     });
 }
 
-const db = getFirestore();
+// Use named database if specified, otherwise fall back to default
+const databaseId = process.env.FIRESTORE_DATABASE_ID || '(default)';
+const db = getFirestore(getApp(), databaseId);
 
 // Configuration
 const SYNC_CONFIG = {

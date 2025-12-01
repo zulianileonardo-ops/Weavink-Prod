@@ -7,8 +7,8 @@
   import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
   import { useAuth } from '@/contexts/AuthContext';
   import { getSubscriptionStatus } from '@/lib/services/client/subscriptionService';
-  import { getFirestore, doc, onSnapshot } from 'firebase/firestore';
-  import { app } from '@/important/firebase';
+  import { doc, onSnapshot } from 'firebase/firestore';
+  import { fireApp } from '@/important/firebase';
   import { ConsentService } from '@/lib/services/servicePrivacy/client/services/ConsentService';
   import { AccountDeletionService } from '@/lib/services/servicePrivacy/client/services/AccountDeletionService';
 
@@ -163,8 +163,7 @@
 
     console.log('🔔 [DashboardContext] Setting up real-time subscription listener for:', currentUser.uid);
 
-    const db = getFirestore(app);
-    const userRef = doc(db, 'users', currentUser.uid);
+    const userRef = doc(fireApp, 'users', currentUser.uid);
 
     const unsubscribe = onSnapshot(
       userRef,
