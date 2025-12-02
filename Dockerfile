@@ -7,14 +7,18 @@ RUN npm ci
 
 COPY . .
 
-# Set dummy QDRANT_URL to bypass build-time validation
-# The real value will be provided at runtime by Coolify
+# Set dummy values to bypass build-time validation
+# The real values will be provided at runtime by Coolify
 ENV QDRANT_URL="http://placeholder:6333"
+ENV REDIS_HOST="placeholder-redis"
+ENV REDIS_PORT="6379"
 
 RUN npm run build
 
-# Clear the placeholder (runtime value will come from Coolify)
+# Clear the placeholders (runtime values will come from Coolify)
 ENV QDRANT_URL=""
+ENV REDIS_HOST=""
+ENV REDIS_PORT=""
 
 EXPOSE 3000
 CMD ["npm", "start"]
