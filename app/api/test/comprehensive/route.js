@@ -2,6 +2,9 @@
 // API endpoint to run comprehensive test suite
 // Access: GET http://localhost:3000/api/test/comprehensive
 
+// Prevent static generation - this route connects to Redis
+export const dynamic = 'force-dynamic';
+
 import { QueryEnhancementService } from '@/lib/services/serviceContact/server/queryEnhancementService';
 
 export async function GET(req) {
