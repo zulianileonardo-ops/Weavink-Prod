@@ -350,9 +350,36 @@ function getCohere() {
   return cohereClient;
 }
 
+// Rate limiting for Cohere Trial key (100 calls/minute)
+const COHERE_RATE_LIMIT = 90; // Stay under 100 to be safe
+const COHERE_RATE_WINDOW = 60000; // 1 minute in ms
+let cohereCallTimestamps = [];
+
+async function waitForCohereRateLimit() {
+  const now = Date.now();
+  // Remove timestamps older than 1 minute
+  cohereCallTimestamps = cohereCallTimestamps.filter(t => now - t < COHERE_RATE_WINDOW);
+
+  if (cohereCallTimestamps.length >= COHERE_RATE_LIMIT) {
+    // Calculate wait time until oldest call expires
+    const oldestCall = Math.min(...cohereCallTimestamps);
+    const waitTime = COHERE_RATE_WINDOW - (now - oldestCall) + 1000; // +1s buffer
+    if (waitTime > 0) {
+      console.log(`  ⏳ Rate limit reached, waiting ${Math.ceil(waitTime / 1000)}s...`);
+      await new Promise(resolve => setTimeout(resolve, waitTime));
+      // Clear old timestamps after waiting
+      cohereCallTimestamps = cohereCallTimestamps.filter(t => Date.now() - t < COHERE_RATE_WINDOW);
+    }
+  }
+  cohereCallTimestamps.push(Date.now());
+}
+
 async function embedWithCohere(text) {
   const cohere = getCohere();
   if (!cohere) throw new Error('COHERE_API_KEY not set');
+
+  // Apply rate limiting
+  await waitForCohereRateLimit();
 
   const response = await cohere.embed({
     model: LEGACY_PROVIDERS.cohere.model,
@@ -362,6 +389,40 @@ async function embedWithCohere(text) {
   });
 
   return response.embeddings.float[0];
+}
+
+/**
+ * Batch embed multiple texts with Cohere (rate-limited)
+ * More efficient than single calls
+ */
+async function embedBatchWithCohere(texts, inputType = 'search_document') {
+  const cohere = getCohere();
+  if (!cohere) throw new Error('COHERE_API_KEY not set');
+
+  const results = [];
+  const batchSize = 90; // Cohere allows up to 96 texts per call, stay under rate limit
+
+  for (let i = 0; i < texts.length; i += batchSize) {
+    const batch = texts.slice(i, i + batchSize);
+
+    // Wait for rate limit (counts as 1 API call per batch)
+    await waitForCohereRateLimit();
+
+    const response = await cohere.embed({
+      model: LEGACY_PROVIDERS.cohere.model,
+      texts: batch,
+      inputType,
+      embeddingTypes: ['float'],
+    });
+
+    results.push(...response.embeddings.float);
+
+    if (i + batchSize < texts.length) {
+      console.log(`  📦 Batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(texts.length / batchSize)} complete...`);
+    }
+  }
+
+  return results;
 }
 
 async function embedWithOllama(text) {
@@ -804,6 +865,7 @@ async function benchmarkLegacyProvider(provider, iterations) {
 
 /**
  * Generate Cohere baseline embeddings for quality comparison
+ * Uses batch embedding for efficiency with rate limiting
  */
 async function generateCohereBaseline() {
   console.log(`\n${'─'.repeat(80)}`);
@@ -823,44 +885,49 @@ async function generateCohereBaseline() {
     latency: { corpus: 0, queries: 0 },
   };
 
-  // Embed corpus
-  console.log(`  Embedding ${TEST_CORPUS.length} corpus texts...`);
+  // Batch embed corpus (uses 1 API call for all 20 texts)
+  console.log(`  Embedding ${TEST_CORPUS.length} corpus texts (batched)...`);
   const corpusStart = performance.now();
-  for (const item of TEST_CORPUS) {
-    try {
-      const emb = await embedWithCohere(item.text);
-      baseline.corpusEmbeddings.push(emb);
-    } catch (err) {
-      console.log(`  ❌ Failed to embed corpus item ${item.id}: ${err.message}`);
-      return { available: false, error: err.message };
-    }
+  try {
+    const corpusTexts = TEST_CORPUS.map(item => item.text);
+    baseline.corpusEmbeddings = await embedBatchWithCohere(corpusTexts, 'search_document');
+  } catch (err) {
+    console.log(`  ❌ Failed to embed corpus: ${err.message}`);
+    return { available: false, error: err.message };
   }
   baseline.latency.corpus = performance.now() - corpusStart;
   console.log(`  ✅ Corpus embedded in ${baseline.latency.corpus.toFixed(0)}ms`);
 
-  // Embed queries and compute rankings
-  console.log(`  Embedding ${TEST_QUERIES.length} queries and computing rankings...`);
+  // Batch embed queries (uses ~2 API calls for 110 texts)
+  console.log(`  Embedding ${TEST_QUERIES.length} queries (batched)...`);
   const queriesStart = performance.now();
-  for (const queryObj of TEST_QUERIES) {
-    const query = queryObj.query;
-    try {
-      const queryEmb = await embedWithCohere(query);
-      baseline.queryEmbeddings[query] = queryEmb;
-      baseline.queryRankings[query] = rankBySimilarity(queryEmb, baseline.corpusEmbeddings);
-    } catch (err) {
-      console.log(`  ❌ Failed to embed query "${query}": ${err.message}`);
-      return { available: false, error: err.message };
+  try {
+    const queryTexts = TEST_QUERIES.map(q => q.query);
+    const queryEmbeddings = await embedBatchWithCohere(queryTexts, 'search_query');
+
+    // Map embeddings back to queries and compute rankings
+    for (let i = 0; i < TEST_QUERIES.length; i++) {
+      const query = TEST_QUERIES[i].query;
+      baseline.queryEmbeddings[query] = queryEmbeddings[i];
+      baseline.queryRankings[query] = rankBySimilarity(queryEmbeddings[i], baseline.corpusEmbeddings);
     }
+  } catch (err) {
+    console.log(`  ❌ Failed to embed queries: ${err.message}`);
+    return { available: false, error: err.message };
   }
   baseline.latency.queries = performance.now() - queriesStart;
   console.log(`  ✅ Queries processed in ${baseline.latency.queries.toFixed(0)}ms`);
 
-  // Log Cohere rankings
-  console.log(`\n  Cohere baseline rankings:`);
-  for (const queryObj of TEST_QUERIES) {
-    const query = queryObj.query;
+  // Log sample of Cohere rankings (first 10 to avoid spam)
+  console.log(`\n  Cohere baseline rankings (sample):`);
+  const samplesToShow = Math.min(10, TEST_QUERIES.length);
+  for (let i = 0; i < samplesToShow; i++) {
+    const query = TEST_QUERIES[i].query;
     const top3 = baseline.queryRankings[query].slice(0, 3).map(r => r.name);
     console.log(`    "${query}" → [${top3.join(', ')}]`);
+  }
+  if (TEST_QUERIES.length > samplesToShow) {
+    console.log(`    ... and ${TEST_QUERIES.length - samplesToShow} more queries`);
   }
 
   return baseline;
@@ -952,31 +1019,43 @@ async function runQualityTest(embedFn, cohereBaseline) {
 
 /**
  * Print detailed quality analysis
+ * Shows sample queries per category to avoid console spam with many queries
  */
 function printQualityAnalysis(qualityResults, cohereBaseline) {
   console.log(`\n${'═'.repeat(100)}`);
   console.log(`  🔍 RETRIEVAL QUALITY ANALYSIS (Cohere = baseline)`);
   console.log(`${'═'.repeat(100)}`);
 
-  for (const queryObj of TEST_QUERIES) {
-    const query = queryObj.query;
-    const cohereTop3 = cohereBaseline.queryRankings[query].slice(0, 3).map(r => r.name);
-    console.log(`\n  Query: "${query}" [${queryObj.category}]`);
-    console.log(`  Expected: [${queryObj.expectedTop3.map(id => TEST_CORPUS.find(c => c.id === id)?.name).join(', ')}]`);
-    console.log(`  Cohere top-3: [${cohereTop3.join(', ')}]`);
+  // Group queries by category and show 1-2 examples per category
+  const categories = [...new Set(TEST_QUERIES.map(q => q.category))];
+  const maxPerCategory = 2;
 
-    for (const [key, result] of Object.entries(qualityResults)) {
-      if (result.error) continue;
-      const qResult = result.perQuery.find(r => r.query === query);
-      if (!qResult || qResult.error) continue;
+  for (const category of categories) {
+    const categoryQueries = TEST_QUERIES.filter(q => q.category === category);
+    const samplesToShow = categoryQueries.slice(0, maxPerCategory);
 
-      const recallPct = (qResult.topKRecall * 100).toFixed(0);
-      const recallIcon = qResult.topKRecall === 1 ? '✓' : qResult.topKRecall >= 0.67 ? '~' : '✗';
-      const mrrStr = qResult.mrr.toFixed(2);
-      const pakPct = (qResult.precisionAtK * 100).toFixed(0);
-      console.log(`    ${key}:`);
-      console.log(`      Top-3: [${qResult.modelTop3.join(', ')}]`);
-      console.log(`      Recall: ${recallPct}% ${recallIcon} | MRR: ${mrrStr} | P@3: ${pakPct}%`);
+    console.log(`\n  ── ${category.toUpperCase()} (${categoryQueries.length} queries, showing ${samplesToShow.length}) ──`);
+
+    for (const queryObj of samplesToShow) {
+      const query = queryObj.query;
+      const cohereTop3 = cohereBaseline.queryRankings[query].slice(0, 3).map(r => r.name);
+      console.log(`\n  Query: "${query}"`);
+      console.log(`  Expected: [${queryObj.expectedTop3.map(id => TEST_CORPUS.find(c => c.id === id)?.name).join(', ')}]`);
+      console.log(`  Cohere top-3: [${cohereTop3.join(', ')}]`);
+
+      for (const [key, result] of Object.entries(qualityResults)) {
+        if (result.error) continue;
+        const qResult = result.perQuery.find(r => r.query === query);
+        if (!qResult || qResult.error) continue;
+
+        const recallPct = (qResult.topKRecall * 100).toFixed(0);
+        const recallIcon = qResult.topKRecall === 1 ? '✓' : qResult.topKRecall >= 0.67 ? '~' : '✗';
+        const mrrStr = qResult.mrr.toFixed(2);
+        const pakPct = (qResult.precisionAtK * 100).toFixed(0);
+        console.log(`    ${key}:`);
+        console.log(`      Top-3: [${qResult.modelTop3.join(', ')}]`);
+        console.log(`      Recall: ${recallPct}% ${recallIcon} | MRR: ${mrrStr} | P@3: ${pakPct}%`);
+      }
     }
   }
 
@@ -1006,9 +1085,7 @@ function printQualityAnalysis(qualityResults, cohereBaseline) {
   console.log(`  ${'Category'.padEnd(14)} │ ${'Best Model'.padEnd(30)} │ Recall │   MRR │ Queries`);
   console.log(`${'─'.repeat(100)}`);
 
-  // Get unique categories
-  const categories = [...new Set(TEST_QUERIES.map(q => q.category))];
-
+  // Reuse categories from above
   for (const category of categories) {
     // Find best model for this category
     let bestModel = null;
