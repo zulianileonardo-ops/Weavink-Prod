@@ -1,0 +1,26 @@
+# Embed Server Docker Compose
+# Run: docker compose -f docker/embed-server/docker-compose.yml up -d
+
+services:
+  embed-server:
+    build:
+      context: ../..
+      dockerfile: docker/embed-server/Dockerfile
+    container_name: embed-server
+    ports:
+      - "5555:5555"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5555/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 60s
+      retries: 3
+    # Optional: Mount cache directory for model persistence
+    volumes:
+      - embed-cache:/root/.cache
+    environment:
+      - PYTHONUNBUFFERED=1
+
+volumes:
+  embed-cache:
