@@ -95,24 +95,71 @@ const TEST_TEXTS = [
   'Pierre Martin - Directeur Technique chez Capgemini, spécialisé en architecture cloud et DevOps.',
 ];
 
-// Test corpus for retrieval quality testing
+// Test corpus for retrieval quality testing (20 realistic contacts)
 const TEST_CORPUS = [
-  { id: 1, name: 'John Smith', text: 'John Smith - Senior React Developer at Google, 10 years JavaScript experience' },
-  { id: 2, name: 'Marie Dupont', text: 'Marie Dupont - Marketing Director, B2B SaaS, Fortune 500 campaigns' },
-  { id: 3, name: 'Pierre Martin', text: 'Pierre Martin - CTO at Capgemini, cloud architecture and DevOps' },
-  { id: 4, name: 'Sarah Chen', text: 'Sarah Chen - Data Scientist at Meta, ML/AI specialist, Python expert' },
-  { id: 5, name: 'Ahmed Hassan', text: 'Ahmed Hassan - iOS Developer, Swift and Objective-C, 8 years mobile' },
-  { id: 6, name: 'Lisa Wagner', text: 'Lisa Wagner - HR Director, talent acquisition, employee engagement' },
-  { id: 7, name: 'Carlos Rodriguez', text: 'Carlos Rodriguez - Backend Engineer, Node.js and PostgreSQL' },
-  { id: 8, name: 'Emma Johnson', text: 'Emma Johnson - UX Designer, Figma expert, user research specialist' },
+  // Tech/Engineering
+  { id: 1, name: 'John Smith', text: 'John Smith - Senior React Developer at Google, 10 years JavaScript experience. Met at ReactConf 2024. Interested in performance optimization.' },
+  { id: 2, name: 'Sarah Chen', text: 'Sarah Chen - Data Scientist at Meta, ML/AI specialist, Python expert. PhD in Machine Learning from Stanford. Working on recommendation systems.' },
+  { id: 3, name: 'Carlos Rodriguez', text: 'Carlos Rodriguez - Backend Engineer, Node.js and PostgreSQL. Previously at Stripe. Expertise in payment systems and API design.' },
+  { id: 4, name: 'Priya Patel', text: 'Priya Patel - DevOps Engineer at Amazon AWS, Kubernetes and Terraform expert. Cloud architecture specialist.' },
+
+  // Marketing/Sales
+  { id: 5, name: 'Marie Dupont', text: 'Marie Dupont - Marketing Director, B2B SaaS, Fortune 500 campaigns. French native, fluent English. Growth hacking expertise.' },
+  { id: 6, name: 'Michael Brown', text: 'Michael Brown - VP Sales at Salesforce, enterprise sales, 15 years experience. Built sales teams from 5 to 200 people.' },
+  { id: 7, name: 'Lisa Wagner', text: 'Lisa Wagner - HR Director, talent acquisition, employee engagement. Built recruiting pipeline at 3 unicorn startups.' },
+
+  // Executive/Leadership
+  { id: 8, name: 'Pierre Martin', text: 'Pierre Martin - CTO at Capgemini, cloud architecture and DevOps. Former Google engineer. Speaks at KubeCon.' },
+  { id: 9, name: 'Jennifer Lee', text: 'Jennifer Lee - CEO at TechStartup Inc, former McKinsey consultant. Y Combinator W22 batch. Focus on AI products.' },
+  { id: 10, name: 'David Kim', text: 'David Kim - CFO at Fintech Corp, 20 years finance experience. Goldman Sachs alum. IPO specialist.' },
+
+  // Design/Product
+  { id: 11, name: 'Emma Johnson', text: 'Emma Johnson - UX Designer, Figma expert, user research specialist. Led design system at Airbnb. Published in UX Collective.' },
+  { id: 12, name: 'Alex Turner', text: 'Alex Turner - Product Manager at Spotify, data-driven PM. Previously at Netflix. Expertise in A/B testing.' },
+
+  // Specialized/Niche
+  { id: 13, name: 'Ahmed Hassan', text: 'Ahmed Hassan - iOS Developer, Swift and Objective-C, 8 years mobile. Built apps with 10M+ downloads. Apple WWDC speaker.' },
+  { id: 14, name: 'Yuki Tanaka', text: 'Yuki Tanaka - Blockchain Developer, Solidity and Rust. Built DeFi protocols. Core contributor to Ethereum.' },
+  { id: 15, name: 'Sofia Garcia', text: 'Sofia Garcia - AI Research Scientist at OpenAI, NLP specialist. Co-authored GPT papers. MIT PhD.' },
+
+  // Investors/Advisors
+  { id: 16, name: 'Robert Chen', text: 'Robert Chen - Partner at Sequoia Capital, Series A/B investments. Focus on B2B SaaS and AI. Board member at 12 companies.' },
+  { id: 17, name: 'Anna Schmidt', text: 'Anna Schmidt - Angel Investor, 50+ startup investments. Former founder (exit to Google). Advisor to Y Combinator.' },
+
+  // Multilingual contacts
+  { id: 18, name: 'François Dubois', text: 'François Dubois - Directeur Commercial chez L\'Oréal, 15 ans d\'expérience en ventes B2B. Basé à Paris. Parle anglais couramment.' },
+  { id: 19, name: 'Hans Mueller', text: 'Hans Mueller - Geschäftsführer bei BMW Digital, Automotive Tech. 20 Jahre Erfahrung in der Automobilindustrie.' },
+  { id: 20, name: 'Mei Lin', text: 'Mei Lin - 阿里巴巴产品总监, 10年电商经验. 专注于跨境电商和支付系统. Also fluent in English.' },
 ];
 
-// Test queries for retrieval quality testing
+// Test queries for retrieval quality testing (15 scenarios with categories)
 const TEST_QUERIES = [
-  'React frontend developer',
-  'marketing B2B SaaS',
-  'cloud DevOps engineer',
-  'machine learning Python',
+  // Role-based queries
+  { query: 'React frontend developer', expectedTop3: [1, 3, 13], category: 'role' },
+  { query: 'marketing B2B SaaS', expectedTop3: [5, 6, 9], category: 'role' },
+  { query: 'cloud DevOps engineer', expectedTop3: [4, 8, 3], category: 'role' },
+  { query: 'machine learning Python', expectedTop3: [2, 15, 12], category: 'skill' },
+
+  // Expertise-based queries
+  { query: 'someone who can help with fundraising', expectedTop3: [16, 17, 10], category: 'expertise' },
+  { query: 'blockchain and crypto expert', expectedTop3: [14, 2, 15], category: 'expertise' },
+  { query: 'product design and user research', expectedTop3: [11, 12, 5], category: 'expertise' },
+
+  // Company/industry queries
+  { query: 'people from Google or Meta', expectedTop3: [1, 2, 8], category: 'company' },
+  { query: 'fintech or payment experience', expectedTop3: [10, 3, 14], category: 'industry' },
+  { query: 'automotive industry contacts', expectedTop3: [19, 8, 4], category: 'industry' },
+
+  // Leadership queries
+  { query: 'CEO or founder startup', expectedTop3: [9, 17, 8], category: 'leadership' },
+  { query: 'investor for Series A', expectedTop3: [16, 17, 10], category: 'leadership' },
+
+  // Multilingual queries
+  { query: 'French speaking contacts', expectedTop3: [18, 5, 8], category: 'language' },
+  { query: 'Entwickler mit Cloud-Erfahrung', expectedTop3: [19, 4, 8], category: 'multilingual' },
+
+  // Edge cases
+  { query: 'API development backend systems', expectedTop3: [3, 4, 8], category: 'technical' },
 ];
 
 // ============================================================================
@@ -373,6 +420,30 @@ function spearmanCorrelation(ranking1, ranking2) {
   return 1 - (6 * sumD2) / (n * (n * n - 1));
 }
 
+/**
+ * Mean Reciprocal Rank (MRR)
+ * Measures position of first relevant result from expected set
+ */
+function meanReciprocalRank(expectedIds, modelRanking) {
+  const expectedSet = new Set(expectedIds);
+  for (let i = 0; i < modelRanking.length; i++) {
+    if (expectedSet.has(modelRanking[i].id)) {
+      return 1 / (i + 1);
+    }
+  }
+  return 0;
+}
+
+/**
+ * Precision@K - % of top-K results that are in expected set
+ */
+function precisionAtK(expectedIds, modelRanking, k = 3) {
+  const expectedSet = new Set(expectedIds);
+  const topK = modelRanking.slice(0, k);
+  const hits = topK.filter(r => expectedSet.has(r.id)).length;
+  return hits / k;
+}
+
 // ============================================================================
 // Warmup
 // ============================================================================
@@ -579,7 +650,8 @@ async function generateCohereBaseline() {
   // Embed queries and compute rankings
   console.log(`  Embedding ${TEST_QUERIES.length} queries and computing rankings...`);
   const queriesStart = performance.now();
-  for (const query of TEST_QUERIES) {
+  for (const queryObj of TEST_QUERIES) {
+    const query = queryObj.query;
     try {
       const queryEmb = await embedWithCohere(query);
       baseline.queryEmbeddings[query] = queryEmb;
@@ -594,7 +666,8 @@ async function generateCohereBaseline() {
 
   // Log Cohere rankings
   console.log(`\n  Cohere baseline rankings:`);
-  for (const query of TEST_QUERIES) {
+  for (const queryObj of TEST_QUERIES) {
+    const query = queryObj.query;
     const top3 = baseline.queryRankings[query].slice(0, 3).map(r => r.name);
     console.log(`    "${query}" → [${top3.join(', ')}]`);
   }
@@ -605,11 +678,14 @@ async function generateCohereBaseline() {
 /**
  * Run quality test for a model/method against Cohere baseline
  */
-async function runQualityTest(embedFn, cohereBaseline, modelId, method) {
+async function runQualityTest(embedFn, cohereBaseline) {
   const result = {
     perQuery: [],
+    perCategory: {},
     avgTopKRecall: 0,
     avgSpearman: 0,
+    avgMRR: 0,
+    avgPrecisionAtK: 0,
   };
 
   // Embed corpus with this model
@@ -624,7 +700,8 @@ async function runQualityTest(embedFn, cohereBaseline, modelId, method) {
   }
 
   // Test each query
-  for (const query of TEST_QUERIES) {
+  for (const queryObj of TEST_QUERIES) {
+    const { query, expectedTop3, category } = queryObj;
     try {
       const queryEmb = await embedFn(query);
       const modelRanking = rankBySimilarity(queryEmb, corpusEmbeddings);
@@ -632,16 +709,30 @@ async function runQualityTest(embedFn, cohereBaseline, modelId, method) {
 
       const recall = topKRecall(cohereRanking, modelRanking, 3);
       const spearman = spearmanCorrelation(cohereRanking, modelRanking);
+      const mrr = meanReciprocalRank(expectedTop3, modelRanking);
+      const pak = precisionAtK(expectedTop3, modelRanking, 3);
 
-      result.perQuery.push({
+      const queryResult = {
         query,
+        category,
+        expectedTop3,
         modelTop3: modelRanking.slice(0, 3).map(r => r.name),
+        modelTop3Ids: modelRanking.slice(0, 3).map(r => r.id),
         cohereTop3: cohereRanking.slice(0, 3).map(r => r.name),
         topKRecall: recall,
         spearman,
-      });
+        mrr,
+        precisionAtK: pak,
+      };
+      result.perQuery.push(queryResult);
+
+      // Track per-category results
+      if (!result.perCategory[category]) {
+        result.perCategory[category] = { queries: [], recall: 0, mrr: 0, pak: 0, spearman: 0 };
+      }
+      result.perCategory[category].queries.push(queryResult);
     } catch {
-      result.perQuery.push({ query, error: 'Failed to embed query' });
+      result.perQuery.push({ query, category, error: 'Failed to embed query' });
     }
   }
 
@@ -650,6 +741,19 @@ async function runQualityTest(embedFn, cohereBaseline, modelId, method) {
   if (validResults.length > 0) {
     result.avgTopKRecall = validResults.reduce((sum, r) => sum + r.topKRecall, 0) / validResults.length;
     result.avgSpearman = validResults.reduce((sum, r) => sum + r.spearman, 0) / validResults.length;
+    result.avgMRR = validResults.reduce((sum, r) => sum + r.mrr, 0) / validResults.length;
+    result.avgPrecisionAtK = validResults.reduce((sum, r) => sum + r.precisionAtK, 0) / validResults.length;
+  }
+
+  // Calculate per-category averages
+  for (const [cat, data] of Object.entries(result.perCategory)) {
+    const catResults = data.queries.filter(r => !r.error);
+    if (catResults.length > 0) {
+      data.recall = catResults.reduce((sum, r) => sum + r.topKRecall, 0) / catResults.length;
+      data.mrr = catResults.reduce((sum, r) => sum + r.mrr, 0) / catResults.length;
+      data.pak = catResults.reduce((sum, r) => sum + r.precisionAtK, 0) / catResults.length;
+      data.spearman = catResults.reduce((sum, r) => sum + r.spearman, 0) / catResults.length;
+    }
   }
 
   return result;
@@ -659,13 +763,15 @@ async function runQualityTest(embedFn, cohereBaseline, modelId, method) {
  * Print detailed quality analysis
  */
 function printQualityAnalysis(qualityResults, cohereBaseline) {
-  console.log(`\n${'═'.repeat(80)}`);
+  console.log(`\n${'═'.repeat(100)}`);
   console.log(`  🔍 RETRIEVAL QUALITY ANALYSIS (Cohere = baseline)`);
-  console.log(`${'═'.repeat(80)}`);
+  console.log(`${'═'.repeat(100)}`);
 
-  for (const query of TEST_QUERIES) {
+  for (const queryObj of TEST_QUERIES) {
+    const query = queryObj.query;
     const cohereTop3 = cohereBaseline.queryRankings[query].slice(0, 3).map(r => r.name);
-    console.log(`\n  Query: "${query}"`);
+    console.log(`\n  Query: "${query}" [${queryObj.category}]`);
+    console.log(`  Expected: [${queryObj.expectedTop3.map(id => TEST_CORPUS.find(c => c.id === id)?.name).join(', ')}]`);
     console.log(`  Cohere top-3: [${cohereTop3.join(', ')}]`);
 
     for (const [key, result] of Object.entries(qualityResults)) {
@@ -675,29 +781,68 @@ function printQualityAnalysis(qualityResults, cohereBaseline) {
 
       const recallPct = (qResult.topKRecall * 100).toFixed(0);
       const recallIcon = qResult.topKRecall === 1 ? '✓' : qResult.topKRecall >= 0.67 ? '~' : '✗';
+      const mrrStr = qResult.mrr.toFixed(2);
+      const pakPct = (qResult.precisionAtK * 100).toFixed(0);
       console.log(`    ${key}:`);
       console.log(`      Top-3: [${qResult.modelTop3.join(', ')}]`);
-      console.log(`      Top-3 Recall: ${recallPct}% ${recallIcon} | Spearman ρ: ${qResult.spearman.toFixed(2)}`);
+      console.log(`      Recall: ${recallPct}% ${recallIcon} | MRR: ${mrrStr} | P@3: ${pakPct}%`);
     }
   }
 
-  // Summary table
-  console.log(`\n${'─'.repeat(80)}`);
-  console.log(`  📈 QUALITY SUMMARY (averaged across all queries)`);
-  console.log(`${'─'.repeat(80)}`);
-  console.log(`  ${'Model/Method'.padEnd(30)} │ Top-3 Recall │ Spearman ρ`);
-  console.log(`${'─'.repeat(80)}`);
+  // Summary table with all metrics
+  console.log(`\n${'═'.repeat(100)}`);
+  console.log(`  📈 QUALITY SUMMARY (averaged across all ${TEST_QUERIES.length} queries)`);
+  console.log(`${'═'.repeat(100)}`);
+  console.log(`  ${'Model/Method'.padEnd(30)} │ Recall │   MRR │  P@3  │ Spearman ρ`);
+  console.log(`${'─'.repeat(100)}`);
 
   for (const [key, result] of Object.entries(qualityResults)) {
     if (result.error) {
       console.log(`  ${key.padEnd(30)} │ ❌ ${result.error}`);
     } else {
       const recallPct = (result.avgTopKRecall * 100).toFixed(0) + '%';
+      const mrr = result.avgMRR.toFixed(2);
+      const pak = (result.avgPrecisionAtK * 100).toFixed(0) + '%';
       const spearman = result.avgSpearman.toFixed(2);
-      console.log(`  ${key.padEnd(30)} │ ${recallPct.padStart(12)} │ ${spearman.padStart(10)}`);
+      console.log(`  ${key.padEnd(30)} │ ${recallPct.padStart(6)} │ ${mrr.padStart(5)} │ ${pak.padStart(5)} │ ${spearman.padStart(10)}`);
     }
   }
-  console.log(`${'═'.repeat(80)}`);
+
+  // Per-category breakdown
+  console.log(`\n${'═'.repeat(100)}`);
+  console.log(`  📊 QUALITY BY CATEGORY (best model per category)`);
+  console.log(`${'═'.repeat(100)}`);
+  console.log(`  ${'Category'.padEnd(14)} │ ${'Best Model'.padEnd(30)} │ Recall │   MRR │ Queries`);
+  console.log(`${'─'.repeat(100)}`);
+
+  // Get unique categories
+  const categories = [...new Set(TEST_QUERIES.map(q => q.category))];
+
+  for (const category of categories) {
+    // Find best model for this category
+    let bestModel = null;
+    let bestRecall = -1;
+    let bestMRR = 0;
+
+    for (const [key, result] of Object.entries(qualityResults)) {
+      if (result.error || !result.perCategory[category]) continue;
+      const catData = result.perCategory[category];
+      if (catData.recall > bestRecall || (catData.recall === bestRecall && catData.mrr > bestMRR)) {
+        bestRecall = catData.recall;
+        bestMRR = catData.mrr;
+        bestModel = key;
+      }
+    }
+
+    if (bestModel) {
+      const catData = qualityResults[bestModel].perCategory[category];
+      const queryCount = catData.queries.length;
+      console.log(`  ${category.padEnd(14)} │ ${bestModel.padEnd(30)} │ ${(catData.recall * 100).toFixed(0).padStart(5)}% │ ${catData.mrr.toFixed(2).padStart(5)} │ ${queryCount}`);
+    } else {
+      console.log(`  ${category.padEnd(14)} │ ${'N/A'.padEnd(30)} │    N/A │   N/A │ 0`);
+    }
+  }
+  console.log(`${'═'.repeat(100)}`);
 }
 
 // ============================================================================
@@ -778,12 +923,12 @@ export async function GET(req) {
             : (text) => embedWithServer(method, text, modelConfig);
 
           console.log(`  Running quality test for ${modelId}/${method}...`);
-          const qualityResult = await runQualityTest(embedFn, cohereBaseline, modelId, method);
+          const qualityResult = await runQualityTest(embedFn, cohereBaseline);
           qualityResults[`${modelId}/${method}`] = qualityResult;
           result.quality = qualityResult;
 
           if (!qualityResult.error) {
-            console.log(`  ✅ Top-3 Recall: ${(qualityResult.avgTopKRecall * 100).toFixed(0)}% | Spearman: ${qualityResult.avgSpearman.toFixed(2)}`);
+            console.log(`  ✅ Recall: ${(qualityResult.avgTopKRecall * 100).toFixed(0)}% | MRR: ${qualityResult.avgMRR.toFixed(2)} | Spearman: ${qualityResult.avgSpearman.toFixed(2)}`);
           }
         }
       }
@@ -808,11 +953,11 @@ export async function GET(req) {
 
     // Print comparison table with Cohere column and quality
     const allMethods = [...methods, 'cohere'];
-    console.log(`\n${'═'.repeat(100)}`);
-    console.log(`  📊 MODEL × INFERENCE METHOD COMPARISON (latency / quality)`);
-    console.log(`${'═'.repeat(100)}`);
-    console.log(`  ${'Model'.padEnd(20)} │${allMethods.map(m => m.substring(0, 12).padStart(14)).join(' │')}`);
-    console.log(`${'─'.repeat(100)}`);
+    console.log(`\n${'═'.repeat(120)}`);
+    console.log(`  📊 MODEL × INFERENCE METHOD COMPARISON (latency/recall/mrr)`);
+    console.log(`${'═'.repeat(120)}`);
+    console.log(`  ${'Model'.padEnd(20)} │${allMethods.map(m => m.substring(0, 14).padStart(18)).join(' │')}`);
+    console.log(`${'─'.repeat(120)}`);
 
     for (const [modelId, methodResults] of Object.entries(modelResults)) {
       let row = `  ${modelId.padEnd(20)} │`;
@@ -823,23 +968,24 @@ export async function GET(req) {
           val = '❌ N/A';
         } else if (r.quality && !r.quality.error) {
           const recallPct = (r.quality.avgTopKRecall * 100).toFixed(0);
-          val = `${r.stats.avg}ms/${recallPct}%`;
+          const mrr = r.quality.avgMRR.toFixed(2);
+          val = `${r.stats.avg}ms/${recallPct}%/${mrr}`;
         } else {
           val = `${r.stats.avg}ms`;
         }
-        row += val.padStart(14) + ' │';
+        row += val.padStart(18) + ' │';
       }
       // Cohere column (baseline)
       if (cohereLatency) {
-        row += `${cohereLatency.avg}ms ★`.padStart(14) + ' │';
+        row += `${cohereLatency.avg}ms ★`.padStart(18) + ' │';
       } else {
-        row += '❌ N/A'.padStart(14) + ' │';
+        row += '❌ N/A'.padStart(18) + ' │';
       }
       console.log(row);
     }
-    console.log(`${'═'.repeat(100)}`);
-    console.log(`  Quality = Top-3 Recall vs Cohere baseline (★ = reference)`);
-    console.log(`${'═'.repeat(100)}\n`);
+    console.log(`${'═'.repeat(120)}`);
+    console.log(`  Format: latency/recall/MRR | Quality = Top-3 Recall vs Cohere baseline (★ = reference)`);
+    console.log(`${'═'.repeat(120)}\n`);
 
     // Build summary
     const summary = {
@@ -866,6 +1012,9 @@ export async function GET(req) {
             entry.quality = {
               topKRecall: r.quality.avgTopKRecall,
               spearman: r.quality.avgSpearman,
+              mrr: r.quality.avgMRR,
+              precisionAtK: r.quality.avgPrecisionAtK,
+              perCategory: r.quality.perCategory,
             };
           }
           summary.models[modelId][method] = entry;
@@ -889,7 +1038,8 @@ export async function GET(req) {
     }
 
     // Build quality analysis for response
-    const qualityAnalysis = TEST_QUERIES.map(query => {
+    const qualityAnalysis = TEST_QUERIES.map(queryObj => {
+      const query = queryObj.query;
       const cohereRanking = cohereBaseline.available
         ? cohereBaseline.queryRankings[query]?.slice(0, 3).map(r => r.name)
         : null;
@@ -904,12 +1054,16 @@ export async function GET(req) {
             ranking: qResult.modelTop3,
             topKRecall: qResult.topKRecall,
             spearman: qResult.spearman,
+            mrr: qResult.mrr,
+            precisionAtK: qResult.precisionAtK,
           });
         }
       }
 
       return {
         query,
+        category: queryObj.category,
+        expectedTop3: queryObj.expectedTop3,
         cohereRanking,
         comparisons,
       };
