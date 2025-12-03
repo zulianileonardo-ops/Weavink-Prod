@@ -6,8 +6,9 @@ FROM python:3.11-slim
 WORKDIR /app
 
 # Install curl for healthcheck and dependencies
+# Added einops for Jina v3 support
 RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/* \
-    && pip install --no-cache-dir flask fastembed sentence-transformers
+    && pip install --no-cache-dir flask fastembed sentence-transformers einops
 
 # Embed the server script directly
 COPY <<'EOF' /app/embed-server.py
@@ -28,15 +29,18 @@ logger = logging.getLogger(__name__)
 fastembed_models = {}
 st_models = {}
 
+# Fastembed supported models - use exact names from fastembed library
+# Note: BGE-M3 is NOT supported by fastembed, only by sentence-transformers
 FASTEMBED_SUPPORTED = {
-    'BAAI/bge-m3',
     'intfloat/multilingual-e5-large',
+    'BAAI/bge-base-en-v1.5',
+    'BAAI/bge-small-en-v1.5',
 }
 
 def get_fastembed_model(model_name):
     if model_name not in fastembed_models:
         if model_name not in FASTEMBED_SUPPORTED:
-            raise ValueError(f"Fastembed does not support {model_name}")
+            raise ValueError(f"Fastembed does not support {model_name}. Supported: {FASTEMBED_SUPPORTED}")
         from fastembed import TextEmbedding
         logger.info(f"Loading Fastembed model: {model_name}")
         fastembed_models[model_name] = TextEmbedding(model_name=model_name)

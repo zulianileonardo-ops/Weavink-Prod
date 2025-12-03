@@ -37,7 +37,7 @@ const MODELS = {
     dimension: 1024,
     maxTokens: 8192,
     languages: '100+',
-    fastembed: true,
+    fastembed: false, // BGE-M3 not supported by fastembed, use sentence-transformers
   },
   'e5-large': {
     name: 'intfloat/multilingual-e5-large',
@@ -46,7 +46,7 @@ const MODELS = {
     languages: '100',
     prefixQuery: 'query: ',
     prefixPassage: 'passage: ',
-    fastembed: true,
+    fastembed: true, // Supported by fastembed
   },
   'e5-large-instruct': {
     name: 'intfloat/multilingual-e5-large-instruct',
