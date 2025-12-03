@@ -99,7 +99,7 @@ const LEGACY_PROVIDERS = {
   },
 };
 
-// Test texts simulating real contact data
+// Test texts simulating real contact data (for latency benchmarks)
 const TEST_TEXTS = [
   // Short query (typical search)
   'React developers',
@@ -112,6 +112,26 @@ const TEST_TEXTS = [
 
   // Multilingual (French)
   'Pierre Martin - Directeur Technique chez Capgemini, spécialisé en architecture cloud et DevOps. Expert AWS et Kubernetes.',
+];
+
+// Test corpus for retrieval quality testing
+const TEST_CORPUS = [
+  { id: 1, name: 'John Smith', text: 'John Smith - Senior React Developer at Google, 10 years JavaScript experience' },
+  { id: 2, name: 'Marie Dupont', text: 'Marie Dupont - Marketing Director, B2B SaaS, Fortune 500 campaigns' },
+  { id: 3, name: 'Pierre Martin', text: 'Pierre Martin - CTO at Capgemini, cloud architecture and DevOps' },
+  { id: 4, name: 'Sarah Chen', text: 'Sarah Chen - Data Scientist at Meta, ML/AI specialist, Python expert' },
+  { id: 5, name: 'Ahmed Hassan', text: 'Ahmed Hassan - iOS Developer, Swift and Objective-C, 8 years mobile' },
+  { id: 6, name: 'Lisa Wagner', text: 'Lisa Wagner - HR Director, talent acquisition, employee engagement' },
+  { id: 7, name: 'Carlos Rodriguez', text: 'Carlos Rodriguez - Backend Engineer, Node.js and PostgreSQL' },
+  { id: 8, name: 'Emma Johnson', text: 'Emma Johnson - UX Designer, Figma expert, user research specialist' },
+];
+
+// Test queries for retrieval quality testing
+const TEST_QUERIES = [
+  'React frontend developer',
+  'marketing B2B SaaS',
+  'cloud DevOps engineer',
+  'machine learning Python',
 ];
 
 // ============================================================================
@@ -370,6 +390,73 @@ function calcStats(times) {
 }
 
 // ============================================================================
+// Quality Metrics Functions
+// ============================================================================
+
+/**
+ * Cosine similarity between two vectors
+ */
+function cosineSimilarity(a, b) {
+  if (!a || !b || a.length !== b.length) return 0;
+  let dotProduct = 0, normA = 0, normB = 0;
+  for (let i = 0; i < a.length; i++) {
+    dotProduct += a[i] * b[i];
+    normA += a[i] * a[i];
+    normB += b[i] * b[i];
+  }
+  const denom = Math.sqrt(normA) * Math.sqrt(normB);
+  return denom === 0 ? 0 : dotProduct / denom;
+}
+
+/**
+ * Rank corpus by similarity to query embedding
+ * Returns array of corpus IDs sorted by similarity (highest first)
+ */
+function rankBySimilarity(queryEmb, corpusEmbeddings) {
+  const scores = corpusEmbeddings.map((emb, idx) => ({
+    id: TEST_CORPUS[idx].id,
+    name: TEST_CORPUS[idx].name,
+    score: cosineSimilarity(queryEmb, emb),
+  }));
+  scores.sort((a, b) => b.score - a.score);
+  return scores;
+}
+
+/**
+ * Top-K Recall: % of baseline's top-K that appear in model's top-K
+ */
+function topKRecall(baselineRanking, modelRanking, k = 3) {
+  const baselineTopK = new Set(baselineRanking.slice(0, k).map(r => r.id));
+  const modelTopK = modelRanking.slice(0, k).map(r => r.id);
+  const overlap = modelTopK.filter(id => baselineTopK.has(id)).length;
+  return overlap / k;
+}
+
+/**
+ * Spearman rank correlation coefficient
+ */
+function spearmanCorrelation(ranking1, ranking2) {
+  const n = ranking1.length;
+  if (n === 0) return 0;
+
+  // Create rank maps (id -> position)
+  const rank1 = {};
+  const rank2 = {};
+  ranking1.forEach((r, i) => { rank1[r.id] = i + 1; });
+  ranking2.forEach((r, i) => { rank2[r.id] = i + 1; });
+
+  // Calculate sum of squared rank differences
+  let sumD2 = 0;
+  for (const id of Object.keys(rank1)) {
+    const d = (rank1[id] || 0) - (rank2[id] || 0);
+    sumD2 += d * d;
+  }
+
+  // Spearman's rho = 1 - (6 * sum(d^2)) / (n * (n^2 - 1))
+  return 1 - (6 * sumD2) / (n * (n * n - 1));
+}
+
+// ============================================================================
 // Benchmarking
 // ============================================================================
 
@@ -484,36 +571,211 @@ async function benchmarkLegacyProvider(provider, iterations) {
 }
 
 // ============================================================================
+// Cohere Baseline & Quality Testing
+// ============================================================================
+
+/**
+ * Generate Cohere baseline embeddings for quality comparison
+ */
+async function generateCohereBaseline() {
+  console.log(`\n${'─'.repeat(80)}`);
+  console.log(`  📏 GENERATING COHERE BASELINE...`);
+
+  const status = await checkLegacyProvider('cohere');
+  if (!status.available) {
+    console.log(`  ❌ Cohere not available: ${status.error}`);
+    return { available: false, error: status.error };
+  }
+
+  const baseline = {
+    available: true,
+    corpusEmbeddings: [],
+    queryEmbeddings: {},
+    queryRankings: {},
+    latency: { corpus: 0, queries: 0 },
+  };
+
+  // Embed corpus
+  console.log(`  Embedding ${TEST_CORPUS.length} corpus texts...`);
+  const corpusStart = performance.now();
+  for (const item of TEST_CORPUS) {
+    try {
+      const emb = await embedWithCohere(item.text);
+      baseline.corpusEmbeddings.push(emb);
+    } catch (err) {
+      console.log(`  ❌ Failed to embed corpus item ${item.id}: ${err.message}`);
+      return { available: false, error: err.message };
+    }
+  }
+  baseline.latency.corpus = performance.now() - corpusStart;
+  console.log(`  ✅ Corpus embedded in ${baseline.latency.corpus.toFixed(0)}ms`);
+
+  // Embed queries and compute rankings
+  console.log(`  Embedding ${TEST_QUERIES.length} queries and computing rankings...`);
+  const queriesStart = performance.now();
+  for (const query of TEST_QUERIES) {
+    try {
+      const queryEmb = await embedWithCohere(query);
+      baseline.queryEmbeddings[query] = queryEmb;
+      baseline.queryRankings[query] = rankBySimilarity(queryEmb, baseline.corpusEmbeddings);
+    } catch (err) {
+      console.log(`  ❌ Failed to embed query "${query}": ${err.message}`);
+      return { available: false, error: err.message };
+    }
+  }
+  baseline.latency.queries = performance.now() - queriesStart;
+  console.log(`  ✅ Queries processed in ${baseline.latency.queries.toFixed(0)}ms`);
+
+  // Log Cohere rankings
+  console.log(`\n  Cohere baseline rankings:`);
+  for (const query of TEST_QUERIES) {
+    const top3 = baseline.queryRankings[query].slice(0, 3).map(r => r.name);
+    console.log(`    "${query}" → [${top3.join(', ')}]`);
+  }
+
+  return baseline;
+}
+
+/**
+ * Run quality test for a model/method against Cohere baseline
+ */
+async function runQualityTest(embedFn, cohereBaseline) {
+  const result = {
+    perQuery: [],
+    avgTopKRecall: 0,
+    avgSpearman: 0,
+  };
+
+  // Embed corpus with this model
+  const corpusEmbeddings = [];
+  for (const item of TEST_CORPUS) {
+    try {
+      const emb = await embedFn(item.text);
+      corpusEmbeddings.push(emb);
+    } catch {
+      return { error: 'Failed to embed corpus' };
+    }
+  }
+
+  // Test each query
+  for (const query of TEST_QUERIES) {
+    try {
+      const queryEmb = await embedFn(query);
+      const modelRanking = rankBySimilarity(queryEmb, corpusEmbeddings);
+      const cohereRanking = cohereBaseline.queryRankings[query];
+
+      const recall = topKRecall(cohereRanking, modelRanking, 3);
+      const spearman = spearmanCorrelation(cohereRanking, modelRanking);
+
+      result.perQuery.push({
+        query,
+        modelTop3: modelRanking.slice(0, 3).map(r => r.name),
+        cohereTop3: cohereRanking.slice(0, 3).map(r => r.name),
+        topKRecall: recall,
+        spearman,
+      });
+    } catch {
+      result.perQuery.push({ query, error: 'Failed to embed query' });
+    }
+  }
+
+  // Calculate averages
+  const validResults = result.perQuery.filter(r => !r.error);
+  if (validResults.length > 0) {
+    result.avgTopKRecall = validResults.reduce((sum, r) => sum + r.topKRecall, 0) / validResults.length;
+    result.avgSpearman = validResults.reduce((sum, r) => sum + r.spearman, 0) / validResults.length;
+  }
+
+  return result;
+}
+
+/**
+ * Print detailed quality analysis
+ */
+function printQualityAnalysis(qualityResults, cohereBaseline) {
+  console.log(`\n${'═'.repeat(80)}`);
+  console.log(`  🔍 RETRIEVAL QUALITY ANALYSIS (Cohere = baseline)`);
+  console.log(`${'═'.repeat(80)}`);
+
+  for (const query of TEST_QUERIES) {
+    const cohereTop3 = cohereBaseline.queryRankings[query].slice(0, 3).map(r => r.name);
+    console.log(`\n  Query: "${query}"`);
+    console.log(`  Cohere top-3: [${cohereTop3.join(', ')}]`);
+
+    for (const [key, result] of Object.entries(qualityResults)) {
+      if (result.error) continue;
+      const qResult = result.perQuery.find(r => r.query === query);
+      if (!qResult || qResult.error) continue;
+
+      const recallPct = (qResult.topKRecall * 100).toFixed(0);
+      const recallIcon = qResult.topKRecall === 1 ? '✓' : qResult.topKRecall >= 0.67 ? '~' : '✗';
+      console.log(`    ${key}:`);
+      console.log(`      Top-3: [${qResult.modelTop3.join(', ')}]`);
+      console.log(`      Top-3 Recall: ${recallPct}% ${recallIcon} | Spearman ρ: ${qResult.spearman.toFixed(2)}`);
+    }
+  }
+
+  // Summary table
+  console.log(`\n${'─'.repeat(80)}`);
+  console.log(`  📈 QUALITY SUMMARY (averaged across all queries)`);
+  console.log(`${'─'.repeat(80)}`);
+  console.log(`  ${'Model/Method'.padEnd(30)} │ Top-3 Recall │ Spearman ρ`);
+  console.log(`${'─'.repeat(80)}`);
+
+  for (const [key, result] of Object.entries(qualityResults)) {
+    if (result.error) {
+      console.log(`  ${key.padEnd(30)} │ ❌ ${result.error}`);
+    } else {
+      const recallPct = (result.avgTopKRecall * 100).toFixed(0) + '%';
+      const spearman = result.avgSpearman.toFixed(2);
+      console.log(`  ${key.padEnd(30)} │ ${recallPct.padStart(12)} │ ${spearman.padStart(10)}`);
+    }
+  }
+  console.log(`${'═'.repeat(80)}`);
+}
+
+// ============================================================================
 // Output Formatting
 // ============================================================================
 
-function printComparisonTable(modelResults) {
-  console.log(`\n${'═'.repeat(80)}`);
-  console.log(`  📊 MODEL × INFERENCE METHOD COMPARISON (avg latency ms)`);
-  console.log(`${'═'.repeat(80)}`);
+function printComparisonTable(modelResults, cohereLatency) {
+  const allMethods = [...INFERENCE_METHODS, 'cohere'];
+  console.log(`\n${'═'.repeat(100)}`);
+  console.log(`  📊 MODEL × INFERENCE METHOD COMPARISON (latency / quality)`);
+  console.log(`${'═'.repeat(100)}`);
 
-  const methods = INFERENCE_METHODS;
-  console.log(`  ${'Model'.padEnd(22)} │${methods.map(m => m.padStart(18)).join(' │')}`);
-  console.log(`${'─'.repeat(80)}`);
+  console.log(`  ${'Model'.padEnd(20)} │${allMethods.map(m => m.substring(0, 12).padStart(14)).join(' │')}`);
+  console.log(`${'─'.repeat(100)}`);
 
   for (const [modelId, methodResults] of Object.entries(modelResults)) {
-    let row = `  ${modelId.padEnd(22)} │`;
-    for (const method of methods) {
+    let row = `  ${modelId.padEnd(20)} │`;
+    for (const method of INFERENCE_METHODS) {
       const r = methodResults[method];
       let val;
       if (!r) {
         val = '—';
       } else if (!r.available) {
         val = '❌ N/A';
+      } else if (r.quality && !r.quality.error) {
+        const recallPct = (r.quality.avgTopKRecall * 100).toFixed(0);
+        val = `${r.stats.avg.toFixed(0)}ms/${recallPct}%`;
       } else {
         val = `${r.stats.avg.toFixed(0)}ms`;
       }
-      row += val.padStart(18) + ' │';
+      row += val.padStart(14) + ' │';
+    }
+    // Cohere column (baseline)
+    if (cohereLatency) {
+      row += `${cohereLatency.avg.toFixed(0)}ms ★`.padStart(14) + ' │';
+    } else {
+      row += '❌ N/A'.padStart(14) + ' │';
     }
     console.log(row);
   }
 
-  console.log(`${'═'.repeat(80)}`);
+  console.log(`${'═'.repeat(100)}`);
+  console.log(`  Quality = Top-3 Recall vs Cohere baseline (★ = reference)`);
+  console.log(`${'═'.repeat(100)}`);
 
   // Dimension validation
   const dims = new Set();
@@ -589,6 +851,21 @@ export async function runEmbeddingBenchmark(options = {}) {
     console.log(`${'─'.repeat(80)}`);
   }
 
+  // Generate Cohere baseline for quality testing
+  const cohereBaseline = await generateCohereBaseline();
+
+  // Benchmark Cohere itself (for latency comparison)
+  let cohereLatency = null;
+  if (cohereBaseline.available) {
+    console.log(`\n${'─'.repeat(80)}`);
+    console.log(`  ⏱️  BENCHMARKING COHERE LATENCY...`);
+    const cohereBenchmark = await benchmarkLegacyProvider('cohere', iterations);
+    if (cohereBenchmark.available) {
+      cohereLatency = cohereBenchmark.stats;
+      console.log(`  ✅ Cohere avg latency: ${cohereLatency.avg.toFixed(2)}ms`);
+    }
+  }
+
   // Warmup if requested
   if (warmup && serverAvailable) {
     await warmupModels(models);
@@ -596,6 +873,7 @@ export async function runEmbeddingBenchmark(options = {}) {
 
   // Benchmark new models
   const modelResults = {};
+  const qualityResults = {};
 
   for (const modelId of models) {
     if (!MODELS[modelId]) {
@@ -606,21 +884,45 @@ export async function runEmbeddingBenchmark(options = {}) {
     modelResults[modelId] = {};
 
     for (const method of methods) {
-      modelResults[modelId][method] = await benchmarkModelMethod(modelId, method, iterations);
+      const result = await benchmarkModelMethod(modelId, method, iterations);
+      modelResults[modelId][method] = result;
+
+      // Run quality test if benchmark succeeded and Cohere baseline available
+      if (result.available && cohereBaseline.available) {
+        const modelConfig = MODELS[modelId];
+        const embedFn = method === 'tei'
+          ? (text) => embedWithTEI(modelId, text, modelConfig)
+          : (text) => embedWithServer(method, modelId, text, modelConfig);
+
+        console.log(`  Running quality test for ${modelId}/${method}...`);
+        const qualityResult = await runQualityTest(embedFn, cohereBaseline);
+        qualityResults[`${modelId}/${method}`] = qualityResult;
+        result.quality = qualityResult;
+
+        if (!qualityResult.error) {
+          console.log(`  ✅ Top-3 Recall: ${(qualityResult.avgTopKRecall * 100).toFixed(0)}% | Spearman: ${qualityResult.avgSpearman.toFixed(2)}`);
+        }
+      }
     }
   }
 
-  // Print comparison table
-  printComparisonTable(modelResults);
+  // Print detailed quality analysis
+  if (cohereBaseline.available && Object.keys(qualityResults).length > 0) {
+    printQualityAnalysis(qualityResults, cohereBaseline);
+  }
 
-  // Benchmark legacy providers
+  // Print comparison table with Cohere column
+  printComparisonTable(modelResults, cohereLatency);
+
+  // Benchmark legacy providers (excluding cohere which we already did)
   const legacyResults = {};
+  const legacyToTest = legacy.filter(p => p !== 'cohere');
 
-  if (legacy.length > 0) {
+  if (legacyToTest.length > 0) {
     console.log(`\n${'─'.repeat(70)}`);
     console.log(`  Testing legacy providers...`);
 
-    for (const provider of legacy) {
+    for (const provider of legacyToTest) {
       if (!LEGACY_PROVIDERS[provider]) {
         console.log(`  ⚠️ Unknown legacy provider: ${provider}`);
         continue;
@@ -633,7 +935,7 @@ export async function runEmbeddingBenchmark(options = {}) {
 
   console.log('');
 
-  return { modelResults, legacyResults };
+  return { modelResults, legacyResults, qualityResults, cohereBaseline };
 }
 
 // CLI entry point
