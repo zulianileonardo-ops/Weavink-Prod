@@ -6,7 +6,7 @@ Supports Fastembed (ONNX) and Sentence Transformers (PyTorch).
 Run: python scripts/embed-server.py --port 5555
 
 Dependencies:
-  pip install flask fastembed sentence-transformers
+  pip install flask fastembed sentence-transformers einops
 """
 from flask import Flask, request, jsonify
 import argparse
@@ -21,11 +21,12 @@ logger = logging.getLogger(__name__)
 fastembed_models = {}
 st_models = {}
 
-# Fastembed supported models (based on fastembed library support)
+# Fastembed supported models - use exact names from fastembed library
+# Note: BGE-M3 is NOT supported by fastembed, only by sentence-transformers
 FASTEMBED_SUPPORTED = {
-    'BAAI/bge-m3',
     'intfloat/multilingual-e5-large',
-    # Note: e5-large-instruct and jina-v3 are NOT supported by fastembed
+    'BAAI/bge-base-en-v1.5',
+    'BAAI/bge-small-en-v1.5',
 }
 
 
@@ -33,7 +34,7 @@ def get_fastembed_model(model_name):
     """Get or load a Fastembed model (cached)."""
     if model_name not in fastembed_models:
         if model_name not in FASTEMBED_SUPPORTED:
-            raise ValueError(f"Fastembed does not support {model_name}")
+            raise ValueError(f"Fastembed does not support {model_name}. Supported: {FASTEMBED_SUPPORTED}")
         from fastembed import TextEmbedding
         logger.info(f"Loading Fastembed model: {model_name}")
         fastembed_models[model_name] = TextEmbedding(model_name=model_name)
@@ -260,14 +261,15 @@ if __name__ == '__main__':
     POST /warmup     - Pre-load models
 
   Fastembed supported models:
-    - BAAI/bge-m3
     - intfloat/multilingual-e5-large
+    - BAAI/bge-base-en-v1.5
+    - BAAI/bge-small-en-v1.5
 
   Sentence Transformers (all models supported):
-    - BAAI/bge-m3
+    - BAAI/bge-m3 (use sentence-transformers, NOT fastembed)
     - intfloat/multilingual-e5-large
     - intfloat/multilingual-e5-large-instruct
-    - jinaai/jina-embeddings-v3 (requires trust_remote_code=true)
+    - jinaai/jina-embeddings-v3 (requires trust_remote_code=true, einops)
 {'='*60}
 """)
 
