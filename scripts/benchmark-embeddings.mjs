@@ -28,7 +28,11 @@ import { CohereClient } from 'cohere-ai';
 // Configuration
 // ============================================================================
 
-const EMBED_SERVER_URL = process.env.EMBED_SERVER_URL || 'http://localhost:5555';
+// Note: Use getEmbedServerUrl() to allow command-line override
+const DEFAULT_EMBED_SERVER_URL = 'http://localhost:5555';
+function getEmbedServerUrl() {
+  return process.env.EMBED_SERVER_URL || DEFAULT_EMBED_SERVER_URL;
+}
 
 // New 1024-dimension multilingual models
 const MODELS = {
@@ -192,7 +196,7 @@ async function embedWithServer(method, _modelId, text, modelConfig) {
     payload.trust_remote_code = true;
   }
 
-  const response = await fetch(`${EMBED_SERVER_URL}/embed`, {
+  const response = await fetch(`${getEmbedServerUrl()}/embed`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -237,7 +241,7 @@ async function embedWithTEI(modelId, text, modelConfig) {
 
 async function checkEmbedServerHealth() {
   try {
-    const resp = await fetch(`${EMBED_SERVER_URL}/health`);
+    const resp = await fetch(`${getEmbedServerUrl()}/health`);
     return resp.ok;
   } catch {
     return false;
@@ -324,7 +328,7 @@ async function warmupModels(modelIds) {
   };
 
   try {
-    const response = await fetch(`${EMBED_SERVER_URL}/warmup`, {
+    const response = await fetch(`${getEmbedServerUrl()}/warmup`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(warmupPayload),
@@ -574,13 +578,13 @@ export async function runEmbeddingBenchmark(options = {}) {
   console.log(`  Models: ${models.join(', ')}`);
   console.log(`  Methods: ${methods.join(', ')}`);
   console.log(`  Legacy: ${legacy.length > 0 ? legacy.join(', ') : 'none'}`);
-  console.log(`  Embed server: ${EMBED_SERVER_URL}`);
+  console.log(`  Embed server: ${getEmbedServerUrl()}`);
   console.log(`${'─'.repeat(80)}`);
 
   // Check embed server
   const serverAvailable = await checkEmbedServerHealth();
   if (!serverAvailable && (methods.includes('fastembed') || methods.includes('sentence-transformers'))) {
-    console.log(`\n  ⚠️ Embed server not available at ${EMBED_SERVER_URL}`);
+    console.log(`\n  ⚠️ Embed server not available at ${getEmbedServerUrl()}`);
     console.log(`     Run: python scripts/embed-server.py --port 5555`);
     console.log(`${'─'.repeat(80)}`);
   }
@@ -663,7 +667,7 @@ Options:
   --legacy=p1,p2           Legacy providers to include
                            Available: ${Object.keys(LEGACY_PROVIDERS).join(', ')}
   --warmup                 Pre-load models before benchmarking
-  --embed-server=URL       Embed server URL (default: ${EMBED_SERVER_URL})
+  --embed-server=URL       Embed server URL (default: ${getEmbedServerUrl()})
 
 Examples:
   # Quick test with BGE-M3 only
