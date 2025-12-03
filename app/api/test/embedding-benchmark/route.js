@@ -132,34 +132,231 @@ const TEST_CORPUS = [
   { id: 20, name: 'Mei Lin', text: 'Mei Lin - 阿里巴巴产品总监, 10年电商经验. 专注于跨境电商和支付系统. Also fluent in English.' },
 ];
 
-// Test queries for retrieval quality testing (15 scenarios with categories)
+// Test queries for retrieval quality testing (110 scenarios - EN/FR with edge cases)
 const TEST_QUERIES = [
-  // Role-based queries
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ROLE-BASED QUERIES (12 tests)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // English - Role
   { query: 'React frontend developer', expectedTop3: [1, 3, 13], category: 'role' },
-  { query: 'marketing B2B SaaS', expectedTop3: [5, 6, 9], category: 'role' },
-  { query: 'cloud DevOps engineer', expectedTop3: [4, 8, 3], category: 'role' },
-  { query: 'machine learning Python', expectedTop3: [2, 15, 12], category: 'skill' },
+  { query: 'backend engineer Node.js', expectedTop3: [3, 4, 1], category: 'role' },
+  { query: 'mobile app developer iOS', expectedTop3: [13, 1, 3], category: 'role' },
+  { query: 'data scientist machine learning', expectedTop3: [2, 15, 12], category: 'role' },
+  { query: 'DevOps infrastructure engineer', expectedTop3: [4, 8, 3], category: 'role' },
+  { query: 'UX UI designer', expectedTop3: [11, 12, 5], category: 'role' },
 
-  // Expertise-based queries
+  // French - Role
+  { query: 'développeur frontend React', expectedTop3: [1, 3, 13], category: 'role' },
+  { query: 'ingénieur backend', expectedTop3: [3, 4, 8], category: 'role' },
+  { query: 'développeur mobile iOS', expectedTop3: [13, 1, 3], category: 'role' },
+  { query: 'data scientist intelligence artificielle', expectedTop3: [2, 15, 12], category: 'role' },
+  { query: 'ingénieur DevOps cloud', expectedTop3: [4, 8, 3], category: 'role' },
+  { query: 'designer UX expérience utilisateur', expectedTop3: [11, 12, 5], category: 'role' },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // SKILL-BASED QUERIES (12 tests)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // English - Skills
+  { query: 'Python programming expert', expectedTop3: [2, 15, 3], category: 'skill' },
+  { query: 'JavaScript TypeScript developer', expectedTop3: [1, 3, 13], category: 'skill' },
+  { query: 'Kubernetes container orchestration', expectedTop3: [4, 8, 3], category: 'skill' },
+  { query: 'machine learning deep learning', expectedTop3: [2, 15, 12], category: 'skill' },
+  { query: 'SQL database PostgreSQL', expectedTop3: [3, 2, 4], category: 'skill' },
+  { query: 'Figma design systems', expectedTop3: [11, 12, 5], category: 'skill' },
+
+  // French - Skills
+  { query: 'expert Python programmation', expectedTop3: [2, 15, 3], category: 'skill' },
+  { query: 'développeur JavaScript TypeScript', expectedTop3: [1, 3, 13], category: 'skill' },
+  { query: 'Kubernetes orchestration conteneurs', expectedTop3: [4, 8, 3], category: 'skill' },
+  { query: 'apprentissage automatique deep learning', expectedTop3: [2, 15, 12], category: 'skill' },
+  { query: 'base de données SQL PostgreSQL', expectedTop3: [3, 2, 4], category: 'skill' },
+  { query: 'design système Figma', expectedTop3: [11, 12, 5], category: 'skill' },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // EXPERTISE QUERIES (14 tests)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // English - Expertise
   { query: 'someone who can help with fundraising', expectedTop3: [16, 17, 10], category: 'expertise' },
-  { query: 'blockchain and crypto expert', expectedTop3: [14, 2, 15], category: 'expertise' },
-  { query: 'product design and user research', expectedTop3: [11, 12, 5], category: 'expertise' },
+  { query: 'expert in scaling startups', expectedTop3: [17, 9, 16], category: 'expertise' },
+  { query: 'blockchain smart contracts specialist', expectedTop3: [14, 3, 15], category: 'expertise' },
+  { query: 'product design user research expert', expectedTop3: [11, 12, 5], category: 'expertise' },
+  { query: 'growth hacking marketing specialist', expectedTop3: [5, 6, 9], category: 'expertise' },
+  { query: 'AI natural language processing researcher', expectedTop3: [15, 2, 12], category: 'expertise' },
+  { query: 'talent acquisition recruiting expert', expectedTop3: [7, 6, 5], category: 'expertise' },
 
-  // Company/industry queries
-  { query: 'people from Google or Meta', expectedTop3: [1, 2, 8], category: 'company' },
-  { query: 'fintech or payment experience', expectedTop3: [10, 3, 14], category: 'industry' },
-  { query: 'automotive industry contacts', expectedTop3: [19, 8, 4], category: 'industry' },
+  // French - Expertise
+  { query: 'quelqu\'un pour aider à lever des fonds', expectedTop3: [16, 17, 10], category: 'expertise' },
+  { query: 'expert en scaling de startups', expectedTop3: [17, 9, 16], category: 'expertise' },
+  { query: 'spécialiste blockchain contrats intelligents', expectedTop3: [14, 3, 15], category: 'expertise' },
+  { query: 'expert design produit recherche utilisateur', expectedTop3: [11, 12, 5], category: 'expertise' },
+  { query: 'spécialiste growth hacking marketing', expectedTop3: [5, 6, 9], category: 'expertise' },
+  { query: 'chercheur IA traitement langage naturel', expectedTop3: [15, 2, 12], category: 'expertise' },
+  { query: 'expert recrutement acquisition talents', expectedTop3: [7, 6, 5], category: 'expertise' },
 
-  // Leadership queries
-  { query: 'CEO or founder startup', expectedTop3: [9, 17, 8], category: 'leadership' },
-  { query: 'investor for Series A', expectedTop3: [16, 17, 10], category: 'leadership' },
+  // ═══════════════════════════════════════════════════════════════════════════
+  // COMPANY QUERIES (10 tests)
+  // ═══════════════════════════════════════════════════════════════════════════
 
-  // Multilingual queries
+  // English - Company
+  { query: 'people from Google', expectedTop3: [1, 8, 17], category: 'company' },
+  { query: 'worked at Meta Facebook', expectedTop3: [2, 1, 15], category: 'company' },
+  { query: 'Amazon AWS experience', expectedTop3: [4, 3, 8], category: 'company' },
+  { query: 'Stripe payment company', expectedTop3: [3, 10, 14], category: 'company' },
+  { query: 'Y Combinator alumni', expectedTop3: [9, 17, 16], category: 'company' },
+
+  // French - Company
+  { query: 'personnes de chez Google', expectedTop3: [1, 8, 17], category: 'company' },
+  { query: 'a travaillé chez Meta Facebook', expectedTop3: [2, 1, 15], category: 'company' },
+  { query: 'expérience Amazon AWS', expectedTop3: [4, 3, 8], category: 'company' },
+  { query: 'entreprise paiement Stripe', expectedTop3: [3, 10, 14], category: 'company' },
+  { query: 'anciens de Y Combinator', expectedTop3: [9, 17, 16], category: 'company' },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // INDUSTRY QUERIES (12 tests)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // English - Industry
+  { query: 'fintech financial technology', expectedTop3: [10, 3, 14], category: 'industry' },
+  { query: 'automotive car industry', expectedTop3: [19, 8, 4], category: 'industry' },
+  { query: 'e-commerce online retail', expectedTop3: [20, 5, 12], category: 'industry' },
+  { query: 'healthcare medical technology', expectedTop3: [2, 15, 7], category: 'industry' },
+  { query: 'SaaS software as a service', expectedTop3: [5, 16, 9], category: 'industry' },
+  { query: 'media entertainment streaming', expectedTop3: [12, 11, 5], category: 'industry' },
+
+  // French - Industry
+  { query: 'fintech technologie financière', expectedTop3: [10, 3, 14], category: 'industry' },
+  { query: 'industrie automobile voiture', expectedTop3: [19, 8, 4], category: 'industry' },
+  { query: 'e-commerce commerce en ligne', expectedTop3: [20, 5, 12], category: 'industry' },
+  { query: 'santé technologie médicale', expectedTop3: [2, 15, 7], category: 'industry' },
+  { query: 'SaaS logiciel en tant que service', expectedTop3: [5, 16, 9], category: 'industry' },
+  { query: 'média divertissement streaming', expectedTop3: [12, 11, 5], category: 'industry' },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // LEADERSHIP QUERIES (12 tests)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // English - Leadership
+  { query: 'CEO founder startup', expectedTop3: [9, 17, 8], category: 'leadership' },
+  { query: 'CTO technical leader', expectedTop3: [8, 4, 3], category: 'leadership' },
+  { query: 'CFO finance executive', expectedTop3: [10, 16, 6], category: 'leadership' },
+  { query: 'VP sales director', expectedTop3: [6, 18, 5], category: 'leadership' },
+  { query: 'investor venture capital partner', expectedTop3: [16, 17, 10], category: 'leadership' },
+  { query: 'board member advisor', expectedTop3: [16, 17, 9], category: 'leadership' },
+
+  // French - Leadership
+  { query: 'PDG fondateur startup', expectedTop3: [9, 17, 8], category: 'leadership' },
+  { query: 'directeur technique CTO', expectedTop3: [8, 4, 3], category: 'leadership' },
+  { query: 'directeur financier CFO', expectedTop3: [10, 16, 6], category: 'leadership' },
+  { query: 'directeur commercial ventes', expectedTop3: [6, 18, 5], category: 'leadership' },
+  { query: 'investisseur capital risque', expectedTop3: [16, 17, 10], category: 'leadership' },
+  { query: 'membre conseil administration', expectedTop3: [16, 17, 9], category: 'leadership' },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // LANGUAGE QUERIES (10 tests)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // English - Language
   { query: 'French speaking contacts', expectedTop3: [18, 5, 8], category: 'language' },
-  { query: 'Entwickler mit Cloud-Erfahrung', expectedTop3: [19, 4, 8], category: 'multilingual' },
+  { query: 'speaks German fluently', expectedTop3: [19, 7, 17], category: 'language' },
+  { query: 'Chinese Mandarin speaker', expectedTop3: [20, 2, 15], category: 'language' },
+  { query: 'bilingual English French', expectedTop3: [5, 18, 8], category: 'language' },
+  { query: 'multilingual international', expectedTop3: [20, 18, 19], category: 'language' },
 
-  // Edge cases
-  { query: 'API development backend systems', expectedTop3: [3, 4, 8], category: 'technical' },
+  // French - Language
+  { query: 'contacts francophones', expectedTop3: [18, 5, 8], category: 'language' },
+  { query: 'parle allemand couramment', expectedTop3: [19, 7, 17], category: 'language' },
+  { query: 'locuteur chinois mandarin', expectedTop3: [20, 2, 15], category: 'language' },
+  { query: 'bilingue anglais français', expectedTop3: [5, 18, 8], category: 'language' },
+  { query: 'multilingue international', expectedTop3: [20, 18, 19], category: 'language' },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // TECHNICAL QUERIES (12 tests)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // English - Technical
+  { query: 'API development REST GraphQL', expectedTop3: [3, 4, 1], category: 'technical' },
+  { query: 'cloud architecture AWS Azure', expectedTop3: [4, 8, 3], category: 'technical' },
+  { query: 'microservices distributed systems', expectedTop3: [3, 4, 8], category: 'technical' },
+  { query: 'CI/CD pipeline automation', expectedTop3: [4, 8, 3], category: 'technical' },
+  { query: 'security cybersecurity expert', expectedTop3: [4, 3, 14], category: 'technical' },
+  { query: 'performance optimization scalability', expectedTop3: [1, 3, 4], category: 'technical' },
+
+  // French - Technical
+  { query: 'développement API REST GraphQL', expectedTop3: [3, 4, 1], category: 'technical' },
+  { query: 'architecture cloud AWS Azure', expectedTop3: [4, 8, 3], category: 'technical' },
+  { query: 'microservices systèmes distribués', expectedTop3: [3, 4, 8], category: 'technical' },
+  { query: 'pipeline CI/CD automatisation', expectedTop3: [4, 8, 3], category: 'technical' },
+  { query: 'sécurité cybersécurité expert', expectedTop3: [4, 3, 14], category: 'technical' },
+  { query: 'optimisation performance scalabilité', expectedTop3: [1, 3, 4], category: 'technical' },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // EDGE CASES - Typos & Misspellings (8 tests)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  { query: 'developper react', expectedTop3: [1, 3, 13], category: 'edge_typo' },
+  { query: 'devops engeneer', expectedTop3: [4, 8, 3], category: 'edge_typo' },
+  { query: 'machien learning', expectedTop3: [2, 15, 12], category: 'edge_typo' },
+  { query: 'blockhain developer', expectedTop3: [14, 3, 15], category: 'edge_typo' },
+  { query: 'developpeur fronted', expectedTop3: [1, 3, 13], category: 'edge_typo' },
+  { query: 'ingenieur devops', expectedTop3: [4, 8, 3], category: 'edge_typo' },
+  { query: 'inteligence artificielle', expectedTop3: [2, 15, 12], category: 'edge_typo' },
+  { query: 'investiseur startup', expectedTop3: [16, 17, 10], category: 'edge_typo' },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // EDGE CASES - Partial/Vague Queries (8 tests)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  { query: 'tech', expectedTop3: [1, 3, 4], category: 'edge_vague' },
+  { query: 'marketing', expectedTop3: [5, 6, 7], category: 'edge_vague' },
+  { query: 'finance', expectedTop3: [10, 16, 17], category: 'edge_vague' },
+  { query: 'design', expectedTop3: [11, 12, 5], category: 'edge_vague' },
+  { query: 'AI', expectedTop3: [2, 15, 9], category: 'edge_vague' },
+  { query: 'startup', expectedTop3: [9, 17, 16], category: 'edge_vague' },
+  { query: 'Paris', expectedTop3: [18, 5, 8], category: 'edge_vague' },
+  { query: 'Silicon Valley', expectedTop3: [1, 2, 9], category: 'edge_vague' },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // EDGE CASES - Natural Language Queries (10 tests)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  { query: 'who can build me a mobile app', expectedTop3: [13, 1, 3], category: 'edge_natural' },
+  { query: 'I need someone to redesign our website', expectedTop3: [11, 1, 12], category: 'edge_natural' },
+  { query: 'looking for a technical cofounder', expectedTop3: [8, 4, 3], category: 'edge_natural' },
+  { query: 'need help with our pitch deck', expectedTop3: [17, 16, 9], category: 'edge_natural' },
+  { query: 'someone who understands payments', expectedTop3: [3, 10, 20], category: 'edge_natural' },
+
+  { query: 'qui peut créer une application mobile', expectedTop3: [13, 1, 3], category: 'edge_natural' },
+  { query: 'je cherche quelqu\'un pour refaire notre site', expectedTop3: [11, 1, 12], category: 'edge_natural' },
+  { query: 'je cherche un cofondateur technique', expectedTop3: [8, 4, 3], category: 'edge_natural' },
+  { query: 'besoin d\'aide pour notre pitch', expectedTop3: [17, 16, 9], category: 'edge_natural' },
+  { query: 'quelqu\'un qui comprend les paiements', expectedTop3: [3, 10, 20], category: 'edge_natural' },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // EDGE CASES - Negation & Complex Queries (6 tests)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  { query: 'engineer but not frontend', expectedTop3: [3, 4, 8], category: 'edge_complex' },
+  { query: 'investor not angel', expectedTop3: [16, 10, 17], category: 'edge_complex' },
+  { query: 'technical and business background', expectedTop3: [9, 8, 17], category: 'edge_complex' },
+
+  { query: 'ingénieur mais pas frontend', expectedTop3: [3, 4, 8], category: 'edge_complex' },
+  { query: 'investisseur pas business angel', expectedTop3: [16, 10, 17], category: 'edge_complex' },
+  { query: 'profil technique et business', expectedTop3: [9, 8, 17], category: 'edge_complex' },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // EDGE CASES - Event/Context Based (6 tests)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  { query: 'met at conference', expectedTop3: [1, 8, 13], category: 'edge_context' },
+  { query: 'speaker at tech events', expectedTop3: [8, 13, 15], category: 'edge_context' },
+  { query: 'published author researcher', expectedTop3: [15, 11, 2], category: 'edge_context' },
+
+  { query: 'rencontré à une conférence', expectedTop3: [1, 8, 13], category: 'edge_context' },
+  { query: 'orateur événements tech', expectedTop3: [8, 13, 15], category: 'edge_context' },
+  { query: 'auteur publié chercheur', expectedTop3: [15, 11, 2], category: 'edge_context' },
 ];
 
 // ============================================================================
