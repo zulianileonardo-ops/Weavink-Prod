@@ -1,6 +1,16 @@
 // app/api/test/embedding-benchmark/route.js
 // API endpoint to benchmark embedding providers
-// Access: GET http://localhost:3000/api/test/embedding-benchmark?iterations=10&providers=cohere,ollama,tei
+//
+// Usage:
+//   GET /api/test/embedding-benchmark?iterations=10&providers=cohere,ollama,tei
+//   GET /api/test/embedding-benchmark?iterations=100&warmup=true&warmupRounds=5
+//   GET /api/test/embedding-benchmark?warmup=false  (skip warmup to measure cold start)
+//
+// Parameters:
+//   - iterations: Number of benchmark iterations per text (default: 10)
+//   - providers: Comma-separated list of providers (default: cohere,ollama,tei)
+//   - warmup: Whether to warm up models before benchmarking (default: true)
+//   - warmupRounds: Number of warmup requests per provider (default: 3)
 
 export const dynamic = 'force-dynamic';
 
@@ -131,6 +141,43 @@ async function checkProvider(provider) {
   }
 }
 
+// Warmup function - loads models into memory before benchmarking
+async function warmupProviders(providers, warmupRounds = 3) {
+  console.log(`\n  🔥 WARMING UP PROVIDERS (${warmupRounds} rounds each)...`);
+  const warmupResults = {};
+
+  for (const provider of providers) {
+    const embedFn = { cohere: embedWithCohere, ollama: embedWithOllama, tei: embedWithTEI }[provider];
+    const config = PROVIDERS[provider];
+
+    try {
+      // Check if available first
+      const status = await checkProvider(provider);
+      if (!status.available) {
+        console.log(`  ⚠️ ${provider}: Not available - ${status.error}`);
+        warmupResults[provider] = { success: false, error: status.error };
+        continue;
+      }
+
+      // Warmup rounds - this loads the model into memory
+      const warmupStart = performance.now();
+      for (let i = 0; i < warmupRounds; i++) {
+        await embedFn('warmup text to load model into memory');
+      }
+      const warmupTime = (performance.now() - warmupStart).toFixed(2);
+
+      console.log(`  ✅ ${provider}: Warmed up in ${warmupTime}ms (${warmupRounds} rounds)`);
+      warmupResults[provider] = { success: true, warmupTime: `${warmupTime}ms` };
+    } catch (error) {
+      console.log(`  ❌ ${provider}: Warmup failed - ${error.message}`);
+      warmupResults[provider] = { success: false, error: error.message };
+    }
+  }
+
+  console.log(`${'─'.repeat(70)}`);
+  return warmupResults;
+}
+
 async function benchmarkProvider(provider, iterations) {
   const config = PROVIDERS[provider];
   const embedFn = { cohere: embedWithCohere, ollama: embedWithOllama, tei: embedWithTEI }[provider];
@@ -182,15 +229,24 @@ export async function GET(req) {
   const iterations = parseInt(searchParams.get('iterations') || '10');
   const providersParam = searchParams.get('providers') || 'cohere,ollama,tei';
   const providers = providersParam.split(',').filter(p => PROVIDERS[p]);
+  const warmup = searchParams.get('warmup') !== 'false'; // Default: true
+  const warmupRounds = parseInt(searchParams.get('warmupRounds') || '3');
 
   console.log(`\n${'═'.repeat(70)}`);
   console.log(`  🏎️  EMBEDDING LATENCY BENCHMARK`);
   console.log(`${'═'.repeat(70)}`);
   console.log(`  Iterations: ${iterations}`);
   console.log(`  Providers: ${providers.join(', ')}`);
+  console.log(`  Warmup: ${warmup ? `enabled (${warmupRounds} rounds)` : 'disabled'}`);
   console.log(`${'─'.repeat(70)}`);
 
   try {
+    // Warmup phase - loads models into memory before benchmarking
+    let warmupResults = null;
+    if (warmup) {
+      warmupResults = await warmupProviders(providers, warmupRounds);
+    }
+
     const results = {};
 
     for (const provider of providers) {
@@ -223,6 +279,7 @@ export async function GET(req) {
       success: true,
       iterations,
       providers: providers,
+      warmup: warmup ? { enabled: true, rounds: warmupRounds, results: warmupResults } : { enabled: false },
       results,
       summary: Object.fromEntries(
         Object.entries(results)
