@@ -12,6 +12,7 @@
 //   --warmup                     Pre-load models before benchmarking
 //   --embed-server=URL           Embed server URL (default: http://localhost:5555)
 //   --regenerate-baseline        Force regeneration of Cohere baseline cache
+//   --skip-cohere-latency        Skip Cohere latency test (auto-skipped if baseline from cache)
 //
 // Environment variables:
 //   EMBED_SERVER_URL             Python embed server (default: http://localhost:5555)
@@ -1586,6 +1587,7 @@ export async function runEmbeddingBenchmark(options = {}) {
     noQuality = false,
     quick = false,
     regenerateBaseline = false,
+    skipCohereLatency = false,
   } = options;
 
   // Using fastembed only
@@ -1626,8 +1628,10 @@ export async function runEmbeddingBenchmark(options = {}) {
   }
 
   // Benchmark Cohere itself (for latency comparison)
+  // Skip if --skip-cohere-latency or if baseline was loaded from cache (to avoid rate limits)
   let cohereLatency = null;
-  if (cohereBaseline.available) {
+  const shouldSkipCohereLatency = skipCohereLatency || cohereBaseline.latency?.cached;
+  if (cohereBaseline.available && !shouldSkipCohereLatency) {
     console.log(`\n${'─'.repeat(80)}`);
     console.log(`  ⏱️  BENCHMARKING COHERE LATENCY...`);
     const cohereBenchmark = await benchmarkLegacyProvider('cohere', effectiveIterations);
@@ -1635,6 +1639,9 @@ export async function runEmbeddingBenchmark(options = {}) {
       cohereLatency = cohereBenchmark.stats;
       console.log(`  ✅ Cohere avg latency: ${cohereLatency.avg.toFixed(2)}ms`);
     }
+  } else if (cohereBaseline.available && shouldSkipCohereLatency) {
+    console.log(`\n${'─'.repeat(80)}`);
+    console.log(`  ⏭️  SKIPPING COHERE LATENCY TEST (baseline from cache)`);
   }
 
   // Warmup if requested
@@ -1776,6 +1783,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       options.quick = true;
     } else if (arg === '--regenerate-baseline') {
       options.regenerateBaseline = true;
+    } else if (arg === '--skip-cohere-latency') {
+      options.skipCohereLatency = true;
     } else if (arg === '--help' || arg === '-h') {
       console.log(`
 Usage: node scripts/benchmark-embeddings.mjs [options]
@@ -1795,6 +1804,7 @@ Performance Testing:
   --no-quality             Skip quality tests (faster runs)
   --quick                  Quick mode: iterations=3, no quality tests
   --regenerate-baseline    Force regeneration of Cohere baseline cache
+  --skip-cohere-latency    Skip Cohere latency test (auto-skipped if cache)
 
 Examples:
   # Quick latency-only test
