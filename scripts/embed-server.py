@@ -346,15 +346,26 @@ def rerank():
         model = get_reranker_model(method, model_name, trust_remote_code)
 
         if method == 'fastembed':
-            # Fastembed TextCrossEncoder returns list of RerankResult
-            results = list(model.rerank(query, documents, top_k=top_n or len(documents)))
+            # fastembed TextCrossEncoder.rerank() returns raw float scores
+            # in the same order as input documents (NOT sorted)
+            scores = list(model.rerank(query, documents))
+
+            # Pair scores with original document indices and sort by score (descending)
+            indexed_scores = [(i, float(score)) for i, score in enumerate(scores)]
+            indexed_scores.sort(key=lambda x: x[1], reverse=True)
+
+            # Apply top_n limit
+            if top_n:
+                indexed_scores = indexed_scores[:top_n]
+
+            # Build scored_results in sorted order
             scored_results = [
                 {
-                    'index': r.index if hasattr(r, 'index') else i,
-                    'score': float(r.score if hasattr(r, 'score') else r),
-                    'document': documents[r.index if hasattr(r, 'index') else i]
+                    'index': idx,
+                    'score': score,
+                    'document': documents[idx]
                 }
-                for i, r in enumerate(results)
+                for idx, score in indexed_scores
             ]
 
         elif method == 'sentence-transformers':
