@@ -5,6 +5,9 @@
 //   GET /api/test/embedding-benchmark?iterations=10&models=bge-m3,e5-large&methods=fastembed,tei
 //   GET /api/test/embedding-benchmark?warmup=true&warmupRounds=5
 //   GET /api/test/embedding-benchmark?legacy=cohere,ollama
+//   GET /api/test/embedding-benchmark?batchTest=true&lengthTest=true
+//   GET /api/test/embedding-benchmark?quick=true  (fast mode: 3 iterations, no quality)
+//   GET /api/test/embedding-benchmark?noQuality=true  (skip Cohere quality tests)
 //
 // Parameters:
 //   - iterations: Number of benchmark iterations per text (default: 10)
@@ -13,6 +16,16 @@
 //   - legacy: Comma-separated list of legacy providers (default: none)
 //   - warmup: Whether to warm up models before benchmarking (default: true)
 //   - warmupRounds: Number of warmup requests per provider (default: 3)
+//   - batchTest: Run batch performance tests (1, 5, 10, 20 items) (default: false)
+//   - lengthTest: Run text length impact tests (tiny→max) (default: false)
+//   - noQuality: Skip Cohere baseline quality tests (default: false)
+//   - quick: Quick mode - 3 iterations, skip quality (default: false)
+//
+// Response includes:
+//   - modelResults: Latency stats with stability (stdDev, CV) and throughput
+//   - batchResults: Batch performance data (if batchTest=true)
+//   - lengthResults: Text length impact data (if lengthTest=true)
+//   - qualityResults: Quality metrics vs Cohere baseline (unless noQuality/quick)
 
 export const dynamic = 'force-dynamic';
 
@@ -94,6 +107,18 @@ const TEST_TEXTS = [
   'Marie Dupont is a seasoned Marketing Director with over 15 years of experience in B2B SaaS growth strategies. She has led successful campaigns for Fortune 500 companies.',
   'Pierre Martin - Directeur Technique chez Capgemini, spécialisé en architecture cloud et DevOps.',
 ];
+
+// Text length test samples (for lengthTest option)
+const TEXT_LENGTH_SAMPLES = {
+  tiny: 'AI expert',  // ~10 chars
+  short: 'Senior React developer with TypeScript experience',  // ~50 chars
+  medium: 'John Smith - Senior React Developer at Google with 10 years experience in JavaScript, TypeScript, and Node.js. Passionate about building scalable web applications and mentoring junior developers.',  // ~200 chars
+  long: 'Marie Dupont is a seasoned Marketing Director with over 15 years of experience in B2B SaaS growth strategies. She has led successful campaigns for Fortune 500 companies including Microsoft, Salesforce, and Adobe. Her expertise spans digital marketing, brand positioning, content strategy, and demand generation. Marie holds an MBA from INSEAD and is a frequent speaker at industry conferences including SaaStr and Dreamforce. She is based in Paris, France and speaks fluent English, French, and Spanish. Currently focused on AI-driven marketing automation.',  // ~600 chars
+  max: 'Marie Dupont is a seasoned Marketing Director with over 15 years of experience in B2B SaaS growth strategies. She has led successful campaigns for Fortune 500 companies including Microsoft, Salesforce, and Adobe. Her expertise spans digital marketing, brand positioning, content strategy, and demand generation. Marie holds an MBA from INSEAD and is a frequent speaker at industry conferences including SaaStr and Dreamforce. She is based in Paris, France and speaks fluent English, French, and Spanish. Currently focused on AI-driven marketing automation and growth hacking techniques. Previously worked at HubSpot where she built the EMEA marketing team from scratch. Expert in SEO, SEM, social media marketing, email campaigns, and content marketing. Has managed budgets exceeding $10M annually. Known for data-driven decision making and innovative campaign strategies. Regular contributor to Forbes and Harvard Business Review on marketing topics. Board advisor to several startups in the martech space.',  // ~1000 chars
+};
+
+// Batch sizes for batch performance testing
+const BATCH_SIZES = [1, 5, 10, 20];
 
 // Test corpus for retrieval quality testing (20 realistic contacts)
 const TEST_CORPUS = [
@@ -449,6 +474,40 @@ async function embedWithServer(method, text, modelConfig) {
   return data.embedding;
 }
 
+/**
+ * Batch embed via embed server
+ */
+async function embedBatchWithServer(method, texts, modelConfig) {
+  const processedTexts = texts.map(text => preprocessText(text, modelConfig));
+
+  const payload = {
+    method,
+    model: modelConfig.name,
+    texts: processedTexts,
+  };
+
+  if (modelConfig.promptName) {
+    payload.prompt_name = modelConfig.promptName;
+  }
+  if (modelConfig.trustRemoteCode) {
+    payload.trust_remote_code = true;
+  }
+
+  const response = await fetch(`${EMBED_SERVER_URL}/embed-batch`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({ error: `HTTP ${response.status}` }));
+    throw new Error(err.error || `HTTP ${response.status}`);
+  }
+
+  const data = await response.json();
+  return data.embeddings;
+}
+
 async function embedWithTEI(modelId, text, modelConfig) {
   const url = TEI_URLS[modelId];
   if (!url) throw new Error(`No TEI URL configured for model: ${modelId}`);
@@ -538,16 +597,37 @@ async function checkLegacyProvider(provider) {
 // ============================================================================
 
 function calcStats(times) {
-  if (times.length === 0) return { min: 0, max: 0, avg: 0, p50: 0, p95: 0, p99: 0 };
+  if (times.length === 0) return { min: 0, max: 0, avg: 0, p50: 0, p95: 0, p99: 0, stdDev: 0, cv: 0 };
+
   const sorted = [...times].sort((a, b) => a - b);
+  const avg = times.reduce((a, b) => a + b, 0) / times.length;
+
+  // Standard deviation
+  const squaredDiffs = times.map(t => Math.pow(t - avg, 2));
+  const variance = squaredDiffs.reduce((a, b) => a + b, 0) / times.length;
+  const stdDev = Math.sqrt(variance);
+
+  // Coefficient of variation (CV) - relative measure of variability
+  const cv = avg > 0 ? (stdDev / avg) * 100 : 0;  // as percentage
+
   return {
     min: Math.min(...times).toFixed(2),
     max: Math.max(...times).toFixed(2),
-    avg: (times.reduce((a, b) => a + b, 0) / times.length).toFixed(2),
+    avg: avg.toFixed(2),
     p50: sorted[Math.floor(sorted.length * 0.5)].toFixed(2),
     p95: sorted[Math.floor(sorted.length * 0.95)].toFixed(2),
     p99: sorted[Math.floor(sorted.length * 0.99)].toFixed(2),
+    stdDev: stdDev.toFixed(2),
+    cv: cv.toFixed(2),
   };
+}
+
+/**
+ * Calculate throughput (embeddings per second)
+ */
+function calcThroughput(totalEmbeddings, totalTimeMs) {
+  if (totalTimeMs <= 0) return 0;
+  return (totalEmbeddings / totalTimeMs) * 1000;
 }
 
 // ============================================================================
@@ -1043,6 +1123,120 @@ function printQualityAnalysis(qualityResults, cohereBaseline) {
 }
 
 // ============================================================================
+// Batch Performance Testing
+// ============================================================================
+
+/**
+ * Benchmark batch embedding performance for different batch sizes
+ */
+async function benchmarkBatchPerformance(modelId, method, iterations = 5) {
+  const modelConfig = MODELS[modelId];
+  if (!modelConfig) return null;
+
+  // TEI doesn't support batching through our interface
+  if (method === 'tei') {
+    return { error: 'TEI batch testing not supported' };
+  }
+
+  const status = await checkMethodAvailability(modelId, method);
+  if (!status.available) {
+    return { error: status.error };
+  }
+
+  const results = {};
+
+  for (const batchSize of BATCH_SIZES) {
+    const batch = [];
+    for (let i = 0; i < batchSize; i++) {
+      batch.push(TEST_TEXTS[i % TEST_TEXTS.length]);
+    }
+
+    const timings = [];
+
+    for (let i = 0; i < iterations; i++) {
+      const start = performance.now();
+      try {
+        await embedBatchWithServer(method, batch, modelConfig);
+        timings.push(performance.now() - start);
+      } catch (err) {
+        // If batch endpoint not available, try sequential fallback
+        if (i === 0) {
+          const seqStart = performance.now();
+          for (const text of batch) {
+            await embedWithServer(method, text, modelConfig);
+          }
+          timings.push(performance.now() - seqStart);
+        }
+      }
+    }
+
+    if (timings.length > 0) {
+      const stats = calcStats(timings);
+      const avgMs = parseFloat(stats.avg);
+      results[`batch_${batchSize}`] = {
+        batchSize,
+        avgMs,
+        p95Ms: parseFloat(stats.p95),
+        perItemMs: avgMs / batchSize,
+        throughput: calcThroughput(batchSize, avgMs),
+      };
+    }
+  }
+
+  return results;
+}
+
+// ============================================================================
+// Text Length Impact Testing
+// ============================================================================
+
+/**
+ * Benchmark how text length affects latency
+ */
+async function benchmarkTextLengthImpact(modelId, method, iterations = 5) {
+  const modelConfig = MODELS[modelId];
+  if (!modelConfig) return null;
+
+  const status = await checkMethodAvailability(modelId, method);
+  if (!status.available) {
+    return { error: status.error };
+  }
+
+  const embedFn = method === 'tei'
+    ? (text) => embedWithTEI(modelId, text, modelConfig)
+    : (text) => embedWithServer(method, text, modelConfig);
+
+  const results = {};
+
+  for (const [lengthName, text] of Object.entries(TEXT_LENGTH_SAMPLES)) {
+    const timings = [];
+
+    for (let i = 0; i < iterations; i++) {
+      const start = performance.now();
+      try {
+        await embedFn(text);
+        timings.push(performance.now() - start);
+      } catch {
+        // Skip failed
+      }
+    }
+
+    if (timings.length > 0) {
+      const stats = calcStats(timings);
+      const avgMs = parseFloat(stats.avg);
+      results[lengthName] = {
+        charCount: text.length,
+        avgMs,
+        p95Ms: parseFloat(stats.p95),
+        msPerChar: avgMs / text.length,
+      };
+    }
+  }
+
+  return results;
+}
+
+// ============================================================================
 // API Handler
 // ============================================================================
 
@@ -1053,6 +1247,14 @@ export async function GET(req) {
   const methodsParam = searchParams.get('methods');
   const legacyParam = searchParams.get('legacy');
   const warmup = searchParams.get('warmup') !== 'false';
+  const batchTest = searchParams.get('batchTest') === 'true';
+  const lengthTest = searchParams.get('lengthTest') === 'true';
+  const noQuality = searchParams.get('noQuality') === 'true';
+  const quick = searchParams.get('quick') === 'true';
+
+  // Quick mode reduces iterations and skips quality tests
+  const effectiveIterations = quick ? 3 : iterations;
+  const skipQuality = quick || noQuality;
 
   const models = modelsParam
     ? modelsParam.split(',').filter(m => MODELS[m])
@@ -1067,11 +1269,14 @@ export async function GET(req) {
   console.log(`\n${'═'.repeat(80)}`);
   console.log(`  🏎️  EMBEDDING BENCHMARK - 1024-DIM MULTILINGUAL MODELS`);
   console.log(`${'═'.repeat(80)}`);
-  console.log(`  Iterations: ${iterations}`);
+  console.log(`  Iterations: ${effectiveIterations}${quick ? ' (quick mode)' : ''}`);
   console.log(`  Models: ${models.join(', ')}`);
   console.log(`  Methods: ${methods.join(', ')}`);
   console.log(`  Legacy: ${legacy.length > 0 ? legacy.join(', ') : 'none'}`);
   console.log(`  Warmup: ${warmup ? 'enabled' : 'disabled'}`);
+  console.log(`  Batch Test: ${batchTest ? 'enabled' : 'disabled'}`);
+  console.log(`  Length Test: ${lengthTest ? 'enabled' : 'disabled'}`);
+  console.log(`  Quality Test: ${skipQuality ? 'disabled' : 'enabled'}`);
   console.log(`${'─'.repeat(80)}`);
 
   try {
@@ -1081,18 +1286,21 @@ export async function GET(req) {
       console.log(`\n  ⚠️ Embed server not available at ${EMBED_SERVER_URL}`);
     }
 
-    // Generate Cohere baseline for quality testing
-    const cohereBaseline = await generateCohereBaseline();
-
-    // Benchmark Cohere itself (for latency comparison)
+    // Generate Cohere baseline for quality testing (skip if noQuality or quick)
+    let cohereBaseline = { available: false };
     let cohereLatency = null;
-    if (cohereBaseline.available) {
-      console.log(`\n${'─'.repeat(80)}`);
-      console.log(`  ⏱️  BENCHMARKING COHERE LATENCY...`);
-      const cohereBenchmark = await benchmarkLegacyProvider('cohere', iterations);
-      if (cohereBenchmark.available) {
-        cohereLatency = cohereBenchmark.stats;
-        console.log(`  ✅ Cohere avg latency: ${cohereLatency.avg}ms`);
+    if (!skipQuality) {
+      cohereBaseline = await generateCohereBaseline();
+
+      // Benchmark Cohere itself (for latency comparison)
+      if (cohereBaseline.available) {
+        console.log(`\n${'─'.repeat(80)}`);
+        console.log(`  ⏱️  BENCHMARKING COHERE LATENCY...`);
+        const cohereBenchmark = await benchmarkLegacyProvider('cohere', effectiveIterations);
+        if (cohereBenchmark.available) {
+          cohereLatency = cohereBenchmark.stats;
+          console.log(`  ✅ Cohere avg latency: ${cohereLatency.avg}ms`);
+        }
       }
     }
 
@@ -1105,15 +1313,17 @@ export async function GET(req) {
     // Benchmark new models
     const modelResults = {};
     const qualityResults = {};
+    const batchResults = {};
+    const lengthResults = {};
 
     for (const modelId of models) {
       modelResults[modelId] = {};
       for (const method of methods) {
-        const result = await benchmarkModelMethod(modelId, method, iterations);
+        const result = await benchmarkModelMethod(modelId, method, effectiveIterations);
         modelResults[modelId][method] = result;
 
         // Run quality test if benchmark succeeded and Cohere baseline available
-        if (result.available && cohereBaseline.available) {
+        if (result.available && cohereBaseline.available && !skipQuality) {
           const modelConfig = MODELS[modelId];
           const embedFn = method === 'tei'
             ? (text) => embedWithTEI(modelId, text, modelConfig)
@@ -1128,6 +1338,22 @@ export async function GET(req) {
             console.log(`  ✅ Recall: ${(qualityResult.avgTopKRecall * 100).toFixed(0)}% | MRR: ${qualityResult.avgMRR.toFixed(2)} | Spearman: ${qualityResult.avgSpearman.toFixed(2)}`);
           }
         }
+
+        // Run batch performance test if enabled
+        if (batchTest && result.available) {
+          console.log(`  Running batch test for ${modelId}/${method}...`);
+          const batchResult = await benchmarkBatchPerformance(modelId, method, 5);
+          batchResults[`${modelId}/${method}`] = batchResult;
+          result.batchPerformance = batchResult;
+        }
+
+        // Run text length impact test if enabled
+        if (lengthTest && result.available) {
+          console.log(`  Running length test for ${modelId}/${method}...`);
+          const lengthResult = await benchmarkTextLengthImpact(modelId, method, 5);
+          lengthResults[`${modelId}/${method}`] = lengthResult;
+          result.lengthImpact = lengthResult;
+        }
       }
     }
 
@@ -1139,12 +1365,12 @@ export async function GET(req) {
       console.log(`  Testing legacy providers...`);
 
       for (const provider of legacyToTest) {
-        legacyResults[provider] = await benchmarkLegacyProvider(provider, iterations);
+        legacyResults[provider] = await benchmarkLegacyProvider(provider, effectiveIterations);
       }
     }
 
     // Print detailed quality analysis
-    if (cohereBaseline.available && Object.keys(qualityResults).length > 0) {
+    if (cohereBaseline.available && Object.keys(qualityResults).length > 0 && !skipQuality) {
       printQualityAnalysis(qualityResults, cohereBaseline);
     }
 
@@ -1198,11 +1424,24 @@ export async function GET(req) {
       summary.models[modelId] = {};
       for (const [method, r] of Object.entries(methodResults)) {
         if (r.available) {
+          // Calculate throughput
+          const totalTime = r.timings?.reduce((a, b) => a + b, 0) || 0;
+          const throughput = totalTime > 0 ? calcThroughput(r.timings.length, totalTime) : 0;
+
           const entry = {
             avgLatency: `${r.stats.avg}ms`,
             p95Latency: `${r.stats.p95}ms`,
             coldStart: `${r.coldStart}ms`,
             dimension: r.actualDimension,
+            // Stability metrics
+            stability: {
+              stdDev: `${r.stats.stdDev}ms`,
+              cv: `${r.stats.cv}%`,
+              status: parseFloat(r.stats.cv) < 15 ? 'stable' : parseFloat(r.stats.cv) < 30 ? 'moderate' : 'unstable',
+            },
+            // Throughput
+            throughput: `${throughput.toFixed(1)} emb/s`,
+            totalEmbeddings: r.timings?.length || 0,
           };
           // Add quality metrics if available
           if (r.quality && !r.quality.error) {
@@ -1213,6 +1452,14 @@ export async function GET(req) {
               precisionAtK: r.quality.avgPrecisionAtK,
               perCategory: r.quality.perCategory,
             };
+          }
+          // Add batch performance if available
+          if (r.batchPerformance && !r.batchPerformance.error) {
+            entry.batchPerformance = r.batchPerformance;
+          }
+          // Add length impact if available
+          if (r.lengthImpact && !r.lengthImpact.error) {
+            entry.lengthImpact = r.lengthImpact;
           }
           summary.models[modelId][method] = entry;
         } else {
@@ -1269,11 +1516,15 @@ export async function GET(req) {
     return Response.json({
       success: true,
       config: {
-        iterations,
+        iterations: effectiveIterations,
         models,
         methods,
         legacy,
         warmup,
+        batchTest,
+        lengthTest,
+        noQuality,
+        quick,
         embedServerUrl: EMBED_SERVER_URL,
       },
       warmup: warmupResults,
@@ -1284,8 +1535,10 @@ export async function GET(req) {
       },
       modelResults,
       legacyResults,
-      qualityResults,
-      qualityAnalysis,
+      qualityResults: skipQuality ? {} : qualityResults,
+      qualityAnalysis: skipQuality ? [] : qualityAnalysis,
+      batchResults: batchTest ? batchResults : {},
+      lengthResults: lengthTest ? lengthResults : {},
       summary,
     });
   } catch (error) {

@@ -114,6 +114,18 @@ const TEST_TEXTS = [
   'Pierre Martin - Directeur Technique chez Capgemini, spécialisé en architecture cloud et DevOps. Expert AWS et Kubernetes.',
 ];
 
+// Text length test samples (for --length-test)
+const TEXT_LENGTH_SAMPLES = {
+  tiny: 'AI expert',  // ~10 chars
+  short: 'Senior React developer with TypeScript experience',  // ~50 chars
+  medium: 'John Smith - Senior React Developer at Google with 10 years experience in JavaScript, TypeScript, and Node.js. Passionate about building scalable web applications and mentoring junior developers.',  // ~200 chars
+  long: 'Marie Dupont is a seasoned Marketing Director with over 15 years of experience in B2B SaaS growth strategies. She has led successful campaigns for Fortune 500 companies including Microsoft, Salesforce, and Adobe. Her expertise spans digital marketing, brand positioning, content strategy, and demand generation. Marie holds an MBA from INSEAD and is a frequent speaker at industry conferences including SaaStr and Dreamforce. She is based in Paris, France and speaks fluent English, French, and Spanish. Currently focused on AI-driven marketing automation.',  // ~600 chars
+  max: 'Marie Dupont is a seasoned Marketing Director with over 15 years of experience in B2B SaaS growth strategies. She has led successful campaigns for Fortune 500 companies including Microsoft, Salesforce, and Adobe. Her expertise spans digital marketing, brand positioning, content strategy, and demand generation. Marie holds an MBA from INSEAD and is a frequent speaker at industry conferences including SaaStr and Dreamforce. She is based in Paris, France and speaks fluent English, French, and Spanish. Currently focused on AI-driven marketing automation and growth hacking techniques. Previously worked at HubSpot where she built the EMEA marketing team from scratch. Expert in SEO, SEM, social media marketing, email campaigns, and content marketing. Has managed budgets exceeding $10M annually. Known for data-driven decision making and innovative campaign strategies. Regular contributor to Forbes and Harvard Business Review on marketing topics. Board advisor to several startups in the martech space.',  // ~1000 chars
+};
+
+// Batch sizes for batch performance testing
+const BATCH_SIZES = [1, 5, 10, 20];
+
 // Test corpus for retrieval quality testing (20 realistic contacts)
 const TEST_CORPUS = [
   // Tech/Engineering
@@ -497,6 +509,54 @@ async function embedWithServer(method, _modelId, text, modelConfig) {
 }
 
 /**
+ * Batch embed via Python embed server (Fastembed or Sentence Transformers)
+ */
+async function embedBatchWithServer(method, _modelId, texts, modelConfig) {
+  const processedTexts = texts.map(text => preprocessText(text, modelConfig));
+
+  const payload = {
+    method,
+    model: modelConfig.name,
+    texts: processedTexts,
+  };
+
+  // Jina v3 specific options
+  if (modelConfig.promptName) {
+    payload.prompt_name = modelConfig.promptName;
+  }
+  if (modelConfig.trustRemoteCode) {
+    payload.trust_remote_code = true;
+  }
+
+  const response = await fetch(`${getEmbedServerUrl()}/embed-batch`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({ error: `HTTP ${response.status}` }));
+    throw new Error(err.error || `HTTP ${response.status}`);
+  }
+
+  const data = await response.json();
+  return data.embeddings;
+}
+
+/**
+ * Get memory usage from embed server
+ */
+async function getServerMemoryUsage() {
+  try {
+    const response = await fetch(`${getEmbedServerUrl()}/memory`);
+    if (!response.ok) return null;
+    return await response.json();
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Embed via HuggingFace TEI server
  */
 async function embedWithTEI(modelId, text, modelConfig) {
@@ -641,17 +701,37 @@ async function warmupModels(modelIds) {
 // ============================================================================
 
 function calcStats(times) {
-  if (times.length === 0) return { min: 0, max: 0, avg: 0, p50: 0, p95: 0, p99: 0 };
+  if (times.length === 0) return { min: 0, max: 0, avg: 0, p50: 0, p95: 0, p99: 0, stdDev: 0, cv: 0 };
 
   const sorted = [...times].sort((a, b) => a - b);
+  const avg = times.reduce((a, b) => a + b, 0) / times.length;
+
+  // Standard deviation
+  const squaredDiffs = times.map(t => Math.pow(t - avg, 2));
+  const variance = squaredDiffs.reduce((a, b) => a + b, 0) / times.length;
+  const stdDev = Math.sqrt(variance);
+
+  // Coefficient of variation (CV) - relative measure of variability
+  const cv = avg > 0 ? (stdDev / avg) * 100 : 0;  // as percentage
+
   return {
     min: Math.min(...times),
     max: Math.max(...times),
-    avg: times.reduce((a, b) => a + b, 0) / times.length,
+    avg,
     p50: sorted[Math.floor(sorted.length * 0.5)],
     p95: sorted[Math.floor(sorted.length * 0.95)],
     p99: sorted[Math.floor(sorted.length * 0.99)],
+    stdDev,
+    cv,  // coefficient of variation in %
   };
+}
+
+/**
+ * Calculate throughput (embeddings per second)
+ */
+function calcThroughput(totalEmbeddings, totalTimeMs) {
+  if (totalTimeMs <= 0) return 0;
+  return (totalEmbeddings / totalTimeMs) * 1000;
 }
 
 // ============================================================================
@@ -1114,6 +1194,251 @@ function printQualityAnalysis(qualityResults, cohereBaseline) {
 }
 
 // ============================================================================
+// Batch Performance Testing
+// ============================================================================
+
+/**
+ * Benchmark batch embedding performance for different batch sizes
+ */
+async function benchmarkBatchPerformance(modelId, method, iterations = 5) {
+  const modelConfig = MODELS[modelId];
+  if (!modelConfig) return null;
+
+  // Check if method supports batching (TEI doesn't through our interface)
+  if (method === 'tei') {
+    return { error: 'TEI batch testing not supported' };
+  }
+
+  // Check availability first
+  const status = await checkMethodAvailability(modelId, method);
+  if (!status.available) {
+    return { error: status.error };
+  }
+
+  const results = {};
+
+  for (const batchSize of BATCH_SIZES) {
+    // Create batch of texts
+    const batch = [];
+    for (let i = 0; i < batchSize; i++) {
+      batch.push(TEST_TEXTS[i % TEST_TEXTS.length]);
+    }
+
+    const timings = [];
+
+    for (let i = 0; i < iterations; i++) {
+      const start = performance.now();
+      try {
+        await embedBatchWithServer(method, modelId, batch, modelConfig);
+        timings.push(performance.now() - start);
+      } catch (err) {
+        // If batch endpoint not available, fall back to sequential
+        if (i === 0) {
+          // Try sequential fallback
+          const seqStart = performance.now();
+          for (const text of batch) {
+            await embedWithServer(method, modelId, text, modelConfig);
+          }
+          timings.push(performance.now() - seqStart);
+        }
+      }
+    }
+
+    if (timings.length > 0) {
+      const stats = calcStats(timings);
+      results[`batch_${batchSize}`] = {
+        batchSize,
+        avgMs: stats.avg,
+        p95Ms: stats.p95,
+        perItemMs: stats.avg / batchSize,
+        throughput: calcThroughput(batchSize, stats.avg),
+      };
+    }
+  }
+
+  return results;
+}
+
+/**
+ * Print batch performance results
+ */
+function printBatchPerformance(batchResults) {
+  console.log(`\n${'═'.repeat(100)}`);
+  console.log(`  📦 BATCH PERFORMANCE ANALYSIS`);
+  console.log(`${'═'.repeat(100)}`);
+  console.log(`  ${'Model/Method'.padEnd(35)} │ Batch 1 │ Batch 5 │ Batch 10 │ Batch 20 │ Throughput`);
+  console.log(`${'─'.repeat(100)}`);
+
+  for (const [key, results] of Object.entries(batchResults)) {
+    if (results.error) {
+      console.log(`  ${key.padEnd(35)} │ ❌ ${results.error}`);
+      continue;
+    }
+
+    const b1 = results.batch_1 ? `${results.batch_1.avgMs.toFixed(0)}ms` : 'N/A';
+    const b5 = results.batch_5 ? `${results.batch_5.avgMs.toFixed(0)}ms` : 'N/A';
+    const b10 = results.batch_10 ? `${results.batch_10.avgMs.toFixed(0)}ms` : 'N/A';
+    const b20 = results.batch_20 ? `${results.batch_20.avgMs.toFixed(0)}ms` : 'N/A';
+    const tp = results.batch_20 ? `${results.batch_20.throughput.toFixed(1)}/s` : 'N/A';
+
+    console.log(`  ${key.padEnd(35)} │ ${b1.padStart(7)} │ ${b5.padStart(7)} │ ${b10.padStart(8)} │ ${b20.padStart(8)} │ ${tp.padStart(10)}`);
+  }
+  console.log(`${'═'.repeat(100)}`);
+}
+
+// ============================================================================
+// Text Length Impact Testing
+// ============================================================================
+
+/**
+ * Benchmark how text length affects latency
+ */
+async function benchmarkTextLengthImpact(modelId, method, iterations = 5) {
+  const modelConfig = MODELS[modelId];
+  if (!modelConfig) return null;
+
+  // Check availability first
+  const status = await checkMethodAvailability(modelId, method);
+  if (!status.available) {
+    return { error: status.error };
+  }
+
+  const embedFn = method === 'tei'
+    ? (text) => embedWithTEI(modelId, text, modelConfig)
+    : (text) => embedWithServer(method, modelId, text, modelConfig);
+
+  const results = {};
+
+  for (const [lengthName, text] of Object.entries(TEXT_LENGTH_SAMPLES)) {
+    const timings = [];
+
+    for (let i = 0; i < iterations; i++) {
+      const start = performance.now();
+      try {
+        await embedFn(text);
+        timings.push(performance.now() - start);
+      } catch {
+        // Skip failed
+      }
+    }
+
+    if (timings.length > 0) {
+      const stats = calcStats(timings);
+      results[lengthName] = {
+        charCount: text.length,
+        avgMs: stats.avg,
+        p95Ms: stats.p95,
+        msPerChar: stats.avg / text.length,
+      };
+    }
+  }
+
+  return results;
+}
+
+/**
+ * Print text length impact results
+ */
+function printTextLengthImpact(lengthResults) {
+  console.log(`\n${'═'.repeat(100)}`);
+  console.log(`  📏 TEXT LENGTH IMPACT ANALYSIS`);
+  console.log(`${'═'.repeat(100)}`);
+  console.log(`  ${'Model/Method'.padEnd(35)} │   Tiny  │  Short  │  Medium │   Long  │    Max  │ Scaling`);
+  console.log(`  ${''.padEnd(35)} │ (~10ch) │ (~50ch) │ (~200ch)│ (~600ch)│(~1000ch)│`);
+  console.log(`${'─'.repeat(100)}`);
+
+  for (const [key, results] of Object.entries(lengthResults)) {
+    if (results.error) {
+      console.log(`  ${key.padEnd(35)} │ ❌ ${results.error}`);
+      continue;
+    }
+
+    const tiny = results.tiny ? `${results.tiny.avgMs.toFixed(0)}ms` : 'N/A';
+    const short = results.short ? `${results.short.avgMs.toFixed(0)}ms` : 'N/A';
+    const medium = results.medium ? `${results.medium.avgMs.toFixed(0)}ms` : 'N/A';
+    const long = results.long ? `${results.long.avgMs.toFixed(0)}ms` : 'N/A';
+    const max = results.max ? `${results.max.avgMs.toFixed(0)}ms` : 'N/A';
+
+    // Calculate scaling factor (max / tiny)
+    let scaling = 'N/A';
+    if (results.tiny && results.max) {
+      const factor = results.max.avgMs / results.tiny.avgMs;
+      scaling = `${factor.toFixed(1)}x`;
+    }
+
+    console.log(`  ${key.padEnd(35)} │ ${tiny.padStart(7)} │ ${short.padStart(7)} │ ${medium.padStart(7)} │ ${long.padStart(7)} │ ${max.padStart(7)} │ ${scaling.padStart(7)}`);
+  }
+  console.log(`${'═'.repeat(100)}`);
+}
+
+// ============================================================================
+// Stability Analysis
+// ============================================================================
+
+/**
+ * Print stability analysis (stdDev, CV)
+ */
+function printStabilityAnalysis(modelResults) {
+  console.log(`\n${'═'.repeat(100)}`);
+  console.log(`  📊 STABILITY ANALYSIS (latency consistency)`);
+  console.log(`${'═'.repeat(100)}`);
+  console.log(`  ${'Model/Method'.padEnd(35)} │   Avg   │  StdDev │   CV%   │  Status`);
+  console.log(`${'─'.repeat(100)}`);
+
+  for (const [modelId, methodResults] of Object.entries(modelResults)) {
+    for (const [method, r] of Object.entries(methodResults)) {
+      if (!r || !r.available || !r.stats) continue;
+
+      const key = `${modelId}/${method}`.padEnd(35);
+      const avg = `${r.stats.avg.toFixed(0)}ms`.padStart(7);
+      const stdDev = `${r.stats.stdDev.toFixed(1)}ms`.padStart(7);
+      const cv = `${r.stats.cv.toFixed(1)}%`.padStart(7);
+
+      // Status based on CV (coefficient of variation)
+      let status;
+      if (r.stats.cv < 15) {
+        status = '✅ Stable';
+      } else if (r.stats.cv < 30) {
+        status = '⚠️ Moderate';
+      } else {
+        status = '❌ Unstable';
+      }
+
+      console.log(`  ${key} │ ${avg} │ ${stdDev} │ ${cv} │ ${status}`);
+    }
+  }
+  console.log(`${'═'.repeat(100)}`);
+}
+
+// ============================================================================
+// Throughput Analysis
+// ============================================================================
+
+/**
+ * Print throughput analysis
+ */
+function printThroughputAnalysis(modelResults) {
+  console.log(`\n${'═'.repeat(100)}`);
+  console.log(`  ⚡ THROUGHPUT ANALYSIS (embeddings per second)`);
+  console.log(`${'═'.repeat(100)}`);
+  console.log(`  ${'Model/Method'.padEnd(35)} │ Emb/sec │ Total Emb │ Total Time`);
+  console.log(`${'─'.repeat(100)}`);
+
+  for (const [modelId, methodResults] of Object.entries(modelResults)) {
+    for (const [method, r] of Object.entries(methodResults)) {
+      if (!r || !r.available || !r.stats || !r.timings) continue;
+
+      const key = `${modelId}/${method}`.padEnd(35);
+      const totalTime = r.timings.reduce((a, b) => a + b, 0);
+      const throughput = calcThroughput(r.timings.length, totalTime);
+
+      console.log(`  ${key} │ ${throughput.toFixed(1).padStart(7)} │ ${r.timings.length.toString().padStart(9)} │ ${(totalTime / 1000).toFixed(2).padStart(8)}s`);
+    }
+  }
+  console.log(`${'═'.repeat(100)}`);
+}
+
+// ============================================================================
 // Output Formatting
 // ============================================================================
 
@@ -1234,17 +1559,28 @@ export async function runEmbeddingBenchmark(options = {}) {
     methods = INFERENCE_METHODS,
     legacy = [],
     warmup = false,
+    batchTest = false,
+    lengthTest = false,
+    noQuality = false,
+    quick = false,
   } = options;
+
+  // Quick mode overrides
+  const effectiveIterations = quick ? 3 : iterations;
+  const skipQuality = quick || noQuality;
 
   console.log(`\n${'═'.repeat(80)}`);
   console.log(`  🏎️  EMBEDDING BENCHMARK - 1024-DIM MULTILINGUAL MODELS`);
   console.log(`${'═'.repeat(80)}`);
-  console.log(`  Iterations: ${iterations} per text`);
+  console.log(`  Iterations: ${effectiveIterations} per text${quick ? ' (quick mode)' : ''}`);
   console.log(`  Test texts: ${TEST_TEXTS.length}`);
   console.log(`  Models: ${models.join(', ')}`);
   console.log(`  Methods: ${methods.join(', ')}`);
   console.log(`  Legacy: ${legacy.length > 0 ? legacy.join(', ') : 'none'}`);
   console.log(`  Embed server: ${getEmbedServerUrl()}`);
+  console.log(`  Quality tests: ${skipQuality ? 'DISABLED' : 'enabled'}`);
+  console.log(`  Batch tests: ${batchTest ? 'enabled' : 'disabled'}`);
+  console.log(`  Length tests: ${lengthTest ? 'enabled' : 'disabled'}`);
   console.log(`${'─'.repeat(80)}`);
 
   // Check embed server
@@ -1255,15 +1591,21 @@ export async function runEmbeddingBenchmark(options = {}) {
     console.log(`${'─'.repeat(80)}`);
   }
 
-  // Generate Cohere baseline for quality testing
-  const cohereBaseline = await generateCohereBaseline();
+  // Generate Cohere baseline for quality testing (skip if noQuality)
+  let cohereBaseline = { available: false };
+  if (!skipQuality) {
+    cohereBaseline = await generateCohereBaseline();
+  } else {
+    console.log(`\n${'─'.repeat(80)}`);
+    console.log(`  ⏭️  SKIPPING COHERE BASELINE (--no-quality or --quick mode)`);
+  }
 
   // Benchmark Cohere itself (for latency comparison)
   let cohereLatency = null;
   if (cohereBaseline.available) {
     console.log(`\n${'─'.repeat(80)}`);
     console.log(`  ⏱️  BENCHMARKING COHERE LATENCY...`);
-    const cohereBenchmark = await benchmarkLegacyProvider('cohere', iterations);
+    const cohereBenchmark = await benchmarkLegacyProvider('cohere', effectiveIterations);
     if (cohereBenchmark.available) {
       cohereLatency = cohereBenchmark.stats;
       console.log(`  ✅ Cohere avg latency: ${cohereLatency.avg.toFixed(2)}ms`);
@@ -1288,11 +1630,11 @@ export async function runEmbeddingBenchmark(options = {}) {
     modelResults[modelId] = {};
 
     for (const method of methods) {
-      const result = await benchmarkModelMethod(modelId, method, iterations);
+      const result = await benchmarkModelMethod(modelId, method, effectiveIterations);
       modelResults[modelId][method] = result;
 
       // Run quality test if benchmark succeeded and Cohere baseline available
-      if (result.available && cohereBaseline.available) {
+      if (result.available && cohereBaseline.available && !skipQuality) {
         const modelConfig = MODELS[modelId];
         const embedFn = method === 'tei'
           ? (text) => embedWithTEI(modelId, text, modelConfig)
@@ -1321,6 +1663,47 @@ export async function runEmbeddingBenchmark(options = {}) {
   // Print latency percentiles
   printLatencyPercentiles(modelResults);
 
+  // Print stability analysis (always)
+  printStabilityAnalysis(modelResults);
+
+  // Print throughput analysis (always)
+  printThroughputAnalysis(modelResults);
+
+  // Batch performance tests (if enabled)
+  const batchResults = {};
+  if (batchTest && serverAvailable) {
+    console.log(`\n${'─'.repeat(80)}`);
+    console.log(`  📦 RUNNING BATCH PERFORMANCE TESTS...`);
+
+    for (const modelId of models) {
+      for (const method of methods) {
+        if (method === 'tei') continue;  // Skip TEI for batch tests
+        const key = `${modelId}/${method}`;
+        console.log(`  Testing ${key}...`);
+        batchResults[key] = await benchmarkBatchPerformance(modelId, method, 5);
+      }
+    }
+
+    printBatchPerformance(batchResults);
+  }
+
+  // Text length impact tests (if enabled)
+  const lengthResults = {};
+  if (lengthTest && serverAvailable) {
+    console.log(`\n${'─'.repeat(80)}`);
+    console.log(`  📏 RUNNING TEXT LENGTH IMPACT TESTS...`);
+
+    for (const modelId of models) {
+      for (const method of methods) {
+        const key = `${modelId}/${method}`;
+        console.log(`  Testing ${key}...`);
+        lengthResults[key] = await benchmarkTextLengthImpact(modelId, method, 5);
+      }
+    }
+
+    printTextLengthImpact(lengthResults);
+  }
+
   // Benchmark legacy providers (excluding cohere which we already did)
   const legacyResults = {};
   const legacyToTest = legacy.filter(p => p !== 'cohere');
@@ -1334,7 +1717,7 @@ export async function runEmbeddingBenchmark(options = {}) {
         console.log(`  ⚠️ Unknown legacy provider: ${provider}`);
         continue;
       }
-      legacyResults[provider] = await benchmarkLegacyProvider(provider, iterations);
+      legacyResults[provider] = await benchmarkLegacyProvider(provider, effectiveIterations);
     }
 
     printLegacyResults(legacyResults);
@@ -1342,7 +1725,7 @@ export async function runEmbeddingBenchmark(options = {}) {
 
   console.log('');
 
-  return { modelResults, legacyResults, qualityResults, cohereBaseline };
+  return { modelResults, legacyResults, qualityResults, cohereBaseline, batchResults, lengthResults };
 }
 
 // CLI entry point
@@ -1363,6 +1746,14 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       options.warmup = true;
     } else if (arg.startsWith('--embed-server=')) {
       process.env.EMBED_SERVER_URL = arg.split('=')[1];
+    } else if (arg === '--batch-test') {
+      options.batchTest = true;
+    } else if (arg === '--length-test') {
+      options.lengthTest = true;
+    } else if (arg === '--no-quality') {
+      options.noQuality = true;
+    } else if (arg === '--quick') {
+      options.quick = true;
     } else if (arg === '--help' || arg === '-h') {
       console.log(`
 Usage: node scripts/benchmark-embeddings.mjs [options]
@@ -1378,15 +1769,24 @@ Options:
   --warmup                 Pre-load models before benchmarking
   --embed-server=URL       Embed server URL (default: ${getEmbedServerUrl()})
 
+Performance Testing:
+  --batch-test             Run batch performance tests (1, 5, 10, 20 items)
+  --length-test            Run text length impact tests (tiny→max)
+  --no-quality             Skip quality tests (faster runs)
+  --quick                  Quick mode: iterations=3, no quality tests
+
 Examples:
-  # Quick test with BGE-M3 only
-  node scripts/benchmark-embeddings.mjs --models=bge-m3 --iterations=5
+  # Quick latency-only test
+  node scripts/benchmark-embeddings.mjs --quick --warmup
 
   # Full benchmark with warmup
   node scripts/benchmark-embeddings.mjs --warmup --iterations=10
 
-  # Compare with Cohere
-  node scripts/benchmark-embeddings.mjs --legacy=cohere --iterations=10
+  # Batch and length performance analysis
+  node scripts/benchmark-embeddings.mjs --batch-test --length-test --no-quality --warmup
+
+  # Test specific model
+  node scripts/benchmark-embeddings.mjs --models=e5-large --methods=fastembed --quick
 `);
       process.exit(0);
     }
