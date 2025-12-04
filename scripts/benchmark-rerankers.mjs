@@ -33,7 +33,7 @@ function getEmbedServerUrl() {
   return process.env.EMBED_SERVER_URL || DEFAULT_EMBED_SERVER_URL;
 }
 
-// Reranker models to benchmark
+// Reranker models to benchmark (both using fastembed)
 const RERANKER_MODELS = {
   'bge-base': {
     name: 'BAAI/bge-reranker-base',
@@ -41,8 +41,7 @@ const RERANKER_MODELS = {
   },
   'jina-v2-multi': {
     name: 'jinaai/jina-reranker-v2-base-multilingual',
-    method: 'sentence-transformers',
-    trust_remote_code: true,
+    method: 'fastembed',
   },
 };
 

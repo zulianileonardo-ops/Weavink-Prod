@@ -42,11 +42,11 @@ RERANKER_SUPPORTED = {
     'fastembed': {
         'BAAI/bge-reranker-base',
         'BAAI/bge-reranker-large',
+        'jinaai/jina-reranker-v2-base-multilingual',
         'Xenova/ms-marco-MiniLM-L-6-v2',
         'Xenova/ms-marco-MiniLM-L-12-v2',
     },
     'sentence-transformers': {
-        'jinaai/jina-reranker-v2-base-multilingual',
         'BAAI/bge-reranker-v2-m3',
         'cross-encoder/ms-marco-MiniLM-L-6-v2',
     }
