@@ -1,8 +1,8 @@
 // app/api/test/embedding-benchmark/route.js
-// API endpoint to benchmark embedding providers across multiple models and inference methods
+// API endpoint to benchmark embedding providers using Fastembed
 //
 // Usage:
-//   GET /api/test/embedding-benchmark?iterations=10&models=bge-m3,e5-large&methods=fastembed,tei
+//   GET /api/test/embedding-benchmark?iterations=10&models=e5-large,jina-de
 //   GET /api/test/embedding-benchmark?warmup=true&warmupRounds=5
 //   GET /api/test/embedding-benchmark?legacy=cohere,ollama
 //   GET /api/test/embedding-benchmark?batchTest=true&lengthTest=true
@@ -12,7 +12,6 @@
 // Parameters:
 //   - iterations: Number of benchmark iterations per text (default: 10)
 //   - models: Comma-separated list of models (default: all)
-//   - methods: Comma-separated list of inference methods (default: all)
 //   - legacy: Comma-separated list of legacy providers (default: none)
 //   - warmup: Whether to warm up models before benchmarking (default: true)
 //   - warmupRounds: Number of warmup requests per provider (default: 3)
@@ -37,15 +36,9 @@ import { CohereClient } from 'cohere-ai';
 
 const EMBED_SERVER_URL = process.env.EMBED_SERVER_URL || 'http://embed-server:5555';
 
-// New 1024-dimension multilingual models
+// Fastembed-compatible multilingual models (768 and 1024 dimensions)
 const MODELS = {
-  'bge-m3': {
-    name: 'BAAI/bge-m3',
-    dimension: 1024,
-    maxTokens: 8192,
-    languages: '100+',
-    fastembed: true,
-  },
+  // 1024-dim models
   'e5-large': {
     name: 'intfloat/multilingual-e5-large',
     dimension: 1024,
@@ -53,37 +46,29 @@ const MODELS = {
     languages: '100',
     prefixQuery: 'query: ',
     prefixPassage: 'passage: ',
-    fastembed: true,
   },
-  'e5-large-instruct': {
-    name: 'intfloat/multilingual-e5-large-instruct',
-    dimension: 1024,
-    maxTokens: 512,
-    languages: '100',
-    instructFormat: true,
-    instructTemplate: 'Instruct: Given a query, retrieve relevant passages\nQuery: {text}',
-    fastembed: false,
-  },
-  'jina-v3': {
-    name: 'jinaai/jina-embeddings-v3',
-    dimension: 1024,
+  // 768-dim models
+  'jina-de': {
+    name: 'jinaai/jina-embeddings-v2-base-de',
+    dimension: 768,
     maxTokens: 8192,
-    languages: '89',
-    promptName: 'retrieval.query',
-    trustRemoteCode: true,
-    fastembed: false,
+    languages: 'German + multilingual',
+  },
+  'jina-code': {
+    name: 'jinaai/jina-embeddings-v2-base-code',
+    dimension: 768,
+    maxTokens: 8192,
+    languages: 'Code + multilingual',
+  },
+  'paraphrase-multilingual': {
+    name: 'sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2',
+    dimension: 768,
+    maxTokens: 256,
+    languages: '50+',
   },
 };
 
-const INFERENCE_METHODS = ['fastembed', 'sentence-transformers', 'tei'];
-
-// TEI server URLs per model
-const TEI_URLS = {
-  'bge-m3': process.env.TEI_BGE_M3_URL || 'http://tei-bge-m3:8080',
-  'e5-large': process.env.TEI_E5_URL || 'http://tei-e5:8081',
-  'e5-large-instruct': process.env.TEI_E5_INSTRUCT_URL || 'http://tei-e5:8081',
-  'jina-v3': process.env.TEI_JINA_URL || 'http://tei-jina:8082',
-};
+const INFERENCE_METHODS = ['fastembed'];
 
 // Legacy providers for comparison
 const LEGACY_PROVIDERS = {
@@ -508,26 +493,6 @@ async function embedBatchWithServer(method, texts, modelConfig) {
   return data.embeddings;
 }
 
-async function embedWithTEI(modelId, text, modelConfig) {
-  const url = TEI_URLS[modelId];
-  if (!url) throw new Error(`No TEI URL configured for model: ${modelId}`);
-
-  const processedText = preprocessText(text, modelConfig);
-
-  const response = await fetch(`${url}/embed`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ inputs: processedText }),
-  });
-
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`TEI: ${response.status} - ${error}`);
-  }
-
-  const data = await response.json();
-  return Array.isArray(data[0]) ? data[0] : data;
-}
 
 // ============================================================================
 // Availability Checks
@@ -547,22 +512,7 @@ async function checkMethodAvailability(modelId, method) {
 
   try {
     if (method === 'fastembed') {
-      if (config.fastembed === false) {
-        return { available: false, error: 'Model not supported by Fastembed' };
-      }
       await embedWithServer('fastembed', 'test', config);
-      return { available: true };
-    }
-
-    if (method === 'sentence-transformers') {
-      await embedWithServer('sentence-transformers', 'test', config);
-      return { available: true };
-    }
-
-    if (method === 'tei') {
-      const url = TEI_URLS[modelId];
-      const resp = await fetch(`${url}/info`);
-      if (!resp.ok) return { available: false, error: `TEI not running at ${url}` };
       return { available: true };
     }
 
@@ -729,20 +679,9 @@ async function warmupModels(modelIds) {
   console.log(`\n  🔥 WARMING UP MODELS...`);
 
   const warmupPayload = {
-    models: modelIds.flatMap(modelId => {
+    models: modelIds.map(modelId => {
       const config = MODELS[modelId];
-      const methods = [];
-
-      if (config.fastembed !== false) {
-        methods.push({ method: 'fastembed', model: config.name });
-      }
-      methods.push({
-        method: 'sentence-transformers',
-        model: config.name,
-        trust_remote_code: config.trustRemoteCode || false,
-      });
-
-      return methods;
+      return { method: 'fastembed', model: config.name };
     }),
   };
 
@@ -777,9 +716,7 @@ async function warmupModels(modelIds) {
 async function benchmarkModelMethod(modelId, method, iterations) {
   const modelConfig = MODELS[modelId];
 
-  const embedFn = method === 'tei'
-    ? (text) => embedWithTEI(modelId, text, modelConfig)
-    : (text) => embedWithServer(method, text, modelConfig);
+  const embedFn = (text) => embedWithServer(method, text, modelConfig);
 
   console.log(`  Testing ${modelId} / ${method}...`);
 
@@ -1133,11 +1070,6 @@ async function benchmarkBatchPerformance(modelId, method, iterations = 5) {
   const modelConfig = MODELS[modelId];
   if (!modelConfig) return null;
 
-  // TEI doesn't support batching through our interface
-  if (method === 'tei') {
-    return { error: 'TEI batch testing not supported' };
-  }
-
   const status = await checkMethodAvailability(modelId, method);
   if (!status.available) {
     return { error: status.error };
@@ -1202,9 +1134,7 @@ async function benchmarkTextLengthImpact(modelId, method, iterations = 5) {
     return { error: status.error };
   }
 
-  const embedFn = method === 'tei'
-    ? (text) => embedWithTEI(modelId, text, modelConfig)
-    : (text) => embedWithServer(method, text, modelConfig);
+  const embedFn = (text) => embedWithServer(method, text, modelConfig);
 
   const results = {};
 
@@ -1267,7 +1197,7 @@ export async function GET(req) {
     : [];
 
   console.log(`\n${'═'.repeat(80)}`);
-  console.log(`  🏎️  EMBEDDING BENCHMARK - 1024-DIM MULTILINGUAL MODELS`);
+  console.log(`  🏎️  EMBEDDING BENCHMARK - FASTEMBED MULTILINGUAL MODELS`);
   console.log(`${'═'.repeat(80)}`);
   console.log(`  Iterations: ${effectiveIterations}${quick ? ' (quick mode)' : ''}`);
   console.log(`  Models: ${models.join(', ')}`);
@@ -1325,9 +1255,7 @@ export async function GET(req) {
         // Run quality test if benchmark succeeded and Cohere baseline available
         if (result.available && cohereBaseline.available && !skipQuality) {
           const modelConfig = MODELS[modelId];
-          const embedFn = method === 'tei'
-            ? (text) => embedWithTEI(modelId, text, modelConfig)
-            : (text) => embedWithServer(method, text, modelConfig);
+          const embedFn = (text) => embedWithServer(method, text, modelConfig);
 
           console.log(`  Running quality test for ${modelId}/${method}...`);
           const qualityResult = await runQualityTest(embedFn, cohereBaseline);

@@ -1,24 +1,19 @@
 #!/usr/bin/env node
 // scripts/benchmark-embeddings.mjs
-// Benchmark embedding latencies across multiple models and inference methods
+// Benchmark embedding latencies across multiple models using Fastembed
 //
 // Usage:
 //   node scripts/benchmark-embeddings.mjs [options]
 //
 // Options:
 //   --iterations=10              Number of iterations per text (default: 10)
-//   --models=bge-m3,e5-large     Models to benchmark (default: all)
-//   --methods=fastembed,tei      Inference methods (default: all)
+//   --models=e5-large,jina-de    Models to benchmark (default: all)
 //   --legacy=cohere,ollama       Include legacy providers (default: none)
 //   --warmup                     Pre-load models before benchmarking
 //   --embed-server=URL           Embed server URL (default: http://localhost:5555)
 //
 // Environment variables:
 //   EMBED_SERVER_URL             Python embed server (default: http://localhost:5555)
-//   TEI_BGE_M3_URL               TEI server for BGE-M3 (default: http://localhost:8080)
-//   TEI_E5_URL                   TEI server for E5 models (default: http://localhost:8081)
-//   TEI_E5_INSTRUCT_URL          TEI server for E5-instruct (default: http://localhost:8081)
-//   TEI_JINA_URL                 TEI server for Jina v3 (default: http://localhost:8082)
 //   COHERE_API_KEY               Cohere API key (for legacy provider)
 //   OLLAMA_URL                   Ollama server URL (default: http://localhost:11434)
 
@@ -34,15 +29,9 @@ function getEmbedServerUrl() {
   return process.env.EMBED_SERVER_URL || DEFAULT_EMBED_SERVER_URL;
 }
 
-// New 1024-dimension multilingual models
+// Fastembed-compatible multilingual models (768 and 1024 dimensions)
 const MODELS = {
-  'bge-m3': {
-    name: 'BAAI/bge-m3',
-    dimension: 1024,
-    maxTokens: 8192,
-    languages: '100+',
-    fastembed: false, // BGE-M3 not supported by fastembed, use sentence-transformers
-  },
+  // 1024-dim models
   'e5-large': {
     name: 'intfloat/multilingual-e5-large',
     dimension: 1024,
@@ -50,55 +39,29 @@ const MODELS = {
     languages: '100',
     prefixQuery: 'query: ',
     prefixPassage: 'passage: ',
-    fastembed: true, // Supported by fastembed
   },
-  'e5-large-instruct': {
-    name: 'intfloat/multilingual-e5-large-instruct',
-    dimension: 1024,
-    maxTokens: 512,
-    languages: '100',
-    instructFormat: true,
-    instructTemplate: 'Instruct: Given a query, retrieve relevant passages\nQuery: {text}',
-    fastembed: false, // Not supported by fastembed
-  },
-  'jina-v3': {
-    name: 'jinaai/jina-embeddings-v3',
-    dimension: 1024,
+  // 768-dim models
+  'jina-de': {
+    name: 'jinaai/jina-embeddings-v2-base-de',
+    dimension: 768,
     maxTokens: 8192,
-    languages: '89',
-    promptName: 'retrieval.query', // For sentence-transformers
-    trustRemoteCode: true,
-    fastembed: false, // Not supported by fastembed
+    languages: 'German + multilingual',
+  },
+  'jina-code': {
+    name: 'jinaai/jina-embeddings-v2-base-code',
+    dimension: 768,
+    maxTokens: 8192,
+    languages: 'Code + multilingual',
+  },
+  'paraphrase-multilingual': {
+    name: 'sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2',
+    dimension: 768,
+    maxTokens: 256,
+    languages: '50+',
   },
 };
 
-const INFERENCE_METHODS = ['fastembed', 'sentence-transformers', 'tei'];
-
-// TEI server URLs per model (dynamically resolved based on embed server)
-function getTeiUrl(modelId) {
-  const embedServerUrl = getEmbedServerUrl();
-  const embedHost = new URL(embedServerUrl).hostname;
-
-  // Check for explicit env vars first
-  const envVars = {
-    'bge-m3': process.env.TEI_BGE_M3_URL,
-    'e5-large': process.env.TEI_E5_URL,
-    'e5-large-instruct': process.env.TEI_E5_INSTRUCT_URL,
-    'jina-v3': process.env.TEI_JINA_URL,
-  };
-
-  if (envVars[modelId]) return envVars[modelId];
-
-  // Default ports per model
-  const defaultPorts = {
-    'bge-m3': 8082,
-    'e5-large': 8081,
-    'e5-large-instruct': 8081,
-    'jina-v3': 8083,
-  };
-
-  return `http://${embedHost}:${defaultPorts[modelId] || 8081}`;
-}
+const INFERENCE_METHODS = ['fastembed'];
 
 // Legacy providers for comparison
 const LEGACY_PROVIDERS = {
@@ -574,29 +537,6 @@ async function getServerMemoryUsage() {
   }
 }
 
-/**
- * Embed via HuggingFace TEI server
- */
-async function embedWithTEI(modelId, text, modelConfig) {
-  const url = getTeiUrl(modelId);
-  if (!url) throw new Error(`No TEI URL configured for model: ${modelId}`);
-
-  const processedText = preprocessText(text, modelConfig);
-
-  const response = await fetch(`${url}/embed`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ inputs: processedText }),
-  });
-
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`TEI error: ${response.status} - ${error}`);
-  }
-
-  const data = await response.json();
-  return Array.isArray(data[0]) ? data[0] : data;
-}
 
 // ============================================================================
 // Availability Checks
@@ -616,23 +556,8 @@ async function checkMethodAvailability(modelId, method) {
 
   try {
     if (method === 'fastembed') {
-      if (config.fastembed === false) {
-        return { available: false, error: 'Model not supported by Fastembed' };
-      }
       // Test embed
       await embedWithServer('fastembed', modelId, 'test', config);
-      return { available: true };
-    }
-
-    if (method === 'sentence-transformers') {
-      await embedWithServer('sentence-transformers', modelId, 'test', config);
-      return { available: true };
-    }
-
-    if (method === 'tei') {
-      const url = getTeiUrl(modelId);
-      const resp = await fetch(`${url}/info`);
-      if (!resp.ok) return { available: false, error: `TEI not running at ${url}` };
       return { available: true };
     }
 
@@ -673,20 +598,9 @@ async function warmupModels(modelIds) {
   console.log('\n  🔥 WARMING UP MODELS...');
 
   const warmupPayload = {
-    models: modelIds.flatMap(modelId => {
+    models: modelIds.map(modelId => {
       const config = MODELS[modelId];
-      const methods = [];
-
-      if (config.fastembed !== false) {
-        methods.push({ method: 'fastembed', model: config.name });
-      }
-      methods.push({
-        method: 'sentence-transformers',
-        model: config.name,
-        trust_remote_code: config.trustRemoteCode || false,
-      });
-
-      return methods;
+      return { method: 'fastembed', model: config.name };
     }),
   };
 
@@ -850,10 +764,8 @@ function precisionAtK(expectedIds, modelRanking, k = 3) {
 async function benchmarkModelMethod(modelId, method, iterations) {
   const modelConfig = MODELS[modelId];
 
-  // Get embed function based on method
-  const embedFn = method === 'tei'
-    ? (text) => embedWithTEI(modelId, text, modelConfig)
-    : (text) => embedWithServer(method, modelId, text, modelConfig);
+  // Get embed function
+  const embedFn = (text) => embedWithServer(method, modelId, text, modelConfig);
 
   console.log(`  Testing ${modelId} / ${method}...`);
 
@@ -1222,11 +1134,6 @@ async function benchmarkBatchPerformance(modelId, method, iterations = 5) {
   const modelConfig = MODELS[modelId];
   if (!modelConfig) return null;
 
-  // Check if method supports batching (TEI doesn't through our interface)
-  if (method === 'tei') {
-    return { error: 'TEI batch testing not supported' };
-  }
-
   // Check availability first
   const status = await checkMethodAvailability(modelId, method);
   if (!status.available) {
@@ -1321,9 +1228,7 @@ async function benchmarkTextLengthImpact(modelId, method, iterations = 5) {
     return { error: status.error };
   }
 
-  const embedFn = method === 'tei'
-    ? (text) => embedWithTEI(modelId, text, modelConfig)
-    : (text) => embedWithServer(method, modelId, text, modelConfig);
+  const embedFn = (text) => embedWithServer(method, modelId, text, modelConfig);
 
   const results = {};
 
@@ -1508,10 +1413,14 @@ function printComparisonTable(modelResults, cohereLatency) {
     }
   }
 
-  if (dims.size === 1 && dims.has(1024)) {
-    console.log(`  ✅ Dimension validation: All models returned 1024-dim vectors`);
-  } else if (dims.size > 0) {
-    console.log(`  ⚠️ Dimensions found: ${[...dims].join(', ')}`);
+  if (dims.size > 0) {
+    const expected = new Set([768, 1024]);
+    const allValid = [...dims].every(d => expected.has(d));
+    if (allValid) {
+      console.log(`  ✅ Dimension validation: All models returned expected dimensions (${[...dims].sort().join(', ')})`);
+    } else {
+      console.log(`  ⚠️ Unexpected dimensions found: ${[...dims].join(', ')}`);
+    }
   }
 }
 
@@ -1574,7 +1483,6 @@ export async function runEmbeddingBenchmark(options = {}) {
   const {
     iterations = 10,
     models = Object.keys(MODELS),
-    methods = INFERENCE_METHODS,
     legacy = [],
     warmup = false,
     batchTest = false,
@@ -1583,17 +1491,19 @@ export async function runEmbeddingBenchmark(options = {}) {
     quick = false,
   } = options;
 
+  // Using fastembed only
+  const methods = INFERENCE_METHODS;
+
   // Quick mode overrides
   const effectiveIterations = quick ? 3 : iterations;
   const skipQuality = quick || noQuality;
 
   console.log(`\n${'═'.repeat(80)}`);
-  console.log(`  🏎️  EMBEDDING BENCHMARK - 1024-DIM MULTILINGUAL MODELS`);
+  console.log(`  🏎️  EMBEDDING BENCHMARK - FASTEMBED MULTILINGUAL MODELS`);
   console.log(`${'═'.repeat(80)}`);
   console.log(`  Iterations: ${effectiveIterations} per text${quick ? ' (quick mode)' : ''}`);
   console.log(`  Test texts: ${TEST_TEXTS.length}`);
   console.log(`  Models: ${models.join(', ')}`);
-  console.log(`  Methods: ${methods.join(', ')}`);
   console.log(`  Legacy: ${legacy.length > 0 ? legacy.join(', ') : 'none'}`);
   console.log(`  Embed server: ${getEmbedServerUrl()}`);
   console.log(`  Quality tests: ${skipQuality ? 'DISABLED' : 'enabled'}`);
@@ -1603,7 +1513,7 @@ export async function runEmbeddingBenchmark(options = {}) {
 
   // Check embed server
   const serverAvailable = await checkEmbedServerHealth();
-  if (!serverAvailable && (methods.includes('fastembed') || methods.includes('sentence-transformers'))) {
+  if (!serverAvailable) {
     console.log(`\n  ⚠️ Embed server not available at ${getEmbedServerUrl()}`);
     console.log(`     Run: python scripts/embed-server.py --port 5555`);
     console.log(`${'─'.repeat(80)}`);
@@ -1654,9 +1564,7 @@ export async function runEmbeddingBenchmark(options = {}) {
       // Run quality test if benchmark succeeded and Cohere baseline available
       if (result.available && cohereBaseline.available && !skipQuality) {
         const modelConfig = MODELS[modelId];
-        const embedFn = method === 'tei'
-          ? (text) => embedWithTEI(modelId, text, modelConfig)
-          : (text) => embedWithServer(method, modelId, text, modelConfig);
+        const embedFn = (text) => embedWithServer(method, modelId, text, modelConfig);
 
         console.log(`  Running quality test for ${modelId}/${method}...`);
         const qualityResult = await runQualityTest(embedFn, cohereBaseline);
@@ -1695,7 +1603,6 @@ export async function runEmbeddingBenchmark(options = {}) {
 
     for (const modelId of models) {
       for (const method of methods) {
-        if (method === 'tei') continue;  // Skip TEI for batch tests
         const key = `${modelId}/${method}`;
         console.log(`  Testing ${key}...`);
         batchResults[key] = await benchmarkBatchPerformance(modelId, method, 5);
@@ -1756,8 +1663,6 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       options.iterations = parseInt(arg.split('=')[1]);
     } else if (arg.startsWith('--models=')) {
       options.models = arg.split('=')[1].split(',');
-    } else if (arg.startsWith('--methods=')) {
-      options.methods = arg.split('=')[1].split(',');
     } else if (arg.startsWith('--legacy=')) {
       options.legacy = arg.split('=')[1].split(',');
     } else if (arg === '--warmup') {
@@ -1780,8 +1685,6 @@ Options:
   --iterations=N           Number of iterations per text (default: 10)
   --models=m1,m2           Models to benchmark (default: all)
                            Available: ${Object.keys(MODELS).join(', ')}
-  --methods=m1,m2          Inference methods (default: all)
-                           Available: ${INFERENCE_METHODS.join(', ')}
   --legacy=p1,p2           Legacy providers to include
                            Available: ${Object.keys(LEGACY_PROVIDERS).join(', ')}
   --warmup                 Pre-load models before benchmarking
@@ -1804,7 +1707,7 @@ Examples:
   node scripts/benchmark-embeddings.mjs --batch-test --length-test --no-quality --warmup
 
   # Test specific model
-  node scripts/benchmark-embeddings.mjs --models=e5-large --methods=fastembed --quick
+  node scripts/benchmark-embeddings.mjs --models=e5-large --quick
 `);
       process.exit(0);
     }
