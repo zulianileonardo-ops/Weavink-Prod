@@ -11,6 +11,7 @@
 //   --legacy=cohere,ollama       Include legacy providers (default: none)
 //   --warmup                     Pre-load models before benchmarking
 //   --embed-server=URL           Embed server URL (default: http://localhost:5555)
+//   --regenerate-baseline        Force regeneration of Cohere baseline cache
 //
 // Environment variables:
 //   EMBED_SERVER_URL             Python embed server (default: http://localhost:5555)
@@ -18,6 +19,13 @@
 //   OLLAMA_URL                   Ollama server URL (default: http://localhost:11434)
 
 import { CohereClient } from 'cohere-ai';
+import { readFileSync, writeFileSync, existsSync } from 'fs';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
+
+// Get script directory for cache file path
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const COHERE_BASELINE_CACHE_PATH = join(__dirname, 'cohere-baseline-cache.json');
 
 // ============================================================================
 // Configuration
@@ -874,13 +882,98 @@ async function benchmarkLegacyProvider(provider, iterations) {
 // ============================================================================
 
 /**
- * Generate Cohere baseline embeddings for quality comparison
- * Uses batch embedding for efficiency with rate limiting
+ * Save Cohere baseline to cache file
  */
-async function generateCohereBaseline() {
-  console.log(`\n${'─'.repeat(80)}`);
-  console.log(`  📏 GENERATING COHERE BASELINE...`);
+function saveCohereBaselineCache(baseline) {
+  try {
+    // Save only embeddings, rankings will be recomputed
+    const cacheData = {
+      version: 1,
+      timestamp: new Date().toISOString(),
+      corpusCount: TEST_CORPUS.length,
+      queryCount: TEST_QUERIES.length,
+      corpusEmbeddings: baseline.corpusEmbeddings,
+      queryEmbeddings: baseline.queryEmbeddings,
+    };
+    writeFileSync(COHERE_BASELINE_CACHE_PATH, JSON.stringify(cacheData, null, 2));
+    console.log(`  💾 Cached baseline to ${COHERE_BASELINE_CACHE_PATH}`);
+    return true;
+  } catch (err) {
+    console.log(`  ⚠️ Failed to cache baseline: ${err.message}`);
+    return false;
+  }
+}
 
+/**
+ * Load Cohere baseline from cache file
+ */
+function loadCohereBaselineCache() {
+  try {
+    if (!existsSync(COHERE_BASELINE_CACHE_PATH)) {
+      return null;
+    }
+
+    const cacheData = JSON.parse(readFileSync(COHERE_BASELINE_CACHE_PATH, 'utf8'));
+
+    // Validate cache matches current test data
+    if (cacheData.corpusCount !== TEST_CORPUS.length || cacheData.queryCount !== TEST_QUERIES.length) {
+      console.log(`  ⚠️ Cache invalid: corpus/query count mismatch`);
+      return null;
+    }
+
+    // Rebuild baseline with rankings
+    const baseline = {
+      available: true,
+      corpusEmbeddings: cacheData.corpusEmbeddings,
+      queryEmbeddings: cacheData.queryEmbeddings,
+      queryRankings: {},
+      latency: { corpus: 0, queries: 0, cached: true },
+    };
+
+    // Recompute rankings from cached embeddings
+    for (const queryObj of TEST_QUERIES) {
+      const query = queryObj.query;
+      if (baseline.queryEmbeddings[query]) {
+        baseline.queryRankings[query] = rankBySimilarity(baseline.queryEmbeddings[query], baseline.corpusEmbeddings);
+      }
+    }
+
+    console.log(`  📂 Loaded baseline from cache (${cacheData.timestamp})`);
+    return baseline;
+  } catch (err) {
+    console.log(`  ⚠️ Failed to load cache: ${err.message}`);
+    return null;
+  }
+}
+
+/**
+ * Generate Cohere baseline embeddings for quality comparison
+ * Uses cache if available, otherwise calls Cohere API
+ */
+async function generateCohereBaseline(forceRegenerate = false) {
+  console.log(`\n${'─'.repeat(80)}`);
+  console.log(`  📏 LOADING COHERE BASELINE...`);
+
+  // Try to load from cache first (unless forced regeneration)
+  if (!forceRegenerate) {
+    const cached = loadCohereBaselineCache();
+    if (cached) {
+      // Log sample of Cohere rankings
+      console.log(`\n  Cohere baseline rankings (sample from cache):`);
+      const samplesToShow = Math.min(5, TEST_QUERIES.length);
+      for (let i = 0; i < samplesToShow; i++) {
+        const query = TEST_QUERIES[i].query;
+        const top3 = cached.queryRankings[query]?.slice(0, 3).map(r => r.name) || [];
+        console.log(`    "${query}" → [${top3.join(', ')}]`);
+      }
+      return cached;
+    }
+    console.log(`  No valid cache found, generating fresh baseline...`);
+  } else {
+    console.log(`  Force regeneration requested...`);
+  }
+
+  // Check Cohere availability
   const status = await checkLegacyProvider('cohere');
   if (!status.available) {
     console.log(`  ❌ Cohere not available: ${status.error}`);
@@ -927,6 +1020,9 @@ async function generateCohereBaseline() {
   }
   baseline.latency.queries = performance.now() - queriesStart;
   console.log(`  ✅ Queries processed in ${baseline.latency.queries.toFixed(0)}ms`);
+
+  // Save to cache for future runs
+  saveCohereBaselineCache(baseline);
 
   // Log sample of Cohere rankings (first 10 to avoid spam)
   console.log(`\n  Cohere baseline rankings (sample):`);
@@ -1489,6 +1585,7 @@ export async function runEmbeddingBenchmark(options = {}) {
     lengthTest = false,
     noQuality = false,
     quick = false,
+    regenerateBaseline = false,
   } = options;
 
   // Using fastembed only
@@ -1522,7 +1619,7 @@ export async function runEmbeddingBenchmark(options = {}) {
   // Generate Cohere baseline for quality testing (skip if noQuality)
   let cohereBaseline = { available: false };
   if (!skipQuality) {
-    cohereBaseline = await generateCohereBaseline();
+    cohereBaseline = await generateCohereBaseline(regenerateBaseline);
   } else {
     console.log(`\n${'─'.repeat(80)}`);
     console.log(`  ⏭️  SKIPPING COHERE BASELINE (--no-quality or --quick mode)`);
@@ -1677,6 +1774,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       options.noQuality = true;
     } else if (arg === '--quick') {
       options.quick = true;
+    } else if (arg === '--regenerate-baseline') {
+      options.regenerateBaseline = true;
     } else if (arg === '--help' || arg === '-h') {
       console.log(`
 Usage: node scripts/benchmark-embeddings.mjs [options]
@@ -1695,6 +1794,7 @@ Performance Testing:
   --length-test            Run text length impact tests (tiny→max)
   --no-quality             Skip quality tests (faster runs)
   --quick                  Quick mode: iterations=3, no quality tests
+  --regenerate-baseline    Force regeneration of Cohere baseline cache
 
 Examples:
   # Quick latency-only test
