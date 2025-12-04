@@ -74,13 +74,31 @@ const MODELS = {
 
 const INFERENCE_METHODS = ['fastembed', 'sentence-transformers', 'tei'];
 
-// TEI server URLs per model
-const TEI_URLS = {
-  'bge-m3': process.env.TEI_BGE_M3_URL || 'http://localhost:8080',
-  'e5-large': process.env.TEI_E5_URL || 'http://localhost:8081',
-  'e5-large-instruct': process.env.TEI_E5_INSTRUCT_URL || 'http://localhost:8081',
-  'jina-v3': process.env.TEI_JINA_URL || 'http://localhost:8082',
-};
+// TEI server URLs per model (dynamically resolved based on embed server)
+function getTeiUrl(modelId) {
+  const embedServerUrl = getEmbedServerUrl();
+  const embedHost = new URL(embedServerUrl).hostname;
+
+  // Check for explicit env vars first
+  const envVars = {
+    'bge-m3': process.env.TEI_BGE_M3_URL,
+    'e5-large': process.env.TEI_E5_URL,
+    'e5-large-instruct': process.env.TEI_E5_INSTRUCT_URL,
+    'jina-v3': process.env.TEI_JINA_URL,
+  };
+
+  if (envVars[modelId]) return envVars[modelId];
+
+  // Default ports per model
+  const defaultPorts = {
+    'bge-m3': 8082,
+    'e5-large': 8081,
+    'e5-large-instruct': 8081,
+    'jina-v3': 8083,
+  };
+
+  return `http://${embedHost}:${defaultPorts[modelId] || 8081}`;
+}
 
 // Legacy providers for comparison
 const LEGACY_PROVIDERS = {
@@ -560,7 +578,7 @@ async function getServerMemoryUsage() {
  * Embed via HuggingFace TEI server
  */
 async function embedWithTEI(modelId, text, modelConfig) {
-  const url = TEI_URLS[modelId];
+  const url = getTeiUrl(modelId);
   if (!url) throw new Error(`No TEI URL configured for model: ${modelId}`);
 
   const processedText = preprocessText(text, modelConfig);
@@ -612,7 +630,7 @@ async function checkMethodAvailability(modelId, method) {
     }
 
     if (method === 'tei') {
-      const url = TEI_URLS[modelId];
+      const url = getTeiUrl(modelId);
       const resp = await fetch(`${url}/info`);
       if (!resp.ok) return { available: false, error: `TEI not running at ${url}` };
       return { available: true };
