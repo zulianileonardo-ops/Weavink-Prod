@@ -39,6 +39,8 @@ function getEmbedServerUrl() {
 }
 
 // Fastembed-compatible multilingual models (768 and 1024 dimensions)
+// NOTE: jina-de removed due to ONNX runtime compatibility issue
+// See: https://github.com/qdrant/fastembed/issues/385
 const MODELS = {
   // 1024-dim models
   'e5-large': {
@@ -50,12 +52,6 @@ const MODELS = {
     prefixPassage: 'passage: ',
   },
   // 768-dim models
-  'jina-de': {
-    name: 'jinaai/jina-embeddings-v2-base-de',
-    dimension: 768,
-    maxTokens: 8192,
-    languages: 'German + multilingual',
-  },
   'jina-code': {
     name: 'jinaai/jina-embeddings-v2-base-code',
     dimension: 768,
