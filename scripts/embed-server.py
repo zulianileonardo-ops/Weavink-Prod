@@ -22,11 +22,17 @@ fastembed_models = {}
 st_models = {}
 
 # Fastembed supported models - use exact names from fastembed library
+# Full list: https://qdrant.github.io/fastembed/examples/Supported_Models/
 # Note: BGE-M3 is NOT supported by fastembed, only by sentence-transformers
 FASTEMBED_SUPPORTED = {
+    # 1024-dim models
     'intfloat/multilingual-e5-large',
     'BAAI/bge-base-en-v1.5',
     'BAAI/bge-small-en-v1.5',
+    # 768-dim models
+    'jinaai/jina-embeddings-v2-base-de',
+    'jinaai/jina-embeddings-v2-base-code',
+    'sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2',
 }
 
 
@@ -261,9 +267,12 @@ if __name__ == '__main__':
     POST /warmup     - Pre-load models
 
   Fastembed supported models:
-    - intfloat/multilingual-e5-large
-    - BAAI/bge-base-en-v1.5
-    - BAAI/bge-small-en-v1.5
+    - intfloat/multilingual-e5-large (1024-dim)
+    - BAAI/bge-base-en-v1.5 (768-dim)
+    - BAAI/bge-small-en-v1.5 (384-dim)
+    - jinaai/jina-embeddings-v2-base-de (768-dim)
+    - jinaai/jina-embeddings-v2-base-code (768-dim)
+    - sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 (768-dim)
 
   Sentence Transformers (all models supported):
     - BAAI/bge-m3 (use sentence-transformers, NOT fastembed)
