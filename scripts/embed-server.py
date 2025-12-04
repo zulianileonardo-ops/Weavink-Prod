@@ -110,7 +110,7 @@ def health():
         'st_loaded': list(st_models.keys()),
         'reranker_loaded': list(reranker_models.keys()),
         'fastembed_supported': list(FASTEMBED_SUPPORTED),
-        'reranker_supported': RERANKER_SUPPORTED,
+        'reranker_supported': {k: list(v) for k, v in RERANKER_SUPPORTED.items()},
     })
 
 
@@ -404,7 +404,7 @@ def list_models():
             'rerankers': list(reranker_models.keys()),
         },
         'fastembed_supported': list(FASTEMBED_SUPPORTED),
-        'reranker_supported': RERANKER_SUPPORTED,
+        'reranker_supported': {k: list(v) for k, v in RERANKER_SUPPORTED.items()},
     })
 
 
