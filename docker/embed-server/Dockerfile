@@ -1,146 +1,52 @@
 # Embed Server Dockerfile
-# Provides Fastembed (ONNX) and Sentence Transformers (PyTorch) embeddings
+# Provides Fastembed (ONNX) and Sentence Transformers (PyTorch) embeddings + reranking
+# Self-hosted alternative to Cohere API
 
 FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install curl for healthcheck and dependencies
-# Added einops for Jina v3 support
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/* \
-    && pip install --no-cache-dir flask fastembed sentence-transformers einops
+# Install system dependencies for ONNX
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
-# Embed the server script directly
-COPY <<'EOF' /app/embed-server.py
-#!/usr/bin/env python3
-"""
-Persistent embedding server - loads models once at startup.
-Supports Fastembed (ONNX) and Sentence Transformers (PyTorch).
-"""
-from flask import Flask, request, jsonify
-import argparse
-import time
-import logging
+# Install Python dependencies
+RUN pip install --no-cache-dir \
+    flask==3.0.0 \
+    gunicorn==21.2.0 \
+    fastembed==0.3.6 \
+    sentence-transformers==2.2.2 \
+    einops==0.7.0
 
-app = Flask(__name__)
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+# Copy server script
+COPY scripts/embed-server.py /app/embed-server.py
 
-fastembed_models = {}
-st_models = {}
+# Pre-download models at build time (faster startup)
+# E5-large embedding model (~2GB)
+RUN python -c "\
+from fastembed import TextEmbedding; \
+print('Downloading E5-large...'); \
+model = TextEmbedding('intfloat/multilingual-e5-large'); \
+print('E5-large ready'); \
+"
 
-# Fastembed supported models - use exact names from fastembed library
-# Note: BGE-M3 is NOT supported by fastembed, only by sentence-transformers
-FASTEMBED_SUPPORTED = {
-    'intfloat/multilingual-e5-large',
-    'BAAI/bge-base-en-v1.5',
-    'BAAI/bge-small-en-v1.5',
-}
+# BGE reranker model (~1GB)
+RUN python -c "\
+from fastembed.rerank.cross_encoder import TextCrossEncoder; \
+print('Downloading BGE-reranker-base...'); \
+model = TextCrossEncoder('BAAI/bge-reranker-base'); \
+print('BGE-reranker ready'); \
+"
 
-def get_fastembed_model(model_name):
-    if model_name not in fastembed_models:
-        if model_name not in FASTEMBED_SUPPORTED:
-            raise ValueError(f"Fastembed does not support {model_name}. Supported: {FASTEMBED_SUPPORTED}")
-        from fastembed import TextEmbedding
-        logger.info(f"Loading Fastembed model: {model_name}")
-        fastembed_models[model_name] = TextEmbedding(model_name=model_name)
-    return fastembed_models[model_name]
-
-def get_st_model(model_name, trust_remote_code=False):
-    if model_name not in st_models:
-        from sentence_transformers import SentenceTransformer
-        logger.info(f"Loading Sentence Transformers model: {model_name}")
-        st_models[model_name] = SentenceTransformer(model_name, trust_remote_code=trust_remote_code)
-    return st_models[model_name]
-
-@app.route('/health', methods=['GET'])
-def health():
-    return jsonify({
-        'status': 'ok',
-        'fastembed_loaded': list(fastembed_models.keys()),
-        'st_loaded': list(st_models.keys()),
-        'fastembed_supported': list(FASTEMBED_SUPPORTED),
-    })
-
-@app.route('/embed', methods=['POST'])
-def embed():
-    data = request.json
-    method = data.get('method')
-    model_name = data.get('model')
-    text = data.get('text')
-
-    if not all([method, model_name, text]):
-        return jsonify({'error': 'Missing required fields: method, model, text'}), 400
-
-    trust_remote_code = data.get('trust_remote_code', False)
-    prompt_name = data.get('prompt_name')
-
-    start = time.perf_counter()
-
-    try:
-        if method == 'fastembed':
-            model = get_fastembed_model(model_name)
-            embeddings = list(model.embed([text]))
-            embedding = [float(x) for x in embeddings[0]]
-        elif method == 'sentence-transformers':
-            model = get_st_model(model_name, trust_remote_code)
-            if prompt_name:
-                embedding = model.encode(text, prompt_name=prompt_name).tolist()
-            else:
-                embedding = model.encode(text).tolist()
-        else:
-            return jsonify({'error': f'Unknown method: {method}'}), 400
-
-        elapsed = (time.perf_counter() - start) * 1000
-        return jsonify({
-            'embedding': embedding,
-            'dimension': len(embedding),
-            'latency_ms': round(elapsed, 2),
-        })
-    except Exception as e:
-        logger.error(f"Embedding error: {e}")
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/warmup', methods=['POST'])
-def warmup():
-    data = request.json
-    models = data.get('models', [])
-    results = {}
-
-    for m in models:
-        model_name = m.get('model')
-        method = m.get('method')
-        trust = m.get('trust_remote_code', False)
-        if not model_name or not method:
-            continue
-        key = f"{method}:{model_name}"
-        try:
-            start = time.perf_counter()
-            if method == 'fastembed':
-                get_fastembed_model(model_name)
-            elif method == 'sentence-transformers':
-                get_st_model(model_name, trust)
-            elapsed = (time.perf_counter() - start) * 1000
-            results[key] = {'success': True, 'load_time_ms': round(elapsed, 2)}
-            logger.info(f"Warmed up {key} in {elapsed:.0f}ms")
-        except Exception as e:
-            results[key] = {'success': False, 'error': str(e)}
-            logger.error(f"Failed to warmup {key}: {e}")
-
-    return jsonify(results)
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--port', type=int, default=5555)
-    parser.add_argument('--host', default='0.0.0.0')
-    args = parser.parse_args()
-    print(f"Embed server starting on {args.host}:{args.port}")
-    app.run(host=args.host, port=args.port, threaded=True)
-EOF
+# Copy warmup script
+COPY docker/embed-server/warmup.py /app/warmup.py
 
 EXPOSE 5555
 
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=3 \
     CMD curl -f http://localhost:5555/health || exit 1
 
-CMD ["python", "/app/embed-server.py", "--port", "5555", "--host", "0.0.0.0"]
+# Use gunicorn for production with warmup
+CMD ["sh", "-c", "python warmup.py && gunicorn --bind 0.0.0.0:5555 --workers 1 --threads 4 --timeout 120 embed-server:app"]
