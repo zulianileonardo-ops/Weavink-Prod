@@ -95,7 +95,7 @@ We use a **bridge network** (`weavink-internal`) for isolation and security.
 │            │   http://:6333                     ┌─────────────────────┐               │
 │            │                                    │   rerank-service    │               │
 │            ▼                                    │   :5556 (BGE)       │               │
-│   ┌─────────────────┐                           │   🔄 DEPLOYING      │               │
+│   ┌─────────────────┐                           │   ✅ DEPLOYED        │               │
 │   │     Redis       │                           └─────────────────────┘               │
 │   │   :6379         │                                                                 │
 │   │   ✅ DEPLOYED    │                           ┌─────────────────────┐               │
@@ -122,7 +122,7 @@ Container Names & Network Connection Commands:
   Redis           │ s40swk408s00s4s4k8kso0gk                │ ✅ Done   │ docker network connect weavink-internal s40swk408s00s4s4k8kso0gk
   Qdrant          │ qdrant-n8ck4s8oww0o8ckwoc0kgsc0         │ ✅ Done   │ docker network connect weavink-internal qdrant-n8ck4s8oww0o8ckwoc0kgsc0
   embed-service   │ e0g4c0g8wsswskosgo0o00k0-124929708495   │ ✅ Done   │ docker network connect weavink-internal e0g4c0g8wsswskosgo0o00k0-124929708495
-  rerank-service  │ <deploying>                             │ 🔄 Build  │ docker network connect weavink-internal <container-name>
+  rerank-service  │ gko04o4448o44cwgw4gk080w-133339492322   │ ✅ Done   │ docker network connect weavink-internal gko04o4448o44cwgw4gk080w-133339492322
   Weavink App     │ <pending>                               │ ⏳ Pending│ docker network connect weavink-internal <container-name>
 ```
 
@@ -145,7 +145,7 @@ flowchart TB
 
         subgraph MLServices["🤖 ML Services (fastembed 0.5.1)"]
             Embed["📊 embed-service ✅<br/>Port 5555<br/>E5-large (1024D)<br/><i>e0g4c0g8wsswskosgo0o00k0-...</i>"]
-            Rerank["🔄 rerank-service 🔄<br/>Port 5556<br/>BGE-reranker-base<br/><i>deploying...</i>"]
+            Rerank["🔄 rerank-service ✅<br/>Port 5556<br/>BGE-reranker-base<br/><i>gko04o4448o44cwgw4gk080w-...</i>"]
         end
 
         subgraph DataStores["💾 Data Stores"]
@@ -177,7 +177,7 @@ flowchart TB
     class Traefik proxy
     class NextJS pending
     class Embed deployed
-    class Rerank deploying
+    class Rerank deployed
     class Redis,Qdrant deployed
 ```
 
@@ -853,20 +853,8 @@ docker ps --filter ancestor=redis:7.2 --format "{{.Names}}"
 | Redis | `s40swk408s00s4s4k8kso0gk` | 6379 | Password | ✅ Connected |
 | Qdrant | `qdrant-n8ck4s8oww0o8ckwoc0kgsc0` | 6333 | API Key | ✅ Connected |
 | embed-service | `e0g4c0g8wsswskosgo0o00k0-124929708495` | 5555 | None | ✅ Connected |
-| rerank-service | `<deploying>` | 5556 | None | 🔄 Deploying |
+| rerank-service | `gko04o4448o44cwgw4gk080w-133339492322` | 5556 | None | ✅ Connected |
 | Weavink App | `<pending>` | 3000 | Session | ⏳ Pending |
-
-**After rerank-service deploys:**
-```bash
-# Get container name
-docker ps | grep rerank
-
-# Connect to network
-docker network connect weavink-internal <container-name>
-
-# Verify
-docker network inspect weavink-internal --format '{{range .Containers}}{{.Name}} {{end}}'
-```
 
 ### Environment Variables Reference
 
@@ -880,10 +868,8 @@ QDRANT_API_KEY=di6jD05MiglTsccUwAHVXOmJQcz67fsm
 
 # ML Services (fastembed 0.5.1)
 EMBED_SERVICE_URL=http://e0g4c0g8wsswskosgo0o00k0-124929708495:5555
-RERANK_SERVICE_URL=http://<rerank-container>:5556  # Update after deployment
+RERANK_SERVICE_URL=http://gko04o4448o44cwgw4gk080w-133339492322:5556
 ```
-
-**Note:** Update `RERANK_SERVICE_URL` with the actual container name after rerank-service deploys.
 
 ---
 
