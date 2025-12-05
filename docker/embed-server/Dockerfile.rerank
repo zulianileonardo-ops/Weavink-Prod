@@ -23,23 +23,13 @@ RUN pip install --no-cache-dir \
     gunicorn==21.2.0 \
     fastembed==0.3.6
 
-# Copy reranking service
+# Copy reranking service and download script
 COPY scripts/rerank-service.py /app/rerank-service.py
+COPY docker/embed-server/download-rerank-model.py /app/download-rerank-model.py
 
 # Pre-download BGE-reranker-base model at build time (~1.5GB)
 # This ensures fast container startup
-RUN python -c "\
-from fastembed.rerank.cross_encoder import TextCrossEncoder; \
-import time; \
-print('Downloading BAAI/bge-reranker-base...'); \
-start = time.time(); \
-model = TextCrossEncoder('BAAI/bge-reranker-base'); \
-print(f'Model downloaded in {time.time() - start:.1f}s'); \
-# Run dummy inference to compile ONNX \
-print('Running warmup inference...'); \
-_ = list(model.rerank('warmup query', ['warmup document'])); \
-print('Done!'); \
-"
+RUN python /app/download-rerank-model.py
 
 EXPOSE 5556
 
