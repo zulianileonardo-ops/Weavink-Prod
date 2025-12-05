@@ -20,10 +20,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Python dependencies (embedding only - smaller footprint)
+# Using fastembed 0.5.1 for stability (matches rerank-service)
 RUN pip install --no-cache-dir \
     flask==3.0.0 \
     gunicorn==21.2.0 \
-    fastembed==0.3.6
+    fastembed==0.5.1
 
 # Copy embedding service and download script (from same directory)
 COPY embed-service.py /app/embed-service.py

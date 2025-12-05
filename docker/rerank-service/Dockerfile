@@ -20,10 +20,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Python dependencies (reranking only)
+# fastembed>=0.4.0 required for fastembed.rerank.cross_encoder module
 RUN pip install --no-cache-dir \
     flask==3.0.0 \
     gunicorn==21.2.0 \
-    fastembed==0.3.6
+    fastembed==0.5.1
 
 # Copy reranking service and download script (from same directory)
 COPY rerank-service.py /app/rerank-service.py
