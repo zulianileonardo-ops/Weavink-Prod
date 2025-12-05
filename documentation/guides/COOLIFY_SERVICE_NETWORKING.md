@@ -72,63 +72,17 @@ We use a **bridge network** (`weavink-internal`) for isolation and security.
 
 ## 3. Architecture Diagram
 
-### ASCII Diagram
+### Container Names & Network Commands
 
-```
-┌──────────────────────────────────────────────────────────────────────────────────────┐
-│                                                                                       │
-│                          Docker Network: weavink-internal                             │
-│                          (Private - Not accessible from internet)                     │
-│                                                                                       │
-│   ┌─────────────────┐                                                                 │
-│   │                 │     POST /embed                                                 │
-│   │   Weavink App   │────────────────────────────────────┐                            │
-│   │   (Next.js)     │                                    │                            │
-│   │                 │     POST /rerank                   │                            │
-│   │   Port 3000     │────────────────────────────────────┼────┐                       │
-│   │   ⏳ PENDING     │                                    │    │                       │
-│   └────────┬────────┘                                    ▼    ▼                       │
-│            │                                    ┌─────────────────────┐               │
-│            │   redis://:6379                    │   embed-service     │               │
-│            │                                    │   :5555 (E5-large)  │               │
-│            │                                    │   ✅ DEPLOYED        │               │
-│            │                                    └─────────────────────┘               │
-│            │                                                                          │
-│            │   http://:6333                     ┌─────────────────────┐               │
-│            │                                    │   rerank-service    │               │
-│            ▼                                    │   :5556 (BGE)       │               │
-│   ┌─────────────────┐                           │   ✅ DEPLOYED        │               │
-│   │     Redis       │                           └─────────────────────┘               │
-│   │   :6379         │                                                                 │
-│   │   ✅ DEPLOYED    │                           ┌─────────────────────┐               │
-│   └─────────────────┘                           │      Qdrant         │               │
-│                                                 │   :6333 (Vector DB) │               │
-│                                                 │   ✅ DEPLOYED        │               │
-│                                                 └─────────────────────┘               │
-│                                                                                       │
-└──────────────────────────────────────────────────────────────────────────────────────┘
-                                         │
-                                         │ ONLY Weavink App is exposed
-                                         ▼
-                         ┌───────────────────────────────┐
-                         │        INTERNET               │
-                         │                               │
-                         │   https://app.weavink.io      │
-                         │   (Port 443 via Traefik)      │
-                         └───────────────────────────────┘
+| Service | Container Name | Status | Network Command |
+|---------|----------------|--------|-----------------|
+| Redis | `s40swk408s00s4s4k8kso0gk` | ✅ Done | `docker network connect weavink-internal s40swk408s00s4s4k8kso0gk` |
+| Qdrant | `qdrant-n8ck4s8oww0o8ckwoc0kgsc0` | ✅ Done | `docker network connect weavink-internal qdrant-n8ck4s8oww0o8ckwoc0kgsc0` |
+| embed-service | `e0g4c0g8wsswskosgo0o00k0-124929708495` | ✅ Done | `docker network connect weavink-internal e0g4c0g8wsswskosgo0o00k0-124929708495` |
+| rerank-service | `gko04o4448o44cwgw4gk080w-133339492322` | ✅ Done | `docker network connect weavink-internal gko04o4448o44cwgw4gk080w-133339492322` |
+| Weavink App | `<pending>` | ⏳ Pending | `docker network connect weavink-internal <container-name>` |
 
-Container Names & Network Connection Commands:
-──────────────────────────────────────────────
-  Service         │ Container Name                          │ Status    │ Network Command
-  ────────────────┼─────────────────────────────────────────┼───────────┼──────────────────────────────────────────────────────────────
-  Redis           │ s40swk408s00s4s4k8kso0gk                │ ✅ Done   │ docker network connect weavink-internal s40swk408s00s4s4k8kso0gk
-  Qdrant          │ qdrant-n8ck4s8oww0o8ckwoc0kgsc0         │ ✅ Done   │ docker network connect weavink-internal qdrant-n8ck4s8oww0o8ckwoc0kgsc0
-  embed-service   │ e0g4c0g8wsswskosgo0o00k0-124929708495   │ ✅ Done   │ docker network connect weavink-internal e0g4c0g8wsswskosgo0o00k0-124929708495
-  rerank-service  │ gko04o4448o44cwgw4gk080w-133339492322   │ ✅ Done   │ docker network connect weavink-internal gko04o4448o44cwgw4gk080w-133339492322
-  Weavink App     │ <pending>                               │ ⏳ Pending│ docker network connect weavink-internal <container-name>
-```
-
-### Mermaid Diagram (Interactive)
+### Architecture Diagram
 
 ```mermaid
 flowchart TB
@@ -237,30 +191,39 @@ sequenceDiagram
 
 ### Port & Auth Summary
 
+```mermaid
+flowchart TB
+    subgraph External["🌐 EXTERNAL (Internet → Coolify)"]
+        HTTPS["HTTPS :443<br/>User auth via session cookies"]
+    end
+
+    subgraph Internal["🔒 INTERNAL (Docker Network: weavink-internal)"]
+        subgraph NoAuth["No Authentication"]
+            Embed["📊 embed-service :5555<br/>POST /embed, /embed/batch"]
+            Rerank["🔄 rerank-service :5556<br/>POST /rerank"]
+        end
+
+        subgraph WithAuth["With Authentication"]
+            RedisAuth["🔴 Redis :6379<br/>Password in URL<br/><code>redis://default:PASS@host:6379</code>"]
+            QdrantAuth["🔷 Qdrant :6333<br/>API Key Header<br/><code>api-key: &lt;key&gt;</code>"]
+        end
+    end
+
+    External --> Internal
+
+    classDef external fill:#e3f2fd,stroke:#1565c0
+    classDef noauth fill:#fff3e0,stroke:#ef6c00
+    classDef withauth fill:#e8f5e9,stroke:#2e7d32
+
+    class HTTPS external
+    class Embed,Rerank noauth
+    class RedisAuth,QdrantAuth withauth
 ```
-┌──────────────────────────────────────────────────────────────────────────┐
-│                     SERVICE AUTHENTICATION SUMMARY                        │
-├──────────────────────────────────────────────────────────────────────────┤
-│                                                                          │
-│  🌐 EXTERNAL (Internet → Coolify)                                        │
-│  ────────────────────────────────                                        │
-│  • HTTPS :443 → User authentication via session cookies                  │
-│                                                                          │
-│  🔒 INTERNAL (Docker Network: weavink-internal)                          │
-│  ──────────────────────────────────────────────                          │
-│                                                                          │
-│  embed-service :5555   │ No Auth    │ POST /embed, /embed/batch          │
-│  rerank-service :5556  │ No Auth    │ POST /rerank                        │
-│  Redis :6379           │ Password   │ redis://default:PASS@host:6379     │
-│  Qdrant :6333          │ API Key    │ Header: api-key: <key>             │
-│                                                                          │
-│  ⚠️  ML services have no auth because:                                   │
-│     - Only accessible within Docker network                              │
-│     - No external port exposure                                          │
-│     - Network isolation = security boundary                              │
-│                                                                          │
-└──────────────────────────────────────────────────────────────────────────┘
-```
+
+> **Why ML services have no auth:**
+> - Only accessible within Docker network
+> - No external port exposure
+> - Network isolation = security boundary
 
 ---
 
@@ -1193,32 +1156,52 @@ DATABASE_URL=postgresql://postgres:<password>@supabasedb-xc444cgkow0gw4kgkwcg0cg
 
 #### Architecture After Migration
 
-```
-┌──────────────────────────────────────────────────────────────────────────────┐
-│                     Docker Network: weavink-internal                          │
-│                                                                              │
-│  ┌─────────────────┐     ┌─────────────────────────────────────────────┐    │
-│  │  Weavink App    │     │            Supabase Stack                    │    │
-│  │  (Next.js)      │────▶│  ┌─────────┐  ┌─────────┐  ┌─────────┐     │    │
-│  │  Port 3000      │     │  │  Kong   │  │ Studio  │  │  Auth   │     │    │
-│  └────────┬────────┘     │  │  :8000  │  │  :3000  │  │  :9999  │     │    │
-│           │              │  └─────────┘  └─────────┘  └─────────┘     │    │
-│           │              │  ┌─────────┐  ┌─────────┐  ┌─────────┐     │    │
-│           │              │  │Postgres │  │ Storage │  │Realtime │     │    │
-│           │              │  │  :5432  │  │  :5000  │  │  :4000  │     │    │
-│           │              │  └─────────┘  └─────────┘  └─────────┘     │    │
-│           │              └─────────────────────────────────────────────┘    │
-│           │                                                                  │
-│           │              ┌─────────────────┐  ┌─────────────────┐           │
-│           │              │  embed-service  │  │  rerank-service │           │
-│           └─────────────▶│  :5555          │  │  :5556          │           │
-│                          └─────────────────┘  └─────────────────┘           │
-│                                                                              │
-│                          ┌─────────────────┐  ┌─────────────────┐           │
-│                          │     Redis       │  │     Qdrant      │           │
-│                          │     :6379       │  │     :6333       │           │
-│                          └─────────────────┘  └─────────────────┘           │
-└──────────────────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph DockerNetwork["🔒 Docker Network: weavink-internal"]
+        subgraph WeavinkApp["📦 Weavink App"]
+            NextJS["⚛️ Next.js<br/>Port 3000"]
+        end
+
+        subgraph Supabase["🗄️ Supabase Stack"]
+            subgraph SupabaseTop["API & UI Layer"]
+                Kong["🔀 Kong<br/>:8000"]
+                Studio["📊 Studio<br/>:3000"]
+                Auth["🔐 Auth<br/>:9999"]
+            end
+            subgraph SupabaseBottom["Data Layer"]
+                Postgres["🐘 Postgres<br/>:5432"]
+                Storage["📁 Storage<br/>:5000"]
+                Realtime["⚡ Realtime<br/>:4000"]
+            end
+        end
+
+        subgraph MLServices["🤖 ML Services"]
+            Embed["📊 embed-service<br/>:5555"]
+            Rerank["🔄 rerank-service<br/>:5556"]
+        end
+
+        subgraph DataStores["💾 Data Stores"]
+            Redis["🔴 Redis<br/>:6379"]
+            Qdrant["🔷 Qdrant<br/>:6333"]
+        end
+
+        NextJS --> Kong
+        NextJS --> Embed
+        NextJS --> Rerank
+        NextJS --> Redis
+        NextJS --> Qdrant
+    end
+
+    classDef app fill:#e8f5e9,stroke:#2e7d32
+    classDef supabase fill:#e3f2fd,stroke:#1565c0
+    classDef ml fill:#fff3e0,stroke:#ef6c00
+    classDef data fill:#fce4ec,stroke:#c2185b
+
+    class NextJS app
+    class Kong,Studio,Auth,Postgres,Storage,Realtime supabase
+    class Embed,Rerank ml
+    class Redis,Qdrant data
 ```
 
 #### Important Notes
