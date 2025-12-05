@@ -19,6 +19,8 @@
 8. [Security Best Practices](#8-security-best-practices)
 9. [Testing Connectivity](#9-testing-connectivity)
 10. [Troubleshooting](#10-troubleshooting)
+11. [Testing Scripts](#11-testing-scripts)
+12. [Future Updates](#12-future-updates)
 
 ---
 
@@ -1083,3 +1085,146 @@ chmod +x /root/test-all-services.sh
 ```
 
 Run with: `/root/test-all-services.sh`
+
+---
+
+## 12. Future Updates
+
+### Planned: Firebase → Supabase Migration
+
+A future migration from Firebase to self-hosted Supabase is planned. This section documents the information needed for that migration.
+
+#### Supabase Service Stack (Coolify)
+
+Coolify provides a pre-configured Supabase stack with the following services:
+
+| Service | Image | Purpose |
+|---------|-------|---------|
+| **Kong** | `kong:2.8.1` | API Gateway - routes all requests |
+| **Studio** | `supabase/studio:2025.06.02` | Dashboard UI (like Firebase console) |
+| **PostgreSQL** | `supabase/postgres:15.8.1.048` | Main database (replaces Firestore) |
+| **PostgREST** | `postgrest/postgrest:v12.2.12` | Auto-generates REST API from DB schema |
+| **GoTrue (Auth)** | `supabase/gotrue:v2.174.0` | Authentication (replaces Firebase Auth) |
+| **Realtime** | `supabase/realtime:v2.34.47` | WebSocket subscriptions |
+| **Storage** | `supabase/storage-api:v1.14.6` | File storage (replaces Firebase Storage) |
+| **Edge Functions** | `supabase/edge-runtime:v1.67.4` | Serverless functions (replaces Cloud Functions) |
+| **Supavisor** | `supabase/supavisor:2.5.1` | Connection pooler for PostgreSQL |
+| **MinIO** | `minio:RELEASE.2025-10-15` | S3-compatible storage backend |
+| **Analytics** | `supabase/logflare:1.4.0` | Logging & analytics |
+| **Vector** | `timberio/vector:0.28.1-alpine` | Log collection |
+| **Imgproxy** | `darthsim/imgproxy:v3.8.0` | Image transformations |
+| **Postgres-Meta** | `supabase/postgres-meta:v0.89.3` | Database management API |
+
+#### Coolify Supabase Configuration
+
+```
+Service Name: supabase-xc444cgkow0gw4kgkwcg0cgo
+
+Credentials (from Coolify):
+- Dashboard User: 0kSZLqeJl19owZqY
+- Dashboard Password: [stored in Coolify]
+- MinIO Admin User: Q2WuRfq2qN8wBQxh
+- MinIO Admin Password: [stored in Coolify]
+- PostgreSQL Database: postgres
+- PostgreSQL Password: [stored in Coolify]
+```
+
+#### Resource Requirements
+
+| Resource | Minimum | Recommended |
+|----------|---------|-------------|
+| RAM | 8GB | 16GB |
+| CPU | 4 cores | 8 cores |
+| Disk | 50GB | 100GB+ |
+
+#### Network Integration
+
+After deploying Supabase, connect all containers to `weavink-internal`:
+
+```bash
+# Get all Supabase container names
+docker ps --format "{{.Names}}" | grep supabase
+
+# Connect each to the network
+docker network connect weavink-internal supabasekong-xc444cgkow0gw4kgkwcg0cgo
+docker network connect weavink-internal supabasedb-xc444cgkow0gw4kgkwcg0cgo
+# ... repeat for all Supabase containers
+```
+
+#### Environment Variables for Weavink App
+
+When migrating, update these environment variables:
+
+```bash
+# Current (Firebase)
+NEXT_PUBLIC_FIREBASE_API_KEY=...
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=...
+FIREBASE_PROJECT_ID=...
+
+# Future (Supabase)
+NEXT_PUBLIC_SUPABASE_URL=http://supabasekong-xc444cgkow0gw4kgkwcg0cgo:8000
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<from-supabase-dashboard>
+SUPABASE_SERVICE_ROLE_KEY=<from-supabase-dashboard>
+DATABASE_URL=postgresql://postgres:<password>@supabasedb-xc444cgkow0gw4kgkwcg0cgo:5432/postgres
+```
+
+#### Migration Checklist
+
+- [ ] Deploy Supabase stack in Coolify
+- [ ] Connect all Supabase containers to `weavink-internal` network
+- [ ] Configure Supabase Studio dashboard
+- [ ] Set up PostgreSQL schema (migrate from Firestore)
+- [ ] Migrate Firebase Auth users to Supabase Auth
+- [ ] Migrate Firebase Storage files to Supabase Storage
+- [ ] Update Weavink App environment variables
+- [ ] Update application code to use Supabase SDK
+- [ ] Test all functionality
+- [ ] Decommission Firebase
+
+#### Firebase Features to Migrate
+
+| Firebase Feature | Supabase Equivalent |
+|------------------|---------------------|
+| Firebase Auth | Supabase Auth (GoTrue) |
+| Firestore | PostgreSQL + PostgREST |
+| Firebase Storage | Supabase Storage + MinIO |
+| Cloud Functions | Edge Functions |
+| Realtime Database | Supabase Realtime |
+
+#### Architecture After Migration
+
+```
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                     Docker Network: weavink-internal                          │
+│                                                                              │
+│  ┌─────────────────┐     ┌─────────────────────────────────────────────┐    │
+│  │  Weavink App    │     │            Supabase Stack                    │    │
+│  │  (Next.js)      │────▶│  ┌─────────┐  ┌─────────┐  ┌─────────┐     │    │
+│  │  Port 3000      │     │  │  Kong   │  │ Studio  │  │  Auth   │     │    │
+│  └────────┬────────┘     │  │  :8000  │  │  :3000  │  │  :9999  │     │    │
+│           │              │  └─────────┘  └─────────┘  └─────────┘     │    │
+│           │              │  ┌─────────┐  ┌─────────┐  ┌─────────┐     │    │
+│           │              │  │Postgres │  │ Storage │  │Realtime │     │    │
+│           │              │  │  :5432  │  │  :5000  │  │  :4000  │     │    │
+│           │              │  └─────────┘  └─────────┘  └─────────┘     │    │
+│           │              └─────────────────────────────────────────────┘    │
+│           │                                                                  │
+│           │              ┌─────────────────┐  ┌─────────────────┐           │
+│           │              │  embed-service  │  │  rerank-service │           │
+│           └─────────────▶│  :5555          │  │  :5556          │           │
+│                          └─────────────────┘  └─────────────────┘           │
+│                                                                              │
+│                          ┌─────────────────┐  ┌─────────────────┐           │
+│                          │     Redis       │  │     Qdrant      │           │
+│                          │     :6379       │  │     :6333       │           │
+│                          └─────────────────┘  └─────────────────┘           │
+└──────────────────────────────────────────────────────────────────────────────┘
+```
+
+#### Important Notes
+
+1. **Don't deploy Supabase yet** - Complete Weavink App deployment first
+2. **Resource planning** - Supabase adds significant resource overhead
+3. **Data migration** - Plan for Firestore → PostgreSQL schema design
+4. **Downtime** - Plan for migration window with potential downtime
+5. **Rollback plan** - Keep Firebase running until Supabase is fully tested
