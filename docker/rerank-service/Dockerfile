@@ -19,6 +19,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
+# Cache bust for fastembed upgrade (change this value to force rebuild)
+ARG CACHE_BUST=2
+
 # Python dependencies (reranking only)
 # fastembed>=0.4.0 required for fastembed.rerank.cross_encoder module
 RUN pip install --no-cache-dir \
