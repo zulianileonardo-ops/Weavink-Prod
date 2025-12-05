@@ -73,48 +73,57 @@ We use a **bridge network** (`weavink-internal`) for isolation and security.
 ### ASCII Diagram
 
 ```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                                                                          │
-│                        Docker Network: weavink-internal                  │
-│                        (Private - Not accessible from internet)          │
-│                                                                          │
-│   ┌────────────────┐                                                     │
-│   │                │     http://<embed-container>:5555                   │
-│   │    Weavink     │─────────────────────────────┐                       │
-│   │    (Next.js)   │                             │                       │
-│   │                │     http://<rerank-container>:5556                  │
-│   │   Port 3000    │─────────────────────────────┼───┐                   │
-│   │                │                             │   │                   │
-│   └───────┬────────┘                             │   │                   │
-│           │                                      ▼   ▼                   │
-│           │                             ┌────────────────┐               │
-│           │   redis://...@<redis>:6379  │ embed-service  │               │
-│           │◄────────────────────────────│   Port 5555    │               │
-│           │                             │  (internal)    │               │
-│           │                             └────────────────┘               │
-│           │                                                              │
-│           │   http://<qdrant>:6333      ┌────────────────┐               │
-│           │◄────────────────────────────│ rerank-service │               │
-│           │                             │   Port 5556    │               │
-│           ▼                             │  (internal)    │               │
-│   ┌───────────────┐                     └────────────────┘               │
-│   │     Redis     │                                                      │
-│   │   Port 6379   │                     ┌────────────────┐               │
-│   │  (internal)   │                     │    Qdrant      │               │
-│   └───────────────┘                     │   Port 6333    │               │
-│                                         │  (internal)    │               │
-│                                         └────────────────┘               │
-│                                                                          │
-└─────────────────────────────────────────────────────────────────────────┘
-                                    │
-                                    │ ONLY this is exposed
-                                    ▼
-                    ┌───────────────────────────────┐
-                    │        INTERNET               │
-                    │                               │
-                    │   https://app.weavink.io      │
-                    │   (Port 443 via Coolify)      │
-                    └───────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────────────────┐
+│                                                                                       │
+│                          Docker Network: weavink-internal                             │
+│                          (Private - Not accessible from internet)                     │
+│                                                                                       │
+│   ┌─────────────────┐                                                                 │
+│   │                 │     POST /embed                                                 │
+│   │   Weavink App   │────────────────────────────────────┐                            │
+│   │   (Next.js)     │                                    │                            │
+│   │                 │     POST /rerank                   │                            │
+│   │   Port 3000     │────────────────────────────────────┼────┐                       │
+│   │   ⏳ PENDING     │                                    │    │                       │
+│   └────────┬────────┘                                    ▼    ▼                       │
+│            │                                    ┌─────────────────────┐               │
+│            │   redis://:6379                    │   embed-service     │               │
+│            │                                    │   :5555 (E5-large)  │               │
+│            │                                    │   ✅ DEPLOYED        │               │
+│            │                                    └─────────────────────┘               │
+│            │                                                                          │
+│            │   http://:6333                     ┌─────────────────────┐               │
+│            │                                    │   rerank-service    │               │
+│            ▼                                    │   :5556 (BGE)       │               │
+│   ┌─────────────────┐                           │   🔄 DEPLOYING      │               │
+│   │     Redis       │                           └─────────────────────┘               │
+│   │   :6379         │                                                                 │
+│   │   ✅ DEPLOYED    │                           ┌─────────────────────┐               │
+│   └─────────────────┘                           │      Qdrant         │               │
+│                                                 │   :6333 (Vector DB) │               │
+│                                                 │   ✅ DEPLOYED        │               │
+│                                                 └─────────────────────┘               │
+│                                                                                       │
+└──────────────────────────────────────────────────────────────────────────────────────┘
+                                         │
+                                         │ ONLY Weavink App is exposed
+                                         ▼
+                         ┌───────────────────────────────┐
+                         │        INTERNET               │
+                         │                               │
+                         │   https://app.weavink.io      │
+                         │   (Port 443 via Traefik)      │
+                         └───────────────────────────────┘
+
+Container Names & Network Connection Commands:
+──────────────────────────────────────────────
+  Service         │ Container Name                          │ Status    │ Network Command
+  ────────────────┼─────────────────────────────────────────┼───────────┼──────────────────────────────────────────────────────────────
+  Redis           │ s40swk408s00s4s4k8kso0gk                │ ✅ Done   │ docker network connect weavink-internal s40swk408s00s4s4k8kso0gk
+  Qdrant          │ qdrant-n8ck4s8oww0o8ckwoc0kgsc0         │ ✅ Done   │ docker network connect weavink-internal qdrant-n8ck4s8oww0o8ckwoc0kgsc0
+  embed-service   │ e0g4c0g8wsswskosgo0o00k0-124929708495   │ ✅ Done   │ docker network connect weavink-internal e0g4c0g8wsswskosgo0o00k0-124929708495
+  rerank-service  │ <deploying>                             │ 🔄 Build  │ docker network connect weavink-internal <container-name>
+  Weavink App     │ <pending>                               │ ⏳ Pending│ docker network connect weavink-internal <container-name>
 ```
 
 ### Mermaid Diagram (Interactive)
@@ -130,18 +139,18 @@ flowchart TB
     end
 
     subgraph DockerNetwork["🔒 Docker Network: weavink-internal"]
-        subgraph WeavinkApp["📦 Weavink App"]
+        subgraph WeavinkApp["📦 Weavink App ⏳"]
             NextJS["⚛️ Next.js<br/>Port 3000<br/><i>Public via Traefik</i>"]
         end
 
-        subgraph MLServices["🤖 ML Services"]
-            Embed["📊 embed-service<br/>Port 5555<br/><i>No Auth</i>"]
-            Rerank["🔄 rerank-service<br/>Port 5556<br/><i>No Auth</i>"]
+        subgraph MLServices["🤖 ML Services (fastembed 0.5.1)"]
+            Embed["📊 embed-service ✅<br/>Port 5555<br/>E5-large (1024D)<br/><i>e0g4c0g8wsswskosgo0o00k0-...</i>"]
+            Rerank["🔄 rerank-service 🔄<br/>Port 5556<br/>BGE-reranker-base<br/><i>deploying...</i>"]
         end
 
         subgraph DataStores["💾 Data Stores"]
-            Redis["🔴 Redis<br/>Port 6379<br/><i>Password Auth</i>"]
-            Qdrant["🔷 Qdrant<br/>Port 6333<br/><i>API Key Auth</i>"]
+            Redis["🔴 Redis ✅<br/>Port 6379<br/><i>s40swk408s00s4s4k8kso0gk</i>"]
+            Qdrant["🔷 Qdrant ✅<br/>Port 6333<br/><i>qdrant-n8ck4s8oww0o8ckwoc0kgsc0</i>"]
         end
     end
 
@@ -150,24 +159,26 @@ flowchart TB
     Traefik -->|"HTTP :3000"| NextJS
 
     %% Internal connections from Weavink
-    NextJS -->|"HTTP :5555<br/>POST /embed"| Embed
-    NextJS -->|"HTTP :5556<br/>POST /rerank"| Rerank
-    NextJS -->|"redis:// :6379<br/>Password Auth"| Redis
-    NextJS -->|"HTTP :6333<br/>API Key Header"| Qdrant
+    NextJS -->|"POST /embed"| Embed
+    NextJS -->|"POST /rerank"| Rerank
+    NextJS -->|"redis:// + Password"| Redis
+    NextJS -->|"HTTP + API Key"| Qdrant
 
     %% Styling
     classDef internet fill:#e1f5fe,stroke:#01579b
     classDef proxy fill:#fff3e0,stroke:#e65100
     classDef app fill:#e8f5e9,stroke:#2e7d32
-    classDef ml fill:#f3e5f5,stroke:#7b1fa2
+    classDef deployed fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
+    classDef deploying fill:#bbdefb,stroke:#1976d2,stroke-dasharray: 5 5
+    classDef pending fill:#fff9c4,stroke:#f9a825,stroke-dasharray: 5 5
     classDef data fill:#fce4ec,stroke:#c2185b
-    classDef network fill:#f5f5f5,stroke:#616161,stroke-dasharray: 5 5
 
     class User internet
     class Traefik proxy
-    class NextJS app
-    class Embed,Rerank ml
-    class Redis,Qdrant data
+    class NextJS pending
+    class Embed deployed
+    class Rerank deploying
+    class Redis,Qdrant deployed
 ```
 
 ### Service Communication Matrix
@@ -316,27 +327,63 @@ Container name is: `s40swk408s00s4s4k8kso0gk`
 
 ### Step 4: Deploy embed-service
 
-1. **New Resource** → **Dockerfile** (from your repo)
+1. **New Resource** → **Git Based** → Select your Weavink repo
 2. **Settings**:
-   - Dockerfile Path: `docker/embed-server/Dockerfile.embed`
+   - **Build Pack**: `Dockerfile`
+   - **Base Directory**: `/docker/embed-service`
    - **Ports Mappings**: Leave empty (internal only!)
    - **Make it publicly available**: OFF
 3. **Resources**:
    - CPU Limit: 6
    - Memory Limit: 6GB
-4. **Deploy** and note the container name
+4. **Deploy** (first build takes ~10 min to download E5-large model)
+5. **Connect to network via SSH**:
+   ```bash
+   # SSH into server
+   ssh root@46.224.102.247
+
+   # Find the container name
+   docker ps | grep embed
+
+   # Connect to network
+   docker network connect weavink-internal <container-name>
+
+   # Verify connection
+   docker network inspect weavink-internal --format '{{range .Containers}}{{.Name}} {{end}}'
+   ```
 
 ### Step 5: Deploy rerank-service
 
-1. **New Resource** → **Dockerfile** (from your repo)
+1. **New Resource** → **Git Based** → Select your Weavink repo
 2. **Settings**:
-   - Dockerfile Path: `docker/embed-server/Dockerfile.rerank`
+   - **Build Pack**: `Dockerfile`
+   - **Base Directory**: `/docker/rerank-service`
    - **Ports Mappings**: Leave empty (internal only!)
    - **Make it publicly available**: OFF
 3. **Resources**:
    - CPU Limit: 4
    - Memory Limit: 4GB
-4. **Deploy** and note the container name
+4. **Deploy** (first build takes ~5 min to download BGE-reranker model)
+5. **Connect to network via SSH**:
+   ```bash
+   # SSH into server
+   ssh root@46.224.102.247
+
+   # Find the container name
+   docker ps | grep rerank
+
+   # Connect to network
+   docker network connect weavink-internal <container-name>
+
+   # Verify connection
+   docker network inspect weavink-internal --format '{{range .Containers}}{{.Name}} {{end}}'
+   ```
+
+### Important: fastembed Version
+
+The rerank-service requires `fastembed>=0.4.0` for the `fastembed.rerank.cross_encoder` module. The Dockerfiles use `fastembed==0.5.1`.
+
+If you encounter `ModuleNotFoundError: No module named 'fastembed.rerank'`, the Docker cache may be using an old version. The Dockerfile includes a cache-bust ARG to force rebuilds.
 
 ### Step 6: Deploy Weavink App
 
@@ -351,7 +398,29 @@ Container name is: `s40swk408s00s4s4k8kso0gk`
 
 ## 5. Connecting Services to Network
 
-**IMPORTANT**: After deploying each service in Coolify, you must manually connect it to the `weavink-internal` network.
+**IMPORTANT**: After deploying each service in Coolify, you must manually connect it to the `weavink-internal` network via SSH.
+
+### SSH Commands Reference
+
+```bash
+# SSH into server
+ssh root@46.224.102.247
+
+# Create network (only once, if not exists)
+docker network create weavink-internal
+
+# Connect a container to network
+docker network connect weavink-internal <container-name>
+
+# Disconnect a container from network
+docker network disconnect weavink-internal <container-name>
+
+# List all containers on the network
+docker network inspect weavink-internal --format '{{range .Containers}}{{.Name}} {{end}}'
+
+# Full network details
+docker network inspect weavink-internal
+```
 
 ### The Process (For Each Service)
 
@@ -363,14 +432,20 @@ ssh root@46.224.102.247
 
 # List all containers
 docker ps --format "table {{.Names}}\t{{.Image}}\t{{.Status}}"
+
+# Or find specific services:
+docker ps | grep redis
+docker ps | grep qdrant
+docker ps | grep embed
+docker ps | grep rerank
 ```
 
 Example output:
 ```
-NAMES                           IMAGE                    STATUS
-s40swk408s00s4s4k8kso0gk       redis:7.2                Up 5 minutes
-abc123xyz                       qdrant/qdrant:v1.7.4     Up 3 minutes
-def456uvw                       embed-service:latest     Up 2 minutes
+NAMES                                    IMAGE                    STATUS
+s40swk408s00s4s4k8kso0gk                redis:7.2                Up 5 minutes
+qdrant-n8ck4s8oww0o8ckwoc0kgsc0         qdrant/qdrant:v1.12      Up 3 minutes
+e0g4c0g8wsswskosgo0o00k0-124929708495   embed-service            Up 2 minutes
 ```
 
 #### Step 2: Connect each container to the network
@@ -380,17 +455,19 @@ def456uvw                       embed-service:latest     Up 2 minutes
 docker network connect weavink-internal s40swk408s00s4s4k8kso0gk
 
 # Connect Qdrant
-docker network connect weavink-internal abc123xyz
+docker network connect weavink-internal qdrant-n8ck4s8oww0o8ckwoc0kgsc0
 
 # Connect embed-service
-docker network connect weavink-internal def456uvw
+docker network connect weavink-internal e0g4c0g8wsswskosgo0o00k0-124929708495
 
-# Connect rerank-service
-docker network connect weavink-internal ghi789rst
+# Connect rerank-service (replace with actual name after deployment)
+docker network connect weavink-internal <rerank-container-name>
 
-# Connect Weavink app
-docker network connect weavink-internal jkl012mno
+# Connect Weavink app (replace with actual name after deployment)
+docker network connect weavink-internal <weavink-container-name>
 ```
+
+**Note**: If you see `Error response from daemon: endpoint with name ... already exists in network`, the container is already connected.
 
 #### Step 3: Verify all services are connected
 
@@ -398,9 +475,9 @@ docker network connect weavink-internal jkl012mno
 docker network inspect weavink-internal --format '{{range .Containers}}{{.Name}} {{end}}'
 ```
 
-Expected output:
+Expected output (all on one line):
 ```
-s40swk408s00s4s4k8kso0gk abc123xyz def456uvw ghi789rst jkl012mno
+s40swk408s00s4s4k8kso0gk qdrant-n8ck4s8oww0o8ckwoc0kgsc0 e0g4c0g8wsswskosgo0o00k0-124929708495 <rerank> <weavink>
 ```
 
 ### Quick Script for Network Connection
@@ -771,15 +848,25 @@ docker ps --filter ancestor=redis:7.2 --format "{{.Names}}"
 
 ### Current Deployed Services
 
-Update this table as you deploy:
-
 | Service | Container Name | Port | Auth | Network Status |
 |---------|----------------|------|------|----------------|
 | Redis | `s40swk408s00s4s4k8kso0gk` | 6379 | Password | ✅ Connected |
 | Qdrant | `qdrant-n8ck4s8oww0o8ckwoc0kgsc0` | 6333 | API Key | ✅ Connected |
-| embed-service | `<pending>` | 5555 | None | ⏳ Pending |
-| rerank-service | `<pending>` | 5556 | None | ⏳ Pending |
+| embed-service | `e0g4c0g8wsswskosgo0o00k0-124929708495` | 5555 | None | ✅ Connected |
+| rerank-service | `<deploying>` | 5556 | None | 🔄 Deploying |
 | Weavink App | `<pending>` | 3000 | Session | ⏳ Pending |
+
+**After rerank-service deploys:**
+```bash
+# Get container name
+docker ps | grep rerank
+
+# Connect to network
+docker network connect weavink-internal <container-name>
+
+# Verify
+docker network inspect weavink-internal --format '{{range .Containers}}{{.Name}} {{end}}'
+```
 
 ### Environment Variables Reference
 
@@ -791,7 +878,94 @@ REDIS_URL=redis://default:<password>@s40swk408s00s4s4k8kso0gk:6379/0
 QDRANT_URL=http://qdrant-n8ck4s8oww0o8ckwoc0kgsc0:6333
 QDRANT_API_KEY=di6jD05MiglTsccUwAHVXOmJQcz67fsm
 
-# ML Services (update after deployment)
-EMBED_SERVICE_URL=http://<embed-container>:5555
-RERANK_SERVICE_URL=http://<rerank-container>:5556
+# ML Services (fastembed 0.5.1)
+EMBED_SERVICE_URL=http://e0g4c0g8wsswskosgo0o00k0-124929708495:5555
+RERANK_SERVICE_URL=http://<rerank-container>:5556  # Update after deployment
 ```
+
+**Note:** Update `RERANK_SERVICE_URL` with the actual container name after rerank-service deploys.
+
+---
+
+## 11. Testing Scripts
+
+### Test Embed Service
+
+Create this script on your server to test the embed-service:
+
+```bash
+cat > /root/test-embed.sh << 'EOF'
+#!/bin/bash
+EMBED_URL="http://e0g4c0g8wsswskosgo0o00k0-124929708495:5555"
+
+echo "=== Health Check ==="
+docker run --rm --network weavink-internal curlimages/curl "$EMBED_URL/health"
+
+echo ""
+echo "=== Single Embedding ==="
+docker run --rm --network weavink-internal curlimages/curl -X POST "$EMBED_URL/embed" -H "Content-Type: application/json" -d '{"text":"React developer"}'
+
+echo ""
+echo "=== Batch Embedding ==="
+docker run --rm --network weavink-internal curlimages/curl -X POST "$EMBED_URL/embed/batch" -H "Content-Type: application/json" -d '{"texts":["React dev","Python dev"]}'
+EOF
+chmod +x /root/test-embed.sh
+```
+
+Run with: `/root/test-embed.sh`
+
+### Test Rerank Service
+
+```bash
+cat > /root/test-rerank.sh << 'EOF'
+#!/bin/bash
+RERANK_URL="http://<rerank-container>:5556"
+
+echo "=== Health Check ==="
+docker run --rm --network weavink-internal curlimages/curl "$RERANK_URL/health"
+
+echo ""
+echo "=== Reranking Test ==="
+docker run --rm --network weavink-internal curlimages/curl -X POST "$RERANK_URL/rerank" -H "Content-Type: application/json" -d '{"query":"React developer","documents":["John is a React expert","Marie works in marketing","Carlos knows Node.js"],"top_n":2}'
+EOF
+chmod +x /root/test-rerank.sh
+```
+
+### Test All Services
+
+```bash
+cat > /root/test-all-services.sh << 'EOF'
+#!/bin/bash
+echo "========================================"
+echo "  WEAVINK SERVICES CONNECTIVITY TEST"
+echo "========================================"
+echo ""
+
+# Service URLs
+REDIS_CONTAINER="s40swk408s00s4s4k8kso0gk"
+QDRANT_CONTAINER="qdrant-n8ck4s8oww0o8ckwoc0kgsc0"
+EMBED_CONTAINER="e0g4c0g8wsswskosgo0o00k0-124929708495"
+QDRANT_API_KEY="di6jD05MiglTsccUwAHVXOmJQcz67fsm"
+
+echo "1. Testing Redis..."
+docker exec $REDIS_CONTAINER redis-cli ping 2>/dev/null && echo "   ✅ Redis: OK" || echo "   ❌ Redis: FAILED"
+
+echo ""
+echo "2. Testing Qdrant..."
+docker run --rm --network weavink-internal curlimages/curl -s -H "api-key: $QDRANT_API_KEY" "http://$QDRANT_CONTAINER:6333/collections" | grep -q "ok" && echo "   ✅ Qdrant: OK" || echo "   ❌ Qdrant: FAILED"
+
+echo ""
+echo "3. Testing embed-service..."
+docker run --rm --network weavink-internal curlimages/curl -s "http://$EMBED_CONTAINER:5555/health" | grep -q "ok" && echo "   ✅ embed-service: OK" || echo "   ❌ embed-service: FAILED"
+
+echo ""
+echo "4. Network members:"
+docker network inspect weavink-internal --format '{{range .Containers}}   - {{.Name}}{{"\n"}}{{end}}'
+
+echo ""
+echo "========================================"
+EOF
+chmod +x /root/test-all-services.sh
+```
+
+Run with: `/root/test-all-services.sh`
