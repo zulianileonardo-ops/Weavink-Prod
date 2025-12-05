@@ -986,6 +986,18 @@ RERANK_SERVICE_URL=http://gko04o4448o44cwgw4gk080w-133339492322:5556
 
 ## 11. Testing Scripts
 
+> **Note**: These scripts are stored in this documentation for reference. They are NOT kept on the server to keep it clean. Copy and run them when needed, then delete after use.
+
+### Last Test Results (Dec 5, 2025)
+
+All services passed connectivity tests:
+```
+1. Testing Redis...      ✅ Redis: OK (auth required)
+2. Testing Qdrant...     ✅ Qdrant: OK
+3. Testing embed-service... ✅ embed-service: OK
+4. Testing rerank-service... ✅ rerank-service: OK
+```
+
 ### Test Embed Service
 
 Create this script on your server to test the embed-service:
