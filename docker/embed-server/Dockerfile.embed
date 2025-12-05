@@ -1,0 +1,70 @@
+# Embedding Service Dockerfile
+# E5-large only - separated for fault isolation and independent scaling
+#
+# Build:
+#   docker build -t embed-service:latest -f docker/embed-server/Dockerfile.embed .
+#
+# Run:
+#   docker run -d --name embed-service -p 5555:5555 --memory=6g --cpus=6 embed-service:latest
+
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# System dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Python dependencies (embedding only - smaller footprint)
+RUN pip install --no-cache-dir \
+    flask==3.0.0 \
+    gunicorn==21.2.0 \
+    fastembed==0.3.6
+
+# Copy embedding service
+COPY scripts/embed-service.py /app/embed-service.py
+
+# Pre-download E5-large model at build time (~2.5GB)
+# This ensures fast container startup
+RUN python -c "\
+from fastembed import TextEmbedding; \
+import time; \
+print('Downloading intfloat/multilingual-e5-large...'); \
+start = time.time(); \
+model = TextEmbedding('intfloat/multilingual-e5-large'); \
+print(f'Model downloaded in {time.time() - start:.1f}s'); \
+# Run dummy inference to compile ONNX \
+print('Running warmup inference...'); \
+_ = list(model.embed(['warmup text'])); \
+print('Done!'); \
+"
+
+EXPOSE 5555
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=3 \
+    CMD curl -f http://localhost:5555/health || exit 1
+
+# Environment variables for performance
+ENV PYTHONUNBUFFERED=1
+ENV OMP_NUM_THREADS=4
+ENV TOKENIZERS_PARALLELISM=false
+
+# Gunicorn with 4 workers, 2 threads each, --preload for memory sharing
+# Total concurrent capacity: 8 requests
+CMD ["gunicorn", \
+     "--bind", "0.0.0.0:5555", \
+     "--workers", "4", \
+     "--threads", "2", \
+     "--worker-class", "gthread", \
+     "--preload", \
+     "--timeout", "60", \
+     "--graceful-timeout", "30", \
+     "--keep-alive", "5", \
+     "--max-requests", "1000", \
+     "--max-requests-jitter", "100", \
+     "--access-logfile", "-", \
+     "--error-logfile", "-", \
+     "embed-service:app"]

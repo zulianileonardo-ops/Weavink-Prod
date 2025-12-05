@@ -1,0 +1,138 @@
+# Production Docker Compose for Embedding & Reranking Services
+# Separate services for fault isolation and independent scaling
+#
+# Usage:
+#   docker compose -f docker/embed-server/docker-compose.production.yml up -d
+#
+# For Coolify: Deploy each service separately using the individual Dockerfiles
+
+version: '3.8'
+
+services:
+  # ========================================
+  # EMBEDDING SERVICE
+  # E5-large model for generating embeddings
+  # ========================================
+  embed-service:
+    build:
+      context: ../..
+      dockerfile: docker/embed-server/Dockerfile.embed
+    container_name: embed-service
+    restart: unless-stopped
+
+    # Resource limits (adjust based on your server)
+    deploy:
+      resources:
+        limits:
+          cpus: '6'
+          memory: 6G
+        reservations:
+          cpus: '4'
+          memory: 4G
+
+    # Networking
+    ports:
+      - "5555:5555"
+    networks:
+      - weavink-internal
+
+    # Model cache persistence (faster restarts)
+    volumes:
+      - embed-cache:/root/.cache
+      - embed-huggingface:/root/.cache/huggingface
+
+    # Environment
+    environment:
+      - PYTHONUNBUFFERED=1
+      - OMP_NUM_THREADS=4
+      - TOKENIZERS_PARALLELISM=false
+
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5555/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 120s
+      retries: 3
+
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"
+
+  # ========================================
+  # RERANKING SERVICE
+  # BGE-reranker-base for reranking search results
+  # ========================================
+  rerank-service:
+    build:
+      context: ../..
+      dockerfile: docker/embed-server/Dockerfile.rerank
+    container_name: rerank-service
+    restart: unless-stopped
+
+    # Resource limits (reranking is lighter than embedding)
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4G
+        reservations:
+          cpus: '2'
+          memory: 2G
+
+    # Networking
+    ports:
+      - "5556:5556"
+    networks:
+      - weavink-internal
+
+    # Model cache persistence
+    volumes:
+      - rerank-cache:/root/.cache
+      - rerank-huggingface:/root/.cache/huggingface
+
+    # Environment
+    environment:
+      - PYTHONUNBUFFERED=1
+      - OMP_NUM_THREADS=2
+      - TOKENIZERS_PARALLELISM=false
+
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5556/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 90s
+      retries: 3
+
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"
+
+# ========================================
+# NETWORKS
+# ========================================
+networks:
+  weavink-internal:
+    driver: bridge
+    # For Coolify: use external network
+    # external: true
+
+# ========================================
+# VOLUMES
+# ========================================
+volumes:
+  embed-cache:
+    driver: local
+  embed-huggingface:
+    driver: local
+  rerank-cache:
+    driver: local
+  rerank-huggingface:
+    driver: local
