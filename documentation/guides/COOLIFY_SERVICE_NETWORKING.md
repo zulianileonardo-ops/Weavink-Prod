@@ -609,25 +609,81 @@ Never add port mappings for:
 - embed-service (5555)
 - rerank-service (5556)
 
-### Firewall Rules
+### UFW Firewall Configuration
 
-On your server, only these ports should be open:
-
-| Port | Purpose | Open To |
-|------|---------|---------|
-| 22 | SSH | Your IP only |
-| 80 | HTTP (redirects to 443) | Public |
-| 443 | HTTPS (your app) | Public |
-| 8000 | Coolify Dashboard | Your IP only |
+The server firewall is configured to only allow necessary ports:
 
 ```bash
-# Check open ports
-sudo ufw status
+# Current UFW Status (as of Dec 5, 2025)
+Status: active
 
-# Secure Coolify dashboard (optional but recommended)
-sudo ufw allow from YOUR_IP to any port 8000
-sudo ufw deny 8000
+To                         Action      From
+--                         ------      ----
+22                         ALLOW       Anywhere        # SSH
+80                         ALLOW       Anywhere        # HTTP
+443                        ALLOW       Anywhere        # HTTPS
+8000                       ALLOW       Anywhere        # Coolify Dashboard
+6001:6002/tcp              ALLOW       Anywhere        # Coolify Realtime (WebSocket)
 ```
+
+### Setting Up UFW Firewall
+
+```bash
+# Enable UFW with default deny incoming
+ufw default deny incoming
+ufw default allow outgoing
+
+# Allow required ports
+ufw allow 22        # SSH
+ufw allow 80        # HTTP
+ufw allow 443       # HTTPS
+ufw allow 8000      # Coolify Dashboard
+ufw allow 6001:6002/tcp  # Coolify Realtime
+
+# Enable firewall
+ufw --force enable
+
+# Check status
+ufw status
+```
+
+### Optional: Restrict Coolify Dashboard to Your IP
+
+```bash
+# Find your IP first (run on your local machine)
+curl ifconfig.me
+
+# Then on the server, restrict port 8000 to your IP only
+ufw delete allow 8000
+ufw allow from YOUR_IP to any port 8000
+```
+
+**Warning**: Only do this if you have a static IP, otherwise you may lock yourself out.
+
+### Security Audit Results (Dec 5, 2025)
+
+| Check | Status | Details |
+|-------|--------|---------|
+| Internal ports (5555, 5556, 6333, 6379) bound to 0.0.0.0 | ✅ PASS | Not exposed |
+| Docker port bindings | ✅ PASS | Internal services have no host port mappings |
+| Redis authentication | ✅ PASS | Password required (`NOAUTH Authentication required`) |
+| Localhost access to internal services | ✅ PASS | All return "NOT ACCESSIBLE" |
+| Network isolation | ✅ PASS | All 4 services on `weavink-internal` |
+| UFW Firewall | ✅ ACTIVE | Only ports 22, 80, 443, 8000, 6001-6002 allowed |
+
+### Port Exposure Summary
+
+| Port | Service | Bound To | Accessible From Internet |
+|------|---------|----------|--------------------------|
+| 22 | SSH | 0.0.0.0 | ✅ Yes (allowed) |
+| 80 | HTTP/Traefik | 0.0.0.0 | ✅ Yes (allowed) |
+| 443 | HTTPS/Traefik | 0.0.0.0 | ✅ Yes (allowed) |
+| 8000 | Coolify Dashboard | 0.0.0.0 | ✅ Yes (allowed) |
+| 6001-6002 | Coolify Realtime | 0.0.0.0 | ✅ Yes (allowed) |
+| 5555 | embed-service | Internal only | 🔒 No |
+| 5556 | rerank-service | Internal only | 🔒 No |
+| 6333 | Qdrant | Internal only | 🔒 No |
+| 6379 | Redis | Internal only | 🔒 No |
 
 ### Network Isolation
 
@@ -635,6 +691,61 @@ Services on `weavink-internal` network CANNOT be reached from:
 - The internet
 - Other Docker networks
 - Other projects in Coolify
+- The host machine's localhost (verified)
+
+### Security Audit Script
+
+Run this script to verify security configuration:
+
+```bash
+cat > /root/security-audit.sh << 'EOF'
+#!/bin/bash
+echo "========================================"
+echo "  WEAVINK SECURITY AUDIT"
+echo "  Server: $(hostname)"
+echo "  Date: $(date)"
+echo "========================================"
+
+echo ""
+echo "=== 1. LISTENING PORTS ==="
+ss -tlnp | grep LISTEN
+
+echo ""
+echo "=== 2. DOCKER PORT BINDINGS ==="
+docker ps --format "table {{.Names}}\t{{.Ports}}"
+
+echo ""
+echo "=== 3. FIREWALL STATUS ==="
+sudo ufw status verbose 2>/dev/null || echo "UFW not installed"
+
+echo ""
+echo "=== 4. LOCALHOST ACCESS TEST ==="
+echo -n "embed-service (5555): "
+curl -s --connect-timeout 2 http://localhost:5555/health 2>/dev/null || echo "NOT ACCESSIBLE (good)"
+echo -n "rerank-service (5556): "
+curl -s --connect-timeout 2 http://localhost:5556/health 2>/dev/null || echo "NOT ACCESSIBLE (good)"
+echo -n "qdrant (6333): "
+curl -s --connect-timeout 2 http://localhost:6333/collections 2>/dev/null || echo "NOT ACCESSIBLE (good)"
+
+echo ""
+echo "=== 5. NETWORK MEMBERS ==="
+docker network inspect weavink-internal --format '{{range .Containers}}  - {{.Name}}{{"\n"}}{{end}}'
+
+echo ""
+echo "=== 6. REDIS AUTH TEST ==="
+docker exec s40swk408s00s4s4k8kso0gk redis-cli ping 2>/dev/null || echo "Auth required (good)"
+
+echo ""
+echo "=== 7. EXTERNAL PORT CHECK ==="
+ss -tlnp | grep -E ":5555|:5556|:6333|:6379" | grep "0.0.0.0" && echo "WARNING!" || echo "OK: Internal ports not exposed"
+
+echo ""
+echo "========================================"
+EOF
+chmod +x /root/security-audit.sh
+```
+
+Run with: `/root/security-audit.sh`
 
 ---
 
@@ -905,7 +1016,7 @@ Run with: `/root/test-embed.sh`
 ```bash
 cat > /root/test-rerank.sh << 'EOF'
 #!/bin/bash
-RERANK_URL="http://<rerank-container>:5556"
+RERANK_URL="http://gko04o4448o44cwgw4gk080w-133339492322:5556"
 
 echo "=== Health Check ==="
 docker run --rm --network weavink-internal curlimages/curl "$RERANK_URL/health"
@@ -927,10 +1038,11 @@ echo "  WEAVINK SERVICES CONNECTIVITY TEST"
 echo "========================================"
 echo ""
 
-# Service URLs
+# Service containers
 REDIS_CONTAINER="s40swk408s00s4s4k8kso0gk"
 QDRANT_CONTAINER="qdrant-n8ck4s8oww0o8ckwoc0kgsc0"
 EMBED_CONTAINER="e0g4c0g8wsswskosgo0o00k0-124929708495"
+RERANK_CONTAINER="gko04o4448o44cwgw4gk080w-133339492322"
 QDRANT_API_KEY="di6jD05MiglTsccUwAHVXOmJQcz67fsm"
 
 echo "1. Testing Redis..."
@@ -938,14 +1050,18 @@ docker exec $REDIS_CONTAINER redis-cli ping 2>/dev/null && echo "   ✅ Redis: O
 
 echo ""
 echo "2. Testing Qdrant..."
-docker run --rm --network weavink-internal curlimages/curl -s -H "api-key: $QDRANT_API_KEY" "http://$QDRANT_CONTAINER:6333/collections" | grep -q "ok" && echo "   ✅ Qdrant: OK" || echo "   ❌ Qdrant: FAILED"
+docker run --rm --network weavink-internal curlimages/curl -s -H "api-key: $QDRANT_API_KEY" "http://$QDRANT_CONTAINER:6333/collections" | grep -q "result" && echo "   ✅ Qdrant: OK" || echo "   ❌ Qdrant: FAILED"
 
 echo ""
 echo "3. Testing embed-service..."
 docker run --rm --network weavink-internal curlimages/curl -s "http://$EMBED_CONTAINER:5555/health" | grep -q "ok" && echo "   ✅ embed-service: OK" || echo "   ❌ embed-service: FAILED"
 
 echo ""
-echo "4. Network members:"
+echo "4. Testing rerank-service..."
+docker run --rm --network weavink-internal curlimages/curl -s "http://$RERANK_CONTAINER:5556/health" | grep -q "ok" && echo "   ✅ rerank-service: OK" || echo "   ❌ rerank-service: FAILED"
+
+echo ""
+echo "5. Network members:"
 docker network inspect weavink-internal --format '{{range .Containers}}   - {{.Name}}{{"\n"}}{{end}}'
 
 echo ""
