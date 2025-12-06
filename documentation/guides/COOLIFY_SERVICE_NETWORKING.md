@@ -17,10 +17,11 @@
 6. [Environment Variables](#6-environment-variables)
 7. [Service Restart Behavior](#7-service-restart-behavior)
 8. [Security Best Practices](#8-security-best-practices)
-9. [Testing Connectivity](#9-testing-connectivity)
-10. [Troubleshooting](#10-troubleshooting)
-11. [Testing Scripts](#11-testing-scripts)
-12. [Future Updates](#12-future-updates)
+9. [Cloudflare Tunnels](#9-cloudflare-tunnels)
+10. [Testing Connectivity](#10-testing-connectivity)
+11. [Troubleshooting](#11-troubleshooting)
+12. [Testing Scripts](#12-testing-scripts)
+13. [Future Updates](#13-future-updates)
 
 ---
 
@@ -90,28 +91,37 @@ flowchart TB
         User["👤 User<br/>Browser"]
     end
 
-    subgraph Coolify["☁️ Coolify / Traefik"]
-        Traefik["🔀 Traefik Proxy<br/>Port 443 (HTTPS)"]
+    subgraph CloudflareLayer["🟠 Cloudflare (glidlink.com)"]
+        CF["☁️ Cloudflare Edge<br/>TLS Termination"]
+        Tunnel["🔒 Cloudflare Tunnel<br/>Encrypted Connection"]
     end
 
-    subgraph DockerNetwork["🔒 Docker Network: weavink-internal"]
-        subgraph WeavinkApp["📦 Weavink App ⏳"]
-            NextJS["⚛️ Next.js<br/>Port 3000<br/><i>Public via Traefik</i>"]
+    subgraph Server["🖥️ Server (46.224.102.247)"]
+        subgraph Coolify["☁️ Coolify / Traefik"]
+            Traefik["🔀 Traefik Proxy<br/>Port 443 (HTTPS)<br/>Origin Certificate"]
         end
 
-        subgraph MLServices["🤖 ML Services (fastembed 0.5.1)"]
-            Embed["📊 embed-service ✅<br/>Port 5555<br/>E5-large (1024D)<br/><i>e0g4c0g8wsswskosgo0o00k0-...</i>"]
-            Rerank["🔄 rerank-service ✅<br/>Port 5556<br/>BGE-reranker-base<br/><i>gko04o4448o44cwgw4gk080w-...</i>"]
-        end
+        subgraph DockerNetwork["🔒 Docker Network: weavink-internal"]
+            subgraph WeavinkApp["📦 Weavink App ⏳"]
+                NextJS["⚛️ Next.js<br/>Port 3000<br/><i>Public via Traefik</i>"]
+            end
 
-        subgraph DataStores["💾 Data Stores"]
-            Redis["🔴 Redis ✅<br/>Port 6379<br/><i>s40swk408s00s4s4k8kso0gk</i>"]
-            Qdrant["🔷 Qdrant ✅<br/>Port 6333<br/><i>qdrant-n8ck4s8oww0o8ckwoc0kgsc0</i>"]
+            subgraph MLServices["🤖 ML Services (fastembed 0.5.1)"]
+                Embed["📊 embed-service ✅<br/>Port 5555<br/>E5-large (1024D)<br/><i>e0g4c0g8wsswskosgo0o00k0-...</i>"]
+                Rerank["🔄 rerank-service ✅<br/>Port 5556<br/>BGE-reranker-base<br/><i>gko04o4448o44cwgw4gk080w-...</i>"]
+            end
+
+            subgraph DataStores["💾 Data Stores"]
+                Redis["🔴 Redis ✅<br/>Port 6379<br/><i>s40swk408s00s4s4k8kso0gk</i>"]
+                Qdrant["🔷 Qdrant ✅<br/>Port 6333<br/><i>qdrant-n8ck4s8oww0o8ckwoc0kgsc0</i>"]
+            end
         end
     end
 
-    %% External connections
-    User -->|"HTTPS :443"| Traefik
+    %% External connections (Full TLS)
+    User -->|"HTTPS"| CF
+    CF -->|"Encrypted"| Tunnel
+    Tunnel -->|"HTTPS :443"| Traefik
     Traefik -->|"HTTP :3000"| NextJS
 
     %% Internal connections from Weavink
@@ -122,6 +132,7 @@ flowchart TB
 
     %% Styling
     classDef internet fill:#e1f5fe,stroke:#01579b
+    classDef cloudflare fill:#fff3e0,stroke:#f48120
     classDef proxy fill:#fff3e0,stroke:#e65100
     classDef app fill:#e8f5e9,stroke:#2e7d32
     classDef deployed fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
@@ -130,6 +141,7 @@ flowchart TB
     classDef data fill:#fce4ec,stroke:#c2185b
 
     class User internet
+    class CF,Tunnel cloudflare
     class Traefik proxy
     class NextJS pending
     class Embed deployed
@@ -714,7 +726,199 @@ Run with: `/root/security-audit.sh`
 
 ---
 
-## 9. Testing Connectivity
+## 9. Cloudflare Tunnels
+
+Our deployment uses **Cloudflare Tunnels** with **Full TLS** to securely expose services through `glidlink.com` without exposing the server's IP address.
+
+### What is Cloudflare Tunnel?
+
+Cloudflare Tunnel creates an encrypted connection between your server and Cloudflare's edge network. This means:
+
+| Benefit | Description |
+|---------|-------------|
+| **Hidden Server IP** | Your server's real IP (46.224.102.247) is never exposed to the internet |
+| **No Port Forwarding** | No need to open ports on your router/firewall for public access |
+| **DDoS Protection** | Cloudflare's edge network absorbs attacks before they reach your server |
+| **Automatic SSL** | Cloudflare handles certificate issuance and renewal |
+| **Works with Dynamic IP** | Even if your server IP changes, the tunnel keeps working |
+
+### Current Configuration
+
+| Setting | Value |
+|---------|-------|
+| **Domain** | glidlink.com |
+| **TLS Mode** | Full (Strict) - End-to-end HTTPS |
+| **Tunnel Type** | Cloudflared container in Coolify |
+| **Origin Certificate** | Wildcard (*.glidlink.com), 15 years validity |
+
+### Architecture with Cloudflare Tunnel
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant U as 👤 User
+    participant CF as ☁️ Cloudflare Edge
+    participant T as 🔒 Tunnel
+    participant TR as 🔀 Traefik
+    participant W as ⚛️ Weavink App
+
+    Note over U,W: Full TLS - Encrypted End-to-End
+
+    U->>+CF: HTTPS (glidlink.com)
+    Note right of CF: Cloudflare TLS<br/>DDoS Protection
+    CF->>+T: Encrypted Tunnel
+    Note right of T: Cloudflared Container<br/>Outbound Connection
+    T->>+TR: HTTPS :443
+    Note right of TR: Origin Certificate<br/>(*.glidlink.com)
+    TR->>+W: HTTP :3000
+    W-->>-TR: Response
+    TR-->>-T: HTTPS Response
+    T-->>-CF: Encrypted
+    CF-->>-U: HTTPS Response
+```
+
+### Full TLS Setup (Reference)
+
+This is how the Full TLS configuration was set up:
+
+#### Step 1: Create Cloudflare Tunnel
+
+1. Go to **Cloudflare Zero Trust** → **Networks** → **Tunnels**
+2. Click **Create a tunnel** → Select **Cloudflared**
+3. Name the tunnel (e.g., `glidlink-coolify`)
+4. Copy the tunnel token (starts with `eyJ...`)
+
+#### Step 2: Create Origin Certificate
+
+1. Go to **Cloudflare Dashboard** → **SSL/TLS** → **Origin Server**
+2. Click **Create Certificate**
+3. Settings:
+   - **Private key type**: RSA (2048)
+   - **Hostnames**: `*.glidlink.com`, `glidlink.com`
+   - **Certificate Validity**: 15 years
+4. Click **Create** and download both:
+   - Certificate (PEM) → save as `glidlink.cert`
+   - Private Key (PEM) → save as `glidlink.key`
+
+#### Step 3: Install Certificate on Server
+
+```bash
+# SSH into server
+ssh root@46.224.102.247
+
+# Create certs directory
+mkdir -p /data/coolify/proxy/certs
+
+# Upload certificate files (from your local machine)
+scp glidlink.cert root@46.224.102.247:/data/coolify/proxy/certs/
+scp glidlink.key root@46.224.102.247:/data/coolify/proxy/certs/
+
+# Verify files
+ls -la /data/coolify/proxy/certs/
+```
+
+#### Step 4: Configure Traefik for TLS
+
+In Coolify Dashboard → **Servers** → **Proxy** → **Dynamic Configuration**:
+
+```yaml
+tls:
+  certificates:
+    - certFile: /traefik/certs/glidlink.cert
+      keyFile: /traefik/certs/glidlink.key
+```
+
+#### Step 5: Set Cloudflare SSL Mode
+
+1. Go to **Cloudflare Dashboard** → **SSL/TLS** → **Overview**
+2. Select **Full (strict)**
+
+#### Step 6: Configure Tunnel Hostname
+
+In Cloudflare Zero Trust → Tunnels → Your Tunnel → **Public Hostname**:
+
+| Field | Value |
+|-------|-------|
+| **Subdomain** | `*` (wildcard) |
+| **Domain** | glidlink.com |
+| **Type** | HTTPS |
+| **URL** | localhost:443 |
+
+Under **TLS Settings**:
+- **Origin Server Name**: glidlink.com
+
+#### Step 7: Deploy Cloudflared in Coolify
+
+1. **New Resource** → Search for **Cloudflared**
+2. Add environment variable:
+   ```
+   TUNNEL_TOKEN=eyJ... (your tunnel token)
+   ```
+3. Deploy
+
+#### Step 8: Enable Always HTTPS
+
+1. Go to **Cloudflare Dashboard** → **SSL/TLS** → **Edge Certificates**
+2. Enable **Always Use HTTPS**
+
+### Verifying the Setup
+
+```bash
+# Check tunnel is running
+docker ps | grep cloudflared
+
+# Test HTTPS externally
+curl -I https://glidlink.com
+
+# Check certificate
+openssl s_client -connect glidlink.com:443 -servername glidlink.com 2>/dev/null | openssl x509 -noout -issuer -dates
+```
+
+### When NOT to Use Cloudflare Tunnels
+
+Consider alternatives if you:
+- Need direct server access without proxy intermediaries
+- Want SSL certificates from non-Cloudflare authorities (Let's Encrypt, etc.)
+- Prefer not routing traffic through Cloudflare's infrastructure
+- Have strict data residency requirements
+
+### Troubleshooting Cloudflare Tunnels
+
+#### Problem: TOO_MANY_REDIRECTS
+
+**Cause**: SSL mode mismatch between Cloudflare and Traefik.
+
+**Solution**: Ensure Cloudflare SSL is set to "Full (strict)" and tunnel points to HTTPS:443.
+
+#### Problem: Tunnel shows "Unhealthy"
+
+**Cause**: Cloudflared container not running or token invalid.
+
+**Solution**:
+```bash
+# Check container logs
+docker logs $(docker ps -q --filter name=cloudflared)
+
+# Verify token is correct
+docker exec $(docker ps -q --filter name=cloudflared) printenv TUNNEL_TOKEN
+```
+
+#### Problem: Certificate errors
+
+**Cause**: Origin certificate not properly installed or hostname mismatch.
+
+**Solution**:
+```bash
+# Verify certificate files exist
+ls -la /data/coolify/proxy/certs/
+
+# Check certificate hostnames
+openssl x509 -in /data/coolify/proxy/certs/glidlink.cert -noout -text | grep DNS
+```
+
+---
+
+## 10. Testing Connectivity
 
 ### From Your Server (SSH)
 
@@ -804,7 +1008,7 @@ chmod +x /root/test-connectivity.sh
 
 ---
 
-## 10. Troubleshooting
+## 11. Troubleshooting
 
 ### Problem: "Connection refused" errors
 
@@ -949,7 +1153,7 @@ RERANK_SERVICE_URL=http://gko04o4448o44cwgw4gk080w-133339492322:5556
 
 ---
 
-## 11. Testing Scripts
+## 12. Testing Scripts
 
 > **Note**: These scripts are stored in this documentation for reference. They are NOT kept on the server to keep it clean. Copy and run them when needed, then delete after use.
 
@@ -1051,7 +1255,7 @@ Run with: `/root/test-all-services.sh`
 
 ---
 
-## 12. Future Updates
+## 13. Future Updates
 
 ### Planned: Firebase → Supabase Migration
 
